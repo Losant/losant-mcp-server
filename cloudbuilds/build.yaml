@@ -38,9 +38,7 @@ steps:
 
     if [[ -n '$TAG_NAME' ]]; then
       docker tag us-docker.pkg.dev/$PROJECT_ID/$_ORG_NAME/$_IMAGE_NAME:tempImage us-docker.pkg.dev/$PROJECT_ID/$_ORG_NAME/$_IMAGE_NAME:$TAG_NAME
-      docker push us-docker.pkg.dev/$PROJECT_ID/$_ORG_NAME/$_IMAGE_NAME:$TAG_NAME
       docker tag us-docker.pkg.dev/$PROJECT_ID/$_ORG_NAME/$_IMAGE_NAME:tempImage losant/losant-mcp-server:$TAG_NAME
-      docker push losant/losant-mcp-server:$TAG_NAME
     else
       docker tag us-docker.pkg.dev/$PROJECT_ID/$_ORG_NAME/$_IMAGE_NAME:tempImage us-docker.pkg.dev/$PROJECT_ID/$_ORG_NAME/$_IMAGE_NAME:$BRANCH_NAME
       docker push us-docker.pkg.dev/$PROJECT_ID/$_ORG_NAME/$_IMAGE_NAME:$BRANCH_NAME
