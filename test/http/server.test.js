@@ -20,7 +20,6 @@ describe('HTTP Server', () => {
     // Save original environment
     originalEnv = { ...process.env };
     process.env.LOSANT_RESOURCE_URL = 'https://mcp.losant.test';
-    process.env.LOSANT_AUTH_SERVER_URL = 'https://api.losant.test';
 
     // Create a valid JWT for testing
     validJWT = createMockJWT();

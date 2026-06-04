@@ -140,7 +140,6 @@ Each MCP client connection authenticates independently against the Losant OAuth 
 | Variable | Required | Description | Example |
 |----------|----------|-------------|---------|
 | `LOSANT_RESOURCE_URL` | **Yes** | MCP server resource URL — must prefix-match the JWT audience claim | `https://mcp.your-domain.com` |
-| `LOSANT_AUTH_SERVER_URL` | No | Losant OAuth authorization server | `https://accounts.losant.com/oauth` |
 | `LOSANT_OAUTH_SCOPES` | No | Fallback OAuth scopes requested during authorization | `all.Organization.bounded, only.User.read` |
 
 ### Common Variables
@@ -484,7 +483,7 @@ This mode is ideal for:
 
 **OAuth mode** (`ENABLE_OAUTH=true`):
 - [ ] Configure `LOSANT_RESOURCE_URL` with your production URL
-- [ ] Verify `LOSANT_AUTH_SERVER_URL` points to the correct Losant auth server
+- [ ] Verify `LOSANT_API_URL` points to the correct Losant auth server
 
 ### Docker Deployment
 
