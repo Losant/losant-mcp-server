@@ -40,10 +40,10 @@ describe('Configuration', () => {
       config.default.get('losant.resourceUrl').should.equal('https://custom-resource.losant.com');
     });
 
-    it('should load LOSANT_AUTH_SERVER_URL from env', async () => {
-      process.env.LOSANT_AUTH_SERVER_URL = 'https://custom-auth.losant.com';
+    it('should load LOSANT_API_URL from env', async () => {
+      process.env.LOSANT_API_URL = 'https://custom-auth.losant.com';
       const config = await esmock('../src/config.js');
-      config.default.get('losant.authServerUrl').should.equal('https://custom-auth.losant.com');
+      config.default.get('losant.apiUrl').should.equal('https://custom-auth.losant.com');
     });
 
     it('should load MCP_TITLE from env', async () => {
@@ -100,12 +100,6 @@ describe('Configuration', () => {
       delete process.env.LOSANT_RESOURCE_URL;
       const config = await esmock('../src/config.js');
       config.default.get('losant.resourceUrl').should.equal('http://localhost:3000');
-    });
-
-    it('should default losant.authServerUrl to https://accounts.losant.com/oauth', async () => {
-      delete process.env.LOSANT_AUTH_SERVER_URL;
-      const config = await esmock('../src/config.js');
-      config.default.get('losant.authServerUrl').should.equal('https://accounts.losant.com/oauth');
     });
 
     it('should default scopes to standard array', async () => {
@@ -165,12 +159,6 @@ describe('Configuration', () => {
       process.env.LOSANT_RESOURCE_URL = 'http://localhost:3000';
       const config = await esmock('../src/config.js');
       config.default.get('losant.resourceUrl').should.match(/^https?:\/\//);
-    });
-
-    it('should validate URLs have correct format for authServerUrl', async () => {
-      process.env.LOSANT_AUTH_SERVER_URL = 'https://accounts.losant.com/oauth';
-      const config = await esmock('../src/config.js');
-      config.default.get('losant.authServerUrl').should.match(/^https?:\/\//);
     });
 
     it('should reject invalid URL format for apiUrl', async () => {

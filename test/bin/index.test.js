@@ -36,7 +36,6 @@ describe('Entry Point', () => {
         get: (key) => {
           if (key === 'shutdownTimeout') { return 10000; }
           if (key === 'losant.resourceUrl') { return 'http://localhost:3000'; }
-          if (key === 'losant.authServerUrl') { return 'https://accounts.losant.com/oauth'; }
           return null;
         }
       };
@@ -112,7 +111,6 @@ describe('Entry Point', () => {
         get: (key) => {
           if (key === 'shutdownTimeout') { return 10000; }
           if (key === 'losant.resourceUrl') { return 'http://localhost:3000'; }
-          if (key === 'losant.authServerUrl') { return 'https://accounts.losant.com/oauth'; }
           return null;
         }
       };
@@ -154,7 +152,6 @@ describe('Entry Point', () => {
         get: (key) => {
           if (key === 'shutdownTimeout') { return 10000; }
           if (key === 'losant.resourceUrl') { return 'http://localhost:3000'; }
-          if (key === 'losant.authServerUrl') { return 'https://accounts.losant.com/oauth'; }
           return null;
         }
       };
@@ -195,7 +192,6 @@ describe('Entry Point', () => {
         get: (key) => {
           if (key === 'shutdownTimeout') { return 5000; }
           if (key === 'losant.resourceUrl') { return 'http://localhost:3000'; }
-          if (key === 'losant.authServerUrl') { return 'https://accounts.losant.com/oauth'; }
           return null;
         }
       };

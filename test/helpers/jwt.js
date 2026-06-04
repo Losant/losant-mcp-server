@@ -12,7 +12,7 @@ export const createMockJWT = (payload = {}, options = {}) => {
     subtype: 'apiToken',
     scope: ['only.User.read'],
     iss: 'test.losant.env',
-    aud: [`${process.env.LOSANT_RESOURCE_URL || 'http://localhost:3000'}/mcp`, `${process.env.LOSANT_AUTH_SERVER_URL || 'http://localhost:3000'}`],
+    aud: [`${process.env.LOSANT_RESOURCE_URL || 'http://localhost:3000'}/mcp`, `${process.env.LOSANT_API_URL || 'http://localhost:3000'}`],
     iat: Math.floor(Date.now() / 1000),
     exp: Math.floor(Date.now() / 1000) + 3600 // 1 hour from now
   };

@@ -74,12 +74,6 @@ const conf = convict({
       default: 'http://localhost:3000',
       env: 'LOSANT_RESOURCE_URL'
     },
-    authServerUrl: {
-      doc: 'The URL for the Losant Authentication Server',
-      format: 'url',
-      default: 'https://accounts.losant.com/oauth',
-      env: 'LOSANT_AUTH_SERVER_URL'
-    },
     apiToken: {
       doc: 'Bearer token for authenticating to Losant API, recommended for local testing and when OAuth is disabled. If ENABLE_OAUTH=true, this should not be set.',
       format: String,

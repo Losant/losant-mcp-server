@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Health check endpoint (`/healthz`)
 - Rollbar error reporting integration
 - Graceful shutdown handling (SIGTERM, SIGINT)
+- Initial Root HTML page
 - Security features:
   - Bearer token validation on every request
   - Shallow validation (audience + expiry only)

@@ -92,7 +92,6 @@ docker run -d \
   --name losant-mcp-server \
   -p 3000:3000 \
   -e LOSANT_API_URL=https://api.losant.com \
-  -e LOSANT_AUTH_SERVER_URL=https://accounts.losant.com/oauth \
   -e MCP_TITLE="My Losant MCP Server" \
   -e MCP_ICON_URL=https://your-domain.com/icon.png \
   -e LOSANT_API_TOKEN=<my-api-token> \
@@ -170,7 +169,6 @@ docker run -it --rm \
 | `HOST` | `null` | Server host (null = all interfaces) |
 | `NODE_ENV` | `development` | Environment (`production` recommended) |
 | `LOSANT_API_URL` | `https://api.losant.com` | Losant API endpoint |
-| `LOSANT_AUTH_SERVER_URL` | `https://accounts.losant.com/oauth` | OAuth server URL |
 | `MCP_TITLE` | `"Losant"` | MCP server title (shown in clients) |
 | `MCP_ICON_URL` | `""` | MCP server icon URL (SVG) |
 | `ROLLBAR_KEY` | `""` | Rollbar API key (optional) |

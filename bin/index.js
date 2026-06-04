@@ -42,7 +42,7 @@ const main = async function() {
   }
   log('- Loaded documentation resources from losant-rest package');
   log(`- Resource URL: ${conf.get('losant.resourceUrl')}`);
-  log(`- Authorization Server: ${conf.get('losant.authServerUrl')}`);
+  log(`- Authorization Server: ${conf.get('losant.apiUrl')}`);
 };
 
 main().catch((error) => {
