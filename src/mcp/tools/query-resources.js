@@ -346,7 +346,7 @@ export default {
         },
         filterField: {
           type: 'string',
-          description: "Simple field to filter on (list operation). Use 'name' when searching for almost all resourceTypes, except for a few special cases i.e. experienceEndpoint only allows 'method' or 'path'."
+          description: "Simple field to filter on (list operation). Use 'name' when searching for almost all resourceTypes, except for a few special cases i.e. experienceEndpoint only allows 'method' or 'route'."
         },
         filter: {
           type: 'string',
