@@ -9,7 +9,6 @@ export const generateRootPage = () => {
   const enableOAuth = conf.get('enableOAuth');
   const resourceUrl = conf.get('losant.resourceUrl');
   const port = conf.get('port');
-  const accountsUrl = (conf.get('losant.authServerUrl') || '').replace('/oauth', '');
 
   // Determine deployment context
   const isLocalhost = resourceUrl.includes('localhost') || resourceUrl.includes('127.0.0.1');
@@ -232,7 +231,7 @@ ENABLE_OAUTH=false</div>
 
     <div class="content">
         <div class="info-box">
-          <strong>📝 Note:</strong> You'll need a ${title} account to use this tool. Sign up at <a href="${accountsUrl}" target="_blank">${accountsUrl}</a>.
+          <strong>📝 Note:</strong> You'll need a ${title} account to use this tool.
         </div>
     <div class="section">
         <h2>Server Status</h2>

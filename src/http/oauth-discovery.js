@@ -54,7 +54,7 @@ export const createOAuthDiscoveryRoute = () => ({
       const scopes = metadata?.scopes_supported || config.get('losant.scopes');
       return h.response({
         resource: mcpUrl,
-        authorization_servers: [config.get('losant.authServerUrl')],
+        authorization_servers: [config.get('losant.apiUrl')],
         bearer_methods_supported: ['header'],
         scopes_supported: scopes
       }).type('application/json');
@@ -62,7 +62,7 @@ export const createOAuthDiscoveryRoute = () => ({
       rollbar.error('OAuth discovery endpoint error', { error });
       return h.response({
         resource: mcpUrl,
-        authorization_servers: [config.get('losant.authServerUrl')],
+        authorization_servers: [config.get('losant.apiUrl')],
         bearer_methods_supported: ['header'],
         scopes_supported: config.get('losant.scopes')
       }).type('application/json');
