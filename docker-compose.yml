@@ -1,0 +1,37 @@
+services:
+  losant-mcp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: losant-mcp-server:latest
+    container_name: losant-mcp-server
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:${PORT:-3000}"
+    environment:
+      # Required: Losant API token
+      - LOSANT_API_TOKEN=${LOSANT_API_TOKEN}
+      # Optional: Losant API URL (defaults to https://api.losant.com)
+      - LOSANT_API_URL=${LOSANT_API_URL:-https://api.losant.com}
+      # Optional: Server port (defaults to 3000)
+      - PORT=${PORT:-3000}
+      # Optional: Node environment
+      - NODE_ENV=${NODE_ENV:-production}
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:${PORT:-3000}/healthz"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+    # Resource limits (optional, adjust as needed)
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '1'
+    #       memory: 512M
+    #     reservations:
+    #       cpus: '0.5'
+    #       memory: 256M

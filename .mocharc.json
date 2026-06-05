@@ -1,0 +1,8 @@
+{
+  "require": ["test/setup.js", "mocha"],
+  "loader": "esmock",
+  "timeout": 5000,
+  "color": true,
+  "recursive": true,
+  "reporter": "spec"
+}
