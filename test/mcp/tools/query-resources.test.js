@@ -69,13 +69,11 @@ describe('query-resources tool', () => {
           operation: 'list',
           resourceType: 'application'
         });
-
         should.not.exist(result.isError);
         const response = JSON.parse(result.content[1].text);
         response.should.have.property('count', 2);
         response.items.should.have.length(2);
-        response.items[0]._omittedCounts.should.have.property('globals', 2);
-        response.items[0]._omittedCounts.should.have.property('archiveConfig', 1);
+        response.items[0]._availableViaGet.should.deepEqual({ readme: true, archiveConfig: true, globals: true });
       });
     });
 
@@ -158,6 +156,46 @@ describe('query-resources tool', () => {
         });
         result.isError.should.be.true();
         result.content[0].text.should.equal(JSON.stringify({ code: -32600, message: 'MCP error -32600: Tool input validation failed', data: { errors: [{ fieldName: 'filterField', details: "The 'filterField' parameter cannot be used together with the 'query' parameter. The 'query' parameter overrides simple filters. Remove the 'filterField' parameter and include any filtering logic in the 'query' object instead." }, { fieldName: 'filter', details: "The 'filter' parameter cannot be used together with the 'query' parameter. The 'query' parameter overrides simple filters. Remove the 'filter' parameter and include any filtering logic in the 'query' object instead." }] } }));
+      });
+      it('should error if applicationJobLog list uses filterField', async () => {
+        const result = await queryTool({
+          operation: 'list',
+          resourceType: 'applicationJobLog',
+          applicationId: APP_ID,
+          filterField: 'name'
+        });
+        result.isError.should.be.true();
+        const error = JSON.parse(result.content[0].text);
+        error.data.errors.should.have.length(1);
+        error.data.errors[0].should.have.property('fieldName', 'filterField');
+        error.data.errors[0].details.should.equal("The 'list' operation on 'applicationJobLog' does not support the 'filterField' parameter.");
+      });
+      it('should error if applicationJobLog list uses filter', async () => {
+        const result = await queryTool({
+          operation: 'list',
+          resourceType: 'applicationJobLog',
+          applicationId: APP_ID,
+          filter: 'Archive*'
+        });
+        result.isError.should.be.true();
+        const error = JSON.parse(result.content[0].text);
+        error.data.errors.should.have.length(1);
+        error.data.errors[0].should.have.property('fieldName', 'filter');
+        error.data.errors[0].details.should.equal("The 'list' operation on 'applicationJobLog' does not support the 'filter' parameter.");
+      });
+      it('should error on both filterField and filter when both provided for applicationJobLog', async () => {
+        const result = await queryTool({
+          operation: 'list',
+          resourceType: 'applicationJobLog',
+          applicationId: APP_ID,
+          filterField: 'name',
+          filter: 'Archive*'
+        });
+        result.isError.should.be.true();
+        const error = JSON.parse(result.content[0].text);
+        error.data.errors.should.have.length(2);
+        error.data.errors[0].should.have.property('fieldName', 'filterField');
+        error.data.errors[1].should.have.property('fieldName', 'filter');
       });
     });
   });
@@ -353,9 +391,7 @@ describe('query-resources tool', () => {
                 newBundle: 'v1.4.0'
               }
             ]
-          }
-
-          ]
+          }]
         });
 
       const result = await queryTool({

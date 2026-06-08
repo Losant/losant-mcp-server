@@ -9,7 +9,7 @@ const omittedFieldsByResourceType = {
   flow: ['nodes', 'triggers', 'iconData' ],
   experienceView: ['body'],
   experienceDomain: [ 'sslCert', 'sslBundle' ],
-  application: ['globals', 'archiveConfig', 'readme' ],
+  application: ['globals', 'archiveConfig', 'readme'],
   embeddedDeployment: ['logs'],
   device: ['attributes.description', 'attributes.contentType', 'attributes.attributeTags', 'attributes.system']
 };
@@ -72,15 +72,7 @@ const omitFieldByResourceType = {
   },
   application: (items) => {
     items.forEach((item) => {
-      item._omittedCounts = {};
-      if (item.globals?.length) {
-        item._omittedCounts.globals = item.globals.length;
-      }
-      item._availableViaGet = { readme: true, archiveConfig: true };
-      if (item.archiveConfig) {
-        item._omittedCounts.archiveConfig = 1;
-      }
-      item._omittedCounts.readme = 1; // always omit readme in list responses since it's large and only relevant for get operations
+      item._availableViaGet = { readme: true, archiveConfig: !!item.archiveConfig, globals: !!item.globals?.length };
       delete item.globals;
       delete item.archiveConfig;
     });
@@ -129,12 +121,21 @@ const checkForUnexpectedPageOps = (listInput, errors, resourceType, operation) =
   });
 };
 
-const checkForUnexpectedListOptions = (listInput, errors, resourceType, operation) => {
-  ['sortField', 'sortDirection', 'filterField', 'filter', 'query'].forEach((param) => {
+const checkForUnexpectedFilterOptions = (listInput, errors, resourceType, operation) => {
+  ['filterField', 'filter'].forEach((param) => {
     if (listInput[param] !== undefined) {
       errors.push({ fieldName: param, details: `The '${operation}' operation on '${resourceType}' does not support the '${param}' parameter.` });
     }
   });
+};
+
+const checkForUnexpectedListOptions = (listInput, errors, resourceType, operation) => {
+  ['sortField', 'sortDirection', 'query'].forEach((param) => {
+    if (listInput[param] !== undefined) {
+      errors.push({ fieldName: param, details: `The '${operation}' operation on '${resourceType}' does not support the '${param}' parameter.` });
+    }
+  });
+  checkForUnexpectedFilterOptions(listInput, errors, resourceType, operation);
   checkForUnexpectedPageOps(listInput, errors, resourceType, operation);
 };
 
@@ -245,6 +246,9 @@ const listResourceTool = async (losantClient, { resourceType }, requestParams, l
   } else if (resourceType === 'experienceEndpoint') {
     checkForUnexpectedPageOps(listInput, errors, resourceType, 'list');
   } else {
+    if (resourceType === 'applicationJobLog') {
+      checkForUnexpectedFilterOptions(listInput, errors, resourceType, 'list');
+    }
     if (listInput.perPage !== undefined && (listInput.perPage > 100 || listInput.perPage < 1)) {
       errors.push({
         fieldName: 'perPage',
@@ -287,7 +291,7 @@ const listResourceTool = async (losantClient, { resourceType }, requestParams, l
       });
     }
     requestParams.query = listInput.query;
-  } else {
+  } else if (resourceType !== 'applicationJobLog') {
     // Use simple filter only if query not provided
     if (listInput.filterField) { requestParams.filterField = listInput.filterField; }
     if (listInput.filter) { requestParams.filter = listInput.filter; }
