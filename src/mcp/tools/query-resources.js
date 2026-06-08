@@ -351,7 +351,7 @@ export default {
         },
         resourceId: {
           type: 'string',
-          description: 'Resource ID (required for "get" operation, 24-character hex string) OR if the resourceType is experienceVersion this could be a string name or an ID, OR if the resourceType is deviceAttribute it could be a version name'
+          description: 'Resource ID (required for "get" operation, 24-character hex string) OR if the resourceType is experienceVersion this could be a string name or an ID'
         },
         page: {
           type: 'number',
