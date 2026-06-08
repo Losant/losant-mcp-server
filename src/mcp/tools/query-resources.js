@@ -9,9 +9,16 @@ const omittedFieldsByResourceType = {
   flow: ['nodes', 'triggers', 'iconData' ],
   experienceView: ['body'],
   experienceDomain: [ 'sslCert', 'sslBundle' ],
-  application: ['globals', 'archiveConfig' ]
+  application: ['globals', 'archiveConfig' ],
+  embeddedDeployment: ['logs'],
+  device: ['attributes.description', 'attributes.contentType', 'attributes.attributeTags', 'attributes.system']
 };
+omittedFieldsByResourceType.edgeDeployment = omittedFieldsByResourceType.embeddedDeployment; // same structure for edge and embedded deployments
 omittedFieldsByResourceType.flowVersion = omittedFieldsByResourceType.flow; // same structure for flow and flowVersion
+
+const omittedFieldHint = {
+  device: 'Attributes include name and dataType only. Use operation:get with the deviceId to retrieve full attribute details including description, contentType, attributeTags, and system configuration.'
+};
 
 const omitFieldByResourceType = {
   applicationDashboard: (items) => {
@@ -75,8 +82,24 @@ const omitFieldByResourceType = {
       delete item.globals;
       delete item.archiveConfig;
     });
+  },
+  embeddedDeployment: (items) => {
+    items.forEach((item) => {
+      if (item.logs.length) {
+        item._omittedCounts = { logs: item.logs.length };
+      }
+      delete item.logs;
+    });
+  },
+  device: (items) => {
+    items.forEach((item) => {
+      if (item.attributes?.length) {
+        item.attributes = item.attributes.map(({ name, dataType }) => ({ name, dataType }));
+      }
+    });
   }
 };
+omitFieldByResourceType.edgeDeployment = omitFieldByResourceType.embeddedDeployment; // same structure for edge and embedded deployments
 omitFieldByResourceType.flowVersion = omitFieldByResourceType.flow; // same structure as flow
 
 const getResourceFieldId = (resourceType) => {
@@ -88,6 +111,9 @@ const getResourceFieldId = (resourceType) => {
   }
   if (resourceType === 'applicationDashboard') {
     return 'dashboardId';
+  }
+  if (resourceType === 'applicationJobLog') {
+    return 'jobId';
   }
   // Default to resourceType + 'Id', e.g. deviceId, flowId, etc.
   return `${resourceType}Id`;
@@ -266,7 +292,7 @@ const listResourceTool = async (losantClient, { resourceType }, requestParams, l
         _projection: {
           mode: 'summary',
           omittedFields: omittedFieldsByResourceType[resourceType] || [],
-          hint: 'Summary fields only. Use operation:get with an id to retrieve full content.'
+          hint: omittedFieldHint[resourceType] || 'Summary fields only. Use operation:get with an id to retrieve full content.'
         }
       }, null, 2)
     });
@@ -325,7 +351,7 @@ export default {
         },
         resourceId: {
           type: 'string',
-          description: 'Resource ID (required for "get" operation, 24-character hex string)'
+          description: 'Resource ID (required for "get" operation, 24-character hex string) OR if the resourceType is experienceVersion this could be a string name or an ID, OR if the resourceType is deviceAttribute it could be a version name'
         },
         page: {
           type: 'number',

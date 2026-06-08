@@ -227,10 +227,181 @@ describe('query-resources tool', () => {
       });
 
       should.not.exist(result.isError);
-      const response = JSON.parse(result.content[0].text);
+      const hint = JSON.parse(result.content[0].text);
+      hint.should.deepEqual({
+        _projection: {
+          mode: 'summary',
+          omittedFields: ['attributes.description', 'attributes.contentType', 'attributes.attributeTags', 'attributes.system'],
+          hint: 'Attributes include name and dataType only. Use operation:get with the deviceId to retrieve full attribute details including description, contentType, attributeTags, and system configuration.'
+        }
+      });
+      const response = JSON.parse(result.content[1].text);
       response.should.have.property('count', 1);
       response.items.should.have.length(1);
       response.items[0].should.have.property('name', '2-Platen Electric Grill (ME-2P)');
+    });
+
+    it('should list applicationJobLog with applicationId', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .get(`/applications/${APP_ID}/jobLogs`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false', perPage: 100 })
+        .reply(200, {
+          count: 1,
+          items: [{
+            id: '575ec76c7ae143cd83dc4a96',
+            jobId: '575ec76c7ae143cd83dc4a96',
+            ownerId: APP_ID,
+            ownerType: 'application',
+            runQueuedAt: '2025-06-10T04:00:00.000Z',
+            runStartedAt: '2025-06-10T04:00:01.000Z',
+            status: 'inProgress',
+            name: 'ArchiveData',
+            progress: {
+              total: 10,
+              completed: 5
+            }
+          }]
+        });
+
+      const result = await queryTool({
+        operation: 'list',
+        resourceType: 'applicationJobLog',
+        applicationId: APP_ID
+      });
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('count', 1);
+      response.items.should.have.length(1);
+      response.items[0].should.have.property('name', 'ArchiveData');
+    });
+
+    it('should list edgeDeployment with applicationId', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .get(`/applications/${APP_ID}/edge/deployments`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false', perPage: 100 })
+        .reply(200, {
+          count: 1,
+          items: [{
+            id: '5a591be186b70d7b9f9b0954',
+            edgeDeploymentId: '5a591be186b70d7b9f9b0954',
+            applicationId: APP_ID,
+            deviceId: DEVICE_ID,
+            flowId: '575ed18f7ae143cd83dc4aa6',
+            creationDate: '2016-06-13T04:00:00.000Z',
+            lastUpdated: '2016-06-13T04:00:00.000Z',
+            desiredVersion: 'v1.4.0',
+            currentVersion: null,
+            // should we exclude logs?
+            logs: [
+              {
+                sourceType: 'user',
+                sourceId: '575ed70c7ae143cd83dc4aa9',
+                date: '2016-06-13T04:00:00.000Z',
+                changeType: 'desired',
+                newValue: 'v1.4.0',
+                previousValue: null
+              }
+            ]
+          }
+          ]
+        });
+
+      const result = await queryTool({
+        operation: 'list',
+        resourceType: 'edgeDeployment',
+        applicationId: APP_ID
+      });
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[1].text);
+      response.should.have.property('count', 1);
+      response.items.should.have.length(1);
+      response.items[0].should.have.property('flowId', '575ed18f7ae143cd83dc4aa6');
+      response.items[0].should.not.have.property('logs');
+      response.items[0]._omittedCounts.should.have.property('logs', 1);
+    });
+
+    it('should list embeddedDeployment with applicationId', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .get(`/applications/${APP_ID}/embedded/deployments`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false', perPage: 100 })
+        .reply(200, {
+          count: 1,
+          items: [{
+            id: '5a591be186b70d7b9f9b0954',
+            embeddedDeploymentId: '5a591be186b70d7b9f9b0954',
+            applicationId: APP_ID,
+            flows: {
+              '575ed18f7ae143cd83dc4aa6': {
+                flowName: 'my flow',
+                desiredVersion: 'v1.4.0',
+                currentVersion: null
+              }
+            },
+            creationDate: '2016-06-13T04:00:00.000Z',
+            lastUpdated: '2016-06-13T04:00:00.000Z',
+            currentBundleVersion: 'nullVersion',
+            desiredBundleVersion: '1615500683',
+            unknownBundle: false,
+            logs: [
+              {
+                sourceType: 'user',
+                sourceId: '575ed70c7ae143cd83dc4aa9',
+                date: '2016-06-13T04:00:00.000Z',
+                changeType: 'desired',
+                updateType: 'newFlow',
+                updateFlowId: '575ed18f7ae143cd83dc4aa6',
+                desiredVersion: 'v1.4.1',
+                newBundle: 'v1.4.0'
+              }
+            ]
+          }
+
+          ]
+        });
+
+      const result = await queryTool({
+        operation: 'list',
+        resourceType: 'embeddedDeployment',
+        applicationId: APP_ID
+      });
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[1].text);
+      response.should.have.property('count', 1);
+      response.items.should.have.length(1);
+      response.items[0].should.have.property('desiredBundleVersion', '1615500683');
+      response.items[0].should.not.have.property('logs');
+      response.items[0]._omittedCounts.should.have.property('logs', 1);
+    });
+
+    it('should strip verbose attribute fields but keep name and dataType when listing devices', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .get(`/applications/${APP_ID}/devices`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false', perPage: 100 })
+        .reply(200, {
+          count: 1,
+          items: [{
+            id: DEVICE_ID,
+            name: 'My Device',
+            attributes: [
+              {
+                name: 'voltage', dataType: 'number', description: 'Battery voltage', contentType: 'text/plain', attributeTags: { unit: 'V' }, system: { aggregation: 'LAST' }
+              },
+              { name: 'location', dataType: 'gps', description: 'GPS position' }
+            ]
+          }]
+        });
+
+      const result = await queryTool({
+        operation: 'list',
+        resourceType: 'device',
+        applicationId: APP_ID
+      });
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[1].text);
+      response.items[0].attributes.should.deepEqual([
+        { name: 'voltage', dataType: 'number' },
+        { name: 'location', dataType: 'gps' }
+      ]);
     });
 
     it('should map paginate and omitt properly for applicationDashboards', async () => {
@@ -420,9 +591,9 @@ describe('query-resources tool', () => {
         page: 1,
         perPage: 25
       });
-      result.content.length.should.equal(2);
-      result.content[0].text.should.deepEqual(JSON.stringify(listDevicesResponse, null, 2));
-      result.content[1].text.should.match(/Pagination hint: \d+ more device\(s\) exist beyond this page/i);
+      result.content.length.should.equal(3);
+      JSON.parse(result.content[1].text).items.length.should.equal(listDevicesResponse.items.length);
+      result.content[2].text.should.match(/Pagination hint: \d+ more device\(s\) exist beyond this page/i);
     });
 
     it('should pass filter parameters correctly', async () => {
@@ -588,7 +759,7 @@ describe('query-resources tool', () => {
       });
 
       should.not.exist(result.isError);
-      const response = JSON.parse(result.content[0].text);
+      const response = JSON.parse(result.content[1].text);
       response.should.have.property('count', 0);
       response.items.should.be.an.Array().with.length(0);
     });
@@ -634,7 +805,7 @@ describe('query-resources tool', () => {
       });
 
       should.not.exist(result.isError);
-      const response = JSON.parse(result.content[0].text);
+      const response = JSON.parse(result.content[1].text);
       response.should.have.property('count', 100);
       response.items.should.have.length(100);
     });
