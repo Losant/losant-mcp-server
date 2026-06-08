@@ -291,7 +291,6 @@ describe('query-resources tool', () => {
             lastUpdated: '2016-06-13T04:00:00.000Z',
             desiredVersion: 'v1.4.0',
             currentVersion: null,
-            // should we exclude logs?
             logs: [
               {
                 sourceType: 'user',

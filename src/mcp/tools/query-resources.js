@@ -76,6 +76,7 @@ const omitFieldByResourceType = {
       if (item.globals?.length) {
         item._omittedCounts.globals = item.globals.length;
       }
+      item._availableViaGet = { readme: true, archiveConfig: true };
       if (item.archiveConfig) {
         item._omittedCounts.archiveConfig = 1;
       }
@@ -86,7 +87,7 @@ const omitFieldByResourceType = {
   },
   embeddedDeployment: (items) => {
     items.forEach((item) => {
-      if (item.logs.length) {
+      if (item.logs?.length) {
         item._omittedCounts = { logs: item.logs.length };
       }
       delete item.logs;
