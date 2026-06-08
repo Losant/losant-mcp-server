@@ -632,6 +632,73 @@ describe('query-resources tool', () => {
       response.should.have.property('id', DEVICE_ID);
       response.should.have.property('name', '2-Platen Electric Grill (ME-2P)');
     });
+
+    it('should get application and merge readme content', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .get(`/applications/${APP_ID}`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .reply(200, { id: APP_ID, name: 'Test App' });
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .get(`/applications/${APP_ID}/readme`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .reply(200, { applicationId: APP_ID, content: '# My App\nThis app manages grills.' });
+
+      const result = await queryTool({
+        operation: 'get',
+        resourceType: 'application',
+        resourceId: APP_ID
+      });
+
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('id', APP_ID);
+      response.should.have.property('name', 'Test App');
+      response.readme.should.equal('# My App\nThis app manages grills.');
+    });
+
+    it('should get application without readme if readme fetch fails', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .get(`/applications/${APP_ID}`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .reply(200, { id: APP_ID, name: 'Test App' });
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .get(`/applications/${APP_ID}/readme`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .reply(404, { error: 'Not found' });
+
+      const result = await queryTool({
+        operation: 'get',
+        resourceType: 'application',
+        resourceId: APP_ID
+      });
+
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('id', APP_ID);
+      response.should.have.property('readme', '');
+    });
+
+    it('should get application without readme if readme content is empty', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .get(`/applications/${APP_ID}`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .reply(200, { id: APP_ID, name: 'Test App' });
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .get(`/applications/${APP_ID}/readme`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .reply(200, { applicationId: APP_ID, content: '' });
+
+      const result = await queryTool({
+        operation: 'get',
+        resourceType: 'application',
+        resourceId: APP_ID
+      });
+
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('id', APP_ID);
+      response.should.have.property('readme', '');
+    });
   });
 
   describe('DataTableRow Special Case', () => {

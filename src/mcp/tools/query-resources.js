@@ -9,7 +9,7 @@ const omittedFieldsByResourceType = {
   flow: ['nodes', 'triggers', 'iconData' ],
   experienceView: ['body'],
   experienceDomain: [ 'sslCert', 'sslBundle' ],
-  application: ['globals', 'archiveConfig' ],
+  application: ['globals', 'archiveConfig', 'readme' ],
   embeddedDeployment: ['logs'],
   device: ['attributes.description', 'attributes.contentType', 'attributes.attributeTags', 'attributes.system']
 };
@@ -79,6 +79,7 @@ const omitFieldByResourceType = {
       if (item.archiveConfig) {
         item._omittedCounts.archiveConfig = 1;
       }
+      item._omittedCounts.readme = 1; // always omit readme in list responses since it's large and only relevant for get operations
       delete item.globals;
       delete item.archiveConfig;
     });
@@ -213,11 +214,28 @@ const getResourceTool = async (losantClient, { resourceType, resourceId }, reque
   }
 
   requestParams[getResourceFieldId(resourceType)] = resourceId;
-  const response = await losantClient[resourceType].get(requestParams);
-  return [{
-    type: 'text',
-    text: JSON.stringify(response, null, 2)
-  }];
+  const responseContext = [];
+  if (resourceType === 'application') {
+    let readmeTxt = 'No readme content found for this application.';
+    const [response, readmeResponse] = await Promise.all([
+      losantClient.application.get(requestParams),
+      losantClient.application.readme(requestParams).catch(() => {
+        readmeTxt = 'Readme failed to load.';
+      })
+    ]);
+    response.readme = readmeResponse?.content || '';
+    responseContext.push({ type: 'text', text: JSON.stringify(response, null, 2) });
+    if (!response.readme) {
+      responseContext.push({ type: 'text', text: readmeTxt });
+    }
+  } else {
+    const response = await losantClient[resourceType].get(requestParams);
+    responseContext.push({
+      type: 'text',
+      text: JSON.stringify(response, null, 2)
+    });
+  }
+  return responseContext;
 };
 
 const listResourceTool = async (losantClient, { resourceType }, requestParams, listInput, errors) => {
