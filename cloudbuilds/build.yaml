@@ -32,8 +32,7 @@ steps:
   name: 'gcr.io/cloud-builders/docker'
   args:
   - 'build'
-  - '--sbom=true'
-  - '--provenance=mode=max'
+  - '--attest=type=sbom,mode=max'
   - '--tag=us-docker.pkg.dev/$PROJECT_ID/$_ORG_NAME/$_IMAGE_NAME:tempImage'
   - '--file=./Dockerfile'
   - '.'
