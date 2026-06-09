@@ -28,17 +28,7 @@ steps:
     - 'my-builder'
     - '--use'
 
-- id: mcpBuild
-  name: 'gcr.io/cloud-builders/docker'
-  args:
-  - 'buildx'
-  - 'build'
-  - '--attest=type=sbom,mode=max'
-  - '--tag=us-docker.pkg.dev/$PROJECT_ID/$_ORG_NAME/$_IMAGE_NAME:tempImage'
-  - '--file=./Dockerfile'
-  - '.'
-
-- id: mcpPush
+- id: mcpBuildAndPush
   name: 'gcr.io/cloud-builders/docker'
   entrypoint: 'bash'
   args:
@@ -46,17 +36,10 @@ steps:
   - |
     set -euo pipefail
     IFS=$'\n\t'
-
-    if [[ -n '$TAG_NAME' ]]; then
-      docker tag us-docker.pkg.dev/$PROJECT_ID/$_ORG_NAME/$_IMAGE_NAME:tempImage us-docker.pkg.dev/$PROJECT_ID/$_ORG_NAME/$_IMAGE_NAME:$TAG_NAME
-      docker push us-docker.pkg.dev/$PROJECT_ID/$_ORG_NAME/$_IMAGE_NAME:$TAG_NAME
-    else
-      docker tag us-docker.pkg.dev/$PROJECT_ID/$_ORG_NAME/$_IMAGE_NAME:tempImage us-docker.pkg.dev/$PROJECT_ID/$_ORG_NAME/$_IMAGE_NAME:$BRANCH_NAME
-      docker push us-docker.pkg.dev/$PROJECT_ID/$_ORG_NAME/$_IMAGE_NAME:$BRANCH_NAME
-    fi
-
-    docker rmi us-docker.pkg.dev/$PROJECT_ID/$_ORG_NAME/$_IMAGE_NAME:tempImage
-  waitFor: ['mcpBuild' ]
+    tagName=${TAG_NAME:-$BRANCH_NAME}
+    tag=us-docker.pkg.dev/$PROJECT_ID/$_ORG_NAME/$_IMAGE_NAME:$tagName
+    docker buildx build --attest=type=sbom,mode=max --tag=$tag --file=./Dockerfile . 
+  waitFor: ['createBuilder' ]
 
 # Redeploy staging or release if this is a develop or release branch build
 - id: redeploy
@@ -77,7 +60,7 @@ steps:
       gcloud container clusters get-credentials --project='$_RELEASE_PROJECT' --region='$_RELEASE_REGION' $_RELEASE_CLUSTER
       kubectl rollout restart deployment/$_RELEASE_CLUSTER-mcp
     fi
-  waitFor: ['mcpPush']
+  waitFor: ['mcpBuildAndPush']
 
 timeout: 600s
 logsBucket: '$_LOGS_BUCKET'
