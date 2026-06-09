@@ -18,6 +18,16 @@ options:
 steps:
 
 # Build Images
+- id: createBuilder
+  name: 'gcr.io/cloud-builders/docker'
+  args:
+    - 'buildx'
+    - 'create'
+    - '--driver'
+    - 'docker-container'
+    - '--name'
+    - 'my-builder'
+    - '--use'
 
 - id: mcpBuild
   name: 'gcr.io/cloud-builders/docker'
