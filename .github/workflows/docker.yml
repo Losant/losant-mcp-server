@@ -29,3 +29,5 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha
           tags: test-build:pr-${{ github.event.pull_request.number }}
+          provenance: mode=max
+          sbom: true
