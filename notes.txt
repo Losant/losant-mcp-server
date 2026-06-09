@@ -1,0 +1,117 @@
+Sub-documents / content                                                                                                                                                                                     
+                                                                                                                                                                                                              
+  ┌────────────────┬──────────────────────────────┬────────────────────────────────┐                                                                                                                          
+  │      File      │            Action            │             Method             │                                                                                                                          
+  ├────────────────┼──────────────────────────────┼────────────────────────────────┤                                                                                                                          
+  │ application.md │ Readme                       │ application.readme             │  must have                                                                                                                         
+  ├────────────────┼──────────────────────────────┼────────────────────────────────┤                                                                                                                        
+  │ application.md │ Search                       │ application.search             │  never                                                                                                                        
+  ├────────────────┼──────────────────────────────┼────────────────────────────────┤                                                                                                                          
+  │ application.md │ Globals                      │ application.globals            │  probably never cause of omission                                                                                                                        
+  ├────────────────┼──────────────────────────────┼────────────────────────────────┤                                                                                                                          
+  │ flow.md        │ Get Storage Entries          │ flow.getStorageEntries         │ yes                                                                                                                         
+  ├────────────────┼──────────────────────────────┼────────────────────────────────┤                                                                                                                          
+  │ flow.md        │ Get Storage Entries Metadata │ flow.getStorageEntriesMetadata │ probably yes                                                                                                                       
+  └────────────────┴──────────────────────────────┴────────────────────────────────┘                                                                                                                          
+                                                                                                                                                                                                            
+  Linked resources / relationships                                                                                                                                                                            
+                                                                                                                                                                                                            
+  ┌───────────────────────┬──────────────────┬────────────────────────────────────┐                                                                                                                           
+  │         File          │      Action      │               Method               │                                                                                                                           
+  ├───────────────────────┼──────────────────┼────────────────────────────────────┤                                                                                                                         
+  │ credential.md         │ Linked Resources │ credential.linkedResources         │ eventually yes                                                                                                                          
+  ├───────────────────────┼──────────────────┼────────────────────────────────────┤                                                                                                                         
+  │ experienceEndpoint.md │ Linked Resources │ experienceEndpoint.linkedResources │ eventually yes                                                                                                                        
+  ├───────────────────────┼──────────────────┼────────────────────────────────────┤                                                                                                                           
+  │ experienceView.md     │ Linked Resources │ experienceView.linkedResources     │ eventually yes
+  └───────────────────────┴──────────────────┴────────────────────────────────────┘                                                                                                                           
+                                                                                                                                                                                                            
+  Logs / debugging                                                                                                                                                                                            
+                                                                                                                                                                                                            
+  ┌────────────────┬─────────────┬───────────────────────────┐                                                                                                                                              
+  │      File      │   Action    │          Method           │
+  ├────────────────┼─────────────┼───────────────────────────┤
+  │ flow.md        │ Errors      │ flow.errors               │ yes
+  ├────────────────┼─────────────┼───────────────────────────┤
+  │ flow.md        │ Log Entries │ flow.getLogEntries        │ yes                                                                                                                                               
+  ├────────────────┼─────────────┼───────────────────────────┤                                                                                                                                                
+  │ flow.md        │ Stats       │ flow.stats                │ yes                                                                                                                                                
+  ├────────────────┼─────────────┼───────────────────────────┤                                                                                                                                                
+  │ flowVersion.md │ Errors      │ flowVersion.errors        │ yes                                                                                                                                            
+  ├────────────────┼─────────────┼───────────────────────────┤                                                                                                                                                
+  │ flowVersion.md │ Log Entries │ flowVersion.getLogEntries │ yes
+  ├────────────────┼─────────────┼───────────────────────────┤                                                                                                                                                
+  │ flowVersion.md │ Stats       │ flowVersion.stats         │ yes                                                                                                                                             
+  ├────────────────┼─────────────┼───────────────────────────┤                                                                                                                                                
+  │ notebook.md    │ Logs        │ notebook.logs             │ yes
+  ├────────────────┼─────────────┼───────────────────────────┤                                                                                                                                                
+  │ resourceJob.md │ Logs        │ resourceJob.logs          │ yes                                                                                                                                             
+  ├────────────────┼─────────────┼───────────────────────────┤                                                                                                                                                
+  │ application.md │ Import Logs │ application.importLogs    │ no
+  └────────────────┴─────────────┴───────────────────────────┘                                                                                                                                                
+                                                                                                                                                                                                            
+  Device discovery queries (on the plural devices endpoint, not timeseries)                                                                                                                                   
+                            
+  ┌────────────┬─────────────────────┬───────────────────────────┐                                                                                                                                            
+  │    File    │       Action        │          Method           │                                                                                                                                            
+  ├────────────┼─────────────────────┼───────────────────────────┤                                                                                                                                            
+  │ devices.md │ Attribute Names     │ devices.attributeNames    │ no never                                                                                                                                           
+  ├────────────┼─────────────────────┼───────────────────────────┤                                                                                                                                          
+  │ devices.md │ Device Names        │ devices.deviceNames       │ no never                                                                                                                                         
+  ├────────────┼─────────────────────┼───────────────────────────┤                                                                                                                                            
+  │ devices.md │ Tag Keys            │ devices.tagKeys           │ maybe?
+  ├────────────┼─────────────────────┼───────────────────────────┤                                                                                                                                            
+  │ devices.md │ Tag Values          │ devices.tagValues         │ maybe?                                                                                                                                         
+  ├────────────┼─────────────────────┼───────────────────────────┤                                                                                                                                            
+  │ devices.md │ Get Composite State │ devices.getCompositeState │ No already in timeseries                                                                                                                                         
+  └────────────┴─────────────────────┴───────────────────────────┘                                                                                                                                            
+   
+  Palette / schema                                                                                                                                                                                            
+                                                                                                                                                                                                            
+  ┌──────────┬────────────────┬────────────────────┐                                                                                                                                                          
+  │   File   │     Action     │       Method       │                                                                                                                                                          
+  ├──────────┼────────────────┼────────────────────┤                                                                                                                                                        
+  │ flows.md │ Palette        │ flows.palette      │ yes probably when we get to workflow                                                                                                                                                        
+  ├──────────┼────────────────┼────────────────────┤                                                                                                                                                        
+  │ flows.md │ Get By Version │ flows.getByVersion │ no - would probaby go to losant_query                                                                                                                                                         
+  └──────────┴────────────────┴────────────────────┘                                                                                                                                                          
+                                                                                                                                                                                                              
+  Events                                                                                                                                                                                                      
+                                                                                                                                                                                                            
+  ┌───────────┬─────────────────────────┬─────────────────────────────┐                                                                                                                                     
+  │   File    │         Action          │           Method            │
+  ├───────────┼─────────────────────────┼─────────────────────────────┤
+  │ events.md │ Most Recent By Severity │ events.mostRecentBySeverity │ no - would probably go into losant_query
+  └───────────┴─────────────────────────┴─────────────────────────────┘
+                                                                                                                                                                                                              
+  Experience stats                                                                                                                                                                                            
+                                                                                                                                                                                                              
+  ┌────────────────────────┬────────┬───────────────────────────┐                                                                                                                                             
+  │          File          │ Action │          Method           │                                                                                                                                           
+  ├────────────────────────┼────────┼───────────────────────────┤                                                                                                                                           
+  │ experienceEndpoints.md │ Stats  │ experienceEndpoints.stats │ yes
+  └────────────────────────┴────────┴───────────────────────────┘
+                                                                                                                                                                                                              
+  Analytics / usage (lower priority)                                                                                                                                                                          
+                                                                                                                                                                                                              
+  ┌─────────────────┬──────────────────────────┬────────────────────────────────────┐                                                                                                                         
+  │      File       │          Action          │               Method               │                                                                                                                       
+  ├─────────────────┼──────────────────────────┼────────────────────────────────────┤                                                                                                                       
+  │ application.md  │ Payload Counts           │ application.payloadCounts          │
+  ├─────────────────┼──────────────────────────┼────────────────────────────────────┤
+  │ application.md  │ Payload Counts Breakdown │ application.payloadCountsBreakdown │                                                                                                                         
+  ├─────────────────┼──────────────────────────┼────────────────────────────────────┤                                                                                                                         
+  │ application.md  │ Device Counts            │ application.deviceCounts           │                                                                                                                         
+  ├─────────────────┼──────────────────────────┼────────────────────────────────────┤                                                                                                                         
+  │ application.md  │ Notebook Minute Counts   │ application.notebookMinuteCounts   │                                                                                                                       
+  ├─────────────────┼──────────────────────────┼────────────────────────────────────┤                                                                                                                         
+  │ applications.md │ Period Summaries         │ applications.periodSummaries       │
+  ├─────────────────┼──────────────────────────┼────────────────────────────────────┤                                                                                                                         
+  │ device.md       │ Payload Counts           │ device.payloadCounts               │                                                                                                                       
+  ├─────────────────┼──────────────────────────┼────────────────────────────────────┤                                                                                                                         
+  │ device.md       │ Payload Counts Breakdown │ device.payloadCountsBreakdown      │
+  └─────────────────┴──────────────────────────┴────────────────────────────────────┘                                                                                                                         
+                                                                                                                                                                                                            
+  ---                                                                                                                                                                                                         
+  That's roughly 30 endpoints across 7 categories. This confirms a dedicated tool is the right call — far too much to cram into losant_query as a new operation. The logs/debugging category and the device 
+  discovery queries both look high-value to tackle first. flows.palette is interesting too — do you expect users to ask about available custom node types?  
