@@ -38,7 +38,7 @@ steps:
     IFS=$'\n\t'
     tagName=${TAG_NAME:-$BRANCH_NAME}
     tag=us-docker.pkg.dev/$PROJECT_ID/$_ORG_NAME/$_IMAGE_NAME:$tagName
-    docker buildx build --attest=type=sbom,mode=max --tag=$tag --file=./Dockerfile . 
+    docker buildx build --attest=type=sbom,mode=max --tag=$tag --file=./Dockerfile --push .
   waitFor: ['createBuilder' ]
 
 # Redeploy staging or release if this is a develop or release branch build
