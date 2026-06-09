@@ -5,7 +5,6 @@ options:
 
 # Substitutions
 # _ORG_NAME - the artifact registry repository name, e.g. 'myOrg'
-# _ROLLBAR_MAP_KEY - the Rollbar source map access token for this project, if set
 # _IMAGE_NAME - the name of the image to build, e.g. 'mcp'
 # _STAGE_PROJECT - the GCP project to deploy staging builds to, e.g. 'stage'
 # _STAGE_REGION - the GCP region to deploy staging builds to, e.g. 'us-west1'
