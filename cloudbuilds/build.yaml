@@ -18,6 +18,17 @@ options:
 steps:
 
 # Build Images
+# Step 1: Create a new Buildx builder instance using the docker-container driver
+- id: createBuilder
+  name: 'gcr.io/cloud-builders/docker'
+  args:
+    - 'buildx'
+    - 'create'
+    - '--driver'
+    - 'docker-container'
+    - '--name'
+    - 'my-builder'
+    - '--use'
 
 - id: mcpBuild
   name: 'gcr.io/cloud-builders/docker'
@@ -30,6 +41,7 @@ steps:
   - '--tag=us-docker.pkg.dev/$PROJECT_ID/$_ORG_NAME/$_IMAGE_NAME:tempImage'
   - '--file=./Dockerfile'
   - '.'
+  waitFor: ['createBuilder']
 
 - id: mcpPush
   name: 'gcr.io/cloud-builders/docker'
