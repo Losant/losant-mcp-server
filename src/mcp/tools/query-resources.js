@@ -72,7 +72,13 @@ const omitFieldByResourceType = {
   },
   application: (items) => {
     items.forEach((item) => {
-      item._availableViaGet = { readme: true, archiveConfig: !!item.archiveConfig, globals: !!item.globals?.length };
+      item._availableViaGet = { readme: true };
+      if (item.globals?.length) {
+        item._availableViaGet.globals = true;
+      }
+      if (item.archiveConfig) {
+        item._availableViaGet.archiveConfig = true;
+      }
       delete item.globals;
       delete item.archiveConfig;
     });

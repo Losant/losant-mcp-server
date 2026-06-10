@@ -74,6 +74,7 @@ describe('query-resources tool', () => {
         response.should.have.property('count', 2);
         response.items.should.have.length(2);
         response.items[0]._availableViaGet.should.deepEqual({ readme: true, archiveConfig: true, globals: true });
+        response.items[1]._availableViaGet.should.deepEqual({ readme: true });
       });
     });
 
