@@ -258,7 +258,7 @@ describe('Integration: OAuth 2.0 Flow', function() {
       const result = JSON.parse(response.payload);
       result.should.have.property('jsonrpc', '2.0');
       result.should.have.property('result');
-      const toolResult = JSON.parse(result.result.content[0].text);
+      const toolResult = JSON.parse(result.result.content[1].text);
       toolResult.should.have.property('count', 2);
       toolResult.items.should.have.length(2);
     });
