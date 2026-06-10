@@ -2,6 +2,7 @@ options:
   machineType: N1_HIGHCPU_8
   env:
   - 'DOCKER_API_VERSION=1.41'
+  - 'BUILDX_NO_DEFAULT_ATTESTATIONS=1'
 
 # Substitutions
 # _ORG_NAME - the artifact registry repository name, e.g. 'myOrg'
@@ -17,6 +18,7 @@ options:
 steps:
 
 # Build Images
+# Step 1: Create a new Buildx builder instance using the docker-container driver
 - id: createBuilder
   name: 'gcr.io/cloud-builders/docker'
   args:
@@ -37,9 +39,9 @@ steps:
     set -euo pipefail
     IFS=$'\n\t'
     tagName=${TAG_NAME:-$BRANCH_NAME}
-    tag=us-docker.pkg.dev/$PROJECT_ID/$_ORG_NAME/$_IMAGE_NAME:$tagName
-    docker buildx build --attest=type=sbom,mode=max --tag=$tag --file=./Dockerfile --push .
-  waitFor: ['createBuilder' ]
+    tag=us-docker.pkg.dev/$PROJECT_ID/$_ORG_NAME/$_IMAGE_NAME:$tagName 
+    docker buildx build --platform=linux/amd64,linux/arm64 --tag=$tag --file=./Dockerfile --push .
+  waitFor: ['createBuilder']
 
 # Redeploy staging or release if this is a develop or release branch build
 - id: redeploy
