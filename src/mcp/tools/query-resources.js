@@ -380,7 +380,7 @@ export default {
         },
         resourceId: {
           type: 'string',
-          description: 'Resource ID (required for "get" operation, 24-character hex string) OR if the resourceType is experienceVersion this could be a string name or an ID'
+          description: 'Resource ID (required for "get" operation, 24-character hex string) OR if the resourceType is experienceVersion or flowVersion this could be a string name or an ID'
         },
         page: {
           type: 'number',
