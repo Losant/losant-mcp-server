@@ -64,18 +64,18 @@ export default {
           errors: [{ fieldName: 'resourceId', details: 'The "updateOne" operation requires a resourceId.' }]
         });
       }
-
-      const schemaKey = `${resourceType}${operation === 'createOne' ? 'Post' : 'Patch'}`;
-      const parseResult = bodySchemas[schemaKey].safeParse(body);
-      if (!parseResult.success) {
-        return invalidRequestError({
-          message: 'Body validation failed',
-          errors: parseResult.error.issues.map((issue) => ({
-            fieldName: issue.path.join('.') || 'body',
-            details: issue.message
-          }))
-        });
-      }
+      // for now let the API validate it
+      // const schemaKey = `${resourceType}${operation === 'createOne' ? 'Post' : 'Patch'}`;
+      // const parseResult = bodySchemas[schemaKey].safeParse(body);
+      // if (!parseResult.success) {
+      //   return invalidRequestError({
+      //     message: 'Body validation failed',
+      //     errors: parseResult.error.issues.map((issue) => ({
+      //       fieldName: issue.path.join('.') || 'body',
+      //       details: issue.message
+      //     }))
+      //   });
+      // }
 
       const requestParams = { applicationId, _links: false, _actions: false, _embedded: false };
       try {
@@ -83,13 +83,13 @@ export default {
         if (operation === 'createOne') {
           response = await losantClient[`${resourceType}s`].post({
             ...requestParams,
-            [resourceType]: parseResult.data
+            [resourceType]: body
           });
         } else {
           response = await losantClient[resourceType].patch({
             ...requestParams,
             [`${resourceType}Id`]: resourceId,
-            [resourceType]: parseResult.data
+            [resourceType]: body
           });
         }
         return {

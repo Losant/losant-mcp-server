@@ -30,6 +30,13 @@ export const RESOURCE_TYPES = [
 ];
 
 export const RESOURCE_TYPE_SET = new Set(RESOURCE_TYPES);
+export const WRITABLE_RESOURCE_TYPES = [
+  'deviceRecipe',
+  'dataTable',
+  'webhook',
+  'integration',
+  'resourceJob'
+];
 
 // require.resolve('losant-rest') returns .../losant-rest/lib/index.js
 // Go up one directory from lib/ to get the package root
@@ -44,7 +51,6 @@ export const MD_FILES = DOC_FILES.filter((f) => {
   const singleFileName = f.replace('.md', '').replace(/s$/, '');
   return f.endsWith('.md') && f !== '_schemas.md' && (RESOURCE_TYPE_SET.has(singleFileName) || singleFileName === 'data');
 });
-export const WRITABLE_RESOURCE_TYPES = ['deviceRecipe', 'dataTable', 'webhook', 'integration', 'resourceJob'];
 
 const WRITE_SCHEMA_SUFFIXES = new Set(
   WRITABLE_RESOURCE_TYPES.flatMap((t) => [`${t}Post`, `${t}Patch`])
