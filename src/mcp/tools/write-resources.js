@@ -1,0 +1,103 @@
+import { z } from 'zod';
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+import { WRITABLE_RESOURCE_TYPES, SCHEMAS_PATH } from '../../constants.js';
+import debug from 'debug';
+import { restToMCPError, invalidRequestError } from '../../helpers/errors.js';
+const log = debug('losant-mcp-server:tools:write-resources');
+
+// Pre-load and compile schemas at startup to avoid per-request I/O
+const bodySchemas = {};
+for (const type of WRITABLE_RESOURCE_TYPES) {
+  const postSchema = JSON.parse(readFileSync(path.join(SCHEMAS_PATH, `${type}Post.json`), 'utf8'));
+  const patchSchema = JSON.parse(readFileSync(path.join(SCHEMAS_PATH, `${type}Patch.json`), 'utf8'));
+  bodySchemas[`${type}Post`] = z.fromJSONSchema(postSchema);
+  bodySchemas[`${type}Patch`] = z.fromJSONSchema(patchSchema);
+}
+
+export default {
+  name: 'losant_write',
+  inputInfo: {
+    annotations: {
+      readOnlyHint: false,
+      idempotentHint: false,
+      destructiveHint: false
+    },
+    title: 'Create or Update Losant Resources',
+    description: `Create or update Losant resources: ${WRITABLE_RESOURCE_TYPES.join(', ')}. Check losant://schemas/{resourceType}Post or losant://schemas/{resourceType}Patch for the body schema before calling.`,
+    inputSchema: z.fromJSONSchema({
+      type: 'object',
+      properties: {
+        operation: {
+          type: 'string',
+          enum: ['createOne', 'updateOne'],
+          description: '"createOne" posts a new resource, "updateOne" patches an existing one by resourceId'
+        },
+        resourceType: {
+          type: 'string',
+          enum: WRITABLE_RESOURCE_TYPES,
+          description: 'Type of resource to create or update'
+        },
+        applicationId: {
+          type: 'string',
+          description: 'Application ID (24-character hex string)'
+        },
+        resourceId: {
+          type: 'string',
+          description: 'Resource ID — required for "updateOne" operation'
+        },
+        body: {
+          type: 'object',
+          description: 'Resource data matching the Post or Patch schema for the given resourceType. Do not include read-only fields such as id, creationDate, or lastUpdated.'
+        }
+      },
+      required: ['operation', 'resourceType', 'applicationId', 'body']
+    })
+  },
+  runnerFactory: (losantClient) => {
+    return async ({ operation, resourceType, applicationId, resourceId, body }) => {
+      log('Write tool called with parameters:', { operation, resourceType, applicationId, resourceId });
+
+      if (operation === 'updateOne' && !resourceId) {
+        return invalidRequestError({
+          message: 'Tool input validation failed',
+          errors: [{ fieldName: 'resourceId', details: 'The "updateOne" operation requires a resourceId.' }]
+        });
+      }
+
+      const schemaKey = `${resourceType}${operation === 'createOne' ? 'Post' : 'Patch'}`;
+      const parseResult = bodySchemas[schemaKey].safeParse(body);
+      if (!parseResult.success) {
+        return invalidRequestError({
+          message: 'Body validation failed',
+          errors: parseResult.error.issues.map((issue) => ({
+            fieldName: issue.path.join('.') || 'body',
+            details: issue.message
+          }))
+        });
+      }
+
+      const requestParams = { applicationId, _links: false, _actions: false, _embedded: false };
+      try {
+        let response;
+        if (operation === 'createOne') {
+          response = await losantClient[`${resourceType}s`].post({
+            ...requestParams,
+            [resourceType]: parseResult.data
+          });
+        } else {
+          response = await losantClient[resourceType].patch({
+            ...requestParams,
+            [`${resourceType}Id`]: resourceId,
+            [resourceType]: parseResult.data
+          });
+        }
+        return {
+          content: [{ type: 'text', text: JSON.stringify(response, null, 2) }]
+        };
+      } catch (err) {
+        return restToMCPError(err, { resourceType });
+      }
+    };
+  }
+};

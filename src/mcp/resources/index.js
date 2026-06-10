@@ -5,7 +5,9 @@ import queryToolGuide from './query-tool-guide.js';
 import indexContent from './build-api-index-content.js';
 import debug from 'debug';
 import memoizee from 'memoizee';
-import { DOCS_PATH, MD_FILES, RESOURCE_TYPE_SET, SCHEMA_FILES, SCHEMAS_PATH } from '../../constants.js';
+import { DOCS_PATH, MD_FILES, RESOURCE_TYPE_SET, SCHEMA_FILES, SCHEMAS_PATH, WRITABLE_RESOURCE_TYPES } from '../../constants.js';
+
+const WRITABLE_RESOURCE_TYPE_SET = new Set(WRITABLE_RESOURCE_TYPES);
 const log = debug('losant-mcp-server:mcp:resources');
 
 const GUIDES_TO_REGISTER = [
@@ -19,17 +21,31 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
     // this will eventually become some sort of resource type to disclaimer map
     const fileName = path.basename(filePath, '.md');
     const isSingularResource = RESOURCE_TYPE_SET.has(fileName);
-    let disclaimer = isSingularResource
-      ? 'MCP exposes: get as operation "get". Other actions require the REST API directly.\n\n'
-      : 'MCP exposes: get as operation "list". Other actions require the REST API directly.\n\n';
+    const isWritable = WRITABLE_RESOURCE_TYPE_SET.has(fileName);
+    const disclaimerLines = ['## Endpoint to MCP Tools\n'];
     if (filePath.endsWith('data.md')) {
-      disclaimer = 'MCP exposes: timeSeriesQuery, and lastValueQuery. Other actions require the REST API directly.\n\n';
+      disclaimerLines.push('- endpoint "timeSeriesQuery" used by tool `losant_timeseries` as operation "timeSeriesQuery"');
+      disclaimerLines.push('- endpoint "lastValueQuery" used by tool `losant_timeseries` as operation "lastValueQuery"');
     } else if (filePath.endsWith('dataTableRows.md')) {
-      disclaimer = 'MCP exposes: query as operation "list". Other actions require the REST API directly.\n\n';
+      disclaimerLines.push('- endpoint "query" used by tool `losant_query` as operation "list"');
     } else if (filePath.endsWith('device.md')) {
-      disclaimer = 'MCP exposes: get, getState, getLogEntries, getCommand, getCompositeState. Other actions require the REST API directly.\n\n';
+      disclaimerLines.push('- endpoint "get" used by tool `losant_query` as operation "get"');
+      disclaimerLines.push('- endpoint "getState" used by tool `losant_timeseries` as operation "getState"');
+      disclaimerLines.push('- endpoint "getLogEntries" used by tool `losant_timeseries` as operation "getLogEntries"');
+      disclaimerLines.push('- endpoint "getCommand" used by tool `losant_timeseries` as operation "getCommand"');
+      disclaimerLines.push('- endpoint "getCompositeState" used by tool `losant_timeseries` as operation "getCompositeState"');
+    } else if (isSingularResource) {
+      disclaimerLines.push('- endpoint "get" used by tool `losant_query` as operation "get"');
+      if (isWritable) {
+        disclaimerLines.push('- endpoint "patch" used by tool `losant_write` as operation "updateOne"');
+      }
+    } else {
+      disclaimerLines.push('- endpoint "get" used by tool `losant_query` as operation "list"');
+      if (WRITABLE_RESOURCE_TYPE_SET.has(fileName.replace(/s$/, ''))) {
+        disclaimerLines.push('- endpoint "post" used by tool `losant_write` as operation "createOne"');
+      }
     }
-    fileInfo = disclaimer + fileInfo;
+    fileInfo = `${disclaimerLines.join('\n')}\n\n${fileInfo}`;
   }
   return {
     contents: [{

@@ -44,7 +44,17 @@ export const MD_FILES = DOC_FILES.filter((f) => {
   const singleFileName = f.replace('.md', '').replace(/s$/, '');
   return f.endsWith('.md') && f !== '_schemas.md' && (RESOURCE_TYPE_SET.has(singleFileName) || singleFileName === 'data');
 });
-export const SCHEMA_FILES = readdirSync(SCHEMAS_PATH).filter((f) => f.endsWith('.json') && f.includes('Query'));
+export const WRITABLE_RESOURCE_TYPES = ['deviceRecipe', 'dataTable', 'webhook', 'integration', 'resourceJob'];
+
+const WRITE_SCHEMA_SUFFIXES = new Set(
+  WRITABLE_RESOURCE_TYPES.flatMap((t) => [`${t}Post`, `${t}Patch`])
+);
+
+export const SCHEMA_FILES = readdirSync(SCHEMAS_PATH).filter((f) => {
+  if (!f.endsWith('.json')) { return false; }
+  const name = f.replace('.json', '');
+  return name.includes('Query') || WRITE_SCHEMA_SUFFIXES.has(name);
+});
 
 // Resources supported by the unified tool
 export const NESTED_RESOURCES = {
