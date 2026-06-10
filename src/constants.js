@@ -26,7 +26,10 @@ export const RESOURCE_TYPES = [
   'experienceSlug',
   'experienceUser',
   'experienceVersion',
-  'experienceView'
+  'experienceView',
+  'applicationJobLog',
+  'edgeDeployment',
+  'embeddedDeployment'
 ];
 
 export const RESOURCE_TYPE_SET = new Set(RESOURCE_TYPES);
@@ -64,5 +67,6 @@ export const ALLOWS_ADVANCED_QUERIES_SET = new Set([
   'flowVersion',
   'experienceGroup',
   'dataTableRow',
-  'experienceUser'
+  'experienceUser',
+  'applicationJobLog'
 ]);

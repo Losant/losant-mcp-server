@@ -142,3 +142,5 @@ vite.config.ts.timestamp-*
 
 # LLM Tools
 .claude/
+
+notes.txt
