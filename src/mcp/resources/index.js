@@ -6,6 +6,11 @@ import deviceGuide from './device-guide.js';
 import integrationGuide from './integration-guide.js';
 import dataTableGuide from './data-table-guide.js';
 import resourceJobGuide from './resource-job-guide.js';
+import credentialGuide from './credential-guide.js';
+import flowGuide from './flow-guide.js';
+import dashboardGuide from './dashboard-guide.js';
+import fileGuide from './file-guide.js';
+import notebookGuide from './notebook-guide.js';
 import indexContent from './build-api-index-content.js';
 import debug from 'debug';
 import memoizee from 'memoizee';
@@ -20,7 +25,12 @@ const GUIDES_TO_REGISTER = [
   deviceGuide,
   integrationGuide,
   dataTableGuide,
-  resourceJobGuide
+  resourceJobGuide,
+  credentialGuide,
+  flowGuide,
+  dashboardGuide,
+  fileGuide,
+  notebookGuide
 ];
 
 const readFileContent = memoizee(async (filePath, mimeType, href) => {
@@ -45,6 +55,21 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
     }
     if (filePath.endsWith('resourceJob.md') || filePath.endsWith('resourceJobs.md')) {
       disclaimerLines.push('\nSee [losant://guides/resource-jobs](losant://guides/resource-jobs) for the iterate-resources-trigger-workflow pattern, queryJson format, and concurrency settings.');
+    }
+    if (filePath.endsWith('credential.md') || filePath.endsWith('credentials.md')) {
+      disclaimerLines.push('\nSee [losant://guides/credentials](losant://guides/credentials) for credential types, required config objects, and common workflows.');
+    }
+    if (filePath.endsWith('flow.md') || filePath.endsWith('flows.md') || filePath.endsWith('flowVersion.md') || filePath.endsWith('flowVersions.md')) {
+      disclaimerLines.push('\nSee [losant://guides/flows](losant://guides/flows) for flow classes, trigger/node authoring, and workflow versioning.');
+    }
+    if (filePath.endsWith('applicationDashboard.md') || filePath.endsWith('applicationDashboards.md')) {
+      disclaimerLines.push('\nSee [losant://guides/dashboards](losant://guides/dashboards) for the block model, layout grid, and context variables.');
+    }
+    if (filePath.endsWith('file.md') || filePath.endsWith('files.md') || filePath.endsWith('privateFile.md') || filePath.endsWith('privateFiles.md')) {
+      disclaimerLines.push('\nSee [losant://guides/files](losant://guides/files) for the two-step create-then-upload pattern and public vs. private file differences.');
+    }
+    if (filePath.endsWith('notebook.md') || filePath.endsWith('notebooks.md')) {
+      disclaimerLines.push('\nSee [losant://guides/notebooks](losant://guides/notebooks) for the two-step upload pattern and input/output type reference.');
     }
     if (filePath.endsWith('data.md')) {
       disclaimerLines.push('- endpoint "timeSeriesQuery" used by tool `losant_timeseries` as operation "timeSeriesQuery"');

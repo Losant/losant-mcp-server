@@ -37,13 +37,26 @@ export const WRITABLE_RESOURCE_TYPES = [
   'dataTableRow',
   'webhook',
   'integration',
-  'resourceJob'
+  'resourceJob',
+  'event',
+  'applicationKey',
+  'credential',
+  'file',
+  'privateFile',
+  'notebook',
+  'flow',
+  'flowVersion',
+  'applicationDashboard'
 ];
 
 export const ALLOW_BULK_CREATE_TYPES = new Set([
   'deviceRecipe',
   'dataTableRow'
 ]);
+
+export const ALLOW_UPDATE_MANY_TYPES = new Set(['event']);
+export const NO_CREATE_TYPES = new Set(['event']);       // created by devices/workflows, not the LLM
+export const NO_UPDATE_TYPES = new Set(['flowVersion']); // versions are immutable after creation
 
 // require.resolve('losant-rest') returns .../losant-rest/lib/index.js
 // Go up one directory from lib/ to get the package root
@@ -68,7 +81,12 @@ WRITE_SCHEMA_SUFFIXES.add('deviceRecipeBulkCreatePost'); // special case for bul
 // Keys are the exposed name (e.g. dataTableRowPost); values are the actual filename.
 export const SCHEMA_FILE_ALIASES = {
   dataTableRowPost: 'dataTableRowInsert.json',
-  dataTableRowPatch: 'dataTableRowInsertUpdate.json'
+  dataTableRowPatch: 'dataTableRowInsertUpdate.json',
+  // privateFile shares schemas with file
+  privateFilePost: 'filePost.json',
+  privateFilePatch: 'filePatch.json',
+  // applicationDashboard has no separate Patch schema
+  applicationDashboardPatch: 'applicationDashboardPost.json'
 };
 export const SCHEMA_FILES = readdirSync(SCHEMAS_PATH).filter((f) => {
   if (!f.endsWith('.json')) { return false; }
