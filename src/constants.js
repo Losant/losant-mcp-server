@@ -34,13 +34,15 @@ export const WRITABLE_RESOURCE_TYPES = [
   'device',
   'deviceRecipe',
   'dataTable',
+  'dataTableRow',
   'webhook',
   'integration',
   'resourceJob'
 ];
 
 export const ALLOW_BULK_CREATE_TYPES = new Set([
-  'deviceRecipe'
+  'deviceRecipe',
+  'dataTableRow'
 ]);
 
 // require.resolve('losant-rest') returns .../losant-rest/lib/index.js
@@ -61,6 +63,13 @@ const WRITE_SCHEMA_SUFFIXES = new Set(
   WRITABLE_RESOURCE_TYPES.flatMap((t) => [`${t}Post`, `${t}Patch`])
 );
 WRITE_SCHEMA_SUFFIXES.add('deviceRecipeBulkCreatePost'); // special case for bulk create schema that doesn't follow the usual naming pattern
+
+// Schemas whose canonical MCP name differs from the losant-rest filename.
+// Keys are the exposed name (e.g. dataTableRowPost); values are the actual filename.
+export const SCHEMA_FILE_ALIASES = {
+  dataTableRowPost: 'dataTableRowInsert.json',
+  dataTableRowPatch: 'dataTableRowInsertUpdate.json'
+};
 export const SCHEMA_FILES = readdirSync(SCHEMAS_PATH).filter((f) => {
   if (!f.endsWith('.json')) { return false; }
   const name = f.replace('.json', '');

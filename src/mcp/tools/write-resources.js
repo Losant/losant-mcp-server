@@ -1,19 +1,23 @@
 import { z } from 'zod';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import { WRITABLE_RESOURCE_TYPES, ALLOW_BULK_CREATE_TYPES, SCHEMAS_PATH } from '../../constants.js';
+import { WRITABLE_RESOURCE_TYPES, ALLOW_BULK_CREATE_TYPES, NESTED_RESOURCES, SCHEMAS_PATH } from '../../constants.js';
 import debug from 'debug';
 import { restToMCPError, invalidRequestError } from '../../helpers/errors.js';
+import { getResourceFieldId } from './helpers.js';
 const log = debug('losant-mcp-server:tools:write-resources');
+
+const SCHEMA_PATH_OVERRIDES = {
+  dataTableRow: { post: 'dataTableRowInsert.json', patch: 'dataTableRowInsertUpdate.json' }
+};
 
 // Pre-load and compile schemas at startup to avoid per-request I/O
 const bodySchemas = {};
 for (const type of WRITABLE_RESOURCE_TYPES) {
-  const postSchema = JSON.parse(readFileSync(path.join(SCHEMAS_PATH, `${type}Post.json`), 'utf8'));
-  const patchSchema = JSON.parse(readFileSync(path.join(SCHEMAS_PATH, `${type}Patch.json`), 'utf8'));
-  bodySchemas[`${type}Post`] = z.fromJSONSchema(postSchema);
-  bodySchemas[`${type}Patch`] = z.fromJSONSchema(patchSchema);
-};
+  const { post: postFile = `${type}Post.json`, patch: patchFile = `${type}Patch.json` } = SCHEMA_PATH_OVERRIDES[type] ?? {};
+  bodySchemas[`${type}Post`] = z.fromJSONSchema(JSON.parse(readFileSync(path.join(SCHEMAS_PATH, postFile), 'utf8')));
+  bodySchemas[`${type}Patch`] = z.fromJSONSchema(JSON.parse(readFileSync(path.join(SCHEMAS_PATH, patchFile), 'utf8')));
+}
 
 const BULK_CREATE_TYPE_TO_BODY_NAME = {
   deviceRecipe: 'bulkInfo'
@@ -28,7 +32,7 @@ export default {
       destructiveHint: false
     },
     title: 'Create or Update Losant Resources',
-    description: `Create or update Losant resources: ${WRITABLE_RESOURCE_TYPES.join(', ')}. Check losant://schemas/{resourceType}Post or losant://schemas/{resourceType}Patch for the body schema before calling. For device and deviceRecipe operations, read losant://guides/devices first — devices have important constraints around deviceClass, attribute dataType immutability, and the recipe-to-device relationship.`,
+    description: `Create or update Losant resources: ${WRITABLE_RESOURCE_TYPES.join(', ')}. Check losant://schemas/{resourceType}Post or losant://schemas/{resourceType}Patch for the body schema before calling. Read the relevant guide before working with complex types: losant://guides/devices (device, deviceRecipe), losant://guides/integrations (integration), losant://guides/data-tables (dataTable, dataTableRow), losant://guides/resource-jobs (resourceJob).`,
     inputSchema: z.fromJSONSchema({
       type: 'object',
       properties: {
@@ -50,22 +54,33 @@ export default {
           type: 'string',
           description: 'Resource ID — required for "updateOne" and "createMany" operations'
         },
+        parentResourceId: {
+          type: 'string',
+          description: 'Parent resource ID — required for nested resource types (e.g., the dataTableId when resourceType is "dataTableRow")'
+        },
         body: {
-          type: 'object',
-          description: 'Resource data matching the Post or Patch schema for the given resourceType. Do not include read-only fields such as id, creationDate, or lastUpdated.'
+          type: ['object', 'array'],
+          description: 'Resource data matching the Post or Patch schema for the given resourceType. For "createMany" on dataTableRow, pass an array of row objects. Do not include read-only fields such as id, creationDate, or lastUpdated.'
         }
       },
       required: ['operation', 'resourceType', 'applicationId', 'body']
     })
   },
   runnerFactory: (losantClient) => {
-    return async ({ operation, resourceType, applicationId, resourceId, body }) => {
-      log('Write tool called with parameters:', { operation, resourceType, applicationId, resourceId });
+    return async ({ operation, resourceType, applicationId, resourceId, parentResourceId, body }) => {
+      log('Write tool called with parameters:', { operation, resourceType, applicationId, resourceId, parentResourceId });
 
-      if ((operation === 'updateOne' || operation === 'createMany') && !resourceId) {
+      if (operation === 'updateOne' && !resourceId) {
         return invalidRequestError({
           message: 'Tool input validation failed',
-          errors: [{ fieldName: 'resourceId', details: `The "${operation}" operation requires a resourceId.` }]
+          errors: [{ fieldName: 'resourceId', details: 'The "updateOne" operation requires a resourceId.' }]
+        });
+      }
+
+      if (operation === 'createMany' && !resourceId && !parentResourceId) {
+        return invalidRequestError({
+          message: 'Tool input validation failed',
+          errors: [{ fieldName: 'resourceId', details: 'The "createMany" operation requires either a resourceId or a parentResourceId.' }]
         });
       }
 
@@ -73,6 +88,14 @@ export default {
         return invalidRequestError({
           message: 'Tool input validation failed',
           errors: [{ fieldName: 'resourceType', details: `The "${operation}" operation is not valid for this resource type.` }]
+        });
+      }
+
+      const parentFieldName = NESTED_RESOURCES[resourceType]?.parentField;
+      if (parentFieldName && !parentResourceId) {
+        return invalidRequestError({
+          message: 'Tool input validation failed',
+          errors: [{ fieldName: 'parentResourceId', details: `The "${resourceType}" resource type requires a parentResourceId (${parentFieldName}).` }]
         });
       }
       // for now let the API validate it
@@ -89,6 +112,7 @@ export default {
       // }
 
       const requestParams = { applicationId, _links: false, _actions: false, _embedded: false };
+      if (parentFieldName) { requestParams[parentFieldName] = parentResourceId; }
       try {
         let response;
         if (operation === 'createOne') {
@@ -97,15 +121,23 @@ export default {
             [resourceType]: body
           });
         } else if (operation === 'createMany') {
-          response = await losantClient[`${resourceType}`].bulkCreate({
-            ...requestParams,
-            [`${resourceType}Id`]: resourceId,
-            [BULK_CREATE_TYPE_TO_BODY_NAME[resourceType]]: body
-          });
+          if (BULK_CREATE_TYPE_TO_BODY_NAME[resourceType]) {
+            response = await losantClient[`${resourceType}`].bulkCreate({
+              ...requestParams,
+              [`${resourceType}Id`]: resourceId,
+              [BULK_CREATE_TYPE_TO_BODY_NAME[resourceType]]: body
+            });
+          } else {
+            // Types like dataTableRow reuse the post endpoint — body must be an array
+            response = await losantClient[`${resourceType}s`].post({
+              ...requestParams,
+              [resourceType]: body
+            });
+          }
         } else {
           response = await losantClient[resourceType].patch({
             ...requestParams,
-            [`${resourceType}Id`]: resourceId,
+            [getResourceFieldId(resourceType)]: resourceId,
             [resourceType]: body
           });
         }

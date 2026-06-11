@@ -100,6 +100,44 @@ See \`losant://guides/advanced-queries\` for query syntax and \`losant://schemas
 
 ### Query rows by column value
 Use \`losant_query\` with \`resourceType=dataTableRow\`, \`parentResourceId=<dataTableId>\`, and an advanced \`query\` object.
+
+### Insert a row
+\`\`\`
+losant_write:
+  operation: createOne
+  resourceType: dataTableRow
+  applicationId: <applicationId>
+  parentResourceId: <dataTableId>
+  body: { "columnName": value, ... }
+\`\`\`
+Body is a flat \`{ columnName: value }\` object — no nesting. Values must match each column's declared \`dataType\`. \`required\` columns must be present; \`unique\` columns must not duplicate an existing row value.
+
+Check \`losant://schemas/dataTableRowPost\` for the full body schema.
+
+### Insert multiple rows at once
+\`\`\`
+losant_write:
+  operation: createMany
+  resourceType: dataTableRow
+  applicationId: <applicationId>
+  parentResourceId: <dataTableId>
+  body: [{ "columnName": value }, { "columnName": value }, ...]
+\`\`\`
+Body must be an **array** of row objects. Each element follows the same rules as a single insert. Use this instead of looping \`createOne\` when inserting multiple rows.
+
+### Update a row
+\`\`\`
+losant_write:
+  operation: updateOne
+  resourceType: dataTableRow
+  applicationId: <applicationId>
+  parentResourceId: <dataTableId>
+  resourceId: <rowId>
+  body: { "columnName": newValue }
+\`\`\`
+Only include columns you want to change — omitted columns are left as-is. Use \`losant_query\` \`operation=get\` on \`dataTableRow\` (with \`parentResourceId\`) to retrieve the \`id\` (rowId) of the row to update.
+
+Check \`losant://schemas/dataTableRowPatch\` for the full body schema.
 `;
 
 export default {

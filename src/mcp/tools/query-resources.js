@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { NESTED_RESOURCES, RESOURCE_TYPES, APPLICATION_RESOURCES, ALLOWS_ADVANCED_QUERIES_SET } from '../../constants.js';
 import debug from 'debug';
 import { restToMCPError, invalidRequestError } from '../../helpers/errors.js';
+import { getResourceFieldId } from './helpers.js';
 const log = debug('losant-mcp-server:tools:query-resources');
 
 const omittedFieldsByResourceType = {
@@ -79,19 +80,6 @@ const omitFieldByResourceType = {
 };
 omitFieldByResourceType.flowVersion = omitFieldByResourceType.flow; // same structure as flow
 
-const getResourceFieldId = (resourceType) => {
-  if (resourceType === 'dataTableRow') {
-    return 'rowId';
-  }
-  if (resourceType === 'experienceVersion') {
-    return 'experienceVersionIdOrName';
-  }
-  if (resourceType === 'applicationDashboard') {
-    return 'dashboardId';
-  }
-  // Default to resourceType + 'Id', e.g. deviceId, flowId, etc.
-  return `${resourceType}Id`;
-};
 
 const checkForUnexpectedPageOps = (listInput, errors, resourceType, operation) => {
   ['page', 'perPage'].forEach((param) => {

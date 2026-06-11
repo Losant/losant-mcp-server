@@ -9,7 +9,7 @@ import resourceJobGuide from './resource-job-guide.js';
 import indexContent from './build-api-index-content.js';
 import debug from 'debug';
 import memoizee from 'memoizee';
-import { DOCS_PATH, MD_FILES, RESOURCE_TYPE_SET, SCHEMA_FILES, SCHEMAS_PATH, WRITABLE_RESOURCE_TYPES } from '../../constants.js';
+import { DOCS_PATH, MD_FILES, RESOURCE_TYPE_SET, SCHEMA_FILE_ALIASES, SCHEMA_FILES, SCHEMAS_PATH, WRITABLE_RESOURCE_TYPES } from '../../constants.js';
 
 const WRITABLE_RESOURCE_TYPE_SET = new Set(WRITABLE_RESOURCE_TYPES);
 const log = debug('losant-mcp-server:mcp:resources');
@@ -37,10 +37,10 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
         disclaimerLines.push('- endpoint "bulkCreate" used by tool `losant_write` as operation "createMany"');
       }
     }
-    if (filePath.endsWith('integration.md') || filePath.endsWith('integrations.md')) {
+    if (filePath.includes('integration')) {
       disclaimerLines.push('\nSee [losant://guides/integrations](losant://guides/integrations) for integration types, required config objects, and workflow pairing.');
     }
-    if (filePath.endsWith('dataTable.md') || filePath.endsWith('dataTables.md')) {
+    if (filePath.endsWith('dataTable.md') || filePath.endsWith('dataTables.md') || filePath.includes('dataTableRow')) {
       disclaimerLines.push('\nSee [losant://guides/data-tables](losant://guides/data-tables) for column schema rules, the dataTable/dataTableRow relationship, and common workflows.');
     }
     if (filePath.endsWith('resourceJob.md') || filePath.endsWith('resourceJobs.md')) {
@@ -115,6 +115,17 @@ export default (server) => {
   for (const file of SCHEMA_FILES) {
     const resource = registerFileResource({
       resourceName: file.replace('.json', ''),
+      file,
+      directory: SCHEMAS_PATH,
+      type: 'schemas',
+      mimeType: 'application/json'
+    });
+    server.registerResource(resource.name, resource.uriName, resource.resourceConfig, resource.content);
+  }
+
+  for (const [aliasName, file] of Object.entries(SCHEMA_FILE_ALIASES)) {
+    const resource = registerFileResource({
+      resourceName: aliasName,
       file,
       directory: SCHEMAS_PATH,
       type: 'schemas',

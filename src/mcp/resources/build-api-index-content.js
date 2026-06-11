@@ -1,4 +1,4 @@
-import { APPLICATION_RESOURCES, MD_FILES, SCHEMA_FILES } from '../../constants.js';
+import { APPLICATION_RESOURCES, MD_FILES, SCHEMA_FILE_ALIASES, SCHEMA_FILES } from '../../constants.js';
 
 let indexContent = '# Losant API Documentation\n\n';
 indexContent += '## Quick Links\n\n';
@@ -40,6 +40,9 @@ indexContent += 'JSON schemas for `losant_write` request bodies (Post = createOn
 writeSchemas.sort().forEach((file) => {
   const name = file.replace('.json', '');
   indexContent += `- [${name}](losant://schemas/${name})\n`;
+});
+Object.keys(SCHEMA_FILE_ALIASES).sort().forEach((aliasName) => {
+  indexContent += `- [${aliasName}](losant://schemas/${aliasName})\n`;
 });
 
 export default indexContent;
