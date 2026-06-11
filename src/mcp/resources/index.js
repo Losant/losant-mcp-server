@@ -2,6 +2,10 @@ import path from 'node:path';
 import { readFile } from 'node:fs/promises';
 import advancedQueryGuide from './advanced-query-guide.js';
 import queryToolGuide from './query-tool-guide.js';
+import deviceGuide from './device-guide.js';
+import integrationGuide from './integration-guide.js';
+import dataTableGuide from './data-table-guide.js';
+import resourceJobGuide from './resource-job-guide.js';
 import indexContent from './build-api-index-content.js';
 import debug from 'debug';
 import memoizee from 'memoizee';
@@ -12,7 +16,11 @@ const log = debug('losant-mcp-server:mcp:resources');
 
 const GUIDES_TO_REGISTER = [
   advancedQueryGuide,
-  queryToolGuide
+  queryToolGuide,
+  deviceGuide,
+  integrationGuide,
+  dataTableGuide,
+  resourceJobGuide
 ];
 
 const readFileContent = memoizee(async (filePath, mimeType, href) => {
@@ -23,6 +31,21 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
     const isSingularResource = RESOURCE_TYPE_SET.has(fileName);
     const isWritable = WRITABLE_RESOURCE_TYPE_SET.has(fileName);
     const disclaimerLines = ['## Endpoint to MCP Tools\n'];
+    if (filePath.includes('device-recipe')) {
+      disclaimerLines.push('\nSee [losant://guides/devices](losant://guides/devices) for domain context, the relationship between devices and device recipes, and common workflows.');
+      if (filePath.endsWith('device-recipe.md')) {
+        disclaimerLines.push('- endpoint "bulkCreate" used by tool `losant_write` as operation "createMany"');
+      }
+    }
+    if (filePath.endsWith('integration.md') || filePath.endsWith('integrations.md')) {
+      disclaimerLines.push('\nSee [losant://guides/integrations](losant://guides/integrations) for integration types, required config objects, and workflow pairing.');
+    }
+    if (filePath.endsWith('dataTable.md') || filePath.endsWith('dataTables.md')) {
+      disclaimerLines.push('\nSee [losant://guides/data-tables](losant://guides/data-tables) for column schema rules, the dataTable/dataTableRow relationship, and common workflows.');
+    }
+    if (filePath.endsWith('resourceJob.md') || filePath.endsWith('resourceJobs.md')) {
+      disclaimerLines.push('\nSee [losant://guides/resource-jobs](losant://guides/resource-jobs) for the iterate-resources-trigger-workflow pattern, queryJson format, and concurrency settings.');
+    }
     if (filePath.endsWith('data.md')) {
       disclaimerLines.push('- endpoint "timeSeriesQuery" used by tool `losant_timeseries` as operation "timeSeriesQuery"');
       disclaimerLines.push('- endpoint "lastValueQuery" used by tool `losant_timeseries` as operation "lastValueQuery"');
@@ -30,10 +53,12 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
       disclaimerLines.push('- endpoint "query" used by tool `losant_query` as operation "list"');
     } else if (filePath.endsWith('device.md')) {
       disclaimerLines.push('- endpoint "get" used by tool `losant_query` as operation "get"');
+      disclaimerLines.push('- endpoint "patch" used by tool `losant_write` as operation "updateOne"');
       disclaimerLines.push('- endpoint "getState" used by tool `losant_timeseries` as operation "getState"');
       disclaimerLines.push('- endpoint "getLogEntries" used by tool `losant_timeseries` as operation "getLogEntries"');
       disclaimerLines.push('- endpoint "getCommand" used by tool `losant_timeseries` as operation "getCommand"');
       disclaimerLines.push('- endpoint "getCompositeState" used by tool `losant_timeseries` as operation "getCompositeState"');
+      disclaimerLines.push('\nSee [losant://guides/devices](losant://guides/devices) for domain context, device classes, attribute constraints, and common workflows.');
     } else if (isSingularResource) {
       disclaimerLines.push('- endpoint "get" used by tool `losant_query` as operation "get"');
       if (isWritable) {

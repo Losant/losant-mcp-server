@@ -4,6 +4,10 @@ let indexContent = '# Losant API Documentation\n\n';
 indexContent += '## Quick Links\n\n';
 indexContent += '- [Advanced Query Guide](losant://guides/advanced-queries) - Learn how to build MongoDB-style queries\n\n';
 indexContent += '- [Losant Query Tool Guide](losant://guides/losant-resources-query) - Workflow guide for the losant_query tool — application selection, nested resources, and resource documentation links\n\n';
+indexContent += '- [Devices & Device Recipes Guide](losant://guides/devices) - Domain guide for devices and recipes — classes, attributes, tags, and common workflows\n\n';
+indexContent += '- [Integrations Guide](losant://guides/integrations) - Integration types, required config objects, credential usage, and workflow pairing\n\n';
+indexContent += '- [Data Tables Guide](losant://guides/data-tables) - Column schema, constraints, the dataTable/dataTableRow relationship, and common workflows\n\n';
+indexContent += '- [Resource Jobs Guide](losant://guides/resource-jobs) - The iterate-resources-trigger-workflow pattern, queryJson format, and concurrency settings\n\n';
 
 indexContent += '\n## Supported Resources\n\n';
 indexContent += 'The following resources can be queried with the losant_query tool:\n\n';
@@ -21,9 +25,19 @@ MD_FILES.sort().forEach((file) => {
   indexContent += `- [${name}](losant://docs/${name})\n`;
 });
 
+const querySchemas = SCHEMA_FILES.filter((f) => f.replace('.json', '').includes('Query'));
+const writeSchemas = SCHEMA_FILES.filter((f) => !f.replace('.json', '').includes('Query'));
+
 indexContent += '\n## Query Schemas\n\n';
 indexContent += 'JSON schemas for advanced queries:\n\n';
-SCHEMA_FILES.sort().forEach((file) => {
+querySchemas.sort().forEach((file) => {
+  const name = file.replace('.json', '');
+  indexContent += `- [${name}](losant://schemas/${name})\n`;
+});
+
+indexContent += '\n## Write Schemas\n\n';
+indexContent += 'JSON schemas for `losant_write` request bodies (Post = createOne, Patch = updateOne):\n\n';
+writeSchemas.sort().forEach((file) => {
   const name = file.replace('.json', '');
   indexContent += `- [${name}](losant://schemas/${name})\n`;
 });

@@ -31,12 +31,17 @@ export const RESOURCE_TYPES = [
 
 export const RESOURCE_TYPE_SET = new Set(RESOURCE_TYPES);
 export const WRITABLE_RESOURCE_TYPES = [
+  'device',
   'deviceRecipe',
   'dataTable',
   'webhook',
   'integration',
   'resourceJob'
 ];
+
+export const ALLOW_BULK_CREATE_TYPES = new Set([
+  'deviceRecipe'
+]);
 
 // require.resolve('losant-rest') returns .../losant-rest/lib/index.js
 // Go up one directory from lib/ to get the package root
@@ -55,13 +60,12 @@ export const MD_FILES = DOC_FILES.filter((f) => {
 const WRITE_SCHEMA_SUFFIXES = new Set(
   WRITABLE_RESOURCE_TYPES.flatMap((t) => [`${t}Post`, `${t}Patch`])
 );
-
+WRITE_SCHEMA_SUFFIXES.add('deviceRecipeBulkCreatePost'); // special case for bulk create schema that doesn't follow the usual naming pattern
 export const SCHEMA_FILES = readdirSync(SCHEMAS_PATH).filter((f) => {
   if (!f.endsWith('.json')) { return false; }
   const name = f.replace('.json', '');
   return name.includes('Query') || WRITE_SCHEMA_SUFFIXES.has(name);
 });
-
 // Resources supported by the unified tool
 export const NESTED_RESOURCES = {
   flowVersion: { parentField: 'flowId', parentType: 'flow' },
