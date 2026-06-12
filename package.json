@@ -42,7 +42,7 @@
     "convict": "^6.2.5",
     "debug": "^4.4.3",
     "jsonwebtoken": "^9.0.3",
-    "losant-rest": "^4.1.4",
+    "losant-rest": "^4.2.0",
     "memoizee": "^0.4.17",
     "omnibelt": "^4.1.0",
     "rollbar": "^3.1.0",
