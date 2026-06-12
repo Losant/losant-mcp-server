@@ -69,3 +69,17 @@ export const createOAuthDiscoveryRoute = () => ({
     }
   }
 });
+
+export const createOAuthServerRoute = () => ({
+  method: 'GET',
+  path: '/.well-known/oauth-authorization-server',
+  handler: async (_request, h) => {
+    try {
+      const metadata = await fetchAuthServerMetadata();
+      return h.response(metadata).type('application/json');
+    } catch (error) {
+      rollbar.error('OAuth discovery endpoint error', { error });
+      return h.response(error.message || 'Auth Authorization Server Error').code(503);
+    }
+  }
+});
