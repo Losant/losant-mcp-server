@@ -43,7 +43,7 @@ export const fetchAuthServerMetadata = memoize(async () => {
  * Create OAuth 2.0 Protected Resource Metadata endpoint
  * @returns {Object} Hapi route configuration
  */
-export const createOAuthDiscoveryRoute = () => ({
+export const createAuthServerMetadataRoute = () => ({
   method: 'GET',
   path: '/.well-known/oauth-protected-resource',
   handler: async (_request, h) => {
@@ -67,5 +67,14 @@ export const createOAuthDiscoveryRoute = () => ({
         scopes_supported: config.get('losant.scopes')
       }).type('application/json');
     }
+  }
+});
+
+export const createOAuthDiscoveryRoute = () => ({
+  method: 'GET',
+  path: '/.well-known/oauth-authorization-server',
+  handler: async (_request, h) => {
+    const metadata = await fetchAuthServerMetadata();
+    return h.response(metadata || {}).type('application/json');
   }
 });

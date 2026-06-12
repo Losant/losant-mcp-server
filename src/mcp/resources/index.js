@@ -1,5 +1,22 @@
 import path from 'node:path';
 import { readFile } from 'node:fs/promises';
+import { readdirSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+
+const SKILLS_PATH = path.join(path.dirname(fileURLToPath(import.meta.url)), 'skills');
+
+const walkSkillsDir = (dir) => {
+  const files = [];
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...walkSkillsDir(fullPath));
+    } else if (entry.name.endsWith('.md')) {
+      files.push(fullPath);
+    }
+  }
+  return files;
+};
 import advancedQueryGuide from './advanced-query-guide.js';
 import queryToolGuide from './query-tool-guide.js';
 import deviceGuide from './device-guide.js';
@@ -161,6 +178,31 @@ export default (server) => {
   GUIDES_TO_REGISTER.forEach(({ name, uriName, resourceConfig, getContent }) => {
     server.registerResource(name, uriName, resourceConfig, getContent);
   });
+
+  // Register skill files from src/mcp/resources/skills/ as individual MCP resources
+  const skillFiles = walkSkillsDir(SKILLS_PATH);
+  log(`Loading ${skillFiles.length} skill files...`);
+  for (const filePath of skillFiles) {
+    const relativePath = path.relative(SKILLS_PATH, filePath);
+    const uriPath = relativePath.replace(/\.md$/, '').replace(/\\/g, '/');
+    // SKILL.md at the domain root → losant://skills/{domain}
+    const uriSegment = uriPath.endsWith('/SKILL') ? uriPath.slice(0, -6) : uriPath;
+    const uriName = `losant://skills/${uriSegment}`;
+    const resourceName = `skill-${uriSegment.replace(/\//g, '-')}`;
+    server.registerResource(
+      resourceName,
+      uriName,
+      { title: `Skill: ${uriSegment}`, description: `Losant authoring skill for ${uriSegment}`, mimeType: 'text/markdown' },
+      async (uri) => {
+        let content = await readFile(filePath, 'utf-8');
+        if (path.basename(filePath) === 'SKILL.md') {
+          const domain = uriSegment; // e.g. "dashboards" or "workflows"
+          content = `> **URI mapping**: File references like \`blocks/graph.md\` → \`losant://skills/${domain}/blocks/graph\`; \`nodes/http.md\` → \`losant://skills/${domain}/nodes/http\`; \`triggers/timer.md\` → \`losant://skills/${domain}/triggers/timer\`; \`reference/x.md\` → \`losant://skills/${domain}/reference/x\`.\n\n` + content;
+        }
+        return { contents: [{ uri: uri.href, mimeType: 'text/markdown', text: content }] };
+      }
+    );
+  }
 
   server.registerResource(
     'api-index',

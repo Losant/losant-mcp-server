@@ -4,7 +4,7 @@ import Inert from '@hapi/inert';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js'; // eslint-disable-line import/no-unresolved
 import { createMCPServer } from '../mcp/server.js';
 import { extractBearerToken, validateBearerToken } from '../auth/bearer.js';
-import { createOAuthDiscoveryRoute } from './oauth-discovery.js';
+import { createAuthServerMetadataRoute, createOAuthDiscoveryRoute } from './oauth-discovery.js';
 import { createRootPageRoute } from './root-page.js';
 import conf from '../config.js';
 import debug from 'debug';
@@ -100,6 +100,7 @@ export const createHttpServer = async () => {
   });
   if (enableOAuth) {
     // OAuth 2.0 Protected Resource Metadata (RFC 9728)
+    hapiServer.route(createAuthServerMetadataRoute());
     hapiServer.route(createOAuthDiscoveryRoute());
 
   }
