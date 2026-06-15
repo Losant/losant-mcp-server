@@ -1,9 +1,9 @@
 ---
-name: losant-workflow-authoring
+name: losant-workflow-create-update
 description: Build, edit, and publish Losant workflows through the API — workflow vs. workflow-version model, trigger and node object shapes, the outputIds wiring model (including conditional/loop/switch shape variations), loops with meta.groupId, globals, validation rules, and PATCH-vs-version guidance. Includes a catalog of every node type and trigger type with pointers to detail docs. Use whenever you are creating or modifying a workflow body (the `triggers` or `nodes` arrays) via the Losant REST API.
 ---
 
-# Losant Workflow Authoring
+# Losant Workflow Create and Update
 
 This skill is the entry point for creating and updating Losant workflows through the API. The **envelope and wiring** are described here in full. The **per-type detail** — what goes in a node's or trigger's `config` — lives in `nodes/<name>.md` and `triggers/<name>.md`, indexed by the catalog tables below. Trivial node and trigger types (the ones whose entire spec fits in ~10 lines) are documented in `nodes/simple.md` and `triggers/simple.md`. Cross-cutting concepts that several detail docs reference live in `reference/`.
 
@@ -78,14 +78,14 @@ Every trigger object has the same outer shape:
   "key":  "...",        // identifier or filter — interpretation depends on type
   "type": "timer",      // see the trigger catalog
   "config": { },        // type-specific; can be {}
-  "meta":   { "x": 0, "y": 0 },
-  "outputIds": [["first-node-id"]]
+  "meta":   { "category": "trigger", "name": "timer", "x": 0, "y": 0 },
+  "outputIds": [["12234567"]] // expected to be a nano ID of a node in this workflow, but not validated until save
 }
 ```
 
 - `key` is type-specific. For most identity-style triggers (timer, virtualButton, onBoot, etc.) the server **generates the key for you** — leave it off. For triggers that filter on a value (deviceTag uses `"key/value"`, event uses the event level, mqttTopic uses the topic), you supply it.
 - `config` defaults to `{}`. Many triggers need nothing here; others (timer, event, opcua) carry their wiring in `config`.
-- `meta.x` / `meta.y` are required canvas coordinates (numbers).
+- `meta` is required: at minimum `category`, `name`, `x`, `y`. `category` and `name` come from each node's definition. `x` / `y` are canvas coordinates. `meta.label` is optional — default to `meta.name` if omitted.
 - `outputIds` is `[[nodeId, ...]]` — a one-element outer array whose inner array lists which node IDs should fire when the trigger fires. **A trigger with no `outputIds` validates but never runs anything.**
 
 ## Nodes — object shape
@@ -94,7 +94,7 @@ Every node object has the same outer shape:
 
 ```json
 {
-  "id": "create-thing",
+  "id": "12234567", // expected to be a nano ID, if it is connected to a trigger or another node, then this ID is listed in the outputIds of the trigger/node that connects to it. The server does not assign an ID for you on create, so you must generate one (e.g. with nanoid) if you want to reference this node from a trigger or another node. If the node is unconnected (e.g. a DebugNode used for testing), then `id` is optional.
   "type": "HttpNode",
   "config": { /* type-specific — see the detail file */ },
   "meta":   { "category": "data", "name": "http", "x": 240, "y": 160 },
@@ -105,7 +105,7 @@ Every node object has the same outer shape:
 - `type` is the PascalCase class name (`HttpNode`, `MutateNode`, `ConditionalNode`, etc.).
 - `id` is optional on create — the server assigns one if omitted. **You must supply `id` if anything else (a trigger, another node) wants to reference this node in its `outputIds`.**
 - `config` is type-specific. Look up the per-node detail file via the catalog.
-- `meta` is required: at minimum `category`, `name`, `x`, `y`. `category` and `name` come from each node's definition. `x` / `y` are canvas coordinates. `meta.groupId` is used only for nodes inside a loop (see Loops below).
+- `meta` is required: at minimum `category`, `name`, `x`, `y`. `category` and `name` come from each node's definition. `x` / `y` are canvas coordinates. `meta.groupId` is used only for nodes inside a loop (see Loops below). There are several triggers and nodes that also require additional `meta` fields — see their detail docs.
 - `outputIds` controls which nodes fire next. Shape rules in the next section.
 
 ## `outputIds` — the wiring model
@@ -201,7 +201,7 @@ See `nodes/loop.md` for the full pattern and a worked example.
 | `onSync` | edge | `triggers/simple.md#onsync` |
 | `request` | edge | `triggers/simple.md#request` |
 | `timer` | cloud, edge, exp | `triggers/timer.md` |
-| `virtualButton` | cloud | `triggers/simple.md#virtualbutton` |
+| `virtualButton` | cloud, edge, exp | `triggers/simple.md#virtualbutton` |
 | `webhook` | cloud, exp | `triggers/simple.md#webhook` |
 | _edge field-bus / hardware triggers_ | edge | `triggers/{opcua,beckhoff,snmp-trap,serial,file-watch,file-tail,redis}.md` |
 

@@ -197,7 +197,7 @@ export default (server) => {
         let content = await readFile(filePath, 'utf-8');
         if (path.basename(filePath) === 'SKILL.md') {
           const domain = uriSegment; // e.g. "dashboards" or "workflows"
-          content = `> **URI mapping**: File references like \`blocks/graph.md\` → \`losant://skills/${domain}/blocks/graph\`; \`nodes/http.md\` → \`losant://skills/${domain}/nodes/http\`; \`triggers/timer.md\` → \`losant://skills/${domain}/triggers/timer\`; \`reference/x.md\` → \`losant://skills/${domain}/reference/x\`.\n\n` + content;
+          content = `> **URI mapping**: File references like \`blocks/graph.md\` → \`losant://skills/${domain}/blocks/graph\`; \`nodes/http.md\` → \`losant://skills/${domain}/nodes/http\`; \`triggers/timer.md\` → \`losant://skills/${domain}/triggers/timer\`; \`reference/x.md\` → \`losant://skills/${domain}/reference/x\`.\n\n${content}`;
         }
         return { contents: [{ uri: uri.href, mimeType: 'text/markdown', text: content }] };
       }

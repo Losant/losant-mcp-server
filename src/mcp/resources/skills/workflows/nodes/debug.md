@@ -14,13 +14,13 @@ See `SKILL.md` for the node object shape and wiring model.
     "message": "After HTTP call",
     "level": "info"
   },
-  "meta": { "category": "debug", "name": "debug", "x": 200, "y": 200 },
+  "meta": { "category": "debug", "name": "debug", "label": "Debug", "x": 200, "y": 200 },
   "outputIds": [[]]
 }
 ```
 
 - **Allowed in:** all flow classes.
-- **`meta.category`:** `debug` · **`meta.name`:** `debug`
+- **`meta.category`:** `debug` · **`meta.name`:** `debug` · **`meta.label`:** `Debug`
 - `outputIds` is typically `[[]]` (empty inner array) — the debug node is usually a terminal for a branch. Wire it to a next node if the flow should continue.
 
 ## Config

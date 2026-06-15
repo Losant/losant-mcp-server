@@ -32,7 +32,9 @@ For the full trigger object shape and wiring model see `SKILL.md`. Only the `typ
 
 A button in the Losant UI that fires the workflow. Cloud only.
 
-- **`type`:** `"virtualButton"` · **`meta.name`:** `"virtualButton"`
+- **`type`:** `"virtualButton"` · **`meta.name`:** `"virtualButton"` **`meta.label`:** `"Virtual Button"`
+- ** `meta.category`:** `trigger`
+- ** `meta.payload`: JSON stringified object that will be used as that `data` property on the payload when the trigger is invoked.
 - **`key`:** server-generated — omit it.
 - **`config`:** `{}`
 
@@ -40,7 +42,7 @@ A button in the Losant UI that fires the workflow. Cloud only.
 {
   "type": "virtualButton",
   "config": {},
-  "meta": { "category": "trigger", "name": "virtualButton", "x": 60, "y": 60 },
+  "meta": { "category": "trigger", "name": "virtualButton", "label": "Virtual Button", "x": 60, "y": 60 },
   "outputIds": [["first-node"]]
 }
 ```
@@ -51,7 +53,8 @@ A button in the Losant UI that fires the workflow. Cloud only.
 
 Fires when an external service POSTs to a Losant webhook URL. Cloud and experience.
 
-- **`type`:** `"webhook"` · **`meta.name`:** `"webhook"`
+- **`type`:** `"webhook"` · **`meta.name`:** `"webhook"` **`meta.label`:** `"Webhook"`
+- ** `meta.category`:** `trigger`
 - **`key`:** the webhook resource's ID. The zero ID (`000000000000000000000000`) matches any webhook in the application.
 - **`config`:** `{}`
 
@@ -60,7 +63,7 @@ Fires when an external service POSTs to a Losant webhook URL. Cloud and experien
   "key": "5f1c2d3e4f5a6b7c8d9e0f1a",
   "type": "webhook",
   "config": {},
-  "meta": { "category": "trigger", "name": "webhook", "x": 60, "y": 60 },
+  "meta": { "category": "trigger", "name": "webhook", "label": "webhook" "x": 60, "y": 60 },
   "outputIds": [["handle"]]
 }
 ```
@@ -71,7 +74,8 @@ Fires when an external service POSTs to a Losant webhook URL. Cloud and experien
 
 Fires once when an edge agent starts up. Edge and embedded.
 
-- **`type`:** `"onBoot"` · **`meta.name`:** `"onBoot"`
+- **`type`:** `"onBoot"` · **`meta.name`:** `"onBoot"` · **`meta.label`:** `"On Boot"`
+- ** `meta.category`:** `trigger`
 - **`key`:** server-generated — omit it.
 - **`config`:** `{}`
 
@@ -90,7 +94,8 @@ Fires once when an edge agent starts up. Edge and embedded.
 
 The entry point for a `flowClass: "customNode"` workflow. Exactly one required per customNode flow; must be paired with at least one `CustomNodeCapNode`.
 
-- **`type`:** `"customNodeStart"` · **`meta.name`:** `"customNodeStart"`
+- **`type`:** `"customNodeStart"` · **`meta.name`:** `"customNodeStart"` · **`meta.label`:** `"Custom Node Start"`
+- ** `meta.category`:** `trigger`
 - **`key`:** the literal string `"customNodeStart"`.
 - **`config`:** `{}`
 
@@ -110,7 +115,8 @@ The entry point for a `flowClass: "customNode"` workflow. Exactly one required p
 
 Fires when a new device is created in the application. Cloud only.
 
-- **`type`:** `"deviceCreate"` · **`meta.name`:** `"deviceCreate"`
+- **`type`:** `"deviceCreate"` · **`meta.name`:** `"deviceCreate"` · **`meta.label`:** `"Device: Create"`
+- ** `meta.category`:** `trigger`
 - **`key`:** server-generated — omit it.
 - **`config`:** `{}`
 
@@ -136,6 +142,7 @@ Fire during resource job execution. Cloud only.
 | Iteration timed out | `"resourceJobIterationTimeout"` | `"resourceJobIterationTimeout"` |
 
 - **`key`:** server-generated — omit it.
+- ** `meta.category`:** `trigger`
 - **`config`:** `{}`
 
 ```json

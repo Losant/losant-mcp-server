@@ -409,9 +409,9 @@ describe('HTTP Server', () => {
       server = await createHttpServer();
     });
 
-    it('should have exactly 6 routes registered', () => {
+    it('should have exactly 7 routes registered', () => {
       const routes = server.table();
-      routes.should.have.length(6); // root, favicon, healthz, oauth discovery, POST /mcp, GET /mcp
+      routes.should.have.length(7); // root, favicon, healthz, oauth discovery, POST /mcp, GET /mcp
     });
 
     it('should have GET /healthz route', () => {
