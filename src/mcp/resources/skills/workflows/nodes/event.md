@@ -4,11 +4,25 @@ Four nodes for managing Losant application events within a workflow.
 
 See `SKILL.md` for the node object shape and wiring model. See `reference/error-handling.md` for the error handling pattern.
 
+## Metadata quick reference
+
+| `type` | `meta.category` | `meta.name` | `meta.label` default |
+|---|---|---|---|
+| `EventCreateNode` | `data` | `event-create` | `"Event: Create"` |
+| `EventGetNode` | `data` | `event-get` | `"Event: Get"` |
+| `EventUpdateNode` | `data` | `event-update` | `"Event: Update"` |
+| `EventDeleteNode` | `data` | `event-delete` | `"Event: Delete"` |
+
+`meta.label` is required — default is from the table above.
+
 ---
 
 ## EventCreateNode — Create an event
 
 Creates a new application event. Events are the primary alerting mechanism in Losant.
+
+- **Allowed in:** cloud, experience, customNode.
+- **`meta.category`:** `data` · **`meta.name`:** `event-create` · **`meta.label`:** `"Event: Create"` (default)
 
 ```json
 {
@@ -22,13 +36,10 @@ Creates a new application event. Events are the primary alerting mechanism in Lo
     "resultPath": "working.event",
     "errorBehavior": "throw"
   },
-  "meta": { "category": "data", "name": "event-create", "x": 200, "y": 200 },
+  "meta": { "category": "data", "name": "event-create", "label": "Event: Create", "x": 200, "y": 200 },
   "outputIds": [["next"]]
 }
 ```
-
-- **Allowed in:** cloud, experience, customNode.
-- **`meta.category`:** `data` · **`meta.name`:** `event-create`
 
 | Config field | Notes |
 |---|---|
@@ -47,6 +58,9 @@ Creates a new application event. Events are the primary alerting mechanism in Lo
 
 Fetches an event by ID.
 
+- **Allowed in:** cloud, experience, customNode.
+- **`meta.category`:** `data` · **`meta.name`:** `event-get` · **`meta.label`:** `"Event: Get"` (default)
+
 ```json
 {
   "id": "get-event",
@@ -56,7 +70,7 @@ Fetches an event by ID.
     "resultPath": "working.event",
     "errorBehavior": "throw"
   },
-  "meta": { "category": "data", "name": "event-get", "x": 200, "y": 200 },
+  "meta": { "category": "data", "name": "event-get", "label": "Event: Get", "x": 200, "y": 200 },
   "outputIds": [["next"]]
 }
 ```
@@ -73,6 +87,9 @@ Fetches an event by ID.
 
 Updates an existing event's state, level, subject, or adds a comment.
 
+- **Allowed in:** cloud, experience, customNode.
+- **`meta.category`:** `data` · **`meta.name`:** `event-update` · **`meta.label`:** `"Event: Update"` (default)
+
 ```json
 {
   "id": "acknowledge-event",
@@ -84,7 +101,7 @@ Updates an existing event's state, level, subject, or adds a comment.
     "resultPath": "working.updatedEvent",
     "errorBehavior": "throw"
   },
-  "meta": { "category": "data", "name": "event-update", "x": 200, "y": 200 },
+  "meta": { "category": "data", "name": "event-update", "label": "Event: Update", "x": 200, "y": 200 },
   "outputIds": [["next"]]
 }
 ```
@@ -103,6 +120,9 @@ Updates an existing event's state, level, subject, or adds a comment.
 
 ## EventDeleteNode — Delete an event
 
+- **Allowed in:** cloud, experience, customNode.
+- **`meta.category`:** `data` · **`meta.name`:** `event-delete` · **`meta.label`:** `"Event: Delete"` (default)
+
 ```json
 {
   "id": "delete-event",
@@ -111,7 +131,7 @@ Updates an existing event's state, level, subject, or adds a comment.
     "eventIdTemplate": "{{working.eventId}}",
     "errorBehavior": "throw"
   },
-  "meta": { "category": "data", "name": "event-delete", "x": 200, "y": 200 },
+  "meta": { "category": "data", "name": "event-delete", "label": "Event: Delete", "x": 200, "y": 200 },
   "outputIds": [["next"]]
 }
 ```

@@ -1,78 +1,108 @@
 # Event Trigger (`type: "event"`)
 
-Fires when an application event is created or changes state. Use to react to alerts — for example, auto-acknowledge events when a recovery condition is met, or route critical events to an on-call system.
+The Event Trigger fires a workflow whenever an event matching the criteria defined in the trigger's configuration is created or changes state.
 
-Cloud only.
+## Required Fields
 
-See `SKILL.md` for the trigger object shape and wiring model.
+| Field | Value |
+|---|---|
+| `type` | `"event"` |
+| `meta.category` | `"trigger"` |
+| `meta.name` | `"event"` |
+| `meta.label` | `"Event"` (default) |
 
-## Trigger object
+## Cloud (Application) workflows
 
 ```json
 {
   "type": "event",
+  "key": "error",
   "config": {
-    "new": true
+    "subject": "",
+    "new": true,
+    "acknowledged": false,
+    "resolved": false
   },
-  "meta": { "category": "trigger", "name": "event", "x": 60, "y": 60 },
+  "meta": {
+    "category": "trigger",
+    "name": "event",
+    "label": "Event",
+    "x": 60,
+    "y": 60
+  },
   "outputIds": [["handle-event"]]
 }
 ```
 
-**`type` is the only required field.** `meta.label` defaults to `"event"` if omitted.
+### Config
 
-- `key` is server-generated — omit it.
+All config fields are always sent by the UI. Always include them.
 
-## Config
+| Field | Type | Default | Notes |
+|---|---|---|---|
+| `key` | enum | `"error"` | Event level filter. `"any"` — all levels. `"info"`, `"warning"`, `"error"`, `"critical"` — specific level only. |
+| `config.subject` | string | `""` | Subject filter using case-insensitive glob matching. `""` matches any subject. |
+| `config.new` | boolean | `true` | Fire when an event is created or placed in the `new` state. |
+| `config.acknowledged` | boolean | `false` | Fire when an event transitions to the `acknowledged` state. |
+| `config.resolved` | boolean | `false` | Fire when an event transitions to the `resolved` state. |
 
-All config fields are optional. With an empty config (`{}`), the trigger fires on all event state changes.
+At least one of `config.new`, `config.acknowledged`, or `config.resolved` should be `true`.
 
-| Field | Type | Notes |
-|---|---|---|
-| `subject` | string (max 255) | Filter to events whose subject matches this string. Supports wildcard `*`. |
-| `new` | boolean | Fire when an event is created with state `"new"`. |
-| `acknowledged` | boolean | Fire when an event transitions to `"acknowledged"`. |
-| `resolved` | boolean | Fire when an event transitions to `"resolved"`. |
+**Note:** Filters are evaluated after the event update. A level filter of `"error"` fires when an event arrives at or is updated to `"error"` level — it does **not** fire when an event changes away from `"error"` to another level.
 
-Multiple state flags can be combined — e.g. `{ "new": true, "acknowledged": true }` fires on both creation and acknowledgement.
-
-## Payload at runtime
+### Payload at runtime
 
 ```json
 {
   "time": "<ISO timestamp>",
   "data": {
-    "event": {
-      "id": "5f1c...",
-      "subject": "High temperature on Truck 42",
-      "level": "error",
+    "id": "<event ID>",
+    "subject": "High Temperature on Device",
+    "level": "error",
+    "state": "new",
+    "message": "<message included at event creation>",
+    "creationDate": "<ISO timestamp>",
+    "sourceId": "<ID of the entity that created the event>",
+    "sourceName": "<name of the source>",
+    "sourceType": "flow",
+    "data": { "tempC": 95.2 },
+    "deviceId": "<ID of associated device>",
+    "deviceName": "<name of associated device>",
+    "eventTags": { "region": "warehouse-a" },
+    "latestUpdate": {
+      "comment": "<comment included with the update>",
+      "creationDate": "<ISO timestamp>",
+      "data": { "structuredData": "included in update" },
       "state": "new",
-      "deviceId": "5f1c...",
-      "data": { "tempC": 95.2 },
-      "tags": {},
-      "creationDate": "..."
-    }
+      "stateChange": { "new": "new", "old": "resolved" },
+      "levelChange": { "new": "error", "old": "warning" },
+      "sourceId": "<ID of entity that applied the update>",
+      "sourceName": "<name>",
+      "sourceType": "flow"
+    },
+    "allUpdates": [ "... array of update objects (same shape as latestUpdate) ..." ]
   },
-  "applicationId": "...",
-  "triggerId": "...",
+  "relayId": "<ID of the resource that created/updated the event>",
+  "relayType": "flow",
+  "triggerId": "error",
   "triggerType": "event",
+  "applicationId": "...",
   "flowId": "...",
   "globals": {}
 }
 ```
 
-- `data.event` is the full event object.
-- Access fields as `{{data.event.subject}}`, `{{data.event.level}}`, `{{data.event.deviceId}}`, etc.
+- `data.deviceId` / `data.deviceName` — only present if a device is associated with the event.
+- `data.data` — additional structured data attached to the event at creation. `undefined` if none.
+- `data.latestUpdate` — the most recent update to the event. `undefined` for newly created events with no updates.
+- `data.allUpdates` — full history of updates. Each update may include `stateChange`, `levelChange`, `subjectChange`, `deviceIdChange`, `tagsChange` — only the changes that occurred are present.
+- `triggerId` — the event level the trigger is configured for (`"any"`, `"info"`, `"warning"`, `"error"`, `"critical"`).
+- `relayId` / `relayType` — matches `data.latestUpdate.sourceId/Type`, or `data.sourceId/Type` if the event has no updates. A `relayType` of `"public"` means the event was created or updated by an unauthenticated Experience User or via a public dashboard.
 
-## Worked example — fire on new critical or error events
+## Experience workflows
 
-```json
-{
-  "type": "event",
-  "config": { "new": true },
-  "meta": { "category": "trigger", "name": "event", "label": "New events", "x": 60, "y": 60 },
-  "outputIds": [["check-level"]]
-}
-```
+Not available.
 
-Then use a ConditionalNode: `{{data.event.level}} === "critical" || {{data.event.level}} === "error"` to filter further.
+## Edge workflows
+
+Not available.

@@ -1,84 +1,163 @@
 # Endpoint Trigger (`type: "endpoint"`)
 
-Fires when an HTTP request is made to a Losant Experience Endpoint. The primary trigger for experience workflows backing API or web endpoints. Available in cloud and experience workflows.
+The Endpoint Trigger fires a workflow when the selected Experience Endpoint receives an HTTP request, or when any endpoint request is received at a domain tied to the selected Experience Version.
 
-See `SKILL.md` for the trigger object shape and wiring model.
+## Required Fields
 
-## Trigger object
+| Field | Value |
+|---|---|
+| `type` | `"endpoint"` |
+| `meta.category` | `"trigger"` |
+| `meta.name` | `"endpoint"` |
+| `meta.label` | `"Endpoint"` (default) |
+
+## Experience workflows
+
+> **Strongly recommended.** Always use `flowClass: "experience"` for endpoint triggers. Experience workflows are version-aware — a request to your `develop` domain fires only the develop version of the workflow, keeping routing behavior predictable. Using cloud workflows for endpoints bypasses versioning and leads to unpredictable behavior.
+
+Two selection modes are available:
+
+### Specific endpoint
+
+Fires only when the named endpoint receives a request. `key` is the Experience Endpoint ID.
 
 ```json
 {
-  "key": "5f1c2d3e4f5a6b7c8d9e0f1a",
   "type": "endpoint",
+  "key": "5f1c2d3e4f5a6b7c8d9e0f1a",
   "config": {},
-  "meta": { "category": "trigger", "name": "endpoint", "x": 60, "y": 60 },
+  "meta": {
+    "category": "trigger",
+    "name": "endpoint",
+    "label": "Endpoint",
+    "x": 60,
+    "y": 60
+  },
   "outputIds": [["handle-request"]]
 }
 ```
 
-**`type` is the only required field.** `meta.label` defaults to `"endpoint"` if omitted.
+### Any endpoint in this version
 
-- `key` is the Experience Endpoint resource's ID. Use `losant_query` with `resourceType=experienceEndpoint` to find endpoint IDs.
-- One trigger per endpoint. A workflow can have multiple endpoint triggers to handle several routes.
+Fires on any request to any endpoint in the same Experience Version as the workflow. `key` is the zero ID. Useful for logging; replying from this mode is strongly discouraged as it may race with other endpoint triggers.
 
-## Config
+```json
+{
+  "type": "endpoint",
+  "key": "000000000000000000000000",
+  "config": {},
+  "meta": {
+    "category": "trigger",
+    "name": "endpoint",
+    "label": "Endpoint",
+    "x": 60,
+    "y": 60
+  },
+  "outputIds": [["log-request"]]
+}
+```
 
-| Field | Type | Notes |
-|---|---|---|
-| `experienceVersion` | string | Optional. Pin this trigger to a specific Experience Version. Omit for the default (develop) version. |
+**`key`** — Required. Always send this field. Specific endpoint ID, or `"000000000000000000000000"` to match any endpoint in the version.
 
-Most triggers use `config: {}` — `experienceVersion` is only needed when routing to a non-default version.
-
-## Payload at runtime
+### Payload at runtime
 
 ```json
 {
   "time": "<ISO timestamp>",
   "data": {
-    "request": {
-      "method": "POST",
-      "path": "/api/devices",
-      "headers": { "content-type": "application/json", "authorization": "Bearer ..." },
-      "query": { "page": "2" },
-      "body": { "name": "Sensor 1" },
-      "params": { "deviceId": "5f1c..." },
-      "replyId": "unique-reply-id"
+    "body": { "name": "Jane", "age": "42" },
+    "cookies": {},
+    "headers": {
+      "content-type": "application/json",
+      "x-forwarded-for": "<source IP>",
+      "x-forwarded-proto": "https"
     },
-    "experience": {
-      "user": { "id": "...", "email": "user@example.com" },
-      "groups": [],
-      "version": "develop"
-    }
+    "method": "post",
+    "path": "/api/devices",
+    "params": { "deviceId": "5f1c..." },
+    "query": { "page": "2" },
+    "replyId": "<endpointId>.<unique request ID>"
   },
+  "experience": {
+    "endpoint": { "...": "Experience Endpoint object" },
+    "user": null,
+    "version": "develop",
+    "authInfo": null
+  },
+  "relayId": "000000000000000000000000",
+  "relayType": "public",
+  "triggerId": "<endpoint ID>",
+  "triggerType": "endpoint",
   "applicationId": "...",
   "flowId": "...",
   "globals": {}
 }
 ```
 
-- `data.request.body` — parsed JSON body (or raw string if not JSON).
-- `data.request.params` — path parameters from the route (e.g. `/devices/:deviceId` → `params.deviceId`).
-- `data.request.query` — URL query string parameters.
-- `data.request.replyId` — pass this to the Endpoint Reply node to link the response to the request.
-- `data.experience.user` — authenticated Experience User, or `null` for unauthenticated requests.
+- `data.body` — parsed JSON, form data, or URL-encoded body. `null` if no body. Left as a string for non-JSON/form content types.
+- `data.params` — path parameters extracted from the route definition (e.g. `/devices/:deviceId`).
+- `data.query` — URL query string parameters.
+- `data.replyId` — pass to an Endpoint Reply node to send a response. Every request must be replied to or the client will hang.
+- `experience.user` — authenticated Experience User, or `null` for unauthenticated requests.
+- `experience.version` — the Experience Version name that received the request.
+- `experience.authInfo` — token details (`issuedAt`, `expiresAt`, `extraData`), or `null` if no token.
 
-## Required: pair with an Endpoint Reply node
+### Notes on "any endpoint" triggers
 
-Every request fired by this trigger **must** be replied to. Wire both success and error paths to an `EndpointReplyNode`. Without a reply, the HTTP client hangs until timeout.
+Fires for requests that match no endpoint (404), unauthorized requests (401/403). Does **not** fire for 429, 400, 413, or automatic OPTIONS/CORS replies.
+
+## Cloud (Application) workflows
+
+> **Not recommended.** Endpoint triggers in cloud workflows bypass Experience Version routing. Use `flowClass: "experience"` instead. Cloud support exists only for legacy reasons.
+
+Three selection modes are available in cloud workflows. `config.experienceVersion` is always sent and defaults to `"develop"`.
+
+### Specific endpoint in a version
 
 ```json
 {
   "type": "endpoint",
-  "key": "endpoint-id",
-  "config": {},
-  "meta": { "category": "trigger", "name": "endpoint", "x": 60, "y": 60 },
-  "outputIds": [["validate-input"]]
+  "key": "5f1c2d3e4f5a6b7c8d9e0f1a",
+  "config": { "experienceVersion": "develop" },
+  "meta": {
+    "category": "trigger",
+    "name": "endpoint",
+    "label": "Endpoint",
+    "x": 60,
+    "y": 60
+  },
+  "outputIds": [["handle-request"]]
 }
 ```
 
-## Idiom notes
+### Any endpoint in a specific version
 
-- Always reply to every branch — use a ConditionalNode to split success/error paths, then an EndpointReplyNode on each.
-- `data.experience.user` is `null` for unauthenticated requests — check it before accessing user properties.
-- Use `data.request.params` for path variables, `data.request.query` for URL params, `data.request.body` for the request body.
-- A workflow can have multiple `endpoint` triggers for different routes — each trigger's `key` is a distinct endpoint ID.
+```json
+{
+  "type": "endpoint",
+  "key": "000000000000000000000000",
+  "config": { "experienceVersion": "develop" },
+  "meta": { "category": "trigger", "name": "endpoint", "label": "Endpoint", "x": 60, "y": 60 },
+  "outputIds": [["log-request"]]
+}
+```
+
+### Any endpoint in any version
+
+```json
+{
+  "type": "endpoint",
+  "key": "000000000000000000000000",
+  "config": {},
+  "meta": { "category": "trigger", "name": "endpoint", "label": "Endpoint", "x": 60, "y": 60 },
+  "outputIds": [["log-request"]]
+}
+```
+
+**`config.experienceVersion`** — Required for "specific endpoint" and "any endpoint in a specific version" modes. Defaults to `"develop"`. Omit only for "any endpoint in any version".
+
+The payload shape is identical to experience workflows.
+
+## Edge workflows
+
+Not available.

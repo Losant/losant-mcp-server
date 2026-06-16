@@ -4,11 +4,23 @@ Two nodes for reading and writing workflow-scoped persistent storage. Values wri
 
 See `SKILL.md` for the node object shape and wiring model.
 
+## Metadata quick reference
+
+| `type` | `meta.category` | `meta.name` | `meta.label` default |
+|---|---|---|---|
+| `GetValueNode` | `logic` | `getValue` | `"Get Value"` |
+| `StoreValueNode` | `logic` | `storeValue` | `"Store Value"` |
+
+`meta.label` is required — default is from the table above.
+
 ---
 
 ## GetValueNode — Read from storage
 
 Reads a stored value by key and writes it to a payload path.
+
+- **Allowed in:** all flow classes.
+- **`meta.category`:** `logic` · **`meta.name`:** `getValue` · **`meta.label`:** `"Get Value"` (default)
 
 ```json
 {
@@ -18,13 +30,10 @@ Reads a stored value by key and writes it to a payload path.
     "keyTemplate": "deviceCounter-{{data.deviceId}}",
     "resultPath": "working.counter"
   },
-  "meta": { "category": "logic", "name": "getValue", "x": 200, "y": 200 },
+  "meta": { "category": "logic", "name": "getValue", "label": "Get Value", "x": 200, "y": 200 },
   "outputIds": [["next"]]
 }
 ```
-
-- **Allowed in:** all flow classes.
-- **`meta.category`:** `logic` · **`meta.name`:** `getValue`
 
 | Config field | Notes |
 |---|---|
@@ -42,6 +51,9 @@ ConditionalNode: expression = "{{working.counter}}"
 
 Writes a value to a storage key.
 
+- **Allowed in:** all flow classes.
+- **`meta.category`:** `logic` · **`meta.name`:** `storeValue` · **`meta.label`:** `"Store Value"` (default)
+
 ```json
 {
   "id": "inc-counter",
@@ -50,13 +62,10 @@ Writes a value to a storage key.
     "keyTemplate": "deviceCounter-{{data.deviceId}}",
     "valueTemplate": "{{add working.counter 1}}"
   },
-  "meta": { "category": "logic", "name": "storeValue", "x": 400, "y": 200 },
+  "meta": { "category": "logic", "name": "storeValue", "label": "Store Value", "x": 400, "y": 200 },
   "outputIds": [["next"]]
 }
 ```
-
-- **Allowed in:** all flow classes.
-- **`meta.category`:** `logic` · **`meta.name`:** `storeValue`
 
 | Config field | Notes |
 |---|---|
@@ -81,21 +90,21 @@ To delete a stored key, set its value to an empty string or use the `remove` opt
       "id": "get-last-run",
       "type": "GetValueNode",
       "config": { "keyTemplate": "lastRun-{{data.deviceId}}", "resultPath": "working.lastRun" },
-      "meta": { "category": "logic", "name": "getValue", "x": 0, "y": 0 },
+      "meta": { "category": "logic", "name": "getValue", "label": "Get Value", "x": 0, "y": 0 },
       "outputIds": [["check-cooldown"]]
     },
     {
       "id": "check-cooldown",
       "type": "ConditionalNode",
       "config": { "expression": "{{subtract time working.lastRun}} > 3600000" },
-      "meta": { "category": "logic", "name": "conditional", "x": 200, "y": 0 },
+      "meta": { "category": "logic", "name": "conditional", "label": "Conditional", "x": 200, "y": 0 },
       "outputIds": [["process"], []]
     },
     {
       "id": "process",
       "type": "StoreValueNode",
       "config": { "keyTemplate": "lastRun-{{data.deviceId}}", "valueTemplate": "{{time}}" },
-      "meta": { "category": "logic", "name": "storeValue", "x": 400, "y": 0 },
+      "meta": { "category": "logic", "name": "storeValue", "label": "Store Value", "x": 400, "y": 0 },
       "outputIds": [["do-work"]]
     }
   ]

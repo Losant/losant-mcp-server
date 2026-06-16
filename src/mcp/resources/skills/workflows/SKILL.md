@@ -52,7 +52,9 @@ Required: `name`. Everything else is optional but `flowClass` controls which tri
 | `experience` | Cloud workers, triggered by an Experience Endpoint | Backs HTTP endpoints exposed to end users. |
 | `edge` | A Losant Gateway Edge Agent (GEA) | Versioning is mandatory — edge agents pull versions, not develop. |
 | `embedded` | The Embedded Edge Agent (EEA) | Very restricted node set. Does NOT support HTTP, custom nodes, and many others. |
-| `customNode` | Cloud workers, as a callable sub-workflow | Requires exactly one `CustomNodeStart` trigger and at least one `CustomNodeCapNode`. |
+| `customNode` | Cloud workers, as a callable sub-workflow | Requires exactly one `CustomNodeStart` trigger and at least one `CustomNodeCapNode`. See `losant://skills/workflows/custom-nodes` for full authoring details. |
+
+> **Edge workflow development:** To manually trigger or interact with a running edge workflow, deploy the `develop` version to a test Edge Compute Device and use **Live Look** (accessible from the workflow editor's Debug or Deployments tab). This applies to any trigger that requires manual interaction — virtual buttons, HTTP request triggers, etc.
 
 ## Workflow version body (POST `/versions`)
 
@@ -69,6 +71,67 @@ Required: `version` (the name). The `triggers` / `nodes` you send become the imm
 
 ---
 
+## Workflow behavior by flow class
+
+The `flowClass` controls more than which triggers and nodes are valid — it changes when edits go live, how storage works, what the runtime payload contains, and how you debug. Read the section for the class you are building before choosing triggers and nodes.
+
+### Application (Cloud) workflows
+
+Application workflows run in Losant's cloud and have access to the widest set of triggers and nodes: device state, timers, webhooks, integrations, data tables, events, and most data and output nodes.
+
+**When changes go live:** A PATCH to the workflow body immediately affects execution — the develop version runs by default. If `defaultVersionId` is set, that specific published version runs instead and PATCHing develop has no effect on live execution until you update or clear `defaultVersionId`.
+
+**Storage:** Workflow storage values are shared across all concurrent executions and are readable from the Losant cloud console.
+
+**Debugging:** The debug panel streams execution output in real time from all versions simultaneously.
+
+> **Gotcha:** If your edits to a workflow aren't having any effect, check whether `defaultVersionId` is set and pinning execution to an older version.
+
+---
+
+### Experience workflows
+
+Experience workflows back HTTP endpoints exposed to end users. They are versioned **alongside** Experience Versions (endpoints and views) — not independently.
+
+**Triggers:** Only three trigger types are available: Endpoint, Workflow Error, and Virtual Button. Device, timer, webhook, and integration triggers are not supported.
+
+**When changes go live:** Like application workflows, edits to develop are live immediately for the develop experience. Publishing an Experience Version snapshots all workflows at that point.
+
+**Debugging:** Debug output is scoped to the currently viewed Experience Version — you won't see executions from other versions in the debug panel.
+
+**Essential pattern:** Always add a `scope: "local"` Workflow Error Trigger to any experience workflow that handles endpoint requests. Without it, a halting error leaves the HTTP client hanging until timeout with no response sent.
+
+> **Gotcha:** The three-trigger limit is strict. If you need device state, a timer, or an integration to feed data into your experience logic, use an Application workflow to process that data and invoke the experience workflow via a Workflow Trigger output node.
+
+---
+
+### Edge workflows
+
+Edge workflows are deployed to Gateway Edge Agent (GEA) hardware and run locally on the device. They support hardware-specific triggers (serial, OPC UA, Beckhoff, file watch, UDP, etc.) and make local decisions without requiring a cloud round-trip.
+
+**When changes go live:** Changes do **not** go live until you publish a named version. Devices pull and run versions — they never execute the develop version directly. PATCHing develop has zero effect on a running device until a new version is published and deployed.
+
+**Storage:** Storage values are per-device and cannot be read from the Losant cloud console.
+
+**Node availability:** Edge workflows have a narrower node set than cloud — no built-in email or SMS nodes, no experience-specific nodes.
+
+**Payload extras:** Every edge workflow execution includes additional envelope fields beyond the standard payload:
+
+| Field | Notes |
+|---|---|
+| `isConnectedToLosant` | `true` if the device was connected to Losant when the workflow fired. |
+| `agentVersion` | The GEA version string currently running the workflow. |
+| `agentEnvironment` | GEA environment metadata. |
+| `flowVersion` | The name of the published version deployed to the device. |
+
+**Debugging:** Edge workflows use Live Look rather than the standard debug panel. Access it from the workflow editor's Debug or Deployments tab by connecting to a specific deployment, or deploy the develop version to a test device (GEA 1.39.0+) for interactive debugging.
+
+> **Gotchas:**
+> - The single most common edge mistake: editing develop and expecting devices to pick it up. Always publish a new version after editing.
+> - Workflow storage is isolated per-device. Two devices running the same workflow have completely separate storage namespaces.
+
+---
+
 ## Triggers — object shape
 
 Every trigger object has the same outer shape:
@@ -78,14 +141,14 @@ Every trigger object has the same outer shape:
   "key":  "...",        // identifier or filter — interpretation depends on type
   "type": "timer",      // see the trigger catalog
   "config": { },        // type-specific; can be {}
-  "meta":   { "category": "trigger", "name": "timer", "x": 0, "y": 0 },
+  "meta":   { "category": "trigger", "name": "timer", "label": "Timer", "x": 0, "y": 0 },
   "outputIds": [["12234567"]] // expected to be a nano ID of a node in this workflow, but not validated until save
 }
 ```
 
 - `key` is type-specific. For most identity-style triggers (timer, virtualButton, onBoot, etc.) the server **generates the key for you** — leave it off. For triggers that filter on a value (deviceTag uses `"key/value"`, event uses the event level, mqttTopic uses the topic), you supply it.
 - `config` defaults to `{}`. Many triggers need nothing here; others (timer, event, opcua) carry their wiring in `config`.
-- `meta` is required: at minimum `category`, `name`, `x`, `y`. `category` and `name` come from each node's definition. `x` / `y` are canvas coordinates. `meta.label` is optional — default to `meta.name` if omitted.
+- `meta` is required: at minimum `category`, `name`, `label`, `x`, `y`. `category` and `name` come from each node's definition. `x` / `y` are canvas coordinates. `label` is required — default to the titlized form of `name` (e.g. `"timer"` → `"Timer"`, `"deviceCreate"` → `"Device: Create"`).
 - `outputIds` is `[[nodeId, ...]]` — a one-element outer array whose inner array lists which node IDs should fire when the trigger fires. **A trigger with no `outputIds` validates but never runs anything.**
 
 ## Nodes — object shape
@@ -97,7 +160,7 @@ Every node object has the same outer shape:
   "id": "12234567", // expected to be a nano ID, if it is connected to a trigger or another node, then this ID is listed in the outputIds of the trigger/node that connects to it. The server does not assign an ID for you on create, so you must generate one (e.g. with nanoid) if you want to reference this node from a trigger or another node. If the node is unconnected (e.g. a DebugNode used for testing), then `id` is optional.
   "type": "HttpNode",
   "config": { /* type-specific — see the detail file */ },
-  "meta":   { "category": "data", "name": "http", "x": 240, "y": 160 },
+  "meta":   { "category": "data", "name": "http", "label": "HTTP", "x": 240, "y": 160 },
   "outputIds": [["log-result"]]
 }
 ```
@@ -105,7 +168,7 @@ Every node object has the same outer shape:
 - `type` is the PascalCase class name (`HttpNode`, `MutateNode`, `ConditionalNode`, etc.).
 - `id` is optional on create — the server assigns one if omitted. **You must supply `id` if anything else (a trigger, another node) wants to reference this node in its `outputIds`.**
 - `config` is type-specific. Look up the per-node detail file via the catalog.
-- `meta` is required: at minimum `category`, `name`, `x`, `y`. `category` and `name` come from each node's definition. `x` / `y` are canvas coordinates. `meta.groupId` is used only for nodes inside a loop (see Loops below). There are several triggers and nodes that also require additional `meta` fields — see their detail docs.
+- `meta` is required: at minimum `category`, `name`, `label`, `x`, `y`. `category` and `name` come from each node's definition. `x` / `y` are canvas coordinates. `label` is required — default to the titlized form of `name` (e.g. `"http"` → `"HTTP"`, `"mutate"` → `"Mutate"`). `meta.groupId` is used only for nodes inside a loop (see Loops below). There are several triggers and nodes that also require additional `meta` fields — see their detail docs.
 - `outputIds` controls which nodes fire next. Shape rules in the next section.
 
 ## `outputIds` — the wiring model
@@ -156,7 +219,7 @@ See `nodes/loop.md` for the full pattern and a worked example.
     {
       "type": "timer",
       "config": { "seconds": 60 },
-      "meta":   { "x": 60, "y": 60 },
+      "meta":   { "category": "trigger", "name": "timer", "label": "Timer", "x": 60, "y": 60 },
       "outputIds": [["log"]]
     }
   ],
@@ -164,7 +227,7 @@ See `nodes/loop.md` for the full pattern and a worked example.
     {
       "id": "log",
       "type": "DebugNode",
-      "meta": { "category": "output", "name": "debug", "x": 60, "y": 200 },
+      "meta": { "category": "debug", "name": "debug", "label": "Debug", "x": 60, "y": 200 },
       "outputIds": [[]],
       "config": { "message": "still alive", "level": "verbose" }
     }
@@ -176,95 +239,82 @@ See `nodes/loop.md` for the full pattern and a worked example.
 
 ## Trigger catalog
 
-`Available` column abbreviations: `cloud`, `exp` (experience), `edge`, `emb` (embedded), `custom` (customNode). `all` = all five.
-
-> _Demo subset — production version lists all ~30 trigger types._
+`Available` column abbreviations: `cloud`, `exp` (experience), `edge`, `custom` (customNode).
 
 | Type | Available | Spec |
 |---|---|---|
 | `appFile` | cloud | `triggers/app-file.md` |
+| `beckhoff` | edge | `triggers/beckhoff.md` |
 | `customNodeStart` | custom | `triggers/simple.md#customnodestart` |
 | `dataTable` | cloud | `triggers/data-table.md` |
-| `deviceCommand` | edge, emb | `triggers/simple.md#devicecommand` |
+| `deviceCommand` | edge | `triggers/device-command.md` |
 | `deviceCreate` | cloud | `triggers/simple.md#devicecreate` |
-| `deviceId`, `deviceIdConnect`, `deviceIdDisconnect`, `deviceIdInactivity` | cloud, edge | `triggers/device.md` |
-| `deviceTag`, `deviceTagConnect`, `deviceTagDisconnect`, `deviceTagInactivity` | cloud, edge | `triggers/device.md` |
-| `endpoint` | cloud, exp | `triggers/endpoint.md` |
+| `deviceIdsTags` | cloud | `triggers/device-state.md` |
+| `deviceIdsTagsConnect` | cloud | `triggers/device-connect.md` |
+| `deviceIdsTagsDisconnect` | cloud | `triggers/device-disconnect.md` |
+| `deviceIdsTagsInactivity` | cloud | `triggers/device-inactive.md` |
+| `endpoint` | exp | `triggers/endpoint.md` |
 | `event` | cloud | `triggers/event.md` |
-| `flowError` | cloud, exp, edge, emb | `triggers/flow-error.md` |
-| `inboundEmail` | cloud | `triggers/simple.md#inboundemail` |
-| `integration` | cloud, edge | `triggers/integration.md` |
+| `fileTail` | edge | `triggers/file-tail.md` |
+| `fileWatch` | edge | `triggers/file-watch.md` |
+| `flowError` | cloud, exp, edge | `triggers/flow-error.md` |
+| `inboundEmail` | cloud | `triggers/email.md` |
+| `integration` (Amazon SQS) | cloud | `triggers/amazon-sqs.md` |
+| `integration` (Azure Event Hubs) | cloud | `triggers/azure-event-hubs.md` |
+| `integration` (GCP Pub/Sub) | cloud | `triggers/google-pub-sub.md` |
+| `integration` (MQTT) | cloud | `triggers/mqtt-topic.md` |
+| `integration` (Particle) | cloud | `triggers/particle.md` |
+| `integration` (WebSocket) | cloud | `triggers/websocket.md` |
 | `mqttTopic` | cloud, edge | `triggers/mqtt-topic.md` |
 | `notebook` | cloud | `triggers/simple.md#notebook` |
-| `onBoot` | edge, emb | `triggers/simple.md#onboot` |
-| `onConnect`, `onDisconnect` | edge | `triggers/simple.md#onconnect` |
-| `onSync` | edge | `triggers/simple.md#onsync` |
-| `request` | edge | `triggers/simple.md#request` |
-| `timer` | cloud, edge, exp | `triggers/timer.md` |
-| `virtualButton` | cloud, edge, exp | `triggers/simple.md#virtualbutton` |
-| `webhook` | cloud, exp | `triggers/simple.md#webhook` |
-| _edge field-bus / hardware triggers_ | edge | `triggers/{opcua,beckhoff,snmp-trap,serial,file-watch,file-tail,redis}.md` |
+| `onBoot` | edge | `triggers/simple.md#onboot` |
+| `onConnect` | edge | `triggers/device-connect.md` |
+| `onDisconnect` | edge | `triggers/device-disconnect.md` |
+| `onSync` | edge | `triggers/application-sync.md` |
+| `opcua` | edge | `triggers/opcua.md` |
+| `redis` | edge | `triggers/redis.md` |
+| `request` | edge | `triggers/http-request.md` |
+| `resourceJobComplete` | cloud | `triggers/simple.md#resourcejobcomplete` |
+| `resourceJobIteration` | cloud | `triggers/simple.md#resourcejobiteration` |
+| `resourceJobIterationTimeout` | cloud | `triggers/simple.md#resourcejobiterationtimeout` |
+| `serial` | edge | `triggers/serial.md` |
+| `snmpTrap` | edge | `triggers/snmp-trap.md` |
+| `timer` | cloud, edge | `triggers/timer.md` |
+| `udp` | edge | `triggers/udp.md` |
+| `virtualButton` | cloud, exp, edge | `triggers/simple.md#virtualbutton` |
+| `webhook` | cloud | `triggers/simple.md#webhook` |
 
 ## Node catalog
 
-`Available` column same abbreviations as above.
-
-> _Demo subset — production version lists all ~130 node types._
+`Available` column same abbreviations as above. Only nodes with skill documentation are listed.
 
 | Type | meta.category | Available | Spec |
 |---|---|---|---|
-| `AnnotationNode` | logic | all | `nodes/simple.md#annotationnode` |
-| `ArrayNode` | logic | all | `nodes/simple.md#arraynode` |
-| `AwsLambdaNode` | data | cloud, exp, custom | `nodes/aws-lambda.md` |
-| `AwsS3GetNode` | data | cloud, exp, custom | `nodes/aws-s3.md` |
-| `AwsS3PutNode` | data | cloud, exp, custom | `nodes/aws-s3.md` |
-| `Base64EncodeNode` | logic | all | `nodes/simple.md#base64encodenode` |
-| `Base64DecodeNode` | logic | all | `nodes/simple.md#base64decodenode` |
-| `BranchOnChangeNode` | logic | all | `nodes/simple.md#branchonchangenode` |
 | `ConditionalNode` | logic | all | `nodes/conditional.md` |
-| `CsvDecodeNode` | logic | cloud, exp, edge, custom | `nodes/csv.md` |
-| `CsvEncodeNode` | logic | cloud, exp, edge, custom | `nodes/csv.md` |
-| `CustomNodeExecuteNode` | logic | cloud, exp, edge | `nodes/custom-node-execute.md` |
+| `DataTableDeleteRowsNode` | data | cloud, exp, custom | `nodes/data-table.md` |
+| `DataTableGetRowsNode` | data | cloud, exp, custom | `nodes/data-table.md` |
 | `DataTableInsertRowNode` | data | cloud, exp, custom | `nodes/data-table.md` |
 | `DataTableUpdateRowsNode` | data | cloud, exp, custom | `nodes/data-table.md` |
-| `DataTableDeleteRowsNode` | data | cloud, exp, custom | `nodes/data-table.md` |
-| `DebugNode` | output | all | `nodes/simple.md#debugnode` |
-| `DelayNode` | logic | cloud, exp, edge, custom | `nodes/simple.md#delaynode` |
-| `FtpGetNode` | data | edge | `nodes/ftp.md` |
-| `FtpPutNode` | output | edge | `nodes/ftp.md` |
-| `GenerateIdNode` | logic | all | `nodes/simple.md#generateidnode` |
-| `GeofenceNode` | logic | cloud, exp, edge, custom | `nodes/geofence.md` |
-| `GetValueNode` | logic | all | `nodes/simple.md#getvaluenode` |
-| `HashNode` | logic | all | `nodes/simple.md#hashnode` |
+| `DebugNode` | debug | all | `nodes/debug.md` |
+| `DelayNode` | logic | cloud, exp, edge, custom | `nodes/simple.md` |
+| `DeviceCommandNode` | output | cloud, exp, custom | `nodes/output.md` |
+| `DeviceGetNode` | data | cloud, exp, custom | `nodes/device.md` |
+| `DeviceStateNode` | output | cloud, exp, edge, custom | `nodes/output.md` |
+| `DeviceUpdateNode` | data | cloud, exp, custom | `nodes/device.md` |
+| `EmailNode` | output | cloud, exp, custom | `nodes/output.md` |
+| `EndpointReplyNode` | output | cloud, exp | `nodes/output.md` |
+| `EventCreateNode` | data | cloud, exp, custom | `nodes/event.md` |
+| `EventDeleteNode` | data | cloud, exp, custom | `nodes/event.md` |
+| `EventGetNode` | data | cloud, exp, custom | `nodes/event.md` |
+| `EventUpdateNode` | data | cloud, exp, custom | `nodes/event.md` |
+| `GenerateIdNode` | logic | all | `nodes/simple.md` |
+| `GetValueNode` | logic | all | `nodes/storage.md` |
 | `HttpNode` | data/output | cloud, exp, edge, custom | `nodes/http.md` |
-| `JsonDecodeNode` | logic | all | `nodes/simple.md#jsondecodenode` |
-| `JsonEncodeNode` | logic | all | `nodes/simple.md#jsonencodenode` |
-| `JwtCreateNode` | logic | cloud, exp, edge, custom | `nodes/jwt.md` |
-| `JwtDecodeNode` | logic | all | `nodes/jwt.md` |
-| `JwtVerifyNode` | logic | cloud, exp, edge, custom | `nodes/jwt.md` |
-| `LatchNode` | logic | all | `nodes/simple.md#latchnode` |
-| `LoopNode` | logic | cloud, exp, edge, custom | `nodes/loop.md` |
-| `LoopCapNode` | logic | cloud, exp, edge, custom | `nodes/loop.md` |
-| `MathNode` | logic | all | `nodes/simple.md#mathnode` |
-| `MongoNode` | data | cloud, exp, custom | `nodes/mongo.md` |
+| `JsonEncodeNode` | logic | all | `nodes/simple.md` |
 | `MutateNode` | logic | all | `nodes/mutate.md` |
-| `ObjectNode` | logic | all | `nodes/simple.md#objectnode` |
-| `RandomNumberNode` | logic | all | `nodes/simple.md#randomnumbernode` |
-| `RedisNode` | data | cloud, exp, edge, custom | `nodes/redis.md` |
-| `SalesforceNode` | data | cloud, exp, custom | `nodes/salesforce.md` |
-| `ServiceNowNode` | data | cloud, exp, custom | `nodes/service-now.md` |
-| `SlackNode` | output | cloud, exp, custom | `nodes/slack.md` |
-| `SnowflakeNode` | data | cloud, exp, custom | `nodes/snowflake.md` |
-| `SqlNode` | data | cloud, exp, custom | `nodes/sql.md` |
-| `StoreValueNode` | logic | all | `nodes/simple.md#storevaluenode` |
-| `StringNode` | logic | cloud, exp, edge, custom | `nodes/simple.md#stringnode` |
-| `SwitchNode` | logic | all | `nodes/switch.md` |
-| `ThrowErrorNode` | logic | all | `nodes/simple.md#throwerrornode` |
-| `TwilioSmsNode` | output | cloud, exp, custom | `nodes/twilio-sms.md` |
-| `ValidatePayloadNode` | logic | all | `nodes/validate-payload.md` |
-| `WhatsappNode` | output | cloud, exp, custom | `nodes/whatsapp.md` |
-| `YamlDecodeNode` | logic | all | `nodes/simple.md#yamldecodenode` |
-| `YamlEncodeNode` | logic | all | `nodes/simple.md#yamlencodenode` |
+| `SlackNode` | output | cloud, exp, custom | `nodes/output.md` |
+| `StoreValueNode` | logic | all | `nodes/storage.md` |
+| `ThrowErrorNode` | logic | all | `nodes/simple.md` |
 
 ---
 

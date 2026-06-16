@@ -4,9 +4,23 @@ Four nodes for querying, inserting, updating, and deleting rows in Losant data t
 
 See `SKILL.md` for the node object shape and wiring model. See `reference/error-handling.md` for the `errorBehavior`/`errorPath` pattern.
 
+## Metadata quick reference
+
+| `type` | `meta.category` | `meta.name` | `meta.label` default |
+|---|---|---|---|
+| `DataTableGetRowsNode` | `data` | `table-get-rows` | `"Table: Get Rows"` |
+| `DataTableInsertRowNode` | `data` | `table-insert-row` | `"Table: Insert Row"` |
+| `DataTableUpdateRowsNode` | `data` | `table-update-row` | `"Table: Update Row"` |
+| `DataTableDeleteRowsNode` | `data` | `table-delete-row` | `"Table: Delete Row"` |
+
+`meta.label` is required — default is from the table above.
+
 ---
 
 ## DataTableGetRowsNode — Query rows
+
+- **Allowed in:** cloud, experience, customNode.
+- **`meta.category`:** `data` · **`meta.name`:** `table-get-rows` · **`meta.label`:** `"Table: Get Rows"` (default)
 
 ```json
 {
@@ -22,7 +36,7 @@ See `SKILL.md` for the node object shape and wiring model. See `reference/error-
     "resultPath": "working.rows",
     "errorBehavior": "throw"
   },
-  "meta": { "category": "data", "name": "table-get-rows", "x": 200, "y": 200 },
+  "meta": { "category": "data", "name": "table-get-rows", "label": "Table: Get Rows", "x": 200, "y": 200 },
   "outputIds": [["next"]]
 }
 ```
@@ -42,6 +56,9 @@ See `SKILL.md` for the node object shape and wiring model. See `reference/error-
 
 ## DataTableInsertRowNode — Insert a row
 
+- **Allowed in:** cloud, experience, customNode.
+- **`meta.category`:** `data` · **`meta.name`:** `table-insert-row` · **`meta.label`:** `"Table: Insert Row"` (default)
+
 ```json
 {
   "id": "insert-row",
@@ -52,7 +69,7 @@ See `SKILL.md` for the node object shape and wiring model. See `reference/error-
     "resultPath": "working.insertedRow",
     "errorBehavior": "throw"
   },
-  "meta": { "category": "data", "name": "table-insert-row", "x": 200, "y": 200 },
+  "meta": { "category": "data", "name": "table-insert-row", "label": "Table: Insert Row", "x": 200, "y": 200 },
   "outputIds": [["next"]]
 }
 ```
@@ -68,6 +85,9 @@ See `SKILL.md` for the node object shape and wiring model. See `reference/error-
 
 ## DataTableUpdateRowsNode — Update matching rows
 
+- **Allowed in:** cloud, experience, customNode.
+- **`meta.category`:** `data` · **`meta.name`:** `table-update-row` · **`meta.label`:** `"Table: Update Row"` (default)
+
 ```json
 {
   "id": "update-rows",
@@ -79,7 +99,7 @@ See `SKILL.md` for the node object shape and wiring model. See `reference/error-
     "resultPath": "working.updateResult",
     "errorBehavior": "throw"
   },
-  "meta": { "category": "data", "name": "table-update-row", "x": 200, "y": 200 },
+  "meta": { "category": "data", "name": "table-update-row", "label": "Table: Update Row", "x": 200, "y": 200 },
   "outputIds": [["next"]]
 }
 ```
@@ -96,6 +116,9 @@ See `SKILL.md` for the node object shape and wiring model. See `reference/error-
 
 ## DataTableDeleteRowsNode — Delete matching rows
 
+- **Allowed in:** cloud, experience, customNode.
+- **`meta.category`:** `data` · **`meta.name`:** `table-delete-row` · **`meta.label`:** `"Table: Delete Row"` (default)
+
 ```json
 {
   "id": "delete-rows",
@@ -106,7 +129,7 @@ See `SKILL.md` for the node object shape and wiring model. See `reference/error-
     "resultPath": "working.deleteResult",
     "errorBehavior": "throw"
   },
-  "meta": { "category": "data", "name": "table-delete-row", "x": 200, "y": 200 },
+  "meta": { "category": "data", "name": "table-delete-row", "label": "Table: Delete Row", "x": 200, "y": 200 },
   "outputIds": [["next"]]
 }
 ```

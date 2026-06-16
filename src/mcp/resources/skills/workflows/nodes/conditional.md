@@ -11,7 +11,7 @@ See `SKILL.md` for the node object shape and `outputIds` wiring model.
   "id": "check",
   "type": "ConditionalNode",
   "config": { "expression": "{{data.temp}} > 80" },
-  "meta": { "category": "logic", "name": "conditional", "x": 200, "y": 200 },
+  "meta": { "category": "logic", "name": "conditional", "label": "Conditional", "x": 200, "y": 200 },
   "outputIds": [
     ["when-true-node"],
     ["when-false-node"]
@@ -21,8 +21,14 @@ See `SKILL.md` for the node object shape and `outputIds` wiring model.
 
 - `outputIds` has **exactly two** outer entries: index 0 = true branch, index 1 = false branch.
 - Either inner array may be empty (`[]`) if you don't need to wire that branch.
+
+| Field | Value |
+|---|---|
+| `meta.category` | `"logic"` |
+| `meta.name` | `"conditional"` |
+| `meta.label` | `"Conditional"` (default) |
+
 - **Allowed in:** all flow classes.
-- **`meta.category`:** `logic` · **`meta.name`:** `conditional`
 
 ## Config
 
@@ -57,7 +63,7 @@ Supports `&&`, `||`, `!`, and parentheses. Numbers are compared numerically when
   "id": "check-status",
   "type": "ConditionalNode",
   "config": { "expression": "{{working.resp.statusCode}} === 200" },
-  "meta": { "category": "logic", "name": "conditional", "x": 400, "y": 200 },
+  "meta": { "category": "logic", "name": "conditional", "label": "Conditional", "x": 400, "y": 200 },
   "outputIds": [
     ["handle-success"],
     ["handle-error"]

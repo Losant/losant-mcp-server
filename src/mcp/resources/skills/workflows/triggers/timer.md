@@ -1,100 +1,138 @@
 # Timer Trigger (`type: "timer"`)
 
-Fires on a schedule. Two modes: simple interval (every N seconds) or cron expression (arbitrary schedule with timezone). Available in cloud, experience, and edge workflows.
+The Timer Trigger will fire a workflow on a scheduled interval.
 
-See `SKILL.md` for the trigger object shape and wiring model.
+## Required Fields
 
-## Trigger object
+| Field | Value |
+|---|---|
+| `type` | `"timer"` |
+| `meta.category` | `"trigger"` |
+| `meta.name` | `"timer"` |
+| `meta.label` | `"Timer"` (default) |
+
+**`meta.timerTypeSelect`** — Required. Always sent by the UI. Tells the UI which mode was used to configure the timer. Must be one of `"seconds"` (simple interval), `"cronWeekly"` (simple schedule), or `"cron"` (advanced). Defaults to `"seconds"`.
+
+- `key` is server-generated — omit it.
+- `data` is always an empty object `{}` — the timer carries no payload data.
+
+## Cloud (Application) workflows
+
+Three configuration modes are available. Choose one.
+
+### Simple interval (`meta.timerTypeSelect: "seconds"`)
+
+Fires repeatedly after a fixed interval. `config.seconds` is the interval in seconds (fractional values allowed). Min 1 second, max 1 year.
 
 ```json
 {
   "type": "timer",
-  "config": { /* see below */ },
-  "meta": { "category": "trigger", "name": "timer", "x": 60, "y": 60 },
+  "config": { "seconds": 300 },
+  "meta": {
+    "category": "trigger",
+    "name": "timer",
+    "label": "Timer",
+    "timerTypeSelect": "seconds",
+    "x": 60,
+    "y": 60
+  },
   "outputIds": [["first-node"]]
 }
 ```
 
-**`type` is the only required field.** `meta.label` defaults to `"timer"` if omitted — set it only when you want a different display name (e.g. `"Every 5 min"` for a busy workflow with multiple timers).
+### Simple schedule (`meta.timerTypeSelect: "cronWeekly"`)
 
-- `key` is server-generated — omit it.
-
-## Config modes
-
-### Simple interval — every N seconds
-
-```json
-{ "seconds": 300 }
-```
-
-| Field | Type | Notes |
-|---|---|---|
-| `seconds` | number | Interval in seconds. Min ~5. Use this for simple polling: `60` = every minute, `3600` = hourly, `86400` = daily. |
-
-### Cron expression — arbitrary schedule with timezone
+Fires at a specific time on selected days of the week. The UI generates a cron expression and stores the human-readable values in `meta` for round-tripping.
 
 ```json
 {
-  "cron": "0 9 * * 1-5",
-  "tz": "America/New_York"
+  "type": "timer",
+  "config": {
+    "cron": "0 9 * * 1,2,3,4,5",
+    "tz": "America/New_York"
+  },
+  "meta": {
+    "category": "trigger",
+    "name": "timer",
+    "label": "Timer",
+    "timerTypeSelect": "cronWeekly",
+    "weekdays": [1, 2, 3, 4, 5],
+    "timeAt": "09:00",
+    "x": 60,
+    "y": 60
+  },
+  "outputIds": [["first-node"]]
 }
 ```
 
-| Field | Type | Notes |
-|---|---|---|
-| `cron` | string | Standard 5-field cron: `minute hour dom month dow`. |
-| `tz` | string | IANA timezone name (e.g. `"America/Chicago"`, `"UTC"`, `"Europe/London"`). Applied to the cron schedule. |
+- `config.cron` — the generated cron string.
+- `config.tz` — IANA timezone name (e.g. `"America/Chicago"`, `"UTC"`).
+- `meta.weekdays` — array of day numbers (0 = Sunday … 6 = Saturday).
+- `meta.timeAt` — time string in `"HH:MM"` 24-hour format.
 
-## Payload at runtime
+### Advanced cron (`meta.timerTypeSelect: "cron"`)
+
+Fires on an arbitrary cron schedule. Standard 5-field cron syntax. Supports `@yearly`, `@monthly`, `@weekly`, `@daily`, `@hourly`. Does not support `L`, `W`, `#`, `?`, `@reboot`, `@annually`.
 
 ```json
 {
-  "time": "<ISO timestamp when fired>",
+  "type": "timer",
+  "config": {
+    "cron": "0 9 * * 1-5",
+    "tz": "America/New_York"
+  },
+  "meta": {
+    "category": "trigger",
+    "name": "timer",
+    "label": "Timer",
+    "timerTypeSelect": "cron",
+    "x": 60,
+    "y": 60
+  },
+  "outputIds": [["first-node"]]
+}
+```
+
+### Payload at runtime (all modes)
+
+```json
+{
+  "time": "<ISO timestamp when the timer fired>",
   "data": {},
-  "applicationId": "...",
-  "triggerId": "...",
+  "triggerId": "<unique trigger ID>",
   "triggerType": "timer",
+  "applicationId": "...",
   "flowId": "...",
   "globals": {}
 }
 ```
 
-`data` is always an empty object — the timer carries no data.
+## Experience workflows
 
-## Worked examples
+Not available.
 
-**Every 5 minutes:**
+## Edge workflows
+
+> **Minimum GEA version:** 1.0.0
+
+Same three configuration modes as Cloud with one difference: Edge workflows support **millisecond** intervals. The minimum interval is 100 milliseconds (GEA 1.12.0+); for GEA 1.12.0 and below the minimum is 1 second.
+
+For sub-second intervals, use a fractional `config.seconds` value (e.g. `0.5` for 500ms, `0.1` for 100ms).
+
 ```json
 {
   "type": "timer",
-  "config": { "seconds": 300 },
-  "meta": { "category": "trigger", "name": "timer", "x": 60, "y": 60 },
-  "outputIds": [["sync"]]
+  "config": { "seconds": 0.5 },
+  "meta": {
+    "category": "trigger",
+    "name": "timer",
+    "label": "Timer",
+    "timerTypeSelect": "seconds",
+    "x": 60,
+    "y": 60
+  },
+  "outputIds": [["first-node"]]
 }
 ```
 
-**Weekdays at 9am Eastern:**
-```json
-{
-  "type": "timer",
-  "config": { "cron": "0 9 * * 1-5", "tz": "America/New_York" },
-  "meta": { "category": "trigger", "name": "timer", "label": "9am ET weekdays", "x": 60, "y": 60 },
-  "outputIds": [["send-report"]]
-}
-```
-
-**Every day at midnight UTC:**
-```json
-{
-  "type": "timer",
-  "config": { "cron": "0 0 * * *", "tz": "UTC" },
-  "meta": { "category": "trigger", "name": "timer", "x": 60, "y": 60 },
-  "outputIds": [["daily-rollup"]]
-}
-```
-
-## Idiom notes
-
-- Use `seconds` for simple intervals; use `cron` + `tz` for clock-aligned schedules.
-- When a workflow has multiple timer triggers with different schedules, set a distinct `meta.label` on each so they're identifiable in the canvas.
-- `cron` does not support sub-minute precision — the minimum granularity is one minute.
+Simple schedule and advanced cron modes are configured identically to Cloud. The payload shape is identical to Cloud.

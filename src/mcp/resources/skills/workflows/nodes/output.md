@@ -2,11 +2,26 @@
 
 Common output nodes for sending data out of a workflow. See `SKILL.md` for node object shape and wiring model.
 
+## Metadata quick reference
+
+| `type` | `meta.category` | `meta.name` | `meta.label` default |
+|---|---|---|---|
+| `EndpointReplyNode` | `output` | `endpoint-reply` | `"Endpoint: Reply"` |
+| `DeviceCommandNode` | `output` | `device-command` | `"Device: Command"` |
+| `DeviceStateNode` | `output` | `device-state` | `"Device: State"` |
+| `EmailNode` | `output` | `email` | `"Email"` |
+| `SlackNode` | `output` | `slack` | `"Slack"` |
+
+`meta.label` is required — default is from the table above.
+
 ---
 
 ## EndpointReplyNode — HTTP response to an Experience Endpoint
 
 Sends an HTTP response back to an endpoint request. **Required** for any workflow triggered by an `endpoint` trigger — the request will hang otherwise.
+
+- **Allowed in:** cloud, experience.
+- **`meta.category`:** `output` · **`meta.name`:** `endpoint-reply` · **`meta.label`:** `"Endpoint: Reply"` (default)
 
 ```json
 {
@@ -20,13 +35,10 @@ Sends an HTTP response back to an endpoint request. **Required** for any workflo
     ],
     "replyIdPath": "data.request.replyId"
   },
-  "meta": { "category": "output", "name": "endpoint-reply", "x": 200, "y": 200 },
+  "meta": { "category": "output", "name": "endpoint-reply", "label": "Endpoint: Reply", "x": 200, "y": 200 },
   "outputIds": [[]]
 }
 ```
-
-- **Allowed in:** cloud, experience.
-- **`meta.category`:** `output` · **`meta.name`:** `endpoint-reply`
 
 | Config field | Notes |
 |---|---|
@@ -41,6 +53,9 @@ Sends an HTTP response back to an endpoint request. **Required** for any workflo
 
 Sends a named command with a payload to a device. The device receives it on its command channel.
 
+- **Allowed in:** cloud, experience, customNode.
+- **`meta.category`:** `output` · **`meta.name`:** `device-command` · **`meta.label`:** `"Device: Command"` (default)
+
 ```json
 {
   "id": "send-cmd",
@@ -51,13 +66,10 @@ Sends a named command with a payload to a device. The device receives it on its 
     "payloadTemplate": "{\"maxTemp\":{{working.threshold}}}",
     "errorBehavior": "throw"
   },
-  "meta": { "category": "output", "name": "device-command", "x": 200, "y": 200 },
+  "meta": { "category": "output", "name": "device-command", "label": "Device: Command", "x": 200, "y": 200 },
   "outputIds": [["next"]]
 }
 ```
-
-- **Allowed in:** cloud, experience, customNode.
-- **`meta.category`:** `output` · **`meta.name`:** `device-command`
 
 | Config field | Notes |
 |---|---|
@@ -72,6 +84,9 @@ Sends a named command with a payload to a device. The device receives it on its 
 
 Reports state on behalf of a device (or for a virtual/system device). Useful for system-level aggregations.
 
+- **Allowed in:** cloud, experience, edge, customNode.
+- **`meta.category`:** `output` · **`meta.name`:** `device-state` · **`meta.label`:** `"Device: State"` (default)
+
 ```json
 {
   "id": "report-state",
@@ -81,13 +96,10 @@ Reports state on behalf of a device (or for a virtual/system device). Useful for
     "stateTemplate": "{\"aggregateTemp\":{{working.avgTemp}},\"sampleCount\":{{working.count}}}",
     "errorBehavior": "throw"
   },
-  "meta": { "category": "output", "name": "device-state", "x": 200, "y": 200 },
+  "meta": { "category": "output", "name": "device-state", "label": "Device: State", "x": 200, "y": 200 },
   "outputIds": [["next"]]
 }
 ```
-
-- **Allowed in:** cloud, experience, edge, customNode.
-- **`meta.category`:** `output` · **`meta.name`:** `device-state`
 
 | Config field | Notes |
 |---|---|
@@ -101,6 +113,9 @@ Reports state on behalf of a device (or for a virtual/system device). Useful for
 
 Sends an email using Losant's built-in email delivery. No credential required.
 
+- **Allowed in:** cloud, experience, customNode.
+- **`meta.category`:** `output` · **`meta.name`:** `email` · **`meta.label`:** `"Email"` (default)
+
 ```json
 {
   "id": "send-email",
@@ -113,13 +128,10 @@ Sends an email using Losant's built-in email delivery. No credential required.
     "isBodyHtml": false,
     "errorBehavior": "throw"
   },
-  "meta": { "category": "output", "name": "email", "x": 200, "y": 200 },
+  "meta": { "category": "output", "name": "email", "label": "Email", "x": 200, "y": 200 },
   "outputIds": [["next"]]
 }
 ```
-
-- **Allowed in:** cloud, experience, customNode.
-- **`meta.category`:** `output` · **`meta.name`:** `email`
 
 | Config field | Notes |
 |---|---|
@@ -136,6 +148,9 @@ Sends an email using Losant's built-in email delivery. No credential required.
 
 Posts a message to a Slack channel via a webhook URL.
 
+- **Allowed in:** cloud, experience, customNode.
+- **`meta.category`:** `output` · **`meta.name`:** `slack` · **`meta.label`:** `"Slack"` (default)
+
 ```json
 {
   "id": "slack-alert",
@@ -145,13 +160,10 @@ Posts a message to a Slack channel via a webhook URL.
     "messageTemplate": ":warning: *Alert* on {{data.deviceId}}: temp {{data.attributes.tempC}}°C",
     "errorBehavior": "throw"
   },
-  "meta": { "category": "output", "name": "slack", "x": 200, "y": 200 },
+  "meta": { "category": "output", "name": "slack", "label": "Slack", "x": 200, "y": 200 },
   "outputIds": [["next"]]
 }
 ```
-
-- **Allowed in:** cloud, experience, customNode.
-- **`meta.category`:** `output` · **`meta.name`:** `slack`
 
 | Config field | Notes |
 |---|---|
@@ -162,4 +174,4 @@ Posts a message to a Slack channel via a webhook URL.
 ## Idiom notes
 
 - Store the Slack webhook URL in a workflow `global` (e.g. `globals.slackWebhookUrl`) so it's easy to rotate without editing nodes.
-- Always wire the false/error branch of an `EndpointReplyNode` to a different reply with a 4xx/5xx status — every endpoint request must get a response.
+- Always wire both success and error branches to an `EndpointReplyNode` — every endpoint request must get a response.

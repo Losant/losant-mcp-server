@@ -10,14 +10,20 @@ See `reference/templates.md` for the Handlebars dialect, `reference/credentials.
 {
   "id": "http-1",
   "type": "HttpNode",
-  "meta": { "category": "data", "name": "http", "x": 200, "y": 120 },
+  "meta": { "category": "data", "name": "http", "label": "HTTP", "x": 200, "y": 120 },
   "config": { /* see below */ },
   "outputIds": [["next-node-id"]]
 }
 ```
 
 - `type` must be the literal `"HttpNode"`.
-- `meta.category` must be `"data"` or `"output"`. `meta.name` must be `"http"`. `meta.x` and `meta.y` are required canvas coordinates (numbers).
+
+| Field | Value |
+|---|---|
+| `meta.category` | `"data"` or `"output"` |
+| `meta.name` | `"http"` |
+| `meta.label` | `"HTTP"` (default) |
+
 - `outputIds` is `[[nextNodeId]]` — a one-element outer array whose inner array lists node IDs to run next. See `SKILL.md` for the full wiring model.
 - `id` is optional on POST; if omitted the server assigns one.
 
@@ -144,7 +150,7 @@ Idiom:
 {
   "id": "create-thing",
   "type": "HttpNode",
-  "meta": { "category": "data", "name": "http", "x": 240, "y": 160 },
+  "meta": { "category": "data", "name": "http", "label": "HTTP", "x": 240, "y": 160 },
   "outputIds": [["log-result"]],
   "config": {
     "method": "POST",

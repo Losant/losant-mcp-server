@@ -20,7 +20,13 @@ See `SKILL.md` for the node object shape and wiring model.
 ```
 
 - **Allowed in:** all flow classes.
-- **`meta.category`:** `debug` · **`meta.name`:** `debug` · **`meta.label`:** `Debug`
+
+| Field | Value |
+|---|---|
+| `meta.category` | `"debug"` |
+| `meta.name` | `"debug"` |
+| `meta.label` | `"Debug"` (default) |
+
 - `outputIds` is typically `[[]]` (empty inner array) — the debug node is usually a terminal for a branch. Wire it to a next node if the flow should continue.
 
 ## Config
@@ -38,7 +44,7 @@ See `SKILL.md` for the node object shape and wiring model.
 {
   "id": "log",
   "type": "DebugNode",
-  "meta": { "category": "debug", "name": "debug", "x": 0, "y": 0 },
+  "meta": { "category": "debug", "name": "debug", "label": "Debug", "x": 0, "y": 0 },
   "outputIds": [[]],
   "config": { "message": "Device state received", "level": "verbose" }
 }
@@ -49,7 +55,7 @@ See `SKILL.md` for the node object shape and wiring model.
 {
   "id": "log-response",
   "type": "DebugNode",
-  "meta": { "category": "debug", "name": "debug", "x": 0, "y": 0 },
+  "meta": { "category": "debug", "name": "debug", "label": "Debug", "x": 0, "y": 0 },
   "outputIds": [["next"]],
   "config": { "message": "HTTP response", "property": "working.httpResponse", "level": "info" }
 }

@@ -1,10 +1,22 @@
 # Simple Nodes
 
-Trivial node types whose entire spec fits in ~10 lines. Each entry below is independent — read only the ones you need. Anchors match the lowercased type name (e.g. `#debugnode`).
+Trivial node types whose entire spec fits in ~10 lines. Each entry below is independent — read only the ones you need.
 
 For the node object shape (`id`, `type`, `meta`, `outputIds`, etc.) see `SKILL.md`. Only the `config` and any node-specific notes are documented here.
 
 > _Demo subset — production version covers all ~25 trivial node types._
+
+## Metadata quick reference
+
+| `type` | `meta.category` | `meta.name` | `meta.label` default |
+|---|---|---|---|
+| `DebugNode` | `debug` | `debug` | `"Debug"` |
+| `GenerateIdNode` | `logic` | `generateId` | `"Generate ID"` |
+| `JsonEncodeNode` | `logic` | `jsonEncode` | `"JSON Encode"` |
+| `DelayNode` | `logic` | `delay` | `"Delay"` |
+| `ThrowErrorNode` | `logic` | `throwError` | `"Throw Error"` |
+
+`meta.label` is required — default is from the table above.
 
 ---
 
@@ -13,7 +25,7 @@ For the node object shape (`id`, `type`, `meta`, `outputIds`, etc.) see `SKILL.m
 Surfaces the current payload (or a specific property of it) to the workflow's debug log. The debug log entry includes the full payload by default — **`message` is a short human-readable label for the entry, not a payload dump.** The node does not mutate the payload; it's purely observational.
 
 - **Allowed in:** all flow classes.
-- **`meta.category`:** `output` or `debug` · **`meta.name`:** `debug`
+- **`meta.category`:** `debug` · **`meta.name`:** `debug` · **`meta.label`:** `"Debug"` (default)
 
 config:
 
@@ -27,7 +39,7 @@ config:
 {
   "id": "log",
   "type": "DebugNode",
-  "meta": { "category": "debug", "name": "debug", "x": 0, "y": 0 },
+  "meta": { "category": "debug", "name": "debug", "label": "Debug", "x": 0, "y": 0 },
   "outputIds": [[]],
   "config": { "message": "HTTP response received", "level": "info" }
 }
@@ -39,7 +51,7 @@ To inspect only a sub-path of the payload:
 {
   "id": "log-response",
   "type": "DebugNode",
-  "meta": { "category": "debug", "name": "debug", "x": 0, "y": 0 },
+  "meta": { "category": "debug", "name": "debug", "label": "Debug", "x": 0, "y": 0 },
   "outputIds": [[]],
   "config": { "message": "HTTP response", "property": "working.httpResponse", "level": "info" }
 }
@@ -52,7 +64,7 @@ To inspect only a sub-path of the payload:
 Writes a generated identifier to a payload path.
 
 - **Allowed in:** all flow classes.
-- **`meta.category`:** `logic` · **`meta.name`:** `generateId`
+- **`meta.category`:** `logic` · **`meta.name`:** `generateId` · **`meta.label`:** `"Generate ID"` (default)
 
 config:
 
@@ -65,7 +77,7 @@ config:
 {
   "id": "make-id",
   "type": "GenerateIdNode",
-  "meta": { "category": "logic", "name": "generateId", "x": 0, "y": 0 },
+  "meta": { "category": "logic", "name": "generateId", "label": "Generate ID", "x": 0, "y": 0 },
   "outputIds": [["next"]],
   "config": { "idType": "uuidV4", "resultPath": "working.id" }
 }
@@ -78,7 +90,7 @@ config:
 Serializes a value on the payload into a JSON string and writes it to another path.
 
 - **Allowed in:** all flow classes.
-- **`meta.category`:** `logic` · **`meta.name`:** `jsonEncode`
+- **`meta.category`:** `logic` · **`meta.name`:** `jsonEncode` · **`meta.label`:** `"JSON Encode"` (default)
 
 config:
 
@@ -92,7 +104,7 @@ config:
 {
   "id": "encode",
   "type": "JsonEncodeNode",
-  "meta": { "category": "logic", "name": "jsonEncode", "x": 0, "y": 0 },
+  "meta": { "category": "logic", "name": "jsonEncode", "label": "JSON Encode", "x": 0, "y": 0 },
   "outputIds": [["next"]],
   "config": { "sourcePath": "data.user", "destinationPath": "working.userJson", "pretty": true }
 }
@@ -105,7 +117,7 @@ config:
 Pauses execution for a templated duration before running its output nodes.
 
 - **Allowed in:** cloud, experience, edge, customNode. (Not embedded.)
-- **`meta.category`:** `logic` · **`meta.name`:** `delay`
+- **`meta.category`:** `logic` · **`meta.name`:** `delay` · **`meta.label`:** `"Delay"` (default)
 
 config:
 
@@ -120,7 +132,7 @@ Maximum delay is bounded by the platform's per-flow execution timeout — the wo
 {
   "id": "wait",
   "type": "DelayNode",
-  "meta": { "category": "logic", "name": "delay", "x": 0, "y": 0 },
+  "meta": { "category": "logic", "name": "delay", "label": "Delay", "x": 0, "y": 0 },
   "outputIds": [["next"]],
   "config": { "durationTemplate": "5", "unit": "seconds" }
 }
@@ -133,7 +145,7 @@ Maximum delay is bounded by the platform's per-flow execution timeout — the wo
 Aborts the current workflow execution with a specified error message. The error is routed to the workflow's `flowError` trigger (if any) and recorded in the workflow's error log.
 
 - **Allowed in:** all flow classes.
-- **`meta.category`:** `logic` · **`meta.name`:** `throwError`
+- **`meta.category`:** `logic` · **`meta.name`:** `throwError` · **`meta.label`:** `"Throw Error"` (default)
 
 config:
 
@@ -145,7 +157,7 @@ config:
 {
   "id": "bail",
   "type": "ThrowErrorNode",
-  "meta": { "category": "logic", "name": "throwError", "x": 0, "y": 0 },
+  "meta": { "category": "logic", "name": "throwError", "label": "Throw Error", "x": 0, "y": 0 },
   "outputIds": [[]],
   "config": { "messageTemplate": "no row found for id {{data.id}}" }
 }

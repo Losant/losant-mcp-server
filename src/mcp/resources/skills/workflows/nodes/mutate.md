@@ -11,13 +11,18 @@ See `SKILL.md` for the node object shape and wiring model.
   "id": "set-fields",
   "type": "MutateNode",
   "config": { "rules": [ /* see below */ ] },
-  "meta": { "category": "logic", "name": "mutate", "x": 200, "y": 200 },
+  "meta": { "category": "logic", "name": "mutate", "label": "Mutate", "x": 200, "y": 200 },
   "outputIds": [["next"]]
 }
 ```
 
+| Field | Value |
+|---|---|
+| `meta.category` | `"logic"` |
+| `meta.name` | `"mutate"` |
+| `meta.label` | `"Mutate"` (default) |
+
 - **Allowed in:** all flow classes.
-- **`meta.category`:** `logic` · **`meta.name`:** `mutate`
 
 ## Rules
 
@@ -74,7 +79,7 @@ Equivalent to `copy` + `remove`. The source path is deleted after copying.
       { "type": "remove", "source": "data.rawBuffer" }
     ]
   },
-  "meta": { "category": "logic", "name": "mutate", "x": 200, "y": 200 },
+  "meta": { "category": "logic", "name": "mutate", "label": "Mutate", "x": 200, "y": 200 },
   "outputIds": [["next"]]
 }
 ```

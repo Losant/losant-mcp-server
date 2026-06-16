@@ -1,105 +1,108 @@
-# Device State Trigger
+# Device: State Trigger (`type: "deviceIdsTags"`)
 
-Fires when a device reports new state. The most common cloud workflow trigger for reacting to sensor data.
+The Device: State Trigger fires a workflow whenever one or more devices report state.
 
-Two `type` values select devices differently; both share the same config fields.
+## Required Fields
 
-See `SKILL.md` for the trigger object shape and wiring model.
+| Field | Value |
+|---|---|
+| `type` | `"deviceIdsTags"` |
+| `meta.category` | `"trigger"` |
+| `meta.name` | `"deviceIdsTags"` |
+| `meta.label` | `"Device: State"` (default) |
 
-## Trigger types
+## Cloud (Application) workflows
 
-| `type` | `meta.name` | Selects devices by |
-|---|---|---|
-| `"deviceId"` | `"device"` | A specific device ID in `key` |
-| `"deviceTag"` | `"deviceTag"` | Tag key/value pair in `key` |
-
-**`type` is the only required field.** `meta.category`, `meta.name`, `meta.x`, `meta.y` should always be provided. `meta.label` defaults to `meta.name` if omitted.
-
-## `deviceId` variant — one specific device
+The trigger can be configured with one or more specific device IDs, tag selectors, or both. It fires individually per matching device per state report.
 
 ```json
 {
-  "key": "5f1c2d3e4f5a6b7c8d9e0f1a",
-  "type": "deviceId",
-  "config": {},
-  "meta": { "category": "trigger", "name": "device", "x": 60, "y": 60 },
-  "outputIds": [["first-node"]]
-}
-```
-
-- `key` is the device's ID.
-
-## `deviceTag` variant — any device matching a tag
-
-```json
-{
-  "key": "fleet/trucks",
-  "type": "deviceTag",
-  "config": {},
-  "meta": { "category": "trigger", "name": "deviceTag", "x": 60, "y": 60 },
-  "outputIds": [["first-node"]]
-}
-```
-
-- `key` format is `"tagKey/tagValue"`. To match any device with a given tag key regardless of value, use `"tagKey/"` (trailing slash, empty value).
-
-## Config fields (both variants)
-
-All config fields are optional. Omitting config entirely (`{}`) fires on every state report from the selected device(s).
-
-| Field | Type | Notes |
-|---|---|---|
-| `attributeWhitelist` | string[] (max 100) | Only fire when the state report includes at least one attribute in this list. |
-| `attributeBlacklist` | string[] (max 100) | Never fire when the state report contains only attributes in this list. |
-| `triggerOn` | `"individual"` \| `"batch"` \| `"both"` | `"individual"` (default) — fire once per report. `"batch"` — aggregate multiple reports into one trigger. `"both"` — fire on individual AND batch. |
-| `batchBehavior` | `"once"` \| `"each"` | When `triggerOn` includes `"batch"`: `"once"` fires once with all accumulated data; `"each"` fires once per accumulated item. |
-| `maxAge` | number | Max age (in seconds) of a state report before it is considered stale and ignored. |
-| `allowInvalid` | boolean | When `true`, also fire for state reports that fail device schema validation. |
-
-## Payload at runtime
-
-```json
-{
-  "time": "<ISO timestamp>",
-  "data": {
-    "deviceId": "5f1c...",
-    "deviceName": "Truck 42",
-    "deviceTags": { "fleet": "trucks", "location": "warehouse-a" },
-    "attributes": {
-      "tempC": 72.5,
-      "humidity": 45.2
-    },
-    "relayId": null
+  "type": "deviceIdsTags",
+  "deviceIds": ["5f1c2d3e4f5a6b7c8d9e0f1a"],
+  "deviceTags": [],
+  "config": {
+    "triggerOn": "both",
+    "batchBehavior": "each"
   },
-  "applicationId": "...",
-  "triggerId": "...",
+  "meta": {
+    "category": "trigger",
+    "name": "deviceIdsTags",
+    "label": "Device: State",
+    "x": 60,
+    "y": 60
+  },
+  "outputIds": [["first-node"]]
+}
+```
+
+**`deviceIds`** — Required. Array of device IDs to match. Defaults to `[]`.
+
+**`deviceTags`** — Required. Array of tag selectors in `"key/value"` format. Use `"key/"` to match any value for a given tag key. Defaults to `[]`.
+
+At least one entry across `deviceIds` and `deviceTags` is required. Always send both arrays.
+
+### Config
+
+| Field | Type | Default | Required | Notes |
+|---|---|---|---|---|
+| `triggerOn` | enum | `"both"` | Yes | `"both"` — fire on individual and batch reports. `"individual"` — individual only. `"batch"` — batch only. |
+| `batchBehavior` | enum | `"each"` | When `triggerOn` is `"both"` or `"batch"` | `"each"` — fire once per item in the batch. `"once"` — fire once with the entire batch as an array on `data`. |
+| `attributeWhitelist` | string[] | — | No | Fire only when the state report includes at least one of these attributes. Not applied for `batchBehavior: "once"`. |
+| `attributeBlacklist` | string[] | — | No | Never fire when the report contains only these attributes. Not applied for `batchBehavior: "once"`. |
+| `maxAge` | number | — | No | Max age in seconds of a state report's timestamp. Reports older than this are ignored. Not applied for `batchBehavior: "once"`. |
+| `allowInvalid` | boolean | — | No | When `true`, also fire for state reports that fail device schema validation — `data` will be `null` and `original` will contain the raw message. Only include when `true`. |
+
+### Payload at runtime — individual report
+
+`data` contains only the attributes that were included and accepted in this state report. `time` is the state report's own timestamp, not the workflow execution time.
+
+```json
+{
+  "time": "<state report timestamp>",
+  "data": {
+    "tempF": 98.6,
+    "humidity": 45
+  },
+  "meta": "<arbitrary meta value from the state report, if included>",
+  "relayId": "<ID of the entity that reported state>",
+  "relayType": "device",
+  "triggerId": "<ID of the reporting device>",
   "triggerType": "deviceId",
+  "applicationId": "...",
   "flowId": "...",
   "globals": {}
 }
 ```
 
-- `data.attributes` contains only the attributes included in this state report — not all device attributes.
-- Access values as `{{data.attributes.attrName}}` in node templates.
+- `data` — only attributes reported and accepted in this update. Attributes not in the report, or with invalid values, are absent.
+- `meta` — present at the root level (not inside `data`) only when the device included a meta value alongside the state report.
+- `triggerId` — the reporting device's ID.
 
-## Worked example — react to temperature for any truck, only when tempC is reported
+### Payload at runtime — batch report (`batchBehavior: "once"`)
+
+When configured to fire once for the entire batch, `data` is an array of state report objects. `meta` is not present at the root level. Attribute filters and age filters do not apply.
 
 ```json
 {
-  "key": "fleet/trucks",
-  "type": "deviceTag",
-  "config": {
-    "attributeWhitelist": ["tempC"],
-    "triggerOn": "individual"
-  },
-  "meta": { "category": "trigger", "name": "deviceTag", "x": 60, "y": 60 },
-  "outputIds": [["check-temp"]]
+  "time": "<time batch was received>",
+  "data": [
+    { "data": { "tempF": 98.6 }, "time": "<state report timestamp>" },
+    { "data": { "tempF": 99.1, "humidity": 44 }, "time": "<state report timestamp>", "meta": { "lastReport": true } }
+  ],
+  "relayId": "<ID of the entity that reported state>",
+  "relayType": "device",
+  "triggerId": "<ID of the reporting device>",
+  "triggerType": "deviceId",
+  "applicationId": "...",
+  "flowId": "...",
+  "globals": {}
 }
 ```
 
-## Idiom notes
+## Experience workflows
 
-- Use `attributeWhitelist` to avoid firing on every attribute — if you only care about `tempC`, whitelist it so the trigger doesn't fire on unrelated state reports.
-- `data.attributes` only contains what was reported this update — don't assume all attributes are always present.
-- For connect/disconnect events, use `deviceIdConnect` / `deviceTagConnect` / `deviceIdDisconnect` / `deviceTagDisconnect` types (all have empty config, `meta.name: "deviceIdsTagsConnect"` or `"deviceIdsTagsDisconnect"`).
-- For inactivity alerts, use `deviceIdInactivity` / `deviceTagInactivity` types (`meta.name: "deviceIdsTagsInactivity"`, config has `seconds: <number>`).
+Not available.
+
+## Edge workflows
+
+Not available.

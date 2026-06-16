@@ -4,11 +4,23 @@ Two nodes for reading and modifying device records via the Losant API within a w
 
 See `SKILL.md` for the node object shape and wiring model. See `reference/error-handling.md` for the error handling pattern.
 
+## Metadata quick reference
+
+| `type` | `meta.category` | `meta.name` | `meta.label` default |
+|---|---|---|---|
+| `DeviceGetNode` | `data` | `device-get` | `"Device: Get"` |
+| `DeviceUpdateNode` | `data` | `device-update` | `"Device: Update"` |
+
+`meta.label` is required — default is from the table above.
+
 ---
 
 ## DeviceGetNode — Retrieve a device
 
 Fetches a device record (attributes, tags, deviceClass, connection status, etc.) by ID or by query and writes it to the payload.
+
+- **Allowed in:** cloud, experience, customNode.
+- **`meta.category`:** `data` · **`meta.name`:** `device-get` · **`meta.label`:** `"Device: Get"` (default)
 
 ```json
 {
@@ -19,13 +31,10 @@ Fetches a device record (attributes, tags, deviceClass, connection status, etc.)
     "resultPath": "working.device",
     "errorBehavior": "throw"
   },
-  "meta": { "category": "data", "name": "device-get", "x": 200, "y": 200 },
+  "meta": { "category": "data", "name": "device-get", "label": "Device: Get", "x": 200, "y": 200 },
   "outputIds": [["next"]]
 }
 ```
-
-- **Allowed in:** cloud, experience, customNode.
-- **`meta.category`:** `data` · **`meta.name`:** `device-get`
 
 | Config field | Notes |
 |---|---|
@@ -41,6 +50,9 @@ The written device object includes `id`, `name`, `deviceClass`, `tags` (array of
 
 Patches a device's name, description, tags, or attributes.
 
+- **Allowed in:** cloud, experience, customNode.
+- **`meta.category`:** `data` · **`meta.name`:** `device-update` · **`meta.label`:** `"Device: Update"` (default)
+
 ```json
 {
   "id": "update-device",
@@ -51,13 +63,10 @@ Patches a device's name, description, tags, or attributes.
     "resultPath": "working.updatedDevice",
     "errorBehavior": "throw"
   },
-  "meta": { "category": "data", "name": "device-update", "x": 400, "y": 200 },
+  "meta": { "category": "data", "name": "device-update", "label": "Device: Update", "x": 400, "y": 200 },
   "outputIds": [["next"]]
 }
 ```
-
-- **Allowed in:** cloud, experience, customNode.
-- **`meta.category`:** `data` · **`meta.name`:** `device-update`
 
 | Config field | Notes |
 |---|---|
@@ -81,7 +90,7 @@ Patches a device's name, description, tags, or attributes.
       "id": "get-dev",
       "type": "DeviceGetNode",
       "config": { "deviceIdTemplate": "{{data.deviceId}}", "resultPath": "working.device" },
-      "meta": { "category": "data", "name": "device-get", "x": 0, "y": 0 },
+      "meta": { "category": "data", "name": "device-get", "label": "Device: Get", "x": 0, "y": 0 },
       "outputIds": [["build-tags"]]
     },
     {
@@ -92,7 +101,7 @@ Patches a device's name, description, tags, or attributes.
           { "type": "copy", "source": "working.device.tags", "destination": "working.tags" }
         ]
       },
-      "meta": { "category": "logic", "name": "mutate", "x": 200, "y": 0 },
+      "meta": { "category": "logic", "name": "mutate", "label": "Mutate", "x": 200, "y": 0 },
       "outputIds": [["update-dev"]]
     },
     {
@@ -103,7 +112,7 @@ Patches a device's name, description, tags, or attributes.
         "deviceTemplate": "{\"tags\":{{jsonEncode (arrayAppend working.tags (object \"key\" \"newTag\" \"value\" \"newValue\"))}}}",
         "resultPath": "working.result"
       },
-      "meta": { "category": "data", "name": "device-update", "x": 400, "y": 0 },
+      "meta": { "category": "data", "name": "device-update", "label": "Device: Update", "x": 400, "y": 0 },
       "outputIds": [["done"]]
     }
   ]
