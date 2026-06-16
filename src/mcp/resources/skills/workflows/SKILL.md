@@ -30,7 +30,7 @@ Typical lifecycle:
 
 ## Workflow create body (POST)
 
-Required: `name`. Everything else is optional but `flowClass` controls which trigger and node types are allowed — set it explicitly on create; you cannot change it later.
+Required: `name`. Everything else is optional but `flowClass` controls which trigger and node types are allowed — set it explicitly on create; you cannot change it later. For `flowClass: "edge"`, also set `minimumAgentVersion` — see the Edge workflows section below for rules.
 
 ```json
 {
@@ -125,6 +125,14 @@ Edge workflows are deployed to Gateway Edge Agent (GEA) hardware and run locally
 | `flowVersion` | The name of the published version deployed to the device. |
 
 **Debugging:** Edge workflows use Live Look rather than the standard debug panel. Access it from the workflow editor's Debug or Deployments tab by connecting to a specific deployment, or deploy the develop version to a test device (GEA 1.39.0+) for interactive debugging.
+
+**`minimumAgentVersion`:** Every edge workflow has a `minimumAgentVersion` field that controls which GEA features, triggers, and nodes are available. This field is set on the workflow itself (not on a version).
+
+- **Creating a new edge workflow:** Always set `minimumAgentVersion` to the latest available GEA version. The current latest is `"2.4.0"`. The authoritative latest version is published at: https://hub.docker.com/repository/docker/losant/edge-agent
+- **Working with an existing edge workflow:** Read the current `minimumAgentVersion` from the workflow before suggesting triggers or nodes. Many edge triggers and nodes have minimum GEA version requirements — if the workflow targets a lower version, those features are unavailable and the workflow cannot be saved with them.
+- **Upgrading:** `minimumAgentVersion` can **only be increased, never decreased**. Before upgrading a workflow's minimum agent version, **always ask the user** — upgrading requires the GEA on all deployed devices to also be updated to at least that version, which may not be possible or desirable in their environment.
+
+> **⚠ WARNING:** Never lower `minimumAgentVersion` below its current value — this is not allowed by the API. If a user asks to use a feature that requires a higher GEA version than the workflow currently targets, explain the requirement and ask whether they want to upgrade the workflow's minimum agent version before proceeding.
 
 > **Gotchas:**
 > - The single most common edge mistake: editing develop and expecting devices to pick it up. Always publish a new version after editing.
@@ -249,10 +257,10 @@ See `nodes/loop.md` for the full pattern and a worked example.
 | `dataTable` | cloud | `triggers/data-table.md` |
 | `deviceCommand` | edge | `triggers/device-command.md` |
 | `deviceCreate` | cloud | `triggers/simple.md#devicecreate` |
-| `deviceIdsTags` | cloud | `triggers/device-state.md` |
-| `deviceIdsTagsConnect` | cloud | `triggers/device-connect.md` |
-| `deviceIdsTagsDisconnect` | cloud | `triggers/device-disconnect.md` |
-| `deviceIdsTagsInactivity` | cloud | `triggers/device-inactive.md` |
+| `deviceId`, `deviceTag` | cloud | `triggers/device-state.md` |
+| `deviceIdConnect`, `deviceTagConnect` | cloud | `triggers/device-connect.md` |
+| `deviceIdDisconnect`, `deviceTagDisconnect` | cloud | `triggers/device-disconnect.md` |
+| `deviceIdInactivity`, `deviceTagInactivity` | cloud | `triggers/device-inactive.md` |
 | `endpoint` | exp | `triggers/endpoint.md` |
 | `event` | cloud | `triggers/event.md` |
 | `fileTail` | edge | `triggers/file-tail.md` |

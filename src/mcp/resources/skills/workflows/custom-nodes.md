@@ -42,7 +42,7 @@ A single-output custom node uses one `CustomNodeCapNode`. A branching custom nod
   "id": "done",
   "type": "CustomNodeCapNode",
   "config": {
-    "resultPath": "working.result"
+    "resultSourcePath": "working.result"
   },
   "meta": { "category": "output", "name": "customNodeCap", "label": "Return", "x": 400, "y": 200 },
   "outputIds": [[]]
@@ -105,7 +105,7 @@ In the workflow body, the node is represented as a `CustomNodeExecuteNode`:
   "config": {
     "customNodeId": "5f1c2d3e4f5a6b7c8d9e0f1a",
     "customNodeVersionName": "v2",
-    "resultPath": "working.converted",
+    "resultSourcePath": "working.converted",
     "inputs": {
       "tempF": "{{data.attributes.tempF}}"
     }
@@ -117,7 +117,7 @@ In the workflow body, the node is represented as a `CustomNodeExecuteNode`:
 
 - `config.customNodeId` — the ID of the custom node resource.
 - `config.customNodeVersionName` — the version name to run, or `"develop"` (Application only; never for Edge).
-- `config.resultPath` — payload path where the custom node's return value is written (omit if output result is `"none"`).
+- `config.resultSourcePath` — payload path where the custom node's return value is written (omit if output result is `"none"`).
 - `config.inputs` — map of input IDs to values (static strings or Handlebars templates).
 - For branching custom nodes, `outputIds` has two entries: `[[trueNodeIds], [falseNodeIds]]`.
 

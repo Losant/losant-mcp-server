@@ -1,42 +1,47 @@
-# Device: Disconnect Trigger (`type: "deviceIdsTagsDisconnect"`)
+# Device: Disconnect Trigger
 
-The Device: Disconnect Trigger fires a workflow whenever one or more devices disconnect from the Losant Platform, via the MQTT broker or whenever the connection status is changed to "disconnected" using the REST API.
+Fires when a device disconnects from Losant over MQTT or changes connection status via the REST API. Available in cloud workflows (with device query) and edge workflows (fires for the edge device itself).
+
+Two `type` values select devices differently; both have empty config.
 
 ## Required Fields
 
-| Field | Value |
-|---|---|
-| `type` | `"deviceIdsTagsDisconnect"` |
-| `meta.category` | `"trigger"` |
-| `meta.name` | `"deviceIdsTagsDisconnect"` |
-| `meta.label` | `"Device: Disconnect"` (default) |
+| `type` | `meta.name` | `meta.label` | Selects devices by |
+|---|---|---|---|
+| `"deviceIdDisconnect"` | `"deviceIdsTagsDisconnect"` | `"Device: Disconnect"` (default) | A specific device ID in `key` |
+| `"deviceTagDisconnect"` | `"deviceIdsTagsDisconnect"` | `"Device: Disconnect"` (default) | A tag `key/value` pair in `key` |
 
 ## Cloud (Application) workflows
 
-The trigger can be configured with one or more specific device IDs, tag selectors, or both. When any matching device disconnects, the workflow fires.
+### `deviceIdDisconnect` variant — one specific device
 
 ```json
 {
-  "type": "deviceIdsTagsDisconnect",
-  "deviceIds": ["5f1c2d3e4f5a6b7c8d9e0f1a"],
-  "deviceTags": [],
+  "type": "deviceIdDisconnect",
+  "key": "5f1c2d3e4f5a6b7c8d9e0f1a",
   "config": {},
-  "meta": {
-    "category": "trigger",
-    "name": "deviceIdsTagsDisconnect",
-    "label": "Device: Disconnect",
-    "x": 60,
-    "y": 60
-  },
+  "meta": { "category": "trigger", "name": "deviceIdsTagsDisconnect", "label": "Device: Disconnect", "x": 60, "y": 60 },
   "outputIds": [["first-node"]]
 }
 ```
 
-**`deviceIds`** — Required. Array of device IDs to match. Defaults to `[]`.
+- `key` is the device's ID.
 
-**`deviceTags`** — Required. Array of tag selectors in `"key/value"` format. Use `"key/"` to match any value for a given tag key. Defaults to `[]`.
+### `deviceTagDisconnect` variant — any device matching a tag
 
-At least one entry across `deviceIds` and `deviceTags` is required. Always send both arrays.
+```json
+{
+  "type": "deviceTagDisconnect",
+  "key": "fleet/trucks",
+  "config": {},
+  "meta": { "category": "trigger", "name": "deviceIdsTagsDisconnect", "label": "Device: Disconnect", "x": 60, "y": 60 },
+  "outputIds": [["first-node"]]
+}
+```
+
+- `key` format is `"tagKey/tagValue"`. Use `"tagKey/"` (trailing slash) to match any value for a given tag key.
+
+**Multiple devices or tags:** Each trigger targets one device ID or one tag. Add one trigger per device/tag as separate entries in the `triggers` array.
 
 ### Payload at runtime
 
@@ -44,7 +49,7 @@ At least one entry across `deviceIds` and `deviceTags` is required. Always send 
 {
   "time": "<ISO timestamp>",
   "data": {
-    "address": "192.168.0.1",
+    "address": "203.0.113.5",
     "connectedAt": "<ISO timestamp when the session started>",
     "disconnectReason": "Keepalive Timeout",
     "messagesFromDevice": 456,
@@ -52,7 +57,7 @@ At least one entry across `deviceIds` and `deviceTags` is required. Always send 
     "method": "mqtt",
     "secure": true
   },
-  "relayId": "<ID of the resource that disconnected the device>",
+  "relayId": "<ID of the API token, user, device, or flow>",
   "relayType": "apiToken",
   "triggerId": "<trigger key>",
   "triggerType": "deviceIdDisconnect",
@@ -62,12 +67,10 @@ At least one entry across `deviceIds` and `deviceTags` is required. Always send 
 }
 ```
 
-- `data.address` — client IP address.
 - `data.connectedAt` — when this session started. Subtract from `time` to get session duration.
-- `data.disconnectReason` — human-readable explanation (e.g. `"Keepalive Timeout"`). Free-text — log it rather than branching on specific values.
+- `data.disconnectReason` — human-readable reason (e.g. `"Keepalive Timeout"`). Free-text — log it rather than branching on specific values.
 - `data.messagesFromDevice` / `data.messagesToDevice` — message counts for this session.
-- `data.method` — `"mqtt"` or `"rest"`.
-- `relayId` / `relayType` — identifies what caused the disconnect. At the envelope level, not inside `data`.
+- `relayId` / `relayType` — at the envelope level, not inside `data`.
 
 ## Experience workflows
 
@@ -77,7 +80,7 @@ Not available.
 
 > **Minimum GEA version:** 1.11.0
 
-Edge workflows cannot use device queries. The trigger fires when the Edge Compute Device running the workflow disconnects from Losant.
+Edge workflows use `type: "onDisconnect"` — fires only for the Edge Compute Device running the workflow. No device query supported.
 
 | Field | Value |
 |---|---|
@@ -90,18 +93,12 @@ Edge workflows cannot use device queries. The trigger fires when the Edge Comput
 {
   "type": "onDisconnect",
   "config": {},
-  "meta": {
-    "category": "trigger",
-    "name": "onDisconnect",
-    "label": "On Disconnect",
-    "x": 60,
-    "y": 60
-  },
+  "meta": { "category": "trigger", "name": "onDisconnect", "label": "On Disconnect", "x": 60, "y": 60 },
   "outputIds": [["first-node"]]
 }
 ```
 
-### Payload at runtime
+### Edge payload
 
 ```json
 {
@@ -119,4 +116,4 @@ Edge workflows cannot use device queries. The trigger fires when the Edge Comput
 ```
 
 - `data.lastConnectTime` — when this session started.
-- `data.reason` — human-readable disconnect reason. Free-text — log it rather than branching on specific values.
+- `data.reason` — human-readable disconnect reason.

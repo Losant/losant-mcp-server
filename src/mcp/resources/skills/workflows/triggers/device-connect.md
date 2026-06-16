@@ -1,42 +1,47 @@
-# Device: Connect Trigger (`type: "deviceIdsTagsConnect"`)
+# Device: Connect Trigger
 
-The Device: Connect Trigger fires a workflow whenever one or more devices connect to the Losant Platform, via the MQTT broker or whenever the connection status is changed to "connected" using the REST API.
+Fires when a device connects to Losant over MQTT or changes connection status via the REST API. Available in cloud workflows (with device query) and edge workflows (fires for the edge device itself).
+
+Two `type` values select devices differently; both have empty config.
 
 ## Required Fields
 
-| Field | Value |
-|---|---|
-| `type` | `"deviceIdsTagsConnect"` |
-| `meta.category` | `"trigger"` |
-| `meta.name` | `"deviceIdsTagsConnect"` |
-| `meta.label` | `"Device: Connect"` (default) |
+| `type` | `meta.name` | `meta.label` | Selects devices by |
+|---|---|---|---|
+| `"deviceIdConnect"` | `"deviceIdsTagsConnect"` | `"Device: Connect"` (default) | A specific device ID in `key` |
+| `"deviceTagConnect"` | `"deviceIdsTagsConnect"` | `"Device: Connect"` (default) | A tag `key/value` pair in `key` |
 
 ## Cloud (Application) workflows
 
-The trigger can be configured with one or more specific device IDs, tag selectors, or both. When any matching device connects, the workflow fires.
+### `deviceIdConnect` variant — one specific device
 
 ```json
 {
-  "type": "deviceIdsTagsConnect",
-  "deviceIds": ["5f1c2d3e4f5a6b7c8d9e0f1a"],
-  "deviceTags": [],
+  "type": "deviceIdConnect",
+  "key": "5f1c2d3e4f5a6b7c8d9e0f1a",
   "config": {},
-  "meta": {
-    "category": "trigger",
-    "name": "deviceIdsTagsConnect",
-    "label": "Device: Connect",
-    "x": 60,
-    "y": 60
-  },
+  "meta": { "category": "trigger", "name": "deviceIdsTagsConnect", "label": "Device: Connect", "x": 60, "y": 60 },
   "outputIds": [["first-node"]]
 }
 ```
 
-**`deviceIds`** — Required. Array of device IDs to match. Defaults to `[]`.
+- `key` is the device's ID.
 
-**`deviceTags`** — Required. Array of tag selectors in `"key/value"` format. Use `"key/"` to match any value for a given tag key. Defaults to `[]`.
+### `deviceTagConnect` variant — any device matching a tag
 
-At least one entry across `deviceIds` and `deviceTags` is required. Always send both arrays.
+```json
+{
+  "type": "deviceTagConnect",
+  "key": "fleet/trucks",
+  "config": {},
+  "meta": { "category": "trigger", "name": "deviceIdsTagsConnect", "label": "Device: Connect", "x": 60, "y": 60 },
+  "outputIds": [["first-node"]]
+}
+```
+
+- `key` format is `"tagKey/tagValue"`. Use `"tagKey/"` (trailing slash) to match any value for a given tag key.
+
+**Multiple devices or tags:** Each trigger targets one device ID or one tag. Add one trigger per device/tag as separate entries in the `triggers` array.
 
 ### Payload at runtime
 
@@ -44,11 +49,11 @@ At least one entry across `deviceIds` and `deviceTags` is required. Always send 
 {
   "time": "<ISO timestamp>",
   "data": {
-    "address": "192.168.0.1",
+    "address": "203.0.113.5",
     "method": "mqtt",
     "secure": true
   },
-  "relayId": "<ID of the resource that connected the device>",
+  "relayId": "<ID of the API token, user, device, or flow that authorized the connection>",
   "relayType": "apiToken",
   "triggerId": "<trigger key>",
   "triggerType": "deviceIdConnect",
@@ -58,10 +63,10 @@ At least one entry across `deviceIds` and `deviceTags` is required. Always send 
 }
 ```
 
-- `data.address` — client IP address.
+- `data.address` — remote IP address of the connecting device.
 - `data.method` — `"mqtt"` or `"rest"`.
-- `data.secure` — `true` if the connection is secure.
-- `relayId` / `relayType` — identifies what authorized the connection. At the envelope level, not inside `data`.
+- `data.secure` — `true` if MQTT over TLS.
+- `relayId` / `relayType` — at the envelope level, not inside `data`.
 
 ## Experience workflows
 
@@ -71,7 +76,7 @@ Not available.
 
 > **Minimum GEA version:** 1.11.0
 
-Edge workflows cannot use device queries. The trigger fires when the Edge Compute Device running the workflow connects to Losant.
+Edge workflows use `type: "onConnect"` — fires only for the Edge Compute Device running the workflow. No device query supported.
 
 | Field | Value |
 |---|---|
@@ -84,18 +89,12 @@ Edge workflows cannot use device queries. The trigger fires when the Edge Comput
 {
   "type": "onConnect",
   "config": {},
-  "meta": {
-    "category": "trigger",
-    "name": "onConnect",
-    "label": "On Connect",
-    "x": 60,
-    "y": 60
-  },
+  "meta": { "category": "trigger", "name": "onConnect", "label": "On Connect", "x": 60, "y": 60 },
   "outputIds": [["first-node"]]
 }
 ```
 
-### Payload at runtime
+### Edge payload
 
 ```json
 {
@@ -111,4 +110,4 @@ Edge workflows cannot use device queries. The trigger fires when the Edge Comput
 }
 ```
 
-- `data.lastDisconnectTime` — ISO timestamp of the last disconnect, or `null` if the device has never disconnected or the Gateway Edge Agent has been restarted.
+- `data.lastDisconnectTime` — ISO timestamp of the last disconnect, or `null` if the device has never disconnected or the GEA was restarted.

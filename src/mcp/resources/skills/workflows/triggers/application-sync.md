@@ -23,7 +23,7 @@ Not available.
 
 > **Minimum GEA version:** 1.39.0
 
-**`key`** — Always set to the literal string `"onSync"`. Required, always send it.
+**`key`** — Server-generated. Omit it.
 
 **`config.syncTypes`** — Required. Array of sync event types to fire on. Defaults to all three. At least one must be included.
 
@@ -36,7 +36,6 @@ Not available.
 ```json
 {
   "type": "onSync",
-  "key": "onSync",
   "config": {
     "syncTypes": ["application", "device", "peripheral"]
   },

@@ -1,60 +1,75 @@
-# Device: State Trigger (`type: "deviceIdsTags"`)
+# Device: State Trigger
 
-The Device: State Trigger fires a workflow whenever one or more devices report state.
+Fires when a device reports state. The most common cloud workflow trigger for reacting to sensor data. Cloud only.
+
+Two `type` values select devices differently; both support the same config fields.
 
 ## Required Fields
 
-| Field | Value |
-|---|---|
-| `type` | `"deviceIdsTags"` |
-| `meta.category` | `"trigger"` |
-| `meta.name` | `"deviceIdsTags"` |
-| `meta.label` | `"Device: State"` (default) |
+| `type` | `meta.name` | `meta.label` | Selects devices by |
+|---|---|---|---|
+| `"deviceId"` | `"device"` | `"Device: State"` (default) | A specific device ID in `key` |
+| `"deviceTag"` | `"deviceTag"` | `"Device: State"` (default) | A tag `key/value` pair in `key` |
 
 ## Cloud (Application) workflows
 
-The trigger can be configured with one or more specific device IDs, tag selectors, or both. It fires individually per matching device per state report.
+### `deviceId` variant — one specific device
 
 ```json
 {
-  "type": "deviceIdsTags",
-  "deviceIds": ["5f1c2d3e4f5a6b7c8d9e0f1a"],
-  "deviceTags": [],
+  "type": "deviceId",
+  "key": "5f1c2d3e4f5a6b7c8d9e0f1a",
   "config": {
     "triggerOn": "both",
     "batchBehavior": "each"
   },
-  "meta": {
-    "category": "trigger",
-    "name": "deviceIdsTags",
-    "label": "Device: State",
-    "x": 60,
-    "y": 60
-  },
+  "meta": { "category": "trigger", "name": "device", "label": "Device: State", "x": 60, "y": 60 },
   "outputIds": [["first-node"]]
 }
 ```
 
-**`deviceIds`** — Required. Array of device IDs to match. Defaults to `[]`.
+- `key` is the device's ID.
 
-**`deviceTags`** — Required. Array of tag selectors in `"key/value"` format. Use `"key/"` to match any value for a given tag key. Defaults to `[]`.
+### `deviceTag` variant — any device matching a tag
 
-At least one entry across `deviceIds` and `deviceTags` is required. Always send both arrays.
+```json
+{
+  "type": "deviceTag",
+  "key": "fleet/trucks",
+  "config": {
+    "triggerOn": "both",
+    "batchBehavior": "each"
+  },
+  "meta": { "category": "trigger", "name": "deviceTag", "label": "Device: State", "x": 60, "y": 60 },
+  "outputIds": [["first-node"]]
+}
+```
 
-### Config
+- `key` format is `"tagKey/tagValue"`. Use `"tagKey/"` (trailing slash) to match any device with a given tag key regardless of value. Use `"/tagValue"` to match any key with a given value.
 
-| Field | Type | Default | Required | Notes |
-|---|---|---|---|---|
-| `triggerOn` | enum | `"both"` | Yes | `"both"` — fire on individual and batch reports. `"individual"` — individual only. `"batch"` — batch only. |
-| `batchBehavior` | enum | `"each"` | When `triggerOn` is `"both"` or `"batch"` | `"each"` — fire once per item in the batch. `"once"` — fire once with the entire batch as an array on `data`. |
-| `attributeWhitelist` | string[] | — | No | Fire only when the state report includes at least one of these attributes. Not applied for `batchBehavior: "once"`. |
-| `attributeBlacklist` | string[] | — | No | Never fire when the report contains only these attributes. Not applied for `batchBehavior: "once"`. |
-| `maxAge` | number | — | No | Max age in seconds of a state report's timestamp. Reports older than this are ignored. Not applied for `batchBehavior: "once"`. |
-| `allowInvalid` | boolean | — | No | When `true`, also fire for state reports that fail device schema validation — `data` will be `null` and `original` will contain the raw message. Only include when `true`. |
+**Multiple devices or tags:** Each trigger node targets one device ID or one tag. To fire on multiple devices or multiple tags, add one trigger per device/tag — each as a separate entry in the workflow's `triggers` array with its own `key`.
+
+### Config — required fields
+
+The UI always sends `triggerOn` and `batchBehavior`. Treat both as required.
+
+| Field | Default | Notes |
+|---|---|---|
+| `config.triggerOn` | `"both"` | `"both"` — fire on individual and batch reports. `"individual"` — individual only. `"batch"` — batch only. |
+| `config.batchBehavior` | `"each"` | Required when `triggerOn` is `"both"` or `"batch"`. `"each"` — fire once per item. `"once"` — fire once for the entire batch. Omit only when `triggerOn` is `"individual"`. |
+
+### Config — optional fields
+
+| Field | Type | Notes |
+|---|---|---|
+| `attributeWhitelist` | string[] (max 100) | Fire only when the report includes at least one of these attributes. Not applied for `batchBehavior: "once"`. |
+| `attributeBlacklist` | string[] (max 100) | Never fire when the report contains only these attributes. Not applied for `batchBehavior: "once"`. |
+| `maxAge` | number | Max age in seconds of a state report's timestamp. Reports older than this are ignored. Not applied for `batchBehavior: "once"`. |
+| `allowInvalid` | boolean | When `true`, also fire for invalid state reports — `data` will be `null` and `original` will contain the raw message. Only include when `true`. |
 
 ### Payload at runtime — individual report
 
-`data` contains only the attributes that were included and accepted in this state report. `time` is the state report's own timestamp, not the workflow execution time.
+Device state attributes are placed **directly on `data`**. `time` is the state report's own timestamp, not the workflow execution time.
 
 ```json
 {
@@ -74,13 +89,13 @@ At least one entry across `deviceIds` and `deviceTags` is required. Always send 
 }
 ```
 
-- `data` — only attributes reported and accepted in this update. Attributes not in the report, or with invalid values, are absent.
-- `meta` — present at the root level (not inside `data`) only when the device included a meta value alongside the state report.
+- `data` — only attributes reported and accepted in this update. Attributes not in the report or with invalid values are absent.
+- `meta` — present at root level only when the device included a meta value with the state report.
 - `triggerId` — the reporting device's ID.
 
 ### Payload at runtime — batch report (`batchBehavior: "once"`)
 
-When configured to fire once for the entire batch, `data` is an array of state report objects. `meta` is not present at the root level. Attribute filters and age filters do not apply.
+When configured to fire once for the entire batch, `data` is an array. Attribute and age filters do not apply.
 
 ```json
 {
@@ -89,7 +104,7 @@ When configured to fire once for the entire batch, `data` is an array of state r
     { "data": { "tempF": 98.6 }, "time": "<state report timestamp>" },
     { "data": { "tempF": 99.1, "humidity": 44 }, "time": "<state report timestamp>", "meta": { "lastReport": true } }
   ],
-  "relayId": "<ID of the entity that reported state>",
+  "relayId": "...",
   "relayType": "device",
   "triggerId": "<ID of the reporting device>",
   "triggerType": "deviceId",

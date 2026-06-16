@@ -75,11 +75,11 @@ Define the connection and subscriptions directly in the trigger config.
   "type": "beckhoff",
   "config": {
     "localAmsNetId": "192.168.5.221.1.1",
-    "localAdsPort": 37250,
+    "localAdsPort": "37250",
     "targetAmsNetId": "5.123.154.18.1.1",
-    "targetAdsPort": 851,
+    "targetAdsPort": "851",
     "routerHost": "127.0.0.1",
-    "routerTcpPort": 48898,
+    "routerTcpPort": "48898",
     "cycleTimeMs": 1000,
     "subscriptions": [
       { "name": "GVL_Var.TestDint1" },
@@ -100,11 +100,11 @@ Define the connection and subscriptions directly in the trigger config.
 | Config field | Default | Notes |
 |---|---|---|
 | `localAmsNetId` | — | **Required.** Six-octet AMS Net ID of the GEA device — typically the device IP plus `.1.1`. |
-| `localAdsPort` | `37250` | Local ADS communication port. |
+| `localAdsPort` | `"37250"` | Local ADS communication port. |
 | `targetAmsNetId` | — | **Required.** Six-octet AMS Net ID of the Beckhoff TwinCAT PLC. |
-| `targetAdsPort` | `851` | Target runtime ADS port. |
+| `targetAdsPort` | `"851"` | Target runtime ADS port. |
 | `routerHost` | — | **Required.** Hostname or IP of the TwinCAT router. |
-| `routerTcpPort` | `48898` | Port of the TwinCAT router. |
+| `routerTcpPort` | `"48898"` | Port of the TwinCAT router. |
 | `cycleTimeMs` | — | **Required.** Poll interval in milliseconds. Min `10`, max `3600000` (1 hour). Lower values increase responsiveness but add load. |
 | `subscriptions` | `[]` | **Required.** Array of `{ "name": "<symbolName>" }` objects. At least one required. |
 

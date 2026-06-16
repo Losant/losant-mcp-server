@@ -147,12 +147,11 @@ The Device: Startup Trigger fires a workflow whenever the Gateway Edge Agent sta
 | `meta.name` | `"onBoot"` |
 | `meta.label` | `"Device: Startup"` (default) |
 
-**`key`** — Always set to the literal string `"onBoot"`. Required, always send it.
+**`key`** — Server-generated. Omit it.
 
 ```json
 {
   "type": "onBoot",
-  "key": "onBoot",
   "config": {},
   "meta": { "category": "trigger", "name": "onBoot", "label": "Device: Startup", "x": 60, "y": 60 },
   "outputIds": [["init"]]

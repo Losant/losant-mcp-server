@@ -15,6 +15,10 @@ The GCP (Google Cloud Platform) Pub/Sub Trigger fires a workflow whenever a mess
 
 A Google Pub/Sub integration resource must exist in the application before this trigger can be used. Use `losant_query` with `resourceType=integration` to find the integration ID.
 
+When creating the integration, two things are required even when using a credential:
+- A GCP service account credential configured in the application.
+- `googlePubSubConfig.projectId` — the GCP project ID must be set explicitly on the integration, even when a credential is provided.
+
 ```json
 {
   "type": "integration",
@@ -80,8 +84,8 @@ All event types share the same envelope. `data.type` identifies which event fire
 - `data.attributes` — key/value map of Pub/Sub message attributes.
 - `data.id` — GCP-assigned message ID.
 - `data.timestamp` — GCP-assigned publish timestamp.
-- `data.topic` — the topic on which this message arrived.
-- `data.topics` — all topics the integration is subscribed to.
+- `data.topic` — the bare subscription name the message arrived on (e.g. `"test-prerelease"`), not a full GCP resource path.
+- `data.topics` — all bare subscription names the integration is subscribed to.
 
 #### `connect` — integration connected
 

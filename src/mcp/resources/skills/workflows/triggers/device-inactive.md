@@ -1,46 +1,55 @@
-# Device: Inactive Trigger (`type: "deviceIdsTagsInactivity"`)
+# Device: Inactive Trigger
 
-The Device: Inactive Trigger fires a workflow whenever one or more devices do not report state for the configured period of time.
+Fires when a device has not reported state for a configured period. Cloud only.
+
+Two `type` values select devices differently; both use the same `config.seconds` field.
 
 ## Required Fields
 
-| Field | Value |
-|---|---|
-| `type` | `"deviceIdsTagsInactivity"` |
-| `meta.category` | `"trigger"` |
-| `meta.name` | `"deviceIdsTagsInactivity"` |
-| `meta.label` | `"Device: Inactive"` (default) |
+| `type` | `meta.name` | `meta.label` | Selects devices by |
+|---|---|---|---|
+| `"deviceIdInactivity"` | `"deviceIdsTagsInactivity"` | `"Device: Inactive"` (default) | A specific device ID in `key` |
+| `"deviceTagInactivity"` | `"deviceIdsTagsInactivity"` | `"Device: Inactive"` (default) | A tag `key/value` pair in `key` |
 
 ## Cloud (Application) workflows
 
-The trigger can be configured with one or more specific device IDs, tag selectors, or both. It fires individually per matching device — if 10 devices match and all exceed the inactivity period at once, the workflow fires 10 times.
+The trigger fires individually per matching device — if 10 devices match the tag and all exceed the threshold at once, the workflow fires 10 times.
+
+**Multiple devices or tags:** Each trigger targets one device ID or one tag. Add one trigger per device/tag as separate entries in the `triggers` array.
+
+### `deviceIdInactivity` variant — one specific device
 
 ```json
 {
-  "type": "deviceIdsTagsInactivity",
-  "deviceIds": ["5f1c2d3e4f5a6b7c8d9e0f1a"],
-  "deviceTags": [],
-  "config": {
-    "seconds": 7200
-  },
-  "meta": {
-    "category": "trigger",
-    "name": "deviceIdsTagsInactivity",
-    "label": "Device: Inactive",
-    "x": 60,
-    "y": 60
-  },
-  "outputIds": [["first-node"]]
+  "type": "deviceIdInactivity",
+  "key": "5f1c2d3e4f5a6b7c8d9e0f1a",
+  "config": { "seconds": 7200 },
+  "meta": { "category": "trigger", "name": "deviceIdsTagsInactivity", "label": "Device: Inactive", "x": 60, "y": 60 },
+  "outputIds": [["alert"]]
 }
 ```
 
-**`deviceIds`** — Required. Array of device IDs to match. Defaults to `[]`.
+- `key` is the device's ID.
 
-**`deviceTags`** — Required. Array of tag selectors in `"key/value"` format. Use `"key/"` to match any value for a given tag key. Defaults to `[]`.
+### `deviceTagInactivity` variant — any device matching a tag
 
-**`config.seconds`** — Required. Inactivity period in seconds before the trigger fires. The UI defaults to `7200` (2 hours). Min `1`, max `31536000` (1 year). Can be expressed in the UI as seconds, minutes, hours, or days — always send the converted value in seconds.
+```json
+{
+  "type": "deviceTagInactivity",
+  "key": "fleet/trucks",
+  "config": { "seconds": 300 },
+  "meta": { "category": "trigger", "name": "deviceIdsTagsInactivity", "label": "Device: Inactive", "x": 60, "y": 60 },
+  "outputIds": [["alert"]]
+}
+```
 
-At least one entry across `deviceIds` and `deviceTags` is required. Always send both arrays.
+- `key` format is `"tagKey/tagValue"`. Use `"tagKey/"` (trailing slash) to match any value for a given tag key.
+
+### Config
+
+| Field | Default | Notes |
+|---|---|---|
+| `config.seconds` | `7200` (2 hours) | **Required.** Inactivity period in seconds. Min 1, max 31,622,400 (~366 days). The UI defaults to 2 hours. |
 
 ### Payload at runtime
 
@@ -48,10 +57,10 @@ At least one entry across `deviceIds` and `deviceTags` is required. Always send 
 {
   "time": "<ISO timestamp when the inactivity threshold was crossed>",
   "data": {
-    "inactivitySeconds": 7200,
+    "inactivitySeconds": 300,
     "lastActivity": "<ISO timestamp of the last state report>"
   },
-  "relayId": "inactivity-5f1c...-7200",
+  "relayId": "inactivity-5f1c...-300",
   "relayType": "timer",
   "triggerId": "<ID of the inactive device>",
   "triggerType": "deviceIdInactivity",
@@ -61,18 +70,18 @@ At least one entry across `deviceIds` and `deviceTags` is required. Always send 
 }
 ```
 
-- `data.inactivitySeconds` — the configured threshold in seconds (mirrors `config.seconds`).
+- `data.inactivitySeconds` — the configured threshold (mirrors `config.seconds`).
 - `data.lastActivity` — when the device last reported state.
-- `triggerId` — the ID of the device that went inactive.
 - `relayId` format: `"inactivity-<deviceId>-<seconds>"`.
-- `relayType` is always `"timer"`.
+- `triggerId` — the device ID that went inactive.
 
-### Behavior notes
+### Timing and reset behavior
 
-- **Not retroactive** — the inactivity timer does not begin until the trigger is saved and the matching device next reports state. A device already silent when the trigger is added will not fire until it reports state at least once afterward.
-- **Fires once per period** — the trigger fires once when the inactivity threshold is crossed. It will not fire again until the device reports state and then exceeds the threshold again.
-- **Only state reports reset the timer** — connecting, disconnecting, publishing on custom MQTT topics, and receiving commands do not affect the inactivity timer.
-- **Timer resets on config change** — when the workflow is saved with a different `config.seconds` value, all in-progress timers are discarded and restart from zero on the next state report.
+- **Not retroactive** — the timer does not start until the trigger is saved and the matching device next reports state.
+- **Only state reports reset the timer.** Connect/disconnect events and other activity do not reset it.
+- **Fires once per period** — will not re-fire until the device reports state and then exceeds the threshold again.
+- Inactivity is measured by state report **arrival time**, not the timestamp in the state data.
+- When `config.seconds` changes on save, all in-progress timers are discarded and restart on the next state report.
 
 ## Experience workflows
 
