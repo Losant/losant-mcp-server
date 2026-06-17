@@ -13,6 +13,7 @@ indexContent += '- [Flows Guide](losant://guides/flows) - Flow classes, triggers
 indexContent += '- [Dashboards Guide](losant://guides/dashboards) - Block model, layout grid, context variables — full authoring at losant://skills/dashboards\n\n';
 indexContent += '- [Files & Private Files Guide](losant://guides/files) - Two-step create-then-upload pattern, public vs. private\n\n';
 indexContent += '- [Notebooks Guide](losant://guides/notebooks) - Two-step upload pattern, input/output types, imageVersion\n\n';
+indexContent += '- [Experiences Guide](losant://guides/experiences) - Versioning model, views, endpoints, users, groups, domains, and slugs\n\n';
 
 indexContent += '\n## Supported Resources\n\n';
 indexContent += 'The following resources can be queried with the losant_query tool:\n\n';

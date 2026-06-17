@@ -47,9 +47,18 @@ export const WRITABLE_RESOURCE_TYPES = [
   'file',
   'privateFile',
   'notebook',
-  'flow',
-  'flowVersion',
-  'applicationDashboard'
+  'applicationDashboard',
+  'experienceDomain',
+  'experienceEndpoint',
+  'experienceGroup',
+  'experienceSlug',
+  'experienceUser',
+  'experienceVersion',
+  'experienceView',
+  'application',
+  'applicationReadme'
+  // 'flow', will be added in another branch
+  // 'flowVersion', will be added in another branch
 ];
 
 export const ALLOW_BULK_CREATE_TYPES = new Set([
@@ -58,7 +67,7 @@ export const ALLOW_BULK_CREATE_TYPES = new Set([
 ]);
 
 export const ALLOW_UPDATE_MANY_TYPES = new Set(['event']);
-export const NO_CREATE_TYPES = new Set(['event']);       // created by devices/workflows, not the LLM
+export const NO_CREATE_TYPES = new Set(['event', 'application', 'applicationReadme']);       // created by devices/workflows, not the LLM
 export const NO_UPDATE_TYPES = new Set(['flowVersion']); // versions are immutable after creation
 
 // require.resolve('losant-rest') returns .../losant-rest/lib/index.js
