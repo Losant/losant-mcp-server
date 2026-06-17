@@ -43,7 +43,7 @@ export const fetchAuthServerMetadata = memoize(async () => {
  * Create OAuth 2.0 Protected Resource Metadata endpoint
  * @returns {Object} Hapi route configuration
  */
-export const createAuthServerMetadataRoute = () => ({
+export const createOAuthDiscoveryRoute = () => ({
   method: 'GET',
   path: '/.well-known/oauth-protected-resource',
   handler: async (_request, h) => {
