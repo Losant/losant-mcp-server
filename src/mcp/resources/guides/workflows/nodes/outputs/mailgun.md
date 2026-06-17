@@ -1,0 +1,62 @@
+# Mailgun Node (`type: "MailgunNode"`)
+
+The Mailgun Node sends an email via a configured Mailgun account. Supports attachments (up to 10).
+
+## Required Fields
+
+| Field | Value |
+|---|---|
+| `type` | `"MailgunNode"` |
+| `meta.category` | `"output"` |
+| `meta.name` | `"mailgun"` |
+| `meta.label` | `"Mailgun"` (default) |
+
+## Cloud (Application) workflows
+
+Two auth methods: service credential or direct API key.
+
+```json
+{
+  "id": "send-email",
+  "type": "MailgunNode",
+  "config": {
+    "credentialNameTemplate": "my-mailgun-credential",
+    "mailgunRegion": "us",
+    "fromTemplate": "alerts@example.com",
+    "subjectTemplate": "Alert: {{working.alertTitle}}",
+    "bodyTemplate": "{{working.alertBody}}",
+    "toAddresses": [{ "email": "operator@example.com" }],
+    "ccAddresses": [],
+    "bccAddresses": [],
+    "replyToTemplate": "",
+    "resultPath": "working.sendResult"
+  },
+  "meta": { "category": "output", "name": "mailgun", "label": "Mailgun", "x": 200, "y": 200 },
+  "outputIds": [["next"]]
+}
+```
+
+| Config field | Default | Notes |
+|---|---|---|
+| `credentialNameTemplate` | `""` | **Required** (credential method). Mailgun credential name. |
+| `mailgunApiKey` | `""` | **Required** (direct method). Mailgun API key (Account API Key or Domain Sending Key). Template. |
+| `mailgunRegion` | `"us"` | **Required.** `"us"` or `"eu"`. Template. |
+| `fromTemplate` | `""` | **Required.** Sender email address. Template. |
+| `subjectTemplate` | `""` | **Required.** Email subject. Template. |
+| `bodyTemplate` | `""` | **Required.** Email body. Template. |
+| `toAddresses` | `[]` | **Required.** Array of `{ email: "template" }` objects. Min 1, max 1000. |
+| `ccAddresses` | `[]` | Array of `{ email: "template" }` CC objects. |
+| `bccAddresses` | `[]` | Array of `{ email: "template" }` BCC objects. |
+| `replyToTemplate` | `""` | Reply-to address. Template. |
+| `attachments` | `[]` | Array of attachment objects (max 10). |
+| `resultPath` | `""` | Payload path to write the send result. |
+
+## Experience workflows
+
+Same as Cloud.
+
+## Edge workflows
+
+> **Minimum GEA version:** 1.48.0
+
+Same as Cloud.

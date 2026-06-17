@@ -1,0 +1,65 @@
+# AWS SQS Node (`type: "SqsSendNode"`)
+
+The AWS SQS Node publishes a message to an Amazon SQS queue. Supports FIFO queues, message attributes, and three connection methods.
+
+## Required Fields
+
+| Field | Value |
+|---|---|
+| `type` | `"SqsSendNode"` |
+| `meta.category` | `"output"` |
+| `meta.name` | `"sqs-send"` |
+| `meta.label` | `"AWS SQS"` (default) |
+
+## Cloud (Application) workflows
+
+Three connection methods: integration, service credential, or direct AWS credentials.
+
+```json
+{
+  "id": "sqs-publish",
+  "type": "SqsSendNode",
+  "config": {
+    "credentialNameTemplate": "my-aws-credential",
+    "queueUrl": "https://sqs.us-east-1.amazonaws.com/123456789/my-queue",
+    "dataMethod": "stringTemplate",
+    "dataTemplate": "{{jsonEncode working.message}}",
+    "attributeMethod": "individualFields",
+    "attributeFields": [],
+    "messageGroupIdTemplate": "",
+    "messageDeduplicationIdTemplate": "",
+    "resultPath": "working.sqsResult"
+  },
+  "meta": { "category": "output", "name": "sqs-send", "label": "AWS SQS", "x": 200, "y": 200 },
+  "outputIds": [["next"]]
+}
+```
+
+| Config field | Default | Notes |
+|---|---|---|
+| `integrationId` | `""` | **Required** (integration method). SQS integration resource ID. |
+| `credentialNameTemplate` | `""` | **Required** (credential method). AWS credential name. |
+| `accessKeyIdTemplate` | `""` | **Required** (direct method). AWS access key ID. |
+| `secretAccessKeyTemplate` | `""` | **Required** (direct method). AWS secret access key. |
+| `regionTemplate` | `""` | **Required** (direct method). AWS region. |
+| `queueUrl` | `""` | **Required** (credential and direct methods). SQS queue URL. Template. |
+| `dataMethod` | `"stringTemplate"` | `"stringTemplate"` or `"payloadPath"`. |
+| `dataTemplate` | `""` | **Required** when `dataMethod: "stringTemplate"`. Message body. Template. |
+| `dataPayloadPath` | `""` | **Required** when `dataMethod: "payloadPath"`. Payload path to message body. |
+| `attributeMethod` | `"individualFields"` | `"individualFields"`, `"jsonTemplate"`, or `"payloadPath"`. |
+| `attributeFields` | `[]` | Array of `{ name, value }` message attribute pairs (individualFields mode). |
+| `attributeTemplate` | `""` | JSON template for attributes (jsonTemplate mode). |
+| `attributePayloadPath` | `""` | Payload path for attributes (payloadPath mode). |
+| `messageGroupIdTemplate` | `""` | **Required** for FIFO queues. Max 128 characters. Template. |
+| `messageDeduplicationIdTemplate` | `""` | Optional deduplication ID for FIFO queues. Template. |
+| `resultPath` | `""` | Payload path to write the send result. |
+
+## Experience workflows
+
+Same as Cloud.
+
+## Edge workflows
+
+> **Minimum GEA version:** 1.39.0
+
+Same as Cloud.

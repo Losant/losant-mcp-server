@@ -1,0 +1,51 @@
+# Validate Payload Node (`type: "ValidatePayloadNode"`)
+
+Validates a value on the workflow payload against a JSON Schema (draft-04). Branches on pass/fail — `outputIds[0]` = valid, `outputIds[1]` = invalid.
+
+## Required Fields
+
+| Field | Value |
+|---|---|
+| `type` | `"ValidatePayloadNode"` |
+| `meta.category` | `"logic"` |
+| `meta.name` | `"validate-payload"` |
+| `meta.label` | `"Validate Payload"` (default) |
+
+## Cloud (Application) workflows
+
+```json
+{
+  "id": "validate",
+  "type": "ValidatePayloadNode",
+  "config": {
+    "schemaType": "json",
+    "schema": "{\"type\":\"object\",\"required\":[\"name\",\"temp\"],\"properties\":{\"name\":{\"type\":\"string\"},\"temp\":{\"type\":\"number\"}}}",
+    "toValidatePath": "data.body",
+    "errorsPath": "working.validationErrors"
+  },
+  "meta": { "category": "logic", "name": "validate-payload", "label": "Validate Payload", "x": 200, "y": 200 },
+  "outputIds": [["handle-valid"], ["handle-invalid"]]
+}
+```
+
+### Config
+
+| Field | Default | Notes |
+|---|---|---|
+| `schemaType` | `"json"` | `"json"` — schema is a JSON string in `schema`. `"path"` — `schema` is a payload path pointing to the schema object. |
+| `schema` | `""` | **Required.** The JSON Schema as a JSON-encoded string (when `schemaType: "json"`) or a payload path (when `schemaType: "path"`). |
+| `toValidatePath` | `""` | **Required.** Payload path of the value to validate. |
+| `errorsPath` | `""` | Payload path to write validation errors on the invalid branch. Errors are an array of objects describing each schema violation. |
+
+### Wiring
+
+`outputIds[0]` — fires when the value passes schema validation.
+`outputIds[1]` — fires when validation fails. Check `errorsPath` for details.
+
+## Experience workflows
+
+Same as Cloud.
+
+## Edge workflows
+
+Same as Cloud.

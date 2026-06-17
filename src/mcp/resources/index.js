@@ -3,14 +3,14 @@ import { readFile } from 'node:fs/promises';
 import { readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
-const SKILLS_PATH = path.join(path.dirname(fileURLToPath(import.meta.url)), 'skills');
+const GUIDES_PATH = path.join(path.dirname(fileURLToPath(import.meta.url)), 'guides');
 
-const walkSkillsDir = (dir) => {
+const walkGuidesDir = (dir) => {
   const files = [];
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
-      files.push(...walkSkillsDir(fullPath));
+      files.push(...walkGuidesDir(fullPath));
     } else if (entry.name.endsWith('.md')) {
       files.push(fullPath);
     }
@@ -179,25 +179,25 @@ export default (server) => {
     server.registerResource(name, uriName, resourceConfig, getContent);
   });
 
-  // Register skill files from src/mcp/resources/skills/ as individual MCP resources
-  const skillFiles = walkSkillsDir(SKILLS_PATH);
-  log(`Loading ${skillFiles.length} skill files...`);
-  for (const filePath of skillFiles) {
-    const relativePath = path.relative(SKILLS_PATH, filePath);
+  // Register guide files from src/mcp/resources/guides/ as individual MCP resources
+  const guideFiles = walkGuidesDir(GUIDES_PATH);
+  log(`Loading ${guideFiles.length} guide files...`);
+  for (const filePath of guideFiles) {
+    const relativePath = path.relative(GUIDES_PATH, filePath);
     const uriPath = relativePath.replace(/\.md$/, '').replace(/\\/g, '/');
-    // SKILL.md at the domain root → losant://skills/{domain}
-    const uriSegment = uriPath.endsWith('/SKILL') ? uriPath.slice(0, -6) : uriPath;
-    const uriName = `losant://skills/${uriSegment}`;
-    const resourceName = `skill-${uriSegment.replace(/\//g, '-')}`;
+    // dashboard-guide.md or workflow-guide.md at the domain root → losant://guides/{domain}
+    const uriSegment = uriPath.endsWith('-guide') ? uriPath.slice(0, -6) : uriPath;
+    const uriName = `losant://guides/${uriSegment}`;
+    const resourceName = `guide-${uriSegment.replace(/\//g, '-')}`;
     server.registerResource(
       resourceName,
       uriName,
-      { title: `Skill: ${uriSegment}`, description: `Losant authoring skill for ${uriSegment}`, mimeType: 'text/markdown' },
+      { title: `Guide: ${uriSegment}`, description: `Losant authoring guide for ${uriSegment}`, mimeType: 'text/markdown' },
       async (uri) => {
         let content = await readFile(filePath, 'utf-8');
-        if (path.basename(filePath) === 'SKILL.md') {
+        if (path.basename(filePath) === 'dashboard-guide.md' || path.basename(filePath) === 'workflow-guide.md') {
           const domain = uriSegment; // e.g. "dashboards" or "workflows"
-          content = `> **URI mapping**: File references like \`blocks/graph.md\` → \`losant://skills/${domain}/blocks/graph\`; \`nodes/http.md\` → \`losant://skills/${domain}/nodes/http\`; \`triggers/timer.md\` → \`losant://skills/${domain}/triggers/timer\`; \`reference/x.md\` → \`losant://skills/${domain}/reference/x\`.\n\n${content}`;
+          content = `> **URI mapping**: File references like \`blocks/graph.md\` → \`losant://guides/${domain}/blocks/graph\`; \`nodes/http.md\` → \`losant://guides/${domain}/nodes/http\`; \`triggers/timer.md\` → \`losant://guides/${domain}/triggers/timer\`; \`reference/x.md\` → \`losant://guides/${domain}/reference/x\`.\n\n${content}`;
         }
         return { contents: [{ uri: uri.href, mimeType: 'text/markdown', text: content }] };
       }

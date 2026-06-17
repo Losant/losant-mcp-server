@@ -9,8 +9,8 @@ indexContent += '- [Integrations Guide](losant://guides/integrations) - Integrat
 indexContent += '- [Data Tables Guide](losant://guides/data-tables) - Column schema, constraints, the dataTable/dataTableRow relationship, and common workflows\n\n';
 indexContent += '- [Resource Jobs Guide](losant://guides/resource-jobs) - The iterate-resources-trigger-workflow pattern, queryJson format, and concurrency settings\n\n';
 indexContent += '- [Credentials Guide](losant://guides/credentials) - Credential types, config objects, and referencing credentials by name\n\n';
-indexContent += '- [Flows Guide](losant://guides/flows) - Flow classes, triggers/nodes overview, versioning — full authoring at losant://skills/workflows\n\n';
-indexContent += '- [Dashboards Guide](losant://guides/dashboards) - Block model, layout grid, context variables — full authoring at losant://skills/dashboards\n\n';
+indexContent += '- [Flows Guide](losant://guides/flows) - Flow classes, triggers/nodes overview, versioning — full authoring at losant://guides/workflows\n\n';
+indexContent += '- [Dashboards Guide](losant://guides/dashboards) - Block model, layout grid, context variables — full authoring at losant://guides/dashboards\n\n';
 indexContent += '- [Files & Private Files Guide](losant://guides/files) - Two-step create-then-upload pattern, public vs. private\n\n';
 indexContent += '- [Notebooks Guide](losant://guides/notebooks) - Two-step upload pattern, input/output types, imageVersion\n\n';
 

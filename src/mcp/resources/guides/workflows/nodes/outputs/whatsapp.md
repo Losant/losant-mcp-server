@@ -1,0 +1,54 @@
+# WhatsApp Node (`type: "WhatsAppNode"`)
+
+The WhatsApp Node sends WhatsApp messages via a WhatsApp Business account. Supports free-form text messages and WhatsApp message templates.
+
+## Required Fields
+
+| Field | Value |
+|---|---|
+| `type` | `"WhatsAppNode"` |
+| `meta.category` | `"output"` |
+| `meta.name` | `"whatsapp"` |
+| `meta.label` | `"WhatsApp"` (default) |
+
+## Cloud (Application) workflows
+
+Two auth methods: service credential or direct (From Number ID + Access Token).
+
+```json
+{
+  "id": "send-whatsapp",
+  "type": "WhatsAppNode",
+  "config": {
+    "credentialNameTemplate": "my-whatsapp-credential",
+    "toNumberTemplates": ["+15559876543"],
+    "messageSourceMethod": "stringTemplate",
+    "messageSourceValue": "Alert: {{working.alertMsg}}",
+    "resultsPath": "working.waResults"
+  },
+  "meta": { "category": "output", "name": "whatsapp", "label": "WhatsApp", "x": 200, "y": 200 },
+  "outputIds": [["next"]]
+}
+```
+
+| Config field | Default | Notes |
+|---|---|---|
+| `credentialNameTemplate` | `""` | **Required** (credential method). WhatsApp Business credential name. |
+| `accessTokenTemplate` | `""` | **Required** (direct method). WhatsApp access token. Template. |
+| `fromNumberIdTemplate` | `""` | **Required** (direct method). From phone number ID. Template. |
+| `toNumberTemplates` | `[]` | **Required.** Array of phone number templates. At least one required. |
+| `messageSourceMethod` | `"stringTemplate"` | **Required.** `"stringTemplate"`, `"payloadPath"`, or `"jsonTemplate"`. |
+| `messageSourceValue` | `""` | **Required.** The message — a string template, payload path, or JSON template per `messageSourceMethod`. |
+| `templateNameTemplate` | `""` | WhatsApp message template name. When set, sends a template message instead of free-form text. Template. |
+| `templateLanguageTemplate` | `""` | **Required** when using a message template. Language code (e.g. `"en_US"`). Template. |
+| `resultsPath` | `""` | Payload path to write the array of per-recipient results. |
+
+## Experience workflows
+
+Same as Cloud.
+
+## Edge workflows
+
+> **Minimum GEA version:** 1.45.0
+
+Same as Cloud.
