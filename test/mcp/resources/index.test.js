@@ -12,20 +12,31 @@ describe('MCP Resources', () => {
     let mockServer;
     let registeredResources;
 
+    let registeredTemplates;
+
     beforeEach(async () => {
       // Reset mock server and tracking
       registeredResources = [];
+      registeredTemplates = [];
       mockServer = {
-        registerResource: (name, uri, config, handler) => {
-          registeredResources.push({ name, uri, config, handler });
+        registerResource: (name, uriOrTemplate, config, handler) => {
+          if (typeof uriOrTemplate === 'string') {
+            registeredResources.push({ name, uri: uriOrTemplate, config, handler });
+          } else {
+            registeredTemplates.push({ name, template: uriOrTemplate, config, handler });
+          }
         }
       };
     });
-    it('should load all markdown documentation files from losant-rest', async () => {
+    it('should register a doc ResourceTemplate instead of individual doc files', async () => {
       registerResourceLoader(mockServer);
+      const docResources = registeredResources.filter((r) => r.uri && r.uri.startsWith('losant://docs/'));
+      docResources.length.should.equal(0);
 
-      const docResources = registeredResources.filter((r) => r.uri.startsWith('losant://docs/') && r.uri !== 'losant://docs/index');
-      docResources.length.should.be.above(47); // There are currently 49 doc files in losant-rest, excluding _schemas.md and index.md
+      const docTemplate = registeredTemplates.find((t) => t.name === 'doc');
+      should.exist(docTemplate);
+      docTemplate.template.uriTemplate.toString().should.equal('losant://docs/{docName}');
+      docTemplate.config.should.have.property('mimeType', 'text/markdown');
     });
 
     it('should filter out _schemas.md from docs', async () => {
@@ -35,27 +46,32 @@ describe('MCP Resources', () => {
       should.not.exist(schemasDoc);
     });
 
-    it('should load all query schema JSON files', async () => {
+    it('should register a schema ResourceTemplate instead of individual schema files', async () => {
       registerResourceLoader(mockServer);
 
-      const schemaResources = registeredResources.filter((r) => r.uri.startsWith('losant://schemas/'));
-      schemaResources.length.should.be.above(10);
+      const schemaResources = registeredResources.filter((r) => r.uri && r.uri.startsWith('losant://schemas/'));
+      schemaResources.length.should.equal(0);
+
+      const schemaTemplate = registeredTemplates.find((t) => t.name === 'schema');
+      should.exist(schemaTemplate);
+      schemaTemplate.template.uriTemplate.toString().should.equal('losant://schemas/{schemaName}');
+      schemaTemplate.config.should.have.property('mimeType', 'application/json');
     });
 
-    it('should register docs with correct URIs (losant://docs/{name})', async () => {
+    it('should register doc template with pattern losant://docs/{docName}', async () => {
       registerResourceLoader(mockServer);
 
-      const applicationDoc = registeredResources.find((r) => r.uri === 'losant://docs/application');
-      should.exist(applicationDoc);
-      applicationDoc.uri.should.equal('losant://docs/application');
+      const docTemplate = registeredTemplates.find((t) => t.name === 'doc');
+      should.exist(docTemplate);
+      docTemplate.template.uriTemplate.toString().should.equal('losant://docs/{docName}');
     });
 
-    it('should register schemas with correct URIs (losant://schemas/{name})', async () => {
+    it('should register schema template with pattern losant://schemas/{schemaName}', async () => {
       registerResourceLoader(mockServer);
 
-      const flowVersionSchema = registeredResources.find((r) => r.uri === 'losant://schemas/advancedFlowVersionQuery');
-      should.exist(flowVersionSchema);
-      flowVersionSchema.uri.should.equal('losant://schemas/advancedFlowVersionQuery');
+      const schemaTemplate = registeredTemplates.find((t) => t.name === 'schema');
+      should.exist(schemaTemplate);
+      schemaTemplate.template.uriTemplate.toString().should.equal('losant://schemas/{schemaName}');
     });
 
     it('should include advanced query guide resource', async () => {
@@ -70,44 +86,40 @@ describe('MCP Resources', () => {
     it('should generate API index with all docs and schemas', async () => {
       registerResourceLoader(mockServer);
 
-      const apiIndex = registeredResources.find((r) => r.uri === 'losant://docs/index');
+      const apiIndex = registeredResources.find((r) => r.uri === 'losant://index');
       should.exist(apiIndex);
-      apiIndex.config.should.have.property('title', 'Losant API Documentation Index');
+      apiIndex.config.should.have.property('title', 'Losant MCP Index');
       apiIndex.config.should.have.property('mimeType', 'text/markdown');
     });
 
-    it('should return correct mimeType for docs (text/markdown)', async () => {
+    it('should register doc template with text/markdown mimeType', async () => {
       registerResourceLoader(mockServer);
 
-      const docResources = registeredResources.filter((r) =>
-        r.uri.startsWith('losant://docs/') && r.uri !== 'losant://docs/index'
-      );
-
-      docResources.forEach((doc) => {
-        doc.config.should.have.property('mimeType', 'text/markdown');
-      });
+      const docTemplate = registeredTemplates.find((t) => t.name === 'doc');
+      should.exist(docTemplate);
+      docTemplate.config.should.have.property('mimeType', 'text/markdown');
     });
 
-    it('should return correct mimeType for schemas (application/json)', async () => {
+    it('should register schema template with application/json mimeType', async () => {
       registerResourceLoader(mockServer);
 
-      const schemaResources = registeredResources.filter((r) => r.uri.startsWith('losant://schemas/'));
-
-      schemaResources.forEach((schema) => {
-        schema.config.should.have.property('mimeType', 'application/json');
-      });
+      const schemaTemplate = registeredTemplates.find((t) => t.name === 'schema');
+      should.exist(schemaTemplate);
+      schemaTemplate.config.should.have.property('mimeType', 'application/json');
     });
 
-    it('should set correct resource names for docs', async () => {
+    it('should register doc template with name "doc"', async () => {
       registerResourceLoader(mockServer);
-      const applicationDoc = registeredResources.find((r) => r.uri === 'losant://docs/application');
-      applicationDoc.name.should.equal('application-docs');
+      const docTemplate = registeredTemplates.find((t) => t.name === 'doc');
+      should.exist(docTemplate);
+      docTemplate.name.should.equal('doc');
     });
 
-    it('should set correct resource names for schemas', async () => {
+    it('should register the schema template with name "schema"', async () => {
       registerResourceLoader(mockServer);
-      const applicationSchema = registeredResources.find((r) => r.uri === 'losant://schemas/advancedApplicationKeyQuery');
-      applicationSchema.name.should.equal('advancedApplicationKeyQuery-schemas');
+      const schemaTemplate = registeredTemplates.find((t) => t.name === 'schema');
+      should.exist(schemaTemplate);
+      schemaTemplate.name.should.equal('schema');
     });
   });
 
@@ -172,7 +184,7 @@ describe('MCP Resources', () => {
     });
 
     it('should provide handler for API index with links', async () => {
-      const result = await client.readResource({ uri: 'losant://docs/index' });
+      const result = await client.readResource({ uri: 'losant://index' });
 
       result.should.have.property('contents');
       result.contents[0].should.have.property('text');

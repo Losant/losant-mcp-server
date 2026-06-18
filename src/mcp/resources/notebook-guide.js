@@ -1,3 +1,4 @@
+import { buildReferenceSection } from './helpers.js';
 const content = `# Notebooks Guide
 
 Notebooks are Jupyter notebook environments that run inside Losant. They can query device data, process it with Python, and write results back to Losant (data tables, files). Like files, they follow a **two-step pattern**: first create the notebook object, then upload the \`.ipynb\` file content.
@@ -86,6 +87,8 @@ Use \`operation=updateOne\` to change the notebook's name, imageVersion, inputs,
 
 ### Trigger a notebook
 Notebooks are executed by a **Notebook Execute** workflow node, not directly via the write tool. After creating the notebook, wire it to a workflow trigger.
+
+${buildReferenceSection(['notebook'])}
 `;
 
 export default {

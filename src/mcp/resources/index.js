@@ -1,5 +1,6 @@
 import path from 'node:path';
 import { readFile } from 'node:fs/promises';
+import { ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js'; // eslint-disable-line import/no-unresolved
 import advancedQueryGuide from './advanced-query-guide.js';
 import queryToolGuide from './query-tool-guide.js';
 import deviceGuide from './device-guide.js';
@@ -15,7 +16,7 @@ import experienceGuide from './experience-guide.js';
 import indexContent from './build-api-index-content.js';
 import debug from 'debug';
 import memoizee from 'memoizee';
-import { DOCS_PATH, MD_FILES, RESOURCE_TYPE_SET, SCHEMA_FILE_ALIASES, SCHEMA_FILES, SCHEMAS_PATH, WRITABLE_RESOURCE_TYPES } from '../../constants.js';
+import { SCHEMA_NAME_TO_FILE, DOC_NAME_TO_FILE, DOCS_PATH, RESOURCE_TYPE_SET, SCHEMAS_PATH, WRITABLE_RESOURCE_TYPES } from '../../constants.js';
 
 const WRITABLE_RESOURCE_TYPE_SET = new Set(WRITABLE_RESOURCE_TYPES);
 const log = debug('losant-mcp-server:mcp:resources');
@@ -33,7 +34,7 @@ const GUIDES_TO_REGISTER = [
   fileGuide,
   notebookGuide,
   experienceGuide
-];
+].sort();
 
 const readFileContent = memoizee(async (filePath, mimeType, href) => {
   let fileInfo = await readFile(filePath, 'utf-8');
@@ -111,68 +112,14 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
   };
 }, { maxAge: 1000 * 60 * 60, primitive: true }); // cache for 1 hour
 
-const registerFileResource = ({ resourceName, file, directory, type, mimeType }) => {
-  const uriName = `losant://${type}/${resourceName}`;
-  return {
-    name: `${resourceName}-${type}`,
-    uriName,
-    resourceConfig: {
-      title: `${resourceName} ${type.toUpperCase()}`,
-      description: `Losant ${type} for ${resourceName}`,
-      mimeType
-    },
-    content: async (uri) => {
-      return readFileContent(path.join(directory, file), mimeType, uri.href);
-    }
-  };
-};
-
 export default (server) => {
-  // the losant rest docs will always be available as resources, so we can use them to generate the input schema for our tools
-  for (const file of MD_FILES) {
-    const resource = registerFileResource({
-      resourceName: file.replace('.md', ''),
-      file,
-      directory: DOCS_PATH,
-      type: 'docs',
-      mimeType: 'text/markdown'
-    });
-    server.registerResource(resource.name, resource.uriName, resource.resourceConfig, resource.content);
-  }
-
-  log(`Loading ${SCHEMA_FILES.length} query schema files...`);
-
-  for (const file of SCHEMA_FILES) {
-    const resource = registerFileResource({
-      resourceName: file.replace('.json', ''),
-      file,
-      directory: SCHEMAS_PATH,
-      type: 'schemas',
-      mimeType: 'application/json'
-    });
-    server.registerResource(resource.name, resource.uriName, resource.resourceConfig, resource.content);
-  }
-
-  for (const [aliasName, file] of Object.entries(SCHEMA_FILE_ALIASES)) {
-    const resource = registerFileResource({
-      resourceName: aliasName,
-      file,
-      directory: SCHEMAS_PATH,
-      type: 'schemas',
-      mimeType: 'application/json'
-    });
-    server.registerResource(resource.name, resource.uriName, resource.resourceConfig, resource.content);
-  }
-  GUIDES_TO_REGISTER.forEach(({ name, uriName, resourceConfig, getContent }) => {
-    server.registerResource(name, uriName, resourceConfig, getContent);
-  });
-
+  log(`Registering ${GUIDES_TO_REGISTER.length + 3} resources...`);
   server.registerResource(
-    'api-index',
-    'losant://docs/index',
+    'index',
+    'losant://index',
     {
-      title: 'Losant API Documentation Index',
-      description: 'Index of all Losant API documentation and query schemas',
+      title: 'Losant MCP Application Index Guide',
+      description: 'Discovery index for all guides, API documentation URIs, and schema URIs available in this MCP server',
       mimeType: 'text/markdown'
     },
     async (uri) => {
@@ -185,4 +132,42 @@ export default (server) => {
       };
     }
   );
+  server.registerResource(
+    'doc',
+    new ResourceTemplate('losant://docs/{docName}', { list: undefined }),
+    {
+      title: 'Losant API Documentation',
+      description: 'Losant REST API documentation — discovered via guide and index links',
+      mimeType: 'text/markdown'
+    },
+    async (uri, { docName }) => {
+      const file = DOC_NAME_TO_FILE[docName];
+      if (!file) {
+        throw new Error(`Doc not found: ${docName}`);
+      }
+      return readFileContent(path.join(DOCS_PATH, file), 'text/markdown', uri.href);
+    }
+  );
+  GUIDES_TO_REGISTER.forEach(({ name, uriName, resourceConfig, getContent }) => {
+    server.registerResource(name, uriName, resourceConfig, getContent);
+  });
+  // log(`Registering schema template for ${Object.keys(SCHEMA_NAME_TO_FILE).length} schemas...`);
+
+  server.registerResource(
+    'schema',
+    new ResourceTemplate('losant://schemas/{schemaName}', { list: undefined }),
+    {
+      title: 'Losant JSON Schema',
+      description: 'JSON schema for a Losant API request body or advanced query — discovered via guide links',
+      mimeType: 'application/json'
+    },
+    async (uri, { schemaName }) => {
+      const file = SCHEMA_NAME_TO_FILE[schemaName];
+      if (!file) {
+        throw new Error(`Schema not found: ${schemaName}`);
+      }
+      return readFileContent(path.join(SCHEMAS_PATH, file), 'application/json', uri.href);
+    }
+  );
+
 };

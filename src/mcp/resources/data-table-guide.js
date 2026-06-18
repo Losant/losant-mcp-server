@@ -1,3 +1,4 @@
+import { buildReferenceSection } from './helpers.js';
 const content = `# Data Tables Guide
 
 A data table is structured tabular storage within a Losant application. Think of it as a simple database table: you define columns on the table, then insert rows. **Columns belong to the \`dataTable\` resource; rows are \`dataTableRow\` resources** — they are queried and managed separately.
@@ -138,6 +139,8 @@ losant_write:
 Only include columns you want to change — omitted columns are left as-is. Use \`losant_query\` \`operation=get\` on \`dataTableRow\` (with \`parentResourceId\`) to retrieve the \`id\` (rowId) of the row to update.
 
 Check \`losant://schemas/dataTableRowPatch\` for the full body schema.
+
+${buildReferenceSection(['dataTable', 'dataTableRow'])}
 `;
 
 export default {

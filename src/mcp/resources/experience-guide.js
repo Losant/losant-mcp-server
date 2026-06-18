@@ -1,3 +1,4 @@
+import { buildReferenceSection } from './helpers.js';
 const content = `# Experiences Guide
 
 Losant Experiences let you build custom web portals and APIs on top of your device data. A request hits an **Endpoint**, which either replies immediately via a static reply (redirect or render a page) or triggers an **Experience Workflow** that builds the reply dynamically. All seven experience resource types are tightly coupled — read this guide before writing any \`experience*\` resource.
@@ -176,6 +177,8 @@ Multiple domains/slugs can point to the same version. Change which version a dom
 1. Create a slug: \`losant_write\` \`operation=createOne\` \`resourceType=experienceSlug\` with the \`slug\` name and \`versionName\`
 2. Or update an existing slug: \`losant_write\` \`operation=updateOne\` \`resourceType=experienceSlug\` — set \`versionName\` to the new version name
 3. Check \`losant://schemas/experienceSlugPost\` and \`losant://schemas/experienceSlugPatch\` for schemas
+
+${buildReferenceSection(['experienceVersion', 'experienceDomain', 'experienceSlug', 'experienceView', 'experienceEndpoint', 'experienceUser', 'experienceGroup'])}
 `;
 
 export default {

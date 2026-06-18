@@ -1,3 +1,4 @@
+import { buildReferenceSection } from './helpers.js';
 const content = `# Integrations Guide
 
 Integrations are bi-directional data bridges between Losant and external messaging systems. When an integration receives a message, it triggers any workflow that has a matching Integration Trigger node. Creating an integration does not process data by itself — it must be paired with a workflow.
@@ -130,6 +131,9 @@ Requires a stored GCP service account credential. Do not embed credentials inlin
 
 ### After creating an integration
 The integration alone does nothing. To process incoming messages, a Workflow must be configured with an **Integration Trigger** node that references this integration's ID. This is done through the Losant UI or workflow API — it cannot be configured via \`losant_write\`.
+
+
+${buildReferenceSection(['integration'])}
 `;
 
 export default {

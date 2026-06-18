@@ -1,3 +1,4 @@
+import { buildReferenceSection } from './helpers.js';
 const content = `# Devices & Device Recipes Guide
 
 Devices are the backbone concept of Losant. Almost everything in the platform exists to serve devices — workflows react to their state, dashboards visualize their data, experiences expose their data to end users. Treat \`device\` and \`deviceRecipe\` as the most important and most nuanced resource types.
@@ -124,10 +125,13 @@ Creating more than 750 devices triggers a background job — include \`"email"\`
 1. Confirm the recipe's template fields (name template, deviceClass, attributes, tags)
 2. Call \`losant_write\` with \`operation=createOne\`, \`resourceType=deviceRecipe\`
 3. Check \`losant://schemas/deviceRecipePost\` for the full body schema
+
+${buildReferenceSection(['device', 'deviceRecipe'])}
 `;
 
 export default {
   name: 'device-guide',
+  resourceTypes: ['device', 'deviceRecipe'],
   uriName: 'losant://guides/devices',
   resourceConfig: {
     title: 'Devices & Device Recipes Guide',

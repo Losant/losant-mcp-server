@@ -126,3 +126,14 @@ export const ALLOWS_ADVANCED_QUERIES_SET = new Set([
   'experienceUser',
   'applicationJobLog'
 ]);
+
+// Maps every valid schema name to its filename on disk (canonical + aliases)
+export const SCHEMA_NAME_TO_FILE = Object.fromEntries([
+  ...SCHEMA_FILES.map((f) => [f.replace('.json', ''), f]),
+  ...Object.entries(SCHEMA_FILE_ALIASES)
+]);
+
+// Maps every valid doc name (URI path segment) to its filename on disk
+export const DOC_NAME_TO_FILE = Object.fromEntries(
+  MD_FILES.map((f) => [f.replace('.md', ''), f])
+);

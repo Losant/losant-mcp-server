@@ -34,7 +34,7 @@ Some resources require a parent resource ID via the \`parentResourceId\` paramet
 
 ${nestedNote}
 
-For a complete index of all available documentation and schemas, see [losant://docs/index](losant://docs/index).
+For a complete index of all available documentation and schemas, see [losant://index](losant://index).
 
 ## Advanced Queries
 
@@ -42,11 +42,11 @@ For MongoDB-style filtering, use the \`query\` parameter instead of \`filterFiel
 `;
 
 export default {
-  name: 'losant-query-resources-guide',
-  uriName: 'losant://guides/losant-resources-query',
+  name: 'losant-query-tool-guide',
+  uriName: 'losant://guides/losant-query-tool',
   resourceConfig: {
     title: 'Losant Query Tool Guide',
-    description: 'Workflow guide for the losant_query tool — application selection, nested resources, and resource documentation links',
+    description: 'READ THIS BEFORE USING: losant_query tool. Workflow guide for the losant_query tool: application selection, nested resources, resource documentation links, and resource-specific query documentation links.',
     mimeType: 'text/markdown'
   },
   getContent: async (uri) => {

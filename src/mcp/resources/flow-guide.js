@@ -1,3 +1,4 @@
+import { buildReferenceSection } from './helpers.js';
 const content = `# Flows Guide
 
 Flows (workflows) are the automation engine of Losant. A flow defines triggers (what starts it) and nodes (what it does). This guide covers what you need to know to create and update flows via \`losant_write\`.
@@ -66,6 +67,8 @@ Requires \`parentResourceId\` = the \`flowId\`. Versions are immutable — \`upd
 
 ### Snapshot a version
 After the develop version is stable, call \`losant_write\` \`operation=createOne\` \`resourceType=flowVersion\` with \`parentResourceId\` = flowId.
+
+${buildReferenceSection(['flow', 'flowVersion'])}
 `;
 
 export default {

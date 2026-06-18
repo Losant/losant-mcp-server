@@ -1,26 +1,27 @@
 import { APPLICATION_RESOURCES, MD_FILES, SCHEMA_FILE_ALIASES, SCHEMA_FILES } from '../../constants.js';
 
-let indexContent = '# Losant API Documentation\n\n';
-indexContent += '## Quick Links\n\n';
-indexContent += '- [Advanced Query Guide](losant://guides/advanced-queries) - Learn how to build MongoDB-style queries\n\n';
-indexContent += '- [Losant Query Tool Guide](losant://guides/losant-resources-query) - Workflow guide for the losant_query tool — application selection, nested resources, and resource documentation links\n\n';
-indexContent += '- [Devices & Device Recipes Guide](losant://guides/devices) - Domain guide for devices and recipes — classes, attributes, tags, and common workflows\n\n';
-indexContent += '- [Integrations Guide](losant://guides/integrations) - Integration types, required config objects, credential usage, and workflow pairing\n\n';
-indexContent += '- [Data Tables Guide](losant://guides/data-tables) - Column schema, constraints, the dataTable/dataTableRow relationship, and common workflows\n\n';
-indexContent += '- [Resource Jobs Guide](losant://guides/resource-jobs) - The iterate-resources-trigger-workflow pattern, queryJson format, and concurrency settings\n\n';
-indexContent += '- [Credentials Guide](losant://guides/credentials) - Credential types, config objects, and referencing credentials by name\n\n';
-indexContent += '- [Flows Guide](losant://guides/flows) - Flow classes, triggers/nodes overview, versioning — full authoring at losant://skills/workflows\n\n';
-indexContent += '- [Dashboards Guide](losant://guides/dashboards) - Block model, layout grid, context variables — full authoring at losant://skills/dashboards\n\n';
-indexContent += '- [Files & Private Files Guide](losant://guides/files) - Two-step create-then-upload pattern, public vs. private\n\n';
-indexContent += '- [Notebooks Guide](losant://guides/notebooks) - Two-step upload pattern, input/output types, imageVersion\n\n';
-indexContent += '- [Experiences Guide](losant://guides/experiences) - Versioning model, views, endpoints, users, groups, domains, and slugs\n\n';
+let indexContent = `# Losant API Documentation
+## Quick Links
+- [Advanced Query Guide](losant://guides/advanced-queries) - Learn how to build MongoDB-style queries
+- [Losant Query Tool Guide](losant://guides/losant-resources-query) - Workflow guide for the losant_query tool — application selection, nested resources, and resource documentation links
+- [Devices & Device Recipes Guide](losant://guides/devices) - Domain guide for devices and recipes — classes, attributes, tags, and common workflows
+- [Integrations Guide](losant://guides/integrations) - Integration types, required config objects, credential usage, and workflow pairing
+- [Data Tables Guide](losant://guides/data-tables) - Column schema, constraints, the dataTable/dataTableRow relationship, and common workflows
+- [Resource Jobs Guide](losant://guides/resource-jobs) - The iterate-resources-trigger-workflow pattern, queryJson format, and concurrency settings
+- [Credentials Guide](losant://guides/credentials) - Credential types, config objects, and referencing credentials by name
+- [Flows Guide](losant://guides/flows) - Flow classes, triggers/nodes overview, versioning — full authoring at losant://skills/workflows
+- [Dashboards Guide](losant://guides/dashboards) - Block model, layout grid, context variables — full authoring at losant://skills/dashboards
+- [Files & Private Files Guide](losant://guides/files) - Two-step create-then-upload pattern, public vs. private
+- [Notebooks Guide](losant://guides/notebooks) - Two-step upload pattern, input/output types, imageVersion
+- [Experiences Guide](losant://guides/experiences) - Versioning model, views, endpoints, users, groups, domains, and slugs
 
-indexContent += '\n## Supported Resources\n\n';
-indexContent += 'The following resources can be queried with the losant_query tool:\n\n';
-indexContent += '### Top-Level Resources\n';
-indexContent += '- **application** - Search and retrieve applications (use this first to get applicationId)\n\n';
-indexContent += '### Application-Scoped Resources\n';
-indexContent += 'These require an applicationId parameter:\n\n';
+## Supported Resources
+The following resources can be queried with the losant_query tool:
+### Top-Level Resources
+- **application** - Search and retrieve applications (use this first to get applicationId)
+### Application-Scoped Resources
+These require an applicationId parameter:`;
+
 APPLICATION_RESOURCES.forEach((resource) => {
   indexContent += `- ${resource}\n`;
 });
