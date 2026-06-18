@@ -35,10 +35,6 @@ Minimal body — create an empty flow and build it up with subsequent \`updateOn
 The \`flowPost\` / \`flowPatch\` schemas are large (86KB). Read \`losant://schemas/flowPost\` for the complete trigger and node type reference.
 
 For the wiring model, trigger configuration, and per-node config details read:
-- \`losant://skills/workflows\` — full authoring guide (trigger catalog, node catalog, wiring model, loops, conditionals)
-- \`losant://skills/workflows/nodes/{nodeName}\` — per-node detail
-- \`losant://skills/workflows/triggers/{triggerName}\` — per-trigger detail
-- \`losant://skills/workflows/reference/error-handling\` — errorBehavior / errorPath pattern
 
 ## Workflow Versions
 
@@ -63,7 +59,7 @@ Requires \`parentResourceId\` = the \`flowId\`. Versions are immutable — \`upd
 1. Use \`losant_query\` \`operation=get\` \`resourceType=flow\` to retrieve current \`triggers\` and \`nodes\` arrays
 2. Append or modify entries
 3. Call \`losant_write\` \`operation=updateOne\` with the full updated \`triggers\` and \`nodes\` arrays
-4. Read \`losant://skills/workflows\` before constructing trigger/node JSON — the wiring model requires \`outputIds\` to be correct
+
 
 ### Snapshot a version
 After the develop version is stable, call \`losant_write\` \`operation=createOne\` \`resourceType=flowVersion\` with \`parentResourceId\` = flowId.

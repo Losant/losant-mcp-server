@@ -67,7 +67,9 @@ export const ALLOW_BULK_CREATE_TYPES = new Set([
 ]);
 
 export const ALLOW_UPDATE_MANY_TYPES = new Set(['event']);
-export const NO_CREATE_TYPES = new Set(['event', 'application', 'applicationReadme']);       // created by devices/workflows, not the LLM
+// events created by devices/workflows, not the LLM
+// applications and their readmes are not created by the MCP
+export const NO_CREATE_TYPES = new Set(['event', 'application', 'applicationReadme']);
 export const NO_UPDATE_TYPES = new Set(['flowVersion']); // versions are immutable after creation
 
 // require.resolve('losant-rest') returns .../losant-rest/lib/index.js

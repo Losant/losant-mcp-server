@@ -24,17 +24,17 @@ const log = debug('losant-mcp-server:mcp:resources');
 const GUIDES_TO_REGISTER = [
   advancedQueryGuide,
   queryToolGuide,
-  deviceGuide,
-  integrationGuide,
-  dataTableGuide,
-  resourceJobGuide,
   credentialGuide,
-  flowGuide,
   dashboardGuide,
+  dataTableGuide,
+  deviceGuide,
+  experienceGuide,
+  flowGuide,
   fileGuide,
+  integrationGuide,
   notebookGuide,
-  experienceGuide
-].sort();
+  resourceJobGuide
+];
 
 const readFileContent = memoizee(async (filePath, mimeType, href) => {
   let fileInfo = await readFile(filePath, 'utf-8');
