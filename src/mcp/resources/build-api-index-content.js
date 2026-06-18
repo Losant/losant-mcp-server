@@ -3,7 +3,7 @@ import { APPLICATION_RESOURCES, MD_FILES, SCHEMA_FILE_ALIASES, SCHEMA_FILES } fr
 let indexContent = `# Losant API Documentation
 ## Quick Links
 - [Advanced Query Guide](losant://guides/advanced-queries) - Learn how to build MongoDB-style queries
-- [Losant Query Tool Guide](losant://guides/losant-resources-query) - Workflow guide for the losant_query tool — application selection, nested resources, and resource documentation links
+- [Losant Query Tool Guide](losant://guides/losant-query-tool) - Workflow guide for the losant_query tool — application selection, nested resources, and resource documentation links
 - [Devices & Device Recipes Guide](losant://guides/devices) - Domain guide for devices and recipes — classes, attributes, tags, and common workflows
 - [Integrations Guide](losant://guides/integrations) - Integration types, required config objects, credential usage, and workflow pairing
 - [Data Tables Guide](losant://guides/data-tables) - Column schema, constraints, the dataTable/dataTableRow relationship, and common workflows

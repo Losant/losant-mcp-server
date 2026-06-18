@@ -88,7 +88,7 @@ describe('MCP Resources', () => {
 
       const apiIndex = registeredResources.find((r) => r.uri === 'losant://index');
       should.exist(apiIndex);
-      apiIndex.config.should.have.property('title', 'Losant MCP Index');
+      apiIndex.config.should.have.property('title', 'Losant MCP Application Index Guide');
       apiIndex.config.should.have.property('mimeType', 'text/markdown');
     });
 
@@ -160,11 +160,11 @@ describe('MCP Resources', () => {
     });
 
     it('should provide handler for losant query tool guide', async () => {
-      const result = await client.readResource({ uri: 'losant://guides/losant-resources-query' });
+      const result = await client.readResource({ uri: 'losant://guides/losant-query-tool' });
 
       result.should.have.property('contents');
       result.contents.should.be.an.Array();
-      result.contents[0].should.have.property('uri', 'losant://guides/losant-resources-query');
+      result.contents[0].should.have.property('uri', 'losant://guides/losant-query-tool');
       result.contents[0].should.have.property('mimeType', 'text/markdown');
       result.contents[0].should.have.property('text');
       // Should contain query guide content

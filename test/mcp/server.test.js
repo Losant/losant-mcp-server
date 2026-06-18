@@ -70,7 +70,7 @@ describe('MCP Server', () => {
       const apiIndex = server._registeredResources['losant://index'];
 
       apiIndex.should.have.property('name', 'index');
-      apiIndex.metadata.should.have.property('title', 'Losant MCP Index');
+      apiIndex.metadata.should.have.property('title', 'Losant MCP Application Index Guide');
       apiIndex.metadata.should.have.property('mimeType', 'text/markdown');
     });
 
