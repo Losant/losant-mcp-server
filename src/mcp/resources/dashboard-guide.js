@@ -1,3 +1,4 @@
+import { buildReferenceSection } from './helpers.js';
 const content = `# Dashboards Guide
 
 Application dashboards display device data, events, and other Losant resources in a configurable grid of blocks. This guide covers what you need to know to create and update dashboards via \`losant_write\`.
@@ -68,6 +69,8 @@ The \`config\` object is block-type-specific — read the per-block guide file b
 
 ### Use context variables
 Read \`losant://guides/dashboards/reference/context-configuration\` before adding \`contextConfiguration\` — context variables let one dashboard serve many devices or data sources.
+
+${buildReferenceSection(['applicationDashboard'])}
 `;
 
 export default {

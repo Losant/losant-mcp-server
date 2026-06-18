@@ -25,46 +25,6 @@ describe('write-resources tool', () => {
       writeResourcesTool.inputInfo.annotations.idempotentHint.should.be.false();
     });
   });
-  // TODO maybe we need this maybe its the API's problem...
-  describe.skip('Validation', () => {
-    it('should require resourceId for update operation', async () => {
-      const result = await writeTool({
-        operation: 'updateOne',
-        resourceType: 'webhook',
-        applicationId: APP_ID,
-        body: { name: 'My Webhook' }
-      });
-      result.isError.should.be.true();
-      const error = JSON.parse(result.content[0].text);
-      error.data.errors[0].should.have.property('fieldName', 'resourceId');
-    });
-
-    it('should return body validation errors for invalid create body', async () => {
-      const result = await writeTool({
-        operation: 'createOne',
-        resourceType: 'webhook',
-        applicationId: APP_ID,
-        body: {}
-      });
-      result.isError.should.be.true();
-      const error = JSON.parse(result.content[0].text);
-      error.should.have.property('message', 'MCP error -32600: Body validation failed');
-      error.data.errors.length.should.be.above(0);
-    });
-
-    it('should return body validation errors for invalid update body', async () => {
-      const result = await writeTool({
-        operation: 'updateOne',
-        resourceType: 'webhook',
-        applicationId: APP_ID,
-        resourceId: '507f1f77bcf86cd799439011',
-        body: { url: 12345 }
-      });
-      result.isError.should.be.true();
-      const error = JSON.parse(result.content[0].text);
-      error.should.have.property('message', 'MCP error -32600: Body validation failed');
-    });
-  });
 
   describe('Create Operation', () => {
     it('should create a webhook', async () => {

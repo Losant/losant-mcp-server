@@ -1,3 +1,4 @@
+import { buildReferenceSection } from './helpers.js';
 const content = `# Files & Private Files Guide
 
 Losant stores files and private files within an application. Both follow a **two-step pattern**: first create the file object via \`losant_write\`, then upload the actual file content to the presigned S3 URL returned in the response.
@@ -91,6 +92,8 @@ No upload step needed — directories are pure metadata.
 
 ### Check for an existing file before uploading
 Use \`losant_query\` \`operation=list\` \`resourceType=file\` with \`filterField=name\` and \`filter=filename\` to check if the file already exists.
+
+${buildReferenceSection(['file', 'privateFile'])}
 `;
 
 export default {

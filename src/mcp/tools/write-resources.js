@@ -1,25 +1,9 @@
 import { z } from 'zod';
-import { readFileSync } from 'node:fs';
-import path from 'node:path';
-import { WRITABLE_RESOURCE_TYPES, ALLOW_BULK_CREATE_TYPES, ALLOW_UPDATE_MANY_TYPES, NO_CREATE_TYPES, NO_UPDATE_TYPES, NESTED_RESOURCES, SCHEMAS_PATH } from '../../constants.js';
+import { WRITABLE_RESOURCE_TYPES, ALLOW_BULK_CREATE_TYPES, ALLOW_UPDATE_MANY_TYPES, NO_CREATE_TYPES, NO_UPDATE_TYPES, NESTED_RESOURCES } from '../../constants.js';
 import debug from 'debug';
 import { restToMCPError, invalidRequestError } from '../../helpers/errors.js';
 import { getResourceFieldId } from './helpers.js';
 const log = debug('losant-mcp-server:tools:write-resources');
-
-const SCHEMA_PATH_OVERRIDES = {
-  dataTableRow: { post: 'dataTableRowInsert.json', patch: 'dataTableRowInsertUpdate.json' },
-  privateFile: { post: 'filePost.json', patch: 'filePatch.json' },
-  applicationDashboard: { post: 'applicationDashboardPost.json', patch: 'applicationDashboardPost.json' }
-};
-
-// Pre-load and compile schemas at startup to avoid per-request I/O
-const bodySchemas = {};
-for (const type of WRITABLE_RESOURCE_TYPES) {
-  const { post: postFile = `${type}Post.json`, patch: patchFile = `${type}Patch.json` } = SCHEMA_PATH_OVERRIDES[type] ?? {};
-  bodySchemas[`${type}Post`] = z.fromJSONSchema(JSON.parse(readFileSync(path.join(SCHEMAS_PATH, postFile), 'utf8')));
-  bodySchemas[`${type}Patch`] = z.fromJSONSchema(JSON.parse(readFileSync(path.join(SCHEMAS_PATH, patchFile), 'utf8')));
-}
 
 const BULK_CREATE_TYPE_TO_BODY_NAME = {
   deviceRecipe: 'bulkInfo'
@@ -34,7 +18,7 @@ export default {
       destructiveHint: false
     },
     title: 'Create or Update Losant Resources',
-    description: `Create or update Losant resources: ${WRITABLE_RESOURCE_TYPES.join(', ')}. Check losant://schemas/{resourceType}Post or losant://schemas/{resourceType}Patch for the body schema before calling. Read the relevant guide first: losant://guides/devices (device, deviceRecipe), losant://guides/integrations (integration), losant://guides/data-tables (dataTable, dataTableRow), losant://guides/resource-jobs (resourceJob), losant://guides/credentials (credential), losant://guides/files (file, privateFile), losant://guides/notebooks (notebook), losant://guides/flows (flow, flowVersion), losant://guides/dashboards (applicationDashboard).`,
+    description: `Create or update Losant resources: ${WRITABLE_RESOURCE_TYPES.join(', ')}. Check losant://schemas/{resourceType}Post or losant://schemas/{resourceType}Patch for the body schema before calling. Read the relevant guide first: losant://guides/devices (device, deviceRecipe), losant://guides/integrations (integration), losant://guides/data-tables (dataTable, dataTableRow), losant://guides/resource-jobs (resourceJob), losant://guides/credentials (credential), losant://guides/files (file, privateFile), losant://guides/notebooks (notebook), losant://guides/flows (flow, flowVersion), losant://guides/dashboards (applicationDashboard), losant://guides/experiences (experienceDomain, experienceEndpoint, experienceGroup, experienceSlug, experienceUser, experienceVersion, experienceView).`,
     inputSchema: z.fromJSONSchema({
       type: 'object',
       properties: {
@@ -54,7 +38,7 @@ export default {
         },
         resourceId: {
           type: 'string',
-          description: 'Resource ID — required for "updateOne" and "createMany" operations'
+          description: 'Resource ID — required for "updateOne" and "createMany" operations except when updating application OR applicationReadme.'
         },
         parentResourceId: {
           type: 'string',
@@ -106,10 +90,10 @@ export default {
         });
       }
 
-      if (operation === 'updateOne' && !resourceId) {
+      if (operation === 'updateOne' && resourceType !== 'application' && resourceType !== 'applicationReadme' && !resourceId) {
         return invalidRequestError({
           message: 'Tool input validation failed',
-          errors: [{ fieldName: 'resourceId', details: 'The "updateOne" operation requires a resourceId.' }]
+          errors: [{ fieldName: 'resourceId', details: 'The "updateOne" operation requires a resourceId unless the resourceType is "application" or "applicationReadme".' }]
         });
       }
 
@@ -134,19 +118,6 @@ export default {
           errors: [{ fieldName: 'parentResourceId', details: `The "${resourceType}" resource type requires a parentResourceId (${parentFieldName}).` }]
         });
       }
-      // for now let the API validate it
-      // const schemaKey = `${resourceType}${operation === 'createOne' ? 'Post' : 'Patch'}`;
-      // const parseResult = bodySchemas[schemaKey].safeParse(body);
-      // if (!parseResult.success) {
-      //   return invalidRequestError({
-      //     message: 'Body validation failed',
-      //     errors: parseResult.error.issues.map((issue) => ({
-      //       fieldName: issue.path.join('.') || 'body',
-      //       details: issue.message
-      //     }))
-      //   });
-      // }
-
       const requestParams = { applicationId, _links: false, _actions: false, _embedded: false };
       if (parentFieldName) { requestParams[parentFieldName] = parentResourceId; }
       try {
@@ -177,11 +148,23 @@ export default {
             [resourceType]: body
           });
         } else {
-          response = await losantClient[resourceType === 'applicationDashboard' ? 'dashboard' : resourceType].patch({
-            ...requestParams,
-            [getResourceFieldId(resourceType)]: resourceId,
-            [resourceType]: body
-          });
+          if (resourceType === 'applicationReadme') {
+            response = await losantClient.application.readmePatch({
+              ...requestParams,
+              readme: body
+            });
+          } else if (resourceType === 'application') {
+            response = await losantClient.application.patch({
+              ...requestParams,
+              application: body
+            });
+          } else {
+            response = await losantClient[resourceType === 'applicationDashboard' ? 'dashboard' : resourceType].patch({
+              ...requestParams,
+              [getResourceFieldId(resourceType)]: resourceId,
+              [resourceType]: body
+            });
+          }
         }
         return {
           content: [{ type: 'text', text: JSON.stringify(response, null, 2) }]

@@ -1,22 +1,6 @@
 import path from 'node:path';
 import { readFile } from 'node:fs/promises';
-import { readdirSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-
-const GUIDES_PATH = path.join(path.dirname(fileURLToPath(import.meta.url)), 'guides');
-
-const walkGuidesDir = (dir) => {
-  const files = [];
-  for (const entry of readdirSync(dir, { withFileTypes: true })) {
-    const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      files.push(...walkGuidesDir(fullPath));
-    } else if (entry.name.endsWith('.md')) {
-      files.push(fullPath);
-    }
-  }
-  return files;
-};
+import { ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js'; // eslint-disable-line import/no-unresolved
 import advancedQueryGuide from './advanced-query-guide.js';
 import queryToolGuide from './query-tool-guide.js';
 import deviceGuide from './device-guide.js';
@@ -28,10 +12,11 @@ import flowGuide from './flow-guide.js';
 import dashboardGuide from './dashboard-guide.js';
 import fileGuide from './file-guide.js';
 import notebookGuide from './notebook-guide.js';
+import experienceGuide from './experience-guide.js';
 import indexContent from './build-api-index-content.js';
 import debug from 'debug';
 import memoizee from 'memoizee';
-import { DOCS_PATH, MD_FILES, RESOURCE_TYPE_SET, SCHEMA_FILE_ALIASES, SCHEMA_FILES, SCHEMAS_PATH, WRITABLE_RESOURCE_TYPES } from '../../constants.js';
+import { SCHEMA_NAME_TO_FILE, DOC_NAME_TO_FILE, DOCS_PATH, RESOURCE_TYPE_SET, SCHEMAS_PATH, WRITABLE_RESOURCE_TYPES } from '../../constants.js';
 
 const WRITABLE_RESOURCE_TYPE_SET = new Set(WRITABLE_RESOURCE_TYPES);
 const log = debug('losant-mcp-server:mcp:resources');
@@ -39,15 +24,16 @@ const log = debug('losant-mcp-server:mcp:resources');
 const GUIDES_TO_REGISTER = [
   advancedQueryGuide,
   queryToolGuide,
-  deviceGuide,
-  integrationGuide,
-  dataTableGuide,
-  resourceJobGuide,
   credentialGuide,
-  flowGuide,
   dashboardGuide,
+  dataTableGuide,
+  deviceGuide,
+  experienceGuide,
   fileGuide,
-  notebookGuide
+  flowGuide,
+  integrationGuide,
+  notebookGuide,
+  resourceJobGuide
 ];
 
 const readFileContent = memoizee(async (filePath, mimeType, href) => {
@@ -88,6 +74,9 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
     if (filePath.endsWith('notebook.md') || filePath.endsWith('notebooks.md')) {
       disclaimerLines.push('\nSee [losant://guides/notebooks](losant://guides/notebooks) for the two-step upload pattern and input/output type reference.');
     }
+    if (filePath.includes('experience')) {
+      disclaimerLines.push('\nSee [losant://guides/experiences](losant://guides/experiences) for the versioning model, view sub-types, endpoint access control, and common workflows.');
+    }
     if (filePath.endsWith('data.md')) {
       disclaimerLines.push('- endpoint "timeSeriesQuery" used by tool `losant_timeseries` as operation "timeSeriesQuery"');
       disclaimerLines.push('- endpoint "lastValueQuery" used by tool `losant_timeseries` as operation "lastValueQuery"');
@@ -123,93 +112,14 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
   };
 }, { maxAge: 1000 * 60 * 60, primitive: true }); // cache for 1 hour
 
-const registerFileResource = ({ resourceName, file, directory, type, mimeType }) => {
-  const uriName = `losant://${type}/${resourceName}`;
-  return {
-    name: `${resourceName}-${type}`,
-    uriName,
-    resourceConfig: {
-      title: `${resourceName} ${type.toUpperCase()}`,
-      description: `Losant ${type} for ${resourceName}`,
-      mimeType
-    },
-    content: async (uri) => {
-      return readFileContent(path.join(directory, file), mimeType, uri.href);
-    }
-  };
-};
-
 export default (server) => {
-  // the losant rest docs will always be available as resources, so we can use them to generate the input schema for our tools
-  for (const file of MD_FILES) {
-    const resource = registerFileResource({
-      resourceName: file.replace('.md', ''),
-      file,
-      directory: DOCS_PATH,
-      type: 'docs',
-      mimeType: 'text/markdown'
-    });
-    server.registerResource(resource.name, resource.uriName, resource.resourceConfig, resource.content);
-  }
-
-  log(`Loading ${SCHEMA_FILES.length} query schema files...`);
-
-  for (const file of SCHEMA_FILES) {
-    const resource = registerFileResource({
-      resourceName: file.replace('.json', ''),
-      file,
-      directory: SCHEMAS_PATH,
-      type: 'schemas',
-      mimeType: 'application/json'
-    });
-    server.registerResource(resource.name, resource.uriName, resource.resourceConfig, resource.content);
-  }
-
-  for (const [aliasName, file] of Object.entries(SCHEMA_FILE_ALIASES)) {
-    const resource = registerFileResource({
-      resourceName: aliasName,
-      file,
-      directory: SCHEMAS_PATH,
-      type: 'schemas',
-      mimeType: 'application/json'
-    });
-    server.registerResource(resource.name, resource.uriName, resource.resourceConfig, resource.content);
-  }
-  GUIDES_TO_REGISTER.forEach(({ name, uriName, resourceConfig, getContent }) => {
-    server.registerResource(name, uriName, resourceConfig, getContent);
-  });
-
-  // Register guide files from src/mcp/resources/guides/ as individual MCP resources
-  const guideFiles = walkGuidesDir(GUIDES_PATH);
-  log(`Loading ${guideFiles.length} guide files...`);
-  for (const filePath of guideFiles) {
-    const relativePath = path.relative(GUIDES_PATH, filePath);
-    const uriPath = relativePath.replace(/\.md$/, '').replace(/\\/g, '/');
-    // dashboard-guide.md or workflow-guide.md at the domain root → losant://guides/{domain}
-    const uriSegment = uriPath.endsWith('-guide') ? uriPath.slice(0, -6) : uriPath;
-    const uriName = `losant://guides/${uriSegment}`;
-    const resourceName = `guide-${uriSegment.replace(/\//g, '-')}`;
-    server.registerResource(
-      resourceName,
-      uriName,
-      { title: `Guide: ${uriSegment}`, description: `Losant authoring guide for ${uriSegment}`, mimeType: 'text/markdown' },
-      async (uri) => {
-        let content = await readFile(filePath, 'utf-8');
-        if (path.basename(filePath) === 'dashboard-guide.md' || path.basename(filePath) === 'workflow-guide.md') {
-          const domain = uriSegment; // e.g. "dashboards" or "workflows"
-          content = `> **URI mapping**: File references like \`blocks/graph.md\` → \`losant://guides/${domain}/blocks/graph\`; \`nodes/http.md\` → \`losant://guides/${domain}/nodes/http\`; \`triggers/timer.md\` → \`losant://guides/${domain}/triggers/timer\`; \`reference/x.md\` → \`losant://guides/${domain}/reference/x\`.\n\n${content}`;
-        }
-        return { contents: [{ uri: uri.href, mimeType: 'text/markdown', text: content }] };
-      }
-    );
-  }
-
+  log(`Registering ${GUIDES_TO_REGISTER.length + 3} resources...`);
   server.registerResource(
-    'api-index',
-    'losant://docs/index',
+    'index',
+    'losant://index',
     {
-      title: 'Losant API Documentation Index',
-      description: 'Index of all Losant API documentation and query schemas',
+      title: 'Losant MCP Application Index Guide',
+      description: 'Discovery index for all guides, API documentation URIs, and schema URIs available in this MCP server',
       mimeType: 'text/markdown'
     },
     async (uri) => {
@@ -222,4 +132,42 @@ export default (server) => {
       };
     }
   );
+  server.registerResource(
+    'doc',
+    new ResourceTemplate('losant://docs/{docName}', { list: undefined }),
+    {
+      title: 'Losant API Documentation',
+      description: 'Losant REST API documentation — discovered via guide and index links',
+      mimeType: 'text/markdown'
+    },
+    async (uri, { docName }) => {
+      const file = DOC_NAME_TO_FILE[docName];
+      if (!file) {
+        throw new Error(`Doc not found: ${docName}`);
+      }
+      return readFileContent(path.join(DOCS_PATH, file), 'text/markdown', uri.href);
+    }
+  );
+  GUIDES_TO_REGISTER.forEach(({ name, uriName, resourceConfig, getContent }) => {
+    server.registerResource(name, uriName, resourceConfig, getContent);
+  });
+  // log(`Registering schema template for ${Object.keys(SCHEMA_NAME_TO_FILE).length} schemas...`);
+
+  server.registerResource(
+    'schema',
+    new ResourceTemplate('losant://schemas/{schemaName}', { list: undefined }),
+    {
+      title: 'Losant JSON Schema',
+      description: 'JSON schema for a Losant API request body or advanced query — discovered via guide links',
+      mimeType: 'application/json'
+    },
+    async (uri, { schemaName }) => {
+      const file = SCHEMA_NAME_TO_FILE[schemaName];
+      if (!file) {
+        throw new Error(`Schema not found: ${schemaName}`);
+      }
+      return readFileContent(path.join(SCHEMAS_PATH, file), 'application/json', uri.href);
+    }
+  );
+
 };

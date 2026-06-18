@@ -1,3 +1,4 @@
+import { buildReferenceSection } from './helpers.js';
 const content = `# Credentials Guide
 
 Credentials store reusable secrets for connecting to external services. They are referenced by name in integrations, workflow nodes, and other resources — avoiding the need to embed secrets inline.
@@ -212,6 +213,8 @@ Query \`losant_query\` with \`resourceType=credential\` and \`filterField=name\`
 
 ### Reference a credential in an integration or node
 Use the credential's \`name\` field as the \`credentialName\` value in the resource that needs it. Never re-read the credential to extract its secret fields — use the name reference only.
+
+${buildReferenceSection(['credential'])}
 `;
 
 export default {

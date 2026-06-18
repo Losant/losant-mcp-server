@@ -47,9 +47,18 @@ export const WRITABLE_RESOURCE_TYPES = [
   'file',
   'privateFile',
   'notebook',
-  'flow',
-  'flowVersion',
-  'applicationDashboard'
+  'applicationDashboard',
+  'experienceDomain',
+  'experienceEndpoint',
+  'experienceGroup',
+  'experienceSlug',
+  'experienceUser',
+  'experienceVersion',
+  'experienceView',
+  'application',
+  'applicationReadme'
+  // 'flow', will be added in another branch
+  // 'flowVersion', will be added in another branch
 ];
 
 export const ALLOW_BULK_CREATE_TYPES = new Set([
@@ -58,7 +67,9 @@ export const ALLOW_BULK_CREATE_TYPES = new Set([
 ]);
 
 export const ALLOW_UPDATE_MANY_TYPES = new Set(['event']);
-export const NO_CREATE_TYPES = new Set(['event']);       // created by devices/workflows, not the LLM
+// events created by devices/workflows, not the LLM
+// applications and their readmes are not created by the MCP
+export const NO_CREATE_TYPES = new Set(['event', 'application', 'applicationReadme']);
 export const NO_UPDATE_TYPES = new Set(['flowVersion']); // versions are immutable after creation
 
 // require.resolve('losant-rest') returns .../losant-rest/lib/index.js
@@ -117,3 +128,14 @@ export const ALLOWS_ADVANCED_QUERIES_SET = new Set([
   'experienceUser',
   'applicationJobLog'
 ]);
+
+// Maps every valid schema name to its filename on disk (canonical + aliases)
+export const SCHEMA_NAME_TO_FILE = Object.fromEntries([
+  ...SCHEMA_FILES.map((f) => [f.replace('.json', ''), f]),
+  ...Object.entries(SCHEMA_FILE_ALIASES)
+]);
+
+// Maps every valid doc name (URI path segment) to its filename on disk
+export const DOC_NAME_TO_FILE = Object.fromEntries(
+  MD_FILES.map((f) => [f.replace('.md', ''), f])
+);

@@ -1,6 +1,14 @@
 import '../common.js';
 import should from 'should';
 import { createMCPServer } from '../../src/mcp/server.js';
+import { Client } from '@modelcontextprotocol/sdk/client/index.js'; // eslint-disable-line import/no-unresolved
+import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js'; // eslint-disable-line import/no-unresolved
+import { SCHEMA_FILES, SCHEMA_FILE_ALIASES } from '../../src/constants.js';
+
+export const REGISTERED_SCHEMA_URIS = [
+  ...SCHEMA_FILES.map((f) => `losant://schemas/${f.replace('.json', '')}`),
+  ...Object.keys(SCHEMA_FILE_ALIASES).map((alias) => `losant://schemas/${alias}`)
+].sort();
 
 describe('MCP Server', () => {
   let server;
@@ -42,10 +50,10 @@ describe('MCP Server', () => {
       });
     });
 
-    it('should load documentation resources', () => {
-      should.exist(server._registeredResources);
-      const resources = Object.keys(server._registeredResources);
-      resources.length.should.be.above(0);
+    it('should register a doc ResourceTemplate', () => {
+      const docTemplate = Object.values(server._registeredResourceTemplates)
+        .find((t) => t.resourceTemplate.uriTemplate.toString() === 'losant://docs/{docName}');
+      should.exist(docTemplate);
     });
 
     it('should have query guide resource with correct URI', () => {
@@ -58,26 +66,63 @@ describe('MCP Server', () => {
     });
 
     it('should have API index resource', () => {
-      should.exist(server._registeredResources['losant://docs/index']);
-      const apiIndex = server._registeredResources['losant://docs/index'];
+      should.exist(server._registeredResources['losant://index']);
+      const apiIndex = server._registeredResources['losant://index'];
 
-      apiIndex.should.have.property('name', 'api-index');
-      apiIndex.metadata.should.have.property('title', 'Losant API Documentation Index');
+      apiIndex.should.have.property('name', 'index');
+      apiIndex.metadata.should.have.property('title', 'Losant MCP Application Index Guide');
       apiIndex.metadata.should.have.property('mimeType', 'text/markdown');
     });
 
-    it('should load multiple API documentation resources', () => {
-      const docResources = Object.keys(server._registeredResources)
-        .filter((uri) => uri.startsWith('losant://docs/') && uri !== 'losant://docs/index');
-
-      docResources.length.should.be.above(47); // Should have many API docs
+    it('should register doc template covering all API documentation', () => {
+      const docTemplate = Object.values(server._registeredResourceTemplates)
+        .find((t) => t.resourceTemplate.uriTemplate.toString() === 'losant://docs/{docName}');
+      should.exist(docTemplate);
+      docTemplate.resourceTemplate.uriTemplate.toString().should.equal('losant://docs/{docName}');
     });
 
-    it('should load query schema resources', () => {
-      const schemaResources = Object.keys(server._registeredResources)
-        .filter((uri) => uri.startsWith('losant://schemas/'));
+    it('should register a schema ResourceTemplate', () => {
+      const schemaTemplate = Object.values(server._registeredResourceTemplates)
+        .find((t) => t.resourceTemplate.uriTemplate.toString() === 'losant://schemas/{schemaName}');
+      should.exist(schemaTemplate);
+    });
+  });
 
-      schemaResources.length.should.be.above(0); // Should have schema resources
+  describe('Schema URI registration', () => {
+    it('should register a ResourceTemplate covering all schema URIs', () => {
+      REGISTERED_SCHEMA_URIS.length.should.be.above(0);
+      const schemaTemplate = Object.values(server._registeredResourceTemplates)
+        .find((t) => t.resourceTemplate.uriTemplate.toString() === 'losant://schemas/{schemaName}');
+      should.exist(schemaTemplate, 'losant://schemas/{schemaName} ResourceTemplate should be registered');
+    });
+  });
+
+  describe('Schema URI accessibility', () => {
+    let client;
+
+    before(async () => {
+      const mcpServer = await createMCPServer('fake-token');
+      const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+      await mcpServer.connect(serverTransport);
+      client = new Client({ name: 'test-client', version: '1.0' });
+      await client.connect(clientTransport);
+    });
+
+    after(async () => {
+      if (client) { await client.close(); }
+    });
+
+    REGISTERED_SCHEMA_URIS.forEach((uri) => {
+      it(`should load ${uri}`, async () => {
+        const result = await client.readResource({ uri });
+        result.should.have.property('contents');
+        result.contents.should.be.an.Array().with.length(1);
+        result.contents[0].should.have.property('uri', uri);
+        result.contents[0].should.have.property('mimeType', 'application/json');
+        result.contents[0].should.have.property('text');
+        const parsed = JSON.parse(result.contents[0].text);
+        parsed.should.be.an.Object();
+      });
     });
   });
 });
