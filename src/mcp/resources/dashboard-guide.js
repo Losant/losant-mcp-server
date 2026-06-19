@@ -7,7 +7,7 @@ Application dashboards display device data, events, and other Losant resources i
 
 - **Blocks**: the unit of content on a dashboard — each has a \`blockType\`, a position/size on a 4-column grid, and a type-specific \`config\` object
 - **Layout grid**: 4 columns wide; \`startX\` (0–3), \`width\` (1–4), \`startY\` and \`height\` in grid units; blocks must not overlap
-- **Context variables**: parameterize a dashboard (e.g., show different devices without duplicating the dashboard) — see \`losant://guides/dashboards/reference/context-configuration\`
+- **Context variables**: parameterize a dashboard (e.g., show different devices without duplicating the dashboard) — see \`losant://references/dashboard/context-configuration\`
 
 ## Creating a Dashboard
 
@@ -31,9 +31,9 @@ Minimal body:
 The \`applicationDashboardPost\` schema is 227KB. Read \`losant://schemas/applicationDashboardPost\` for the complete block type reference.
 
 For the layout model, per-block config details, and worked examples read:
-- \`losant://guides/dashboards\` — full authoring guide (block catalog, layout rules, context variable usage)
-- \`losant://guides/dashboards/blocks/{blockType}\` — per-block config detail
-- \`losant://guides/dashboards/reference/context-configuration\` — context variable types and URL mechanism
+- \`losant://authoring/dashboard\` — full authoring guide (block catalog, layout rules, context variable usage)
+- \`losant://dashboard/blocks/{blockType}\` — per-block config detail
+- \`losant://references/dashboard/context-configuration\` — context variable types and URL mechanism
 
 ## Block Object Shape
 
@@ -58,7 +58,7 @@ The \`config\` object is block-type-specific — read the per-block guide file b
 ### Create an empty dashboard, then add blocks
 1. Call \`losant_write\` \`operation=createOne\` \`resourceType=applicationDashboard\` with just \`name\`
 2. Read \`losant://guides/dashboards\` to understand the block catalog and layout rules
-3. For each block type you want to add, read \`losant://guides/dashboards/blocks/{blockType}\`
+3. For each block type you want to add, read \`losant://dashboard/blocks/{blockType}\`
 4. Assemble the full \`blocks\` array
 5. Call \`losant_write\` \`operation=updateOne\` with the blocks array
 
@@ -68,7 +68,7 @@ The \`config\` object is block-type-specific — read the per-block guide file b
 3. Call \`losant_write\` \`operation=updateOne\` with the full updated \`blocks\` array
 
 ### Use context variables
-Read \`losant://guides/dashboards/reference/context-configuration\` before adding \`contextConfiguration\` — context variables let one dashboard serve many devices or data sources.
+Read \`losant://references/dashboard/context-configuration\` before adding \`contextConfiguration\` — context variables let one dashboard serve many devices or data sources.
 
 ${buildReferenceSection(['applicationDashboard'])}
 `;

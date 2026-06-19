@@ -1,6 +1,7 @@
 import { createRequire } from 'node:module';
 import { readdirSync } from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 export const RESOURCE_TYPES = [
   'application',         // Top-level resource for application lookup
@@ -56,9 +57,9 @@ export const WRITABLE_RESOURCE_TYPES = [
   'experienceVersion',
   'experienceView',
   'application',
-  'applicationReadme'
-  // 'flow', will be added in another branch
-  // 'flowVersion', will be added in another branch
+  'applicationReadme',
+  'flow',
+  'flowVersion'
 ];
 
 export const ALLOW_BULK_CREATE_TYPES = new Set([
@@ -139,3 +140,39 @@ export const SCHEMA_NAME_TO_FILE = Object.fromEntries([
 export const DOC_NAME_TO_FILE = Object.fromEntries(
   MD_FILES.map((f) => [f.replace('.md', ''), f])
 );
+
+// Authoring content — deep-dive markdown files for flow and dashboard construction
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+export const AUTHORING_PATH = path.join(__dirname, 'mcp/resources/authoring');
+
+export const AUTHORING_HUB_TO_FILE = {
+  flow: path.join(AUTHORING_PATH, 'flows/flow.md'),
+  dashboard: path.join(AUTHORING_PATH, 'dashboards/dashboard-guide.md')
+};
+
+const flowNodesDir = path.join(AUTHORING_PATH, 'flows/nodes');
+export const FLOW_NODE_TO_FILE = Object.fromEntries(
+  readdirSync(flowNodesDir).filter((f) => f.endsWith('.md'))
+    .map((f) => [f.replace('.md', ''), path.join(flowNodesDir, f)])
+);
+
+const flowTriggersDir = path.join(AUTHORING_PATH, 'flows/triggers');
+export const FLOW_TRIGGER_TO_FILE = Object.fromEntries(
+  readdirSync(flowTriggersDir).filter((f) => f.endsWith('.md'))
+    .map((f) => [f.replace('.md', ''), path.join(flowTriggersDir, f)])
+);
+
+const dashboardBlocksDir = path.join(AUTHORING_PATH, 'dashboards/blocks');
+export const DASHBOARD_BLOCK_TO_FILE = Object.fromEntries(
+  readdirSync(dashboardBlocksDir).filter((f) => f.endsWith('.md'))
+    .map((f) => [f.replace('.md', ''), path.join(dashboardBlocksDir, f)])
+);
+
+export const REFERENCES_TO_FILE = {
+  'flow/custom-nodes': path.join(AUTHORING_PATH, 'flows/reference/custom-nodes.md'),
+  'flow/error-handling': path.join(AUTHORING_PATH, 'flows/reference/error-handling.md'),
+  'flow/payload': path.join(AUTHORING_PATH, 'flows/reference/payload.md'),
+  'flow/globals': path.join(AUTHORING_PATH, 'flows/reference/globals.md'),
+  'flow/templating': path.join(AUTHORING_PATH, 'flows/reference/templating.md'),
+  'dashboard/context-configuration': path.join(AUTHORING_PATH, 'dashboards/reference/context-configuration.md')
+};

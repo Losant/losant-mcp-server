@@ -16,7 +16,7 @@ import experienceGuide from './experience-guide.js';
 import indexContent from './build-api-index-content.js';
 import debug from 'debug';
 import memoizee from 'memoizee';
-import { SCHEMA_NAME_TO_FILE, DOC_NAME_TO_FILE, DOCS_PATH, RESOURCE_TYPE_SET, SCHEMAS_PATH, WRITABLE_RESOURCE_TYPES } from '../../constants.js';
+import { SCHEMA_NAME_TO_FILE, DOC_NAME_TO_FILE, DOCS_PATH, RESOURCE_TYPE_SET, SCHEMAS_PATH, WRITABLE_RESOURCE_TYPES, AUTHORING_HUB_TO_FILE, FLOW_NODE_TO_FILE, FLOW_TRIGGER_TO_FILE, DASHBOARD_BLOCK_TO_FILE, REFERENCES_TO_FILE } from '../../constants.js';
 
 const WRITABLE_RESOURCE_TYPE_SET = new Set(WRITABLE_RESOURCE_TYPES);
 const log = debug('losant-mcp-server:mcp:resources');
@@ -112,6 +112,12 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
   };
 }, { maxAge: 1000 * 60 * 60, primitive: true }); // cache for 1 hour
 
+// Authoring files are served as-is — no Endpoint disclaimer prepended
+const readAuthoringContent = memoizee(async (filePath, href) => {
+  const text = await readFile(filePath, 'utf-8');
+  return { contents: [{ uri: href, mimeType: 'text/markdown', text }] };
+}, { maxAge: 1000 * 60 * 60, primitive: true });
+
 export default (server) => {
   log(`Registering ${GUIDES_TO_REGISTER.length + 3} resources...`);
   server.registerResource(
@@ -167,6 +173,82 @@ export default (server) => {
         throw new Error(`Schema not found: ${schemaName}`);
       }
       return readFileContent(path.join(SCHEMAS_PATH, file), 'application/json', uri.href);
+    }
+  );
+
+  server.registerResource(
+    'authoring-hub',
+    new ResourceTemplate('losant://authoring/{resourceType}', { list: undefined }),
+    {
+      title: 'Losant Authoring Guide',
+      description: 'Hub authoring guide for complex Losant resources — discovered via guide links',
+      mimeType: 'text/markdown'
+    },
+    async (uri, { resourceType }) => {
+      const filePath = AUTHORING_HUB_TO_FILE[resourceType];
+      if (!filePath) { throw new Error(`Authoring hub not found: ${resourceType}`); }
+      return readAuthoringContent(filePath, uri.href);
+    }
+  );
+
+  server.registerResource(
+    'flow-node',
+    new ResourceTemplate('losant://flow/nodes/{nodeName}', { list: undefined }),
+    {
+      title: 'Losant Flow Node',
+      description: 'Per-node authoring detail for Losant workflow nodes — discovered via losant://authoring/flow',
+      mimeType: 'text/markdown'
+    },
+    async (uri, { nodeName }) => {
+      const filePath = FLOW_NODE_TO_FILE[nodeName];
+      if (!filePath) { throw new Error(`Flow node not found: ${nodeName}`); }
+      return readAuthoringContent(filePath, uri.href);
+    }
+  );
+
+  server.registerResource(
+    'flow-trigger',
+    new ResourceTemplate('losant://flow/triggers/{triggerName}', { list: undefined }),
+    {
+      title: 'Losant Flow Trigger',
+      description: 'Per-trigger authoring detail for Losant workflow triggers — discovered via losant://authoring/flow',
+      mimeType: 'text/markdown'
+    },
+    async (uri, { triggerName }) => {
+      const filePath = FLOW_TRIGGER_TO_FILE[triggerName];
+      if (!filePath) { throw new Error(`Flow trigger not found: ${triggerName}`); }
+      return readAuthoringContent(filePath, uri.href);
+    }
+  );
+
+  server.registerResource(
+    'dashboard-block',
+    new ResourceTemplate('losant://dashboard/blocks/{blockType}', { list: undefined }),
+    {
+      title: 'Losant Dashboard Block',
+      description: 'Per-block authoring detail for Losant dashboard blocks — discovered via losant://authoring/dashboard',
+      mimeType: 'text/markdown'
+    },
+    async (uri, { blockType }) => {
+      const filePath = DASHBOARD_BLOCK_TO_FILE[blockType];
+      if (!filePath) { throw new Error(`Dashboard block not found: ${blockType}`); }
+      return readAuthoringContent(filePath, uri.href);
+    }
+  );
+
+  server.registerResource(
+    'reference',
+    new ResourceTemplate('losant://references/{resourceType}/{referenceName}', { list: undefined }),
+    {
+      title: 'Losant Authoring Reference',
+      description: 'Cross-cutting reference docs for flow and dashboard authoring — discovered via authoring guide links',
+      mimeType: 'text/markdown'
+    },
+    async (uri, { resourceType, referenceName }) => {
+      const key = `${resourceType}/${referenceName}`;
+      const filePath = REFERENCES_TO_FILE[key];
+      if (!filePath) { throw new Error(`Reference not found: ${key}`); }
+      return readAuthoringContent(filePath, uri.href);
     }
   );
 

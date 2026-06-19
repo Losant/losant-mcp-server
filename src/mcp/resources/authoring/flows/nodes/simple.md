@@ -17,7 +17,7 @@ Trivial node types whose entire spec fits in a few lines. Each entry is independ
 | `RandomNumberNode` | `logic` | `randomNumber` | `"Random Number"` | all |
 | `LatchNode` | `logic` | `latch` | `"Latch"` | all |
 | `BranchOnChangeNode` | `logic` | `branchOnChange` | `"On Change"` | all |
-| `AnnotationNode` | `logic` | `annotation` | `"Annotation"` | all |
+| `AnnotationNode` | `annotation` | `note` | `"Annotation"` | all |
 
 ---
 

@@ -36,10 +36,13 @@ The \`flowPost\` / \`flowPatch\` schemas are large (86KB). Read \`losant://schem
 
 For the wiring model, trigger configuration, and per-node config details read:
 
-- \`losant://guides/workflows\` — full authoring guide (trigger catalog, node catalog, wiring model, loops, conditionals)
-- \`losant://guides/workflows/nodes/{nodeName}\` — per-node detail
-- \`losant://guides/workflows/triggers/{triggerName}\` — per-trigger detail
-- \`losant://guides/workflows/reference/error-handling\` — errorBehavior / errorPath pattern
+- \`losant://authoring/flow\` — full authoring guide (trigger catalog, node catalog, wiring model, loops, conditionals)
+- \`losant://flow/nodes/{nodeName}\` — per-node detail
+- \`losant://flow/triggers/{triggerName}\` — per-trigger detail
+- \`losant://references/flow/error-handling\` — errorBehavior / errorPath pattern
+- \`losant://references/flow/globals\` — global variables reference
+- \`losant://references/flow/payload\` — payload reference
+- \`losant://references/flow/custom-nodes\` — custom nodes reference
 
 ## Workflow Versions
 
@@ -64,7 +67,7 @@ Requires \`parentResourceId\` = the \`flowId\`. Versions are immutable — \`upd
 1. Use \`losant_query\` \`operation=get\` \`resourceType=flow\` to retrieve current \`triggers\` and \`nodes\` arrays
 2. Append or modify entries
 3. Call \`losant_write\` \`operation=updateOne\` with the full updated \`triggers\` and \`nodes\` arrays
-4. Read \`losant://guides/workflows\` before constructing trigger/node JSON — the wiring model requires \`outputIds\` to be correct
+4. Read \`losant://authoring/flow\` before constructing trigger/node JSON — the wiring model requires \`outputIds\` to be correct
 
 ### Snapshot a version
 After the develop version is stable, call \`losant_write\` \`operation=createOne\` \`resourceType=flowVersion\` with \`parentResourceId\` = flowId.

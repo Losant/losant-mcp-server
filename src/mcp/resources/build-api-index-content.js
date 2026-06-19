@@ -9,8 +9,8 @@ let indexContent = `# Losant API Documentation
 - [Data Tables Guide](losant://guides/data-tables) - Column schema, constraints, the dataTable/dataTableRow relationship, and common workflows
 - [Resource Jobs Guide](losant://guides/resource-jobs) - The iterate-resources-trigger-workflow pattern, queryJson format, and concurrency settings
 - [Credentials Guide](losant://guides/credentials) - Credential types, config objects, and referencing credentials by name
-- [Flows Guide](losant://guides/flows) - Flow classes, triggers/nodes overview, versioning
-- [Dashboards Guide](losant://guides/dashboards) - Block model, layout grid, context variable
+- [Flows Guide](losant://guides/flows) - Flow classes, triggers/nodes overview, versioning — full authoring at losant://authoring/flow
+- [Dashboards Guide](losant://guides/dashboards) - Block model, layout grid, context variables — full authoring at losant://authoring/dashboard
 - [Files & Private Files Guide](losant://guides/files) - Two-step create-then-upload pattern, public vs. private
 - [Notebooks Guide](losant://guides/notebooks) - Two-step upload pattern, input/output types, imageVersion
 - [Experiences Guide](losant://guides/experiences) - Versioning model, views, endpoints, users, groups, domains, and slugs

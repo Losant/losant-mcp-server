@@ -20,19 +20,19 @@ Branches the workflow based on a Handlebars expression. The most common branchin
   "config": { "expression": "{{data.temp}} > 80" },
   "meta": { "category": "logic", "name": "conditional", "label": "Conditional", "x": 200, "y": 200 },
   "outputIds": [
-    ["when-true-node"],
-    ["when-false-node"]
+    ["when-false-node"],
+    ["when-true-node"]
   ]
 }
 ```
 
-`outputIds` has **exactly two** outer entries: index 0 = true branch, index 1 = false branch. Either inner array may be empty (`[]`) if you don't need to wire that branch.
+`outputIds` has **exactly two** outer entries: index 0 = false branch, index 1 = true branch. Either inner array may be empty (`[]`) if you don't need to wire that branch.
 
 ### Config
 
 | Field | Type | Notes |
 |---|---|---|
-| `expression` | string | **Required.** Handlebars expression evaluated against the current payload. Truthy → index 0; falsy → index 1. |
+| `expression` | string | **Required.** Handlebars expression evaluated against the current payload. Falsy → index 0; fruthy → index 1. |
 
 ### Expression semantics
 
@@ -55,7 +55,7 @@ Supports `&&`, `||`, `!`, and parentheses. Numbers are compared numerically in c
   "type": "ConditionalNode",
   "config": { "expression": "{{working.resp.statusCode}} === 200" },
   "meta": { "category": "logic", "name": "conditional", "label": "Conditional", "x": 400, "y": 200 },
-  "outputIds": [["handle-success"], ["handle-error"]]
+  "outputIds": [["handle-error"], ["handle-success"]]
 }
 ```
 

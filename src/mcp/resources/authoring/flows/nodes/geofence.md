@@ -1,6 +1,6 @@
 # Geofence Node (`type: "GeofenceNode"`)
 
-Determines whether a GPS coordinate is inside or outside a defined geographic area. Three modes: circular radius, polygonal coordinates, or a polygon defined by a payload path. Branches on inside/outside — `outputIds[0]` = inside, `outputIds[1]` = outside.
+Determines whether a GPS coordinate is inside or outside a defined geographic area. Three modes: circular radius, polygonal coordinates, or a polygon defined by a payload path. Branches on inside/outside — `outputIds[0]` = outside (not inside), `outputIds[1]` = inside.
 
 ## Required Fields
 
@@ -28,7 +28,7 @@ Determines whether a GPS coordinate is inside or outside a defined geographic ar
     "branchPath": ""
   },
   "meta": { "category": "logic", "name": "geofence", "label": "Geofence", "x": 200, "y": 200 },
-  "outputIds": [["inside"], ["outside"]]
+  "outputIds": [["outside"], ["inside"]]
 }
 ```
 
@@ -45,8 +45,8 @@ Determines whether a GPS coordinate is inside or outside a defined geographic ar
 
 ### Wiring
 
-`outputIds[0]` — fires when the coordinate is inside the geofence.
-`outputIds[1]` — fires when the coordinate is outside.
+`outputIds[0]` — fires when the coordinate is **outside** the geofence (or when radius/polygon is invalid — error path).
+`outputIds[1]` — fires when the coordinate is **inside** the geofence.
 
 ## Experience workflows
 

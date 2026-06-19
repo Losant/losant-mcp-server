@@ -18,7 +18,7 @@ Executes arbitrary JavaScript against the workflow payload. Use when built-in no
   "id": "transform",
   "type": "RawFunctionNode",
   "config": {
-    "script": "payload.working.result = payload.data.tempC * 9/5 + 32;\ncallback();",
+    "script": "payload.working.result = payload.data.tempC * 9/5 + 32;\n",
     "scopePath": ""
   },
   "meta": { "category": "logic", "name": "function", "label": "Function", "x": 200, "y": 200 },
@@ -30,13 +30,12 @@ Executes arbitrary JavaScript against the workflow payload. Use when built-in no
 
 | Field | Default | Notes |
 |---|---|---|
-| `script` | `""` | **Required.** JavaScript code to execute. Must call `callback()` to continue execution. |
+| `script` | `""` | **Required.** JavaScript code to execute. Whatever you return or add to the payload object will be added to the payload. |
 | `scopePath` | `""` | Optional payload path. When set, `payload` inside the function refers to that sub-object rather than the full payload. |
 
 ### Script environment
 
 - **`payload`** — the full workflow payload object. Mutate it directly: `payload.working.x = 42`.
-- **`callback(err?)`** — call with no arguments to continue, or `callback(new Error("message"))` to halt with an error.
 - **`console.log()`** — output appears in the workflow debug panel.
 - ES5 and ES6+ syntax supported.
 
@@ -57,7 +56,6 @@ https.get('https://api.example.com/data', (res) => {
   res.on('data', chunk => body += chunk);
   res.on('end', () => {
     payload.working.apiResult = JSON.parse(body);
-    callback();
   });
 }).on('error', callback);
 ```

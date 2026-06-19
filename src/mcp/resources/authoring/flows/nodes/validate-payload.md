@@ -1,6 +1,6 @@
 # Validate Payload Node (`type: "ValidatePayloadNode"`)
 
-Validates a value on the workflow payload against a JSON Schema (draft-04). Branches on pass/fail — `outputIds[0]` = valid, `outputIds[1]` = invalid.
+Validates a value on the workflow payload against a JSON Schema (draft-04). Branches on pass/fail — `outputIds[0]` = invalid (validation failed), `outputIds[1]` = valid (validation passed).
 
 ## Required Fields
 
@@ -24,7 +24,7 @@ Validates a value on the workflow payload against a JSON Schema (draft-04). Bran
     "errorsPath": "working.validationErrors"
   },
   "meta": { "category": "logic", "name": "validate-payload", "label": "Validate Payload", "x": 200, "y": 200 },
-  "outputIds": [["handle-valid"], ["handle-invalid"]]
+  "outputIds": [["handle-invalid"], ["handle-valid"]]
 }
 ```
 
@@ -39,8 +39,8 @@ Validates a value on the workflow payload against a JSON Schema (draft-04). Bran
 
 ### Wiring
 
-`outputIds[0]` — fires when the value passes schema validation.
-`outputIds[1]` — fires when validation fails. Check `errorsPath` for details.
+`outputIds[0]` — fires when validation fails. Check `errorsPath` for details.
+`outputIds[1]` — fires when the value passes schema validation.
 
 ## Experience workflows
 
