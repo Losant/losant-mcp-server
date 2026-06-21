@@ -2,7 +2,7 @@
 
 Trivial trigger types whose entire config is `{}`. Each entry is independent — read only the ones you need.
 
-For the full trigger object shape and wiring model see `workflow-guide.md`. Only the `type`, `key`, and `meta` specifics are documented here.
+For the full trigger object shape and wiring model see `losant://authoring/flow`. Only the `type`, `key`, and `meta` specifics are documented here.
 
 ## Metadata quick reference
 
@@ -53,7 +53,7 @@ A button in the Losant UI that manually fires the workflow. Available in cloud, 
 | `meta.name` | `"virtualButton"` |
 | `meta.label` | `"Virtual Button"` (default) |
 
-**`meta.payload`** — Required. A JSON-encoded object string that becomes the `data` field on the workflow payload when the button fires. Defaults to `""` (empty string = `data: {}`). Must be a valid JSON object if set — not a primitive or array.
+**`meta.payload`** — Optional. A JSON-encoded object string that becomes the `data` field on the workflow payload when the button fires. Omit or set to `""` for an empty payload (`data: {}`). If set, must be a valid JSON object — not a primitive or array.
 
 - **`key`:** server-generated — omit it.
 - **`config`:** `{}`

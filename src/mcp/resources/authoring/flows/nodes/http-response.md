@@ -32,7 +32,7 @@ Not available.
     "bodyTemplateType": "string",
     "bodyTemplate": "{\"success\": true}",
     "headerInfo": [
-      { "key": "Content-Type", "valueTemplate": "application/json" }
+      { "keyTemplate": "Content-Type", "valueTemplate": "application/json" }
     ],
     "cookieInfo": []
   },
@@ -46,5 +46,5 @@ Not available.
 | `responseCodeTemplate` | `""` | **Required.** HTTP status code (100–599). Template. |
 | `bodyTemplateType` | `"string"` | `"string"` — string template. `"path"` — payload path. `"payload"` — send the full workflow payload as body. |
 | `bodyTemplate` | `""` | Response body. Template or payload path per `bodyTemplateType`. Omit when `bodyTemplateType: "payload"`. |
-| `headerInfo` | `[]` | Array of `{ key, valueTemplate }` response headers. |
+| `headerInfo` | `[]` | Array of `{ keyTemplate, valueTemplate }` response headers. |
 | `cookieInfo` | `[]` | Array of cookie configuration objects. |

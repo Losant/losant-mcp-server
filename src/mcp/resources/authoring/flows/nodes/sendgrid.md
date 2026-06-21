@@ -24,7 +24,7 @@ Two auth methods: service credential or direct API key (must start with `"SG."`)
     "fromTemplate": "alerts@example.com",
     "subjectTemplate": "Alert: {{working.alertTitle}}",
     "bodyTemplate": "<p>{{working.alertBody}}</p>",
-    "toAddresses": [{ "email": "operator@example.com" }],
+    "toAddresses": ["operator@example.com"],
     "ccAddresses": [],
     "bccAddresses": [],
     "replyToTemplate": "",
@@ -42,9 +42,9 @@ Two auth methods: service credential or direct API key (must start with `"SG."`)
 | `fromTemplate` | `""` | **Required.** Sender email address. Template. |
 | `subjectTemplate` | `""` | **Required.** Email subject. Template. |
 | `bodyTemplate` | `""` | **Required.** Email body. Template. Supports HTML. |
-| `toAddresses` | `[]` | **Required.** Array of `{ email: "template" }` recipient objects. At least one required. |
-| `ccAddresses` | `[]` | Array of `{ email: "template" }` CC recipient objects. |
-| `bccAddresses` | `[]` | Array of `{ email: "template" }` BCC recipient objects. |
+| `toAddresses` | `[]` | **Required.** Array of email address template strings (e.g. `["operator@example.com", "{{data.email}}"]`). At least one required. |
+| `ccAddresses` | `[]` | Array of email address template strings. |
+| `bccAddresses` | `[]` | Array of email address template strings. |
 | `replyToTemplate` | `""` | Reply-to address. Template. |
 | `attachments` | `[]` | Array of attachment objects (max 10). Edge requires GEA 1.43.3+. |
 | `resultPath` | `""` | Payload path to write the send result. |

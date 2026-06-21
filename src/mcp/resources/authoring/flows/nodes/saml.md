@@ -41,7 +41,7 @@ Pass the URL at `resultPath` to an Endpoint Reply node to redirect the user's br
 
 ### SAML: Verify Node (`type: "SamlVerifyNode"`)
 
-Verifies a SAML response returned by the Identity Provider after authentication. Branches — `outputIds[0]` = valid, `outputIds[1]` = invalid.
+Verifies a SAML response returned by the Identity Provider after authentication. Branches — `outputIds[0]` = invalid (verification failed), `outputIds[1]` = valid (verification passed).
 
 ```json
 {
@@ -54,7 +54,7 @@ Verifies a SAML response returned by the Identity Provider after authentication.
     "resultPath": "working.samlResult"
   },
   "meta": { "category": "experience", "name": "saml-verify", "label": "SAML: Verify", "x": 200, "y": 200 },
-  "outputIds": [["valid"], ["invalid"]]
+  "outputIds": [["invalid"], ["valid"]]
 }
 ```
 

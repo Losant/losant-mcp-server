@@ -21,44 +21,32 @@ Not available.
 
 ## Edge workflows
 
-All four nodes share the same **connection and security config** pattern. See the trigger skill `triggers/opcua.md` for the Agent Config File mode (GEA 1.40.0+).
+All four nodes share the same connection and security config fields.
 
 ### Shared connection config
 
-```json
-{
-  "uri": "opc.tcp://192.168.1.100:4840/UA/Server",
-  "usernameTemplate": "",
-  "passwordTemplate": "",
-  "securityPolicyTemplate": "None",
-  "securityModeTemplate": "NONE",
-  "certTemplate": "",
-  "privateKeyTemplate": ""
-}
-```
-
 | Config field | Default | Notes |
 |---|---|---|
-| `uri` | `""` | **Required.** OPC UA server URI. |
+| `uriTemplate` | `""` | **Required.** OPC UA server URI (e.g. `"opc.tcp://192.168.1.100:4840"`). Template. |
 | `usernameTemplate` | `""` | Optional username. Template. |
 | `passwordTemplate` | `""` | Optional password. Template. |
-| `securityPolicyTemplate` | `"None"` | `"None"`, `"Basic128"`, `"Basic192"`, `"Basic256"`, `"Basic128Rsa15"`, `"Basic192Rsa15"`, `"Basic256Sha256"`. Template. |
-| `securityModeTemplate` | `"NONE"` | `"NONE"`, `"SIGN"`, `"SIGNANDENCRYPT"`. Template. |
-| `certTemplate` | `""` | PEM client certificate. Required when security policy is not None. Template. |
-| `privateKeyTemplate` | `""` | PEM private key. Required when security policy is not None. Template. |
+| `securityPolicyTemplate` | `"None"` | `"None"`, `"Basic128"`, `"Basic192"`, `"Basic192Rsa15"`, `"Basic256"`, `"Basic256Rsa15"`, `"Basic256Sha256"`. Template. |
+| `securityModeTemplate` | `"NONE"` | `"NONE"` (only valid when policy is `"None"`), `"SIGN"`, `"SIGNANDENCRYPT"`. Template. |
+| `certTemplate` | `""` | PEM client certificate. Required when security policy is not `"None"`. Template. |
+| `privateKeyTemplate` | `""` | PEM private key. Required when security policy is not `"None"`. Template. |
 
 ---
 
 ### OPC UA: Browse Node (`type: "OpcUaBrowseNode"`)
 
-Browses the OPC UA server's node hierarchy.
+Browses the OPC UA server's node hierarchy starting from a given node ID or browse name. Returns an object with a `browse` key and an `errors` array.
 
 ```json
 {
   "id": "opc-browse",
   "type": "OpcUaBrowseNode",
   "config": {
-    "uri": "opc.tcp://192.168.1.100:4840",
+    "uriTemplate": "opc.tcp://192.168.1.100:4840",
     "securityPolicyTemplate": "None",
     "securityModeTemplate": "NONE",
     "browseInstructionsType": "array",
@@ -72,29 +60,40 @@ Browses the OPC UA server's node hierarchy.
 }
 ```
 
-| Config field | Notes |
-|---|---|
-| `browseInstructionsType` | `"array"` or `"payloadPath"`. |
-| `browseInstructions` | Array of `{ nameSpaceTemplate, identifierTemplate }` nodes to browse. |
-| `destinationPath` | **Required.** Payload path to write browse results. |
+| Config field | Default | Notes |
+|---|---|---|
+| `browseInstructionsType` | `"array"` | `"array"` or `"payloadPath"` (GEA 1.18.0+). |
+| `browseInstructions` | — | When `"array"`: exactly one `{ nameSpaceTemplate, identifierTemplate }` object in an array. When `"payloadPath"`: payload path string resolving to an object with `nameSpace` and `identifier` keys. |
+| `destinationPath` | `""` | **Required.** Payload path to write browse results. |
+
+**Browse instruction fields** (when `browseInstructionsType: "array"`):
+
+| Field | Required | Notes |
+|---|---|---|
+| `nameSpaceTemplate` | No | Namespace index (e.g. `"2"`). If omitted, defaults to the server root folder unless `identifierTemplate` is a browse name. Template. |
+| `identifierTemplate` | Yes | Node identifier (e.g. `"i=1001"` or `"s=Main.Device"`) or browse name. Template. |
 
 ---
 
 ### OPC UA: Read Node (`type: "OpcUaReadNode"`)
 
-Reads values from OPC UA nodes.
+Reads values from one or more OPC UA nodes. Result is an object keyed by each instruction's `key` field, with an `errors` array for any failures.
 
 ```json
 {
   "id": "opc-read",
   "type": "OpcUaReadNode",
   "config": {
-    "uri": "opc.tcp://192.168.1.100:4840",
+    "uriTemplate": "opc.tcp://192.168.1.100:4840",
     "securityPolicyTemplate": "None",
     "securityModeTemplate": "NONE",
     "readInstructionsType": "array",
     "readInstructions": [
-      { "nameSpace": "2", "identifier": "i=1001", "key": "temperature" }
+      {
+        "nameSpaceTemplate": "2",
+        "identifierTemplate": "i=1001",
+        "key": "temperature"
+      }
     ],
     "destinationPath": "working.opcData"
   },
@@ -103,25 +102,42 @@ Reads values from OPC UA nodes.
 }
 ```
 
-Each read instruction requires: `nameSpace` (namespace index, template), `identifier` (node identifier, template), `key` (result key, cannot be `"errors"`).
+| Config field | Default | Notes |
+|---|---|---|
+| `readInstructionsType` | `"array"` | `"array"` or `"payloadPath"` (GEA 1.18.0+). |
+| `readInstructions` | `[]` | **Required.** When `"array"`: array of read instruction objects. When `"payloadPath"`: payload path string resolving to an array of objects with `nameSpace`, `identifier`, and `key` keys. |
+| `destinationPath` | `""` | **Required.** Payload path to write read results. |
+
+**Read instruction fields** (when `readInstructionsType: "array"`):
+
+| Field | Required | Notes |
+|---|---|---|
+| `nameSpaceTemplate` | Yes | Namespace index (e.g. `"2"`). Template. |
+| `identifierTemplate` | Yes | Node identifier (e.g. `"i=1001"` or `"s=Main.Device"`). Template. |
+| `key` | No | Result key in the destination object. Defaults to the node's Display Name if omitted. Cannot be `"errors"`. |
 
 ---
 
 ### OPC UA: Write Node (`type: "OpcUaWriteNode"`)
 
-Writes values to OPC UA nodes.
+Writes values to one or more OPC UA nodes. Values are automatically converted to each node's data type. Result is an object with a `write` key and an `errors` array.
 
 ```json
 {
   "id": "opc-write",
   "type": "OpcUaWriteNode",
   "config": {
-    "uri": "opc.tcp://192.168.1.100:4840",
+    "uriTemplate": "opc.tcp://192.168.1.100:4840",
     "securityPolicyTemplate": "None",
     "securityModeTemplate": "NONE",
     "writeInstructionsType": "array",
     "writeInstructions": [
-      { "nameSpace": "2", "identifier": "i=1001", "sourceTypeTemplate": "string", "valueTemplate": "{{working.setpoint}}" }
+      {
+        "nameSpaceTemplate": "2",
+        "identifierTemplate": "i=1001",
+        "sourceTypeTemplate": "string",
+        "valueTemplate": "{{working.setpoint}}"
+      }
     ],
     "destinationPath": "working.writeResult"
   },
@@ -130,20 +146,33 @@ Writes values to OPC UA nodes.
 }
 ```
 
-Each write instruction requires: `nameSpace`, `identifier`, `sourceTypeTemplate` (`"string"` or `"path"`), `valueTemplate` or path.
+| Config field | Default | Notes |
+|---|---|---|
+| `writeInstructionsType` | `"array"` | `"array"` or `"payloadPath"` (GEA 1.18.0+). |
+| `writeInstructions` | `[]` | **Required.** When `"array"`: array of write instruction objects. When `"payloadPath"`: payload path string resolving to an array of objects with `nameSpace`, `identifier`, and `value` keys. |
+| `destinationPath` | `""` | Payload path to write result metadata. |
+
+**Write instruction fields** (when `writeInstructionsType: "array"`):
+
+| Field | Required | Notes |
+|---|---|---|
+| `nameSpaceTemplate` | Yes | Namespace index. Template. |
+| `identifierTemplate` | Yes | Node identifier. Template. |
+| `sourceTypeTemplate` | Yes | `"string"` — `valueTemplate` is a Handlebars template. `"path"` — `valueTemplate` is a payload path. |
+| `valueTemplate` | Yes | Value to write — template string or payload path per `sourceTypeTemplate`. |
 
 ---
 
 ### OPC UA: Call Node (`type: "OpcUaCallNode"`) — GEA 1.9.0+
 
-Calls a method on an OPC UA object node.
+Calls a method on an OPC UA object node. Result is an object with a `result` key and an `errors` array.
 
 ```json
 {
   "id": "opc-call",
   "type": "OpcUaCallNode",
   "config": {
-    "uri": "opc.tcp://192.168.1.100:4840",
+    "uriTemplate": "opc.tcp://192.168.1.100:4840",
     "securityPolicyTemplate": "None",
     "securityModeTemplate": "NONE",
     "callInstructionsType": "array",
@@ -152,7 +181,14 @@ Calls a method on an OPC UA object node.
       "identifierTemplate": "i=1001",
       "methodNsTemplate": "2",
       "methodIdTemplate": "i=1002",
-      "methodArguments": []
+      "methodArguments": [
+        {
+          "dataTypeTemplate": "Double",
+          "arrayTypeTemplate": "Scalar",
+          "sourceTypeTemplate": "string",
+          "valueTemplate": "{{working.value}}"
+        }
+      ]
     },
     "destinationPath": "working.callResult"
   },
@@ -161,4 +197,27 @@ Calls a method on an OPC UA object node.
 }
 ```
 
-Required call instruction fields: `nameSpaceTemplate` (object namespace), `identifierTemplate` (object identifier), `methodNsTemplate` (method namespace), `methodIdTemplate` (method identifier). Optional `methodArguments` array with `{ dataTypeTemplate, arrayTypeTemplate, valueTemplate }` per argument.
+| Config field | Default | Notes |
+|---|---|---|
+| `callInstructionsType` | `"array"` | `"array"` or `"payloadPath"` (GEA 1.18.0+). |
+| `callInstructions` | `{}` | When `"array"`: a single object (see fields below). When `"payloadPath"`: payload path string resolving to an object with `nameSpace`, `identifier`, `methodNs`, `methodId`, and `methodArguments` keys. |
+| `destinationPath` | `""` | **Required.** Payload path to write call result. |
+
+**`callInstructions` fields** (when `callInstructionsType: "array"`):
+
+| Field | Required | Notes |
+|---|---|---|
+| `nameSpaceTemplate` | Yes | Object namespace index. Template. |
+| `identifierTemplate` | Yes | Object node identifier. Template. |
+| `methodNsTemplate` | Yes | Method namespace index. Template. |
+| `methodIdTemplate` | Yes | Method node identifier. Template. |
+| `methodArguments` | No | Array of argument objects (see below). May be empty or omitted if the method takes no arguments. |
+
+**`methodArguments` item fields:**
+
+| Field | Default | Notes |
+|---|---|---|
+| `dataTypeTemplate` | `"Null"` | OPC UA data type. One of: `"Null"`, `"Boolean"`, `"SByte"`, `"Byte"`, `"Int16"`, `"UInt16"`, `"Int32"`, `"UInt32"`, `"Int64"`, `"UInt64"`, `"Float"`, `"Double"`, `"String"`, `"DateTime"`, `"Guid"`, `"ByteString"`, `"XmlElement"`, `"NodeId"`, `"ExpandedNodeId"`, `"QualifiedName"`, `"LocalizedText"`, `"DataValue"`. |
+| `arrayTypeTemplate` | `"Scalar"` | `"Scalar"`, `"Array"`, or `"Matrix"`. |
+| `sourceTypeTemplate` | `"string"` | `"string"` — `valueTemplate` is a Handlebars template. `"path"` — `valueTemplate` is a payload path. |
+| `valueTemplate` | `""` | Argument value — template string or payload path per `sourceTypeTemplate`. |

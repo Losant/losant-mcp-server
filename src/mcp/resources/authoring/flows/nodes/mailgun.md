@@ -25,7 +25,7 @@ Two auth methods: service credential or direct API key.
     "fromTemplate": "alerts@example.com",
     "subjectTemplate": "Alert: {{working.alertTitle}}",
     "bodyTemplate": "{{working.alertBody}}",
-    "toAddresses": [{ "email": "operator@example.com" }],
+    "toAddresses": ["operator@example.com"],
     "ccAddresses": [],
     "bccAddresses": [],
     "replyToTemplate": "",
@@ -44,9 +44,9 @@ Two auth methods: service credential or direct API key.
 | `fromTemplate` | `""` | **Required.** Sender email address. Template. |
 | `subjectTemplate` | `""` | **Required.** Email subject. Template. |
 | `bodyTemplate` | `""` | **Required.** Email body. Template. |
-| `toAddresses` | `[]` | **Required.** Array of `{ email: "template" }` objects. Min 1, max 1000. |
-| `ccAddresses` | `[]` | Array of `{ email: "template" }` CC objects. |
-| `bccAddresses` | `[]` | Array of `{ email: "template" }` BCC objects. |
+| `toAddresses` | `[]` | **Required.** Array of email address template strings. Min 1, max 1000. |
+| `ccAddresses` | `[]` | Array of email address template strings. |
+| `bccAddresses` | `[]` | Array of email address template strings. |
 | `replyToTemplate` | `""` | Reply-to address. Template. |
 | `attachments` | `[]` | Array of attachment objects (max 10). |
 | `resultPath` | `""` | Payload path to write the send result. |

@@ -86,7 +86,7 @@ Generates a cryptographic signature using a private key. Used for verifying data
 
 ### Crypto: Verify Node (`type: "CryptoVerifyNode"`)
 
-Verifies a cryptographic signature against a key/certificate. Branches — `outputIds[0]` = valid, `outputIds[1]` = invalid.
+Verifies a cryptographic signature against a key/certificate. Branches — `outputIds[0]` = **invalid** (verification failed); `outputIds[1]` = **valid** (verification passed). Note: this is consistent with the ConditionalNode pattern where index 0 is the failure/false path.
 
 ```json
 {
@@ -104,7 +104,7 @@ Verifies a cryptographic signature against a key/certificate. Branches — `outp
     "resultPath": "working.verifyError"
   },
   "meta": { "category": "logic", "name": "crypto-verify", "label": "Crypto: Verify", "x": 200, "y": 200 },
-  "outputIds": [["valid"], ["invalid"]]
+  "outputIds": [["invalid"], ["valid"]]
 }
 ```
 

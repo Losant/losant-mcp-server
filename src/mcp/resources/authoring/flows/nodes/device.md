@@ -11,7 +11,7 @@ Four nodes for managing device records via the Losant API within a workflow.
 | `UpdateDeviceNode` | `data` | `update-device` | `"Device: Update"` |
 | `DeviceDeleteWorkflowNode` | `data` | `delete-device` | `"Device: Delete"` |
 
-See `reference/error-handling.md` for the `errorBehavior`/`errorPath` pattern.
+See `losant://references/flow/error-handling` for the `errorBehavior`/`errorPath` pattern. Note: `errorBehavior` is **not supported** on `CreateDeviceNode` or `UpdateDeviceNode` — omit it from both.
 
 ## Cloud (Application) workflows
 
@@ -24,12 +24,11 @@ Creates a new device in the application. Three configuration modes are available
   "id": "create-device",
   "type": "CreateDeviceNode",
   "config": {
-    "mode": "individualFields",
+    "dataMethod": "individualFields",
     "nameTemplate": "{{data.deviceName}}",
-    "deviceClass": "standalone",
-    "tags": [{ "keyTemplate": "source", "valueTemplate": "workflow" }],
-    "resultPath": "working.newDevice",
-    "errorBehavior": "throw"
+    "deviceClassTemplate": "standalone",
+    "deviceTags": [{ "keyTemplate": "source", "valueTemplate": "workflow" }],
+    "resultPath": "working.newDevice"
   },
   "meta": { "category": "data", "name": "create-device", "label": "Device: Create", "x": 200, "y": 200 },
   "outputIds": [["next"]]
@@ -51,13 +50,12 @@ Creates a new device in the application. Three configuration modes are available
 | `deviceAttributes[0].contentTypeTemplate` | Optional when `dataMethod: "individualFields"`, but required when the device attribute item data type is a `blob`. |
 | `parentIdTemplate` | Optional when `dataMethod: "individualFields"`. The device system to use as this devices parent.  |
 | `systemIntervalTemplate` | Optional when `dataMethod: "individualFields"`. When creating a new system device set the query internal i.e. the interval to wait before calculating the system device state from their children. Ddefaults to 30. |
-| `keepDuplicatesTemplate` | Optional when `dataMethod: "individualFields"`. Wh |
+| `keepDuplicatesTemplate` | Optional. When `true`, allows creating duplicate device names. |
 | `deviceJsonTemplate` | Used when `dataMethod: "jsonTemplate"` — a JSON template resolving to a Device Post schema object. |
 | `devicePayloadPath` | Used when `dataMethod: "payloadPath"` — a payload path pointing to a Device Post schema object. |
 | `tagsAsObject` | A boolean defaults to false. When set to true will return tags in an object format instead of an array. |
 | `attributesAsObject` | A boolean defaults to false. When set to true will return attributes in an object format keyed by the attribute name instead of an array. |
 | `resultPath` | Payload path for the created device object (includes `id`). |
-| `errorBehavior` / `errorPath` | Standard error handling. |
 
 ---
 
@@ -207,17 +205,37 @@ Find devices for an experience user with composite state:
 
 ### Device: Update Node (`type: "UpdateDeviceNode"`)
 
-Patches a device's name, description, tags, or attributes.
+Patches a device record. Config structure mirrors CreateDeviceNode — use `idTemplate` to identify which device to update, then `dataMethod` to specify how the update payload is provided. `errorBehavior` is **not supported** on this node.
+
+#### Update by JSON template (most common)
 
 ```json
 {
   "id": "update-device",
   "type": "UpdateDeviceNode",
   "config": {
-    "deviceIdTemplate": "{{data.deviceId}}",
-    "deviceTemplate": "{\"name\":\"{{working.newName}}\",\"tags\":[{\"key\":\"status\",\"value\":\"active\"}]}",
-    "resultPath": "working.updatedDevice",
-    "errorBehavior": "throw"
+    "idTemplate": "{{data.deviceId}}",
+    "dataMethod": "jsonTemplate",
+    "deviceJsonTemplate": "{\"name\":\"{{data.newName}}\"}",
+    "resultPath": "working.updatedDevice"
+  },
+  "meta": { "category": "data", "name": "update-device", "label": "Device: Update", "x": 400, "y": 200 },
+  "outputIds": [["next"]]
+}
+```
+
+#### Update by individual fields
+
+```json
+{
+  "id": "update-device",
+  "type": "UpdateDeviceNode",
+  "config": {
+    "idTemplate": "{{data.deviceId}}",
+    "dataMethod": "individualFields",
+    "nameTemplate": "{{data.newName}}",
+    "deviceTags": [{ "keyTemplate": "status", "valueTemplate": "active" }],
+    "resultPath": "working.updatedDevice"
   },
   "meta": { "category": "data", "name": "update-device", "label": "Device: Update", "x": 400, "y": 200 },
   "outputIds": [["next"]]
@@ -226,12 +244,18 @@ Patches a device's name, description, tags, or attributes.
 
 | Config field | Notes |
 |---|---|
-| `deviceIdTemplate` | **Required.** Device ID. |
-| `deviceTemplate` | **Required.** Patch object as a **JSON-encoded string template**. Only include fields to update. |
+| `idTemplate` | **Required.** Device ID to update. Template. |
+| `dataMethod` | **Required.** `"individualFields"`, `"jsonTemplate"`, or `"payloadPath"`. |
+| `deviceJsonTemplate` | Used when `dataMethod: "jsonTemplate"` — LJSON template resolving to a device patch object. Only include fields to update. |
+| `devicePayloadPath` | Used when `dataMethod: "payloadPath"` — payload path pointing to a device patch object. |
+| `nameTemplate` | Used when `dataMethod: "individualFields"`. New device name. Template. |
+| `descriptionTemplate` | Used when `dataMethod: "individualFields"`. New description. Template. |
+| `deviceClassTemplate` | Used when `dataMethod: "individualFields"`. New device class. |
+| `deviceTags` | Used when `dataMethod: "individualFields"`. Array of `{ keyTemplate, valueTemplate }`. **Full replacement** — always read first, merge changes, then write the full array. |
+| `deviceAttributes` | Used when `dataMethod: "individualFields"`. Array of `{ nameTemplate, dataTypeTemplate }`. **Full replacement**. Do not change an existing attribute's `dataTypeTemplate` — this drops all historical state. |
+| `tagsAsObject` | `false` | When `true`, returns tags as an object map in the result. |
+| `attributesAsObject` | `false` | When `true`, returns attributes as an object map in the result. |
 | `resultPath` | Payload path for the updated device object. |
-| `errorBehavior` / `errorPath` | Standard error handling. |
-
-**Tags and attributes are full-replacement arrays** — always read the device first, merge your changes, then write the full array. **Do not change an attribute's `dataType`** — this drops all historical state for that attribute.
 
 ---
 
@@ -292,7 +316,7 @@ Removes one or more devices from the application. Two delete modes are available
     {
       "id": "get-dev",
       "type": "GetDeviceNode",
-      "config": { "deviceIdTemplate": "{{data.deviceId}}", "resultPath": "working.device" },
+      "config": { "idTemplate": "{{data.deviceId}}", "resultPath": "working.device" },
       "meta": { "category": "data", "name": "get-device", "label": "Device: Get", "x": 0, "y": 0 },
       "outputIds": [["update-dev"]]
     },
@@ -300,8 +324,9 @@ Removes one or more devices from the application. Two delete modes are available
       "id": "update-dev",
       "type": "UpdateDeviceNode",
       "config": {
-        "deviceIdTemplate": "{{data.deviceId}}",
-        "deviceTemplate": "{\"tags\":{{jsonEncode (arrayAppend working.device.tags (object \"key\" \"newTag\" \"value\" \"newValue\"))}}}",
+        "idTemplate": "{{data.deviceId}}",
+        "dataMethod": "jsonTemplate",
+        "deviceJsonTemplate": "{\"tags\":{{jsonEncode (arrayAppend working.device.tags (object \"key\" \"newTag\" \"value\" \"newValue\"))}}}",
         "resultPath": "working.result"
       },
       "meta": { "category": "data", "name": "update-device", "label": "Device: Update", "x": 200, "y": 0 },

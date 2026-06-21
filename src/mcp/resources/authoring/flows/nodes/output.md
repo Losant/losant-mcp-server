@@ -56,31 +56,86 @@ Not available.
 
 ## Device: Command Node (`type: "DeviceSendCommandNode"`)
 
-Sends a named command with a payload to a device over MQTT.
+Sends a named command with a payload to one or more devices over MQTT. Device selection mode is stored in **`meta.deviceSelectionType`** (not in `config`). There is no `errorBehavior` field on this node.
 
-### Cloud (Application) workflows
+### Device selection modes (`meta.deviceSelectionType`)
+
+#### `payload` — device ID(s) from payload path (most common)
 
 ```json
 {
   "id": "send-cmd",
   "type": "DeviceSendCommandNode",
   "config": {
-    "deviceIdTemplate": "{{data.deviceId}}",
-    "commandNameTemplate": "setThreshold",
+    "deviceIdsPath": "data.deviceId",
+    "nameTemplate": "setThreshold",
     "payloadTemplate": "{\"maxTemp\":{{working.threshold}}}",
-    "errorBehavior": "throw"
+    "payloadTemplateType": "json"
   },
-  "meta": { "category": "output", "name": "device-command", "label": "Device: Command", "x": 200, "y": 200 },
+  "meta": { "category": "output", "name": "device-command", "label": "Device: Command", "deviceSelectionType": "payload", "x": 200, "y": 200 },
   "outputIds": [["next"]]
 }
 ```
 
 | Config field | Notes |
 |---|---|
-| `deviceIdTemplate` | **Required.** Target device ID. |
-| `commandNameTemplate` | **Required.** Command name. |
-| `payloadTemplate` | JSON-encoded string template for command payload. |
-| `errorBehavior` / `errorPath` | Standard error handling. |
+| `deviceIdsPath` | **Required.** Payload path to a device ID or array of device IDs. |
+
+#### `direct` — hardcoded device IDs and/or tags
+
+```json
+{
+  "id": "send-cmd",
+  "type": "DeviceSendCommandNode",
+  "config": {
+    "sendToDeviceIds": ["abc123"],
+    "sendToDeviceTags": [{ "key": "type", "value": "pump" }],
+    "nameTemplate": "setThreshold",
+    "payloadTemplate": "{\"maxTemp\":75}",
+    "payloadTemplateType": "json"
+  },
+  "meta": { "category": "output", "name": "device-command", "label": "Device: Command", "deviceSelectionType": "direct", "x": 200, "y": 200 },
+  "outputIds": [["next"]]
+}
+```
+
+| Config field | Notes |
+|---|---|
+| `sendToDeviceIds` | Array of device ID strings. At least one ID or tag required. |
+| `sendToDeviceTags` | Array of `{ key, value }` tag objects to target matching devices. |
+
+#### `query` — advanced device query
+
+```json
+{
+  "id": "send-cmd",
+  "type": "DeviceSendCommandNode",
+  "config": {
+    "deviceQueryJsonTemplate": "{\"tags\":{\"\":{\"key\":\"type\",\"value\":\"pump\"}}}",
+    "nameTemplate": "setThreshold",
+    "payloadTemplate": "{\"maxTemp\":75}",
+    "payloadTemplateType": "json"
+  },
+  "meta": { "category": "output", "name": "device-command", "label": "Device: Command", "deviceSelectionType": "query", "x": 200, "y": 200 },
+  "outputIds": [["next"]]
+}
+```
+
+| Config field | Notes |
+|---|---|
+| `deviceQueryJsonTemplate` | **Required.** Advanced device query as a LJSON template. |
+
+### Command fields (all selection modes)
+
+| Config field | Notes |
+|---|---|
+| `nameTemplate` | **Required.** Command name. Template. |
+| `payloadTemplate` | Command payload. Template. Interpretation depends on `payloadTemplateType`. |
+| `payloadTemplateType` | `json` (default) — render as JSON template. `string` — render as a string template. `path` — treat as a payload path to read the payload from. |
+
+### Cloud (Application) workflows
+
+Supported. All three `deviceSelectionType` modes available.
 
 ### Experience workflows
 
@@ -94,18 +149,35 @@ Not available.
 
 ## Device: State Node (`type: "DeviceChangeStateNode"`)
 
-Reports state on behalf of a device from within a workflow. Useful for system-level aggregations or recording computed values.
+Reports state on behalf of a device from within a workflow. Useful for system-level aggregations or recording computed values. No `errorBehavior` field on this node.
 
-### Cloud (Application) workflows
+### Device identification
+
+Two modes controlled by `config.deviceIdTemplateType`:
+
+- `"stringTemplate"` (default) — `config.deviceId` is a hardcoded device ID string.
+- `"jsonPath"` — `config.deviceId` is a payload path (no `{{}}`) resolving to the device ID at runtime.
+
+### State data method (`config.attrDataMethod`)
+
+Three modes for supplying the state attributes:
+
+#### `individualFields` (default) — explicit key/value pairs
 
 ```json
 {
   "id": "report-state",
   "type": "DeviceChangeStateNode",
   "config": {
-    "deviceIdTemplate": "{{data.deviceId}}",
-    "stateTemplate": "{\"aggregateTemp\":{{working.avgTemp}},\"sampleCount\":{{working.count}}}",
-    "errorBehavior": "throw"
+    "deviceId": "{{data.deviceId}}",
+    "deviceIdTemplateType": "stringTemplate",
+    "attrDataMethod": "individualFields",
+    "attrInfos": [
+      { "key": "temp", "valueTemplate": "{{working.avgTemp}}" },
+      { "key": "count", "valueTemplate": "{{working.count}}" }
+    ],
+    "timeSourceType": "payloadTime",
+    "resultPath": "working.stateResult"
   },
   "meta": { "category": "output", "name": "device-state", "label": "Device: State", "x": 200, "y": 200 },
   "outputIds": [["next"]]
@@ -114,9 +186,58 @@ Reports state on behalf of a device from within a workflow. Useful for system-le
 
 | Config field | Notes |
 |---|---|
-| `deviceIdTemplate` | **Required.** Target device ID. |
-| `stateTemplate` | **Required.** State attributes as a JSON-encoded string template. Keys must match defined device attributes. |
-| `errorBehavior` / `errorPath` | Standard error handling. |
+| `attrInfos` | Array of `{ key, valueTemplate }` — one entry per attribute. `key` is the attribute name; `valueTemplate` is a Handlebars template resolving to the value. |
+
+#### `jsonTemplate` — state as a LJSON template
+
+```json
+{
+  "config": {
+    "deviceId": "{{data.deviceId}}",
+    "deviceIdTemplateType": "stringTemplate",
+    "attrDataMethod": "jsonTemplate",
+    "attrJsonTemplate": "{\"aggregateTemp\":{{working.avgTemp}},\"sampleCount\":{{working.count}}}",
+    "timeSourceType": "payloadTime"
+  }
+}
+```
+
+| Config field | Notes |
+|---|---|
+| `attrJsonTemplate` | **Required.** LJSON template resolving to an object where keys are attribute names and values are the state values. |
+
+#### `payloadPath` — state from a payload path
+
+```json
+{
+  "config": {
+    "deviceId": "{{data.deviceId}}",
+    "deviceIdTemplateType": "stringTemplate",
+    "attrDataMethod": "payloadPath",
+    "attrPayloadPath": "working.stateObject",
+    "timeSourceType": "payloadTime"
+  }
+}
+```
+
+| Config field | Notes |
+|---|---|
+| `attrPayloadPath` | **Required.** Payload path to an object whose keys are attribute names. |
+
+### Common config fields (all modes)
+
+| Field | Default | Notes |
+|---|---|---|
+| `deviceId` | — | **Required.** Device ID string (when `deviceIdTemplateType: "stringTemplate"`) or payload path (when `deviceIdTemplateType: "jsonPath"`). |
+| `deviceIdTemplateType` | `"stringTemplate"` | `"stringTemplate"` — `deviceId` is a Handlebars template. `"jsonPath"` — `deviceId` is a bare payload path (no `{{}}`). |
+| `attrDataMethod` | `"individualFields"` | State source mode — see above. |
+| `timeSourceType` | `"payloadTime"` | `"payloadTime"` — use the time from the current payload. `"now"` — use the current time. `"payloadPath"` — read time from `timeSourcePath`. |
+| `timeSourcePath` | — | Payload path to a time value. Used when `timeSourceType: "payloadPath"`. |
+| `resultPath` | — | Optional. Payload path to write the result object indicating success or failure of queuing the state change. |
+
+### Cloud (Application) workflows
+
+Supported. All `deviceIdTemplateType` and `attrDataMethod` modes available.
 
 ### Experience workflows
 
@@ -130,7 +251,7 @@ Same as Cloud. Available on all GEA versions.
 
 ## Email Node (`type: "StructureEmailNode"`)
 
-Sends an email using Losant's built-in email delivery. No credential required.
+Sends an email using Losant's built-in email delivery. No credential required. **Rate limited to 1 send per minute.** For production use, prefer SendGrid or Mailgun nodes. The From address is auto-generated from the workflow ID — it cannot be customized. No `errorBehavior` field on this node.
 
 ### Cloud (Application) workflows
 
@@ -139,12 +260,10 @@ Sends an email using Losant's built-in email delivery. No credential required.
   "id": "send-email",
   "type": "StructureEmailNode",
   "config": {
-    "toTemplate": "operator@example.com",
-    "fromTemplate": "alerts@example.com",
+    "toAddresses": ["operator@example.com", "backup@example.com"],
     "subjectTemplate": "Alert: {{working.alertSubject}}",
-    "bodyTemplate": "Temperature on {{data.deviceId}} reached {{data.attributes.tempC}}°C.",
-    "isBodyHtml": false,
-    "errorBehavior": "throw"
+    "bodyTemplate": "<h2>Alert</h2><p>Temperature on {{data.deviceId}} reached {{data.attributes.tempC}}°C.</p>",
+    "resultPath": "working.emailResult"
   },
   "meta": { "category": "output", "name": "structure-email", "label": "Email", "x": 200, "y": 200 },
   "outputIds": [["next"]]
@@ -153,12 +272,10 @@ Sends an email using Losant's built-in email delivery. No credential required.
 
 | Config field | Notes |
 |---|---|
-| `toTemplate` | **Required.** Recipient email(s), comma-separated template. |
-| `fromTemplate` | Sender address template. |
-| `subjectTemplate` | Email subject template. |
-| `bodyTemplate` | Email body template. |
-| `isBodyHtml` | When `true`, body is rendered as HTML. Default `false`. |
-| `errorBehavior` / `errorPath` | Standard error handling. |
+| `toAddresses` | **Required.** Array of recipient email address strings. Up to 5 recipients. Each element is a static email string or a Handlebars template resolving to one. |
+| `subjectTemplate` | **Required.** Email subject as a Handlebars template. |
+| `bodyTemplate` | **Required.** Email body as an HTML template. Body is always rendered as HTML. |
+| `resultPath` | Optional. Payload path to write the send result object. |
 
 ### Experience workflows
 

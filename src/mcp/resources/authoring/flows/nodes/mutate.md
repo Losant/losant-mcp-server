@@ -38,7 +38,7 @@ Available: cloud, experience, customNode, edge, embedded.
 | Field | Required | Notes |
 |---|---|---|
 | `valueTemplate` | Yes | Handlebars string template. Rendered result is written to `destination`. Max 32,768 characters. |
-| `valueTemplateType` | No | `"string"` (default) — stores the rendered string as-is. `"json"` — parses the rendered result as JSON before storing. Use `"json"` when the template produces a number, boolean, object, or array. |
+| `valueTemplateType` | No | Controls how the rendered `valueTemplate` output is treated before storing. `"string"` (default) — stores the rendered output as a string value. `"json"` — parses the rendered output as a JSON value before storing; use this when the template produces a number, boolean, object, or array and you want the destination path to hold that type, not a string. |
 | `destination` | Yes | Payload path to write to. Created if it doesn't exist. |
 
 **`valueTemplateType` examples:**

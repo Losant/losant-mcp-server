@@ -11,7 +11,7 @@ Four nodes for managing Losant application events within a workflow.
 | `UpdateEventNode` | `data` | `update-event` | `"Event: Update"` |
 | `DeleteEventNode` | `data` | `delete-event` | `"Event: Delete"` |
 
-See `reference/error-handling.md` for the `errorBehavior`/`errorPath` pattern.
+See `losant://references/flow/error-handling` for the `errorBehavior`/`errorPath` pattern.
 
 ## Cloud (Application) workflows
 
@@ -44,25 +44,27 @@ Events are the primary alerting mechanism in Losant.
 | `deviceIdTemplate` | Optional — links the event to a device. Template. |
 | `dataTemplate` | Optional arbitrary JSON data as JSON-encoded string template. |
 | `eventTagsTemplate` | Optional event tags as JSON-encoded string template. |
-| `resultPath` | Payload path for the created event object (includes `id`). |
+| `resultPath` | Payload path for the created event object. Shape: `{ id, applicationId, level, subject, message, deviceId, data, eventTags, state, creationDate, lastUpdated }`. The `id` field is needed to Get/Update/Delete the event downstream. |
 | `errorBehavior` / `errorPath` | Standard error handling. |
 
 ---
 
 ### Event: Get Node (`type: "GetEventNode"`)
 
-Fetches an event by ID.
+Retrieves one or more events. The retrieval mode is stored in **`meta.mode`** (not in `config`).
+
+#### Mode: get one by ID (`meta.mode: "eventIdTemplate"`) — default
 
 ```json
 {
   "id": "get-event",
   "type": "GetEventNode",
   "config": {
-    "eventIdTemplate": "{{working.eventId}}",
-    "resultPath": "working.event",
+    "eventIdTemplate": "{{working.event.id}}",
+    "resultPath": "working.fetchedEvent",
     "errorBehavior": "throw"
   },
-  "meta": { "category": "data", "name": "get-event", "label": "Event: Get", "x": 200, "y": 200 },
+  "meta": { "category": "data", "name": "get-event", "label": "Event: Get", "mode": "eventIdTemplate", "x": 200, "y": 200 },
   "outputIds": [["next"]]
 }
 ```
@@ -70,40 +72,195 @@ Fetches an event by ID.
 | Config field | Notes |
 |---|---|
 | `eventIdTemplate` | **Required.** Event ID. Template. |
-| `resultPath` | **Required.** Payload path for the event object. |
+| `resultPath` | **Required.** Payload path for the event object (or `null` if not found). |
 | `errorBehavior` / `errorPath` | Standard error handling. |
 
----
-
-### Event: Update Node (`type: "UpdateEventNode"`)
-
-Updates an existing event's state, level, subject, or adds a comment.
+#### Mode: get one by query (`meta.mode: "queryTemplateSingle"`)
 
 ```json
 {
-  "id": "acknowledge-event",
-  "type": "UpdateEventNode",
+  "id": "get-event-query",
+  "type": "GetEventNode",
   "config": {
-    "eventIdTemplate": "{{working.eventId}}",
-    "stateTemplate": "acknowledged",
-    "commentTemplate": "Acknowledged by automated workflow",
-    "resultPath": "working.updatedEvent",
+    "queryTemplate": "{\"state\": {\"$eq\": \"new\"}}",
+    "sortField": "creationDate",
+    "sortDirection": "desc",
+    "resultPath": "working.event",
     "errorBehavior": "throw"
   },
-  "meta": { "category": "data", "name": "update-event", "label": "Event: Update", "x": 200, "y": 200 },
+  "meta": { "category": "data", "name": "get-event", "label": "Event: Get", "mode": "queryTemplateSingle", "x": 200, "y": 200 },
   "outputIds": [["next"]]
 }
 ```
 
 | Config field | Notes |
 |---|---|
-| `eventIdTemplate` | **Required.** Event ID. |
-| `stateTemplate` | New state: `"new"`, `"acknowledged"`, or `"resolved"`. |
-| `levelTemplate` | New level: `"info"`, `"warning"`, `"error"`, `"critical"`. |
-| `subjectTemplate` | New subject. |
+| `queryTemplate` | Advanced query JSON template. See `losant://guides/advanced-queries`. |
+| `sortField` | **Required.** Sort field: `"creationDate"`, `"level"`, `"state"`, `"subject"`. Default `"creationDate"`. |
+| `sortDirection` | **Required.** `"asc"` or `"desc"`. Default `"desc"`. |
+| `resultPath` | **Required.** Payload path for the first matching event (or `null`). |
+
+#### Mode: get many by query (`meta.mode: "queryTemplateMultiple"`)
+
+```json
+{
+  "id": "get-events-multi",
+  "type": "GetEventNode",
+  "config": {
+    "queryTemplate": "{\"state\": {\"$eq\": \"new\"}}",
+    "sortField": "creationDate",
+    "sortDirection": "desc",
+    "resultsPage": "0",
+    "resultsPerPage": "25",
+    "findMultiple": true,
+    "findMetadata": false,
+    "resultPath": "working.events",
+    "errorBehavior": "throw"
+  },
+  "meta": { "category": "data", "name": "get-event", "label": "Event: Get", "mode": "queryTemplateMultiple", "x": 200, "y": 200 },
+  "outputIds": [["next"]]
+}
+```
+
+| Config field | Notes |
+|---|---|
+| `queryTemplate` | Advanced query JSON template. |
+| `sortField` | **Required.** Same options as single-query mode. |
+| `sortDirection` | **Required.** `"asc"` or `"desc"`. |
+| `resultsPage` | Page number (0-based). Template. |
+| `resultsPerPage` | Page size. Template. |
+| `findMultiple` | Always `true` for this mode. |
+| `findMetadata` | `false` (default) — result is an array. `true` — result is `{ items: [...], count, totalCount, page, perPage }`. |
+| `resultPath` | **Required.** Payload path for the results array or metadata object. |
+
+---
+
+### Event: Update Node (`type: "UpdateEventNode"`)
+
+Updates one or many events. Mode is stored in **`meta.mode`**. The data to apply is controlled by **`config.dataMethod`**.
+
+**Important:** The ID field on UpdateEventNode is `targetEventIdTemplate` (NOT `eventIdTemplate`).
+
+#### Mode: update one by ID (`meta.mode: "eventIdTemplate"`) — default
+
+```json
+{
+  "id": "ack-event",
+  "type": "UpdateEventNode",
+  "config": {
+    "targetEventIdTemplate": "{{working.event.id}}",
+    "dataMethod": "individualFields",
+    "stateTemplate": "acknowledged",
+    "commentTemplate": "Acknowledged by automated workflow",
+    "levelTemplate": "",
+    "subjectTemplate": "",
+    "deviceIdTemplate": "",
+    "eventTags": [],
+    "dataSourceType": "payloadPath",
+    "dataSourcePath": "",
+    "resultPath": "working.updatedEvent",
+    "errorBehavior": "throw"
+  },
+  "meta": { "category": "data", "name": "update-event", "label": "Event: Update", "mode": "eventIdTemplate", "x": 200, "y": 200 },
+  "outputIds": [["next"]]
+}
+```
+
+#### Mode: update one by query (`meta.mode: "queryTemplateSingle"`)
+
+```json
+{
+  "id": "ack-one-query",
+  "type": "UpdateEventNode",
+  "config": {
+    "queryTemplate": "{\"state\": {\"$eq\": \"new\"}}",
+    "sortField": "creationDate",
+    "sortDirection": "desc",
+    "dataMethod": "individualFields",
+    "stateTemplate": "acknowledged",
+    "commentTemplate": "Auto-acknowledged",
+    "levelTemplate": "",
+    "subjectTemplate": "",
+    "deviceIdTemplate": "",
+    "eventTags": [],
+    "dataSourceType": "payloadPath",
+    "dataSourcePath": "",
+    "resultPath": "working.updatedEvent",
+    "errorBehavior": "throw"
+  },
+  "meta": { "category": "data", "name": "update-event", "label": "Event: Update", "mode": "queryTemplateSingle", "x": 200, "y": 200 },
+  "outputIds": [["next"]]
+}
+```
+
+| Config field | Notes |
+|---|---|
+| `queryTemplate` | Advanced query JSON template. |
+| `sortField` | **Required.** Selects which event to update when multiple match. |
+| `sortDirection` | **Required.** `"asc"` or `"desc"`. |
+
+#### Mode: update many by query (`meta.mode: "queryTemplateMultiple"`) — bulk update
+
+```json
+{
+  "id": "ack-all-new",
+  "type": "UpdateEventNode",
+  "config": {
+    "queryTemplate": "{\"state\": {\"$eq\": \"new\"}}",
+    "updateMultiple": true,
+    "dataMethod": "individualFields",
+    "stateTemplate": "acknowledged",
+    "commentTemplate": "Bulk auto-acknowledged",
+    "levelTemplate": "",
+    "subjectTemplate": "",
+    "deviceIdTemplate": "",
+    "eventTags": [],
+    "dataSourceType": "payloadPath",
+    "dataSourcePath": "",
+    "resultPath": "working.bulkResult",
+    "errorBehavior": "throw"
+  },
+  "meta": { "category": "data", "name": "update-event", "label": "Event: Update", "mode": "queryTemplateMultiple", "x": 200, "y": 200 },
+  "outputIds": [["next"]]
+}
+```
+
+The bulk update result at `resultPath` is `{ "success": true }` — updates are queued and applied asynchronously, not returned synchronously.
+
+| Config field | Notes |
+|---|---|
+| `queryTemplate` | Advanced query. All matching events are updated. |
+| `updateMultiple` | Always `true` for this mode. |
+
+### Update data methods (`config.dataMethod`)
+
+All three modes use the same `dataMethod` to control what gets updated:
+
+#### `"individualFields"` (default)
+
+| Config field | Notes |
+|---|---|
+| `stateTemplate` | New state: `"new"`, `"acknowledged"`, or `"resolved"`. Leave empty to not change. |
+| `levelTemplate` | New level: `"info"`, `"warning"`, `"error"`, `"critical"`. Leave empty to not change. |
+| `subjectTemplate` | New subject. Leave empty to not change. |
 | `commentTemplate` | Comment to append to the event's history. |
-| `resultPath` | Payload path for the updated event. |
-| `errorBehavior` / `errorPath` | Standard error handling. |
+| `deviceIdTemplate` | Update linked device. Set to `null` (JSON null, not empty string) to remove the device association. |
+| `eventTags` | Array of `{ keyTemplate, valueTemplate }` objects. Merged into existing tags. Omit `valueTemplate` to delete a tag key. |
+| `dataSourceType` | `"payloadPath"` (read from `dataSourcePath`) or `"JSON_OBJECT"` (read from `dataSourceJson`). |
+| `dataSourcePath` | Payload path to structured event data. Used when `dataSourceType: "payloadPath"`. |
+| `dataSourceJson` | JSON template for structured event data. Used when `dataSourceType: "JSON_OBJECT"`. |
+
+#### `"payloadPath"` — read the full event update from payload
+
+| Config field | Notes |
+|---|---|
+| `eventPayloadPath` | **Required.** Payload path to an event patch object. |
+
+#### `"jsonTemplate"` — specify the full event update as a JSON template
+
+| Config field | Notes |
+|---|---|
+| `eventJsonTemplate` | **Required.** JSON template resolving to the event patch object. E.g. `{ "state": "acknowledged", "comment": "{{data.reason}}" }`. |
 
 ---
 
@@ -116,7 +273,7 @@ Deletes an event by ID.
   "id": "delete-event",
   "type": "DeleteEventNode",
   "config": {
-    "eventIdTemplate": "{{working.eventId}}",
+    "eventIdTemplate": "{{working.event.id}}",
     "errorBehavior": "throw"
   },
   "meta": { "category": "data", "name": "delete-event", "label": "Event: Delete", "x": 200, "y": 200 },
@@ -126,13 +283,14 @@ Deletes an event by ID.
 
 | Config field | Notes |
 |---|---|
-| `eventIdTemplate` | **Required.** Event ID. |
+| `eventIdTemplate` | **Required.** Event ID. Template. |
 | `errorBehavior` / `errorPath` | Standard error handling. |
 
 ### Idiom notes
 
-- **Create once, update state** — create when an alert fires; acknowledge when handled; resolve when cleared. Don't create a new event for each update.
-- Link events to devices via `deviceIdTemplate` to enable Event List dashboard blocks to associate events with devices.
+- **Create once, update state** — create when an alert fires; acknowledge when handled; resolve when cleared.
+- Use `queryTemplateMultiple` on UpdateEventNode to bulk-acknowledge all open events matching a device or tag.
+- Link events to devices via `deviceIdTemplate` to enable Event List dashboard blocks.
 - Use `dataTemplate` to store structured context: `"{\"temp\":{{data.attributes.tempC}}}"`.
 
 ## Experience workflows

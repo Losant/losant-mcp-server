@@ -79,7 +79,7 @@ Decodes a JWT without verifying the signature. Useful for reading claims from a 
 
 ### JWT: Verify Node (`type: "JWTVerifyNode"`)
 
-Verifies a JWT signature and branches the workflow. `outputIds[0]` = valid, `outputIds[1]` = invalid.
+Verifies a JWT signature and branches the workflow. `outputIds[0]` = **invalid** (verification failed); `outputIds[1]` = **valid** (verification passed).
 
 ```json
 {
@@ -91,7 +91,7 @@ Verifies a JWT signature and branches the workflow. `outputIds[0]` = valid, `out
     "errorPath": "working.jwtError"
   },
   "meta": { "category": "logic", "name": "jwt-verify", "label": "JWT: Verify", "x": 200, "y": 200 },
-  "outputIds": [["handle-valid"], ["handle-invalid"]]
+  "outputIds": [["handle-invalid"], ["handle-valid"]]
 }
 ```
 

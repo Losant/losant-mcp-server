@@ -50,7 +50,9 @@ Creates a new Experience User. Two configuration modes: individual fields or a J
 
 ### User: Get Node (`type: "GetExperienceUserNode"`)
 
-Fetches one or more Experience Users by email/ID, query, or other criteria.
+Fetches one or more Experience Users. Three find methods available via `findMethod`.
+
+#### Find by email or ID (`findMethod: "emailOrId"`) — default
 
 ```json
 {
@@ -66,11 +68,71 @@ Fetches one or more Experience Users by email/ID, query, or other criteria.
 }
 ```
 
+| Config field | Notes |
+|---|---|
+| `emailOrIdTemplate` | **Required.** Email address or user ID. Template. Result is the user object or `null` if not found. |
+| `resultPath` | **Required.** Payload path to write the result. |
+
+#### Find by tag query (`findMethod: "userTags"`)
+
+```json
+{
+  "id": "get-users-by-tag",
+  "type": "GetExperienceUserNode",
+  "config": {
+    "findMethod": "userTags",
+    "tags": [{ "keyTemplate": "role", "valueTemplate": "admin" }],
+    "findMultiple": true,
+    "findMetadata": false,
+    "resultsPerPage": "100",
+    "resultsPage": "0",
+    "sortField": "email",
+    "sortDirection": "asc",
+    "resultPath": "working.users"
+  },
+  "meta": { "category": "experience", "name": "get-experience-user", "label": "User: Get", "x": 200, "y": 200 },
+  "outputIds": [["next"]]
+}
+```
+
 | Config field | Default | Notes |
 |---|---|---|
-| `findMethod` | `"emailOrId"` | How to find the user(s). Common values: `"emailOrId"`, `"query"`. |
-| `emailOrIdTemplate` | `""` | **Required** when `findMethod: "emailOrId"`. Email or user ID. Template. |
-| `resultPath` | `""` | **Required.** Payload path to write the result. |
+| `tags` | `[]` | Array of `{ keyTemplate, valueTemplate }` tag pairs to match. |
+| `findMultiple` | `false` | `false` — return first match or `null`. `true` — return array. |
+| `findMetadata` | `false` | When `true` and `findMultiple: true`, wraps result as `{ items, count, totalCount, page, perPage }`. |
+| `resultsPerPage` | `"100"` | Page size. Template. |
+| `resultsPage` | `"0"` | Zero-based page. Template. |
+| `sortField` | `"email"` | `"email"`, `"id"`, `"firstName"`, `"lastName"`, `"creationDate"`, `"lastUpdated"`. |
+| `sortDirection` | `"asc"` | `"asc"` or `"desc"`. |
+| `resultPath` | — | **Required.** Payload path to write the result. |
+
+#### Find by advanced query (`findMethod: "query"`)
+
+```json
+{
+  "id": "get-users-query",
+  "type": "GetExperienceUserNode",
+  "config": {
+    "findMethod": "query",
+    "queryTemplate": "{\"email\":{\"$endsWith\":\"@example.com\"}}",
+    "findMultiple": true,
+    "findMetadata": false,
+    "resultsPerPage": "25",
+    "resultsPage": "0",
+    "sortField": "creationDate",
+    "sortDirection": "desc",
+    "resultPath": "working.users"
+  },
+  "meta": { "category": "experience", "name": "get-experience-user", "label": "User: Get", "x": 200, "y": 200 },
+  "outputIds": [["next"]]
+}
+```
+
+| Config field | Notes |
+|---|---|
+| `queryTemplate` | **Required.** Advanced query as a LJSON template. See `losant://guides/advanced-queries`. |
+| `findMultiple`, `findMetadata`, pagination, sort | Same as `userTags` mode above. |
+| `resultPath` | **Required.** |
 
 ---
 
@@ -129,7 +191,7 @@ Deletes an Experience User.
 
 ### Device: Verify Node (`type: "VerifyDeviceNode"`)
 
-Verifies that a device is associated with an Experience User (or group). Branches — `outputIds[0]` = verified (associated), `outputIds[1]` = not verified.
+Verifies that a device is associated with an Experience User (or group). Branches — `outputIds[0]` = **not verified** (not associated); `outputIds[1]` = **verified** (associated).
 
 ```json
 {
@@ -141,7 +203,7 @@ Verifies that a device is associated with an Experience User (or group). Branche
     "idTypeTemplate": "experienceUser"
   },
   "meta": { "category": "experience", "name": "verify-experience-device", "label": "Device: Verify", "x": 200, "y": 200 },
-  "outputIds": [["verified"], ["not-verified"]]
+  "outputIds": [["not-verified"], ["verified"]]
 }
 ```
 

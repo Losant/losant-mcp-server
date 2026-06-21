@@ -46,7 +46,7 @@ Four auth methods: integration, service credential, JSON template, or payload pa
 | `dataTemplate` | `""` | **Required** when `dataMethod: "stringTemplate"`. Message body. Template. |
 | `dataPayloadPath` | `""` | **Required** when `dataMethod: "payloadPath"`. |
 | `attrMethod` | `"individualFields"` | `"individualFields"`, `"jsonTemplate"`, or `"payloadPath"` for message attributes. |
-| `attrFields` | `[]` | Array of `{ key, valueTemplate }` attribute pairs. |
+| `attrFields` | `[]` | Array of `{ keyTemplate, valueTemplate }` attribute pairs. |
 | `resultPath` | `""` | Payload path to write the publish result. |
 
 ## Experience workflows

@@ -5,12 +5,12 @@ description: Build, edit, and publish Losant workflows through the API — workf
 
 # Losant Workflow Create and Update
 
-This guide is the entry point for creating and updating Losant workflows through the API. The **envelope and wiring** are described here in full. The **per-type detail** — what goes in a node's or trigger's `config` — lives in `nodes/<name>.md` and `triggers/<name>.md`, indexed by the catalog tables below. Trivial node and trigger types (the ones whose entire spec fits in ~10 lines) are documented in `nodes/simple.md` and `triggers/simple.md`. Cross-cutting concepts that several detail docs reference live in `reference/`.
+This guide is the entry point for creating and updating Losant workflows through the API. The **envelope and wiring** are described here in full. The **per-type detail** — what goes in a node's or trigger's `config` — is accessed via `losant://flow/nodes/<name>` and `losant://flow/triggers/<name>`, indexed by the catalog tables below. Trivial node and trigger types (the ones whose entire spec fits in ~10 lines) are documented in `losant://flow/nodes/simple` and `losant://flow/triggers/simple`. Cross-cutting concepts that several detail docs reference are at `losant://references/flow/<name>`.
 
 **Reading order for a new authoring task:**
 1. Read the envelope and wiring sections of this file (you're already here).
-2. For each trigger/node you intend to use, locate it in the catalog and read its Spec file.
-3. If the Spec file references a `reference/<x>.md`, read that too.
+2. For each trigger/node you intend to use, locate it in the catalog and read the resource at the URI listed in the Spec column.
+3. If the Spec doc references a `losant://references/flow/<name>` resource, read that too.
 
 ---
 
@@ -156,7 +156,7 @@ Every trigger object has the same outer shape:
 
 - `key` is type-specific. For most identity-style triggers (timer, virtualButton, onBoot, etc.) the server **generates the key for you** — leave it off. For triggers that filter on a value (deviceTag uses `"key/value"`, event uses the event level, mqttTopic uses the topic), you supply it.
 - `config` defaults to `{}`. Many triggers need nothing here; others (timer, event, opcua) carry their wiring in `config`.
-- `meta` is required: at minimum `category`, `name`, `label`, `x`, `y`. `category` and `name` come from each node's definition. `x` / `y` are canvas coordinates. `label` is required — default to the titlized form of `name` (e.g. `"timer"` → `"Timer"`, `"deviceCreate"` → `"Device: Create"`).
+- `meta` is required: at minimum `category`, `name`, `label`, `x`, `y`. `category` and `name` come from each node's definition. `x` / `y` are canvas coordinates. `label` is required — default to the titlized form of `name` (e.g. `"timer"` → `"Timer"`, `"deviceCreate"` → `"Device: Create"`). **Some triggers require additional fields inside `meta` beyond these five** — always read the trigger's detail doc for the complete `meta` shape.
 - `outputIds` is `[[nodeId, ...]]` — a one-element outer array whose inner array lists which node IDs should fire when the trigger fires. **A trigger with no `outputIds` validates but never runs anything.**
 
 ## Nodes — object shape
@@ -243,6 +243,14 @@ When a branch merges back to a single path, resume the parent's x and continue i
 |---|---|---|
 | Most nodes (HTTP, Mutate, Debug, …) | `[[id, id, ...]]` — one outer entry | All listed nodes fire when this node finishes. |
 | `ConditionalNode`, `GeofenceNode` | `[[falseIds], [trueIds]]` — two outer entries | Index 0 = condition false / outside; index 1 = condition true / inside. Either inner array may be empty (`[]`). |
+| `LatchNode` | `[[notLatchingIds], [newlyLatchedIds]]` — two outer entries | Index 0 = not newly latching (already latched or expression false); index 1 = first-time latch (transition from unlatched to latched). |
+| `ExperienceUserAuthNode` | `[[failedIds], [authenticatedIds]]` — two outer entries | Index 0 = authentication **failed**; index 1 = authentication **succeeded**. |
+| `VerifyExperienceGroupNode` | `[[memberIds], [notMemberIds]]` — two outer entries | Index 0 = user **is a member** of the group; index 1 = user is **not a member**. |
+| `BranchOnChangeNode` | `[[unchangedIds], [changedIds]]` — two outer entries | Index 0 = value **unchanged** (same as previous execution, or first run); index 1 = value **changed**. |
+| `CryptoVerifyNode` | `[[invalidIds], [validIds]]` — two outer entries | Index 0 = verification **failed** (invalid signature); index 1 = verification **passed** (valid signature). |
+| `JwtVerifyNode` | `[[invalidIds], [validIds]]` — two outer entries | Index 0 = JWT **invalid** (bad signature, expired, etc.); index 1 = JWT **valid**. |
+| `TimeRangeNode` | `[[outOfRangeIds], [inRangeIds]]` — two outer entries | Index 0 = current time is **outside** the configured range; index 1 = current time is **inside** the range. |
+| `VerifyDeviceNode` | `[[notVerifiedIds], [verifiedIds]]` — two outer entries | Index 0 = device is **not associated** with the user/group; index 1 = device **is associated**. |
 | `LoopNode` | `[[afterLoopIds], [insideLoopIds]]` | Index 0 = nodes that fire when the loop finishes; index 1 = nodes inside the loop body. |
 | `SwitchNode` | `[[case0Ids], [case1Ids], ...]` | One outer entry per configured case, in order. |
 | Triggers | `[[firstNodeIds]]` — one outer entry | Same as a regular node. |
@@ -264,7 +272,7 @@ A `LoopNode` and its `LoopCapNode`s form a body that runs once per item in the l
 - The loop's `outputIds[1]` lists the **first** nodes inside the body (only IDs whose `meta.groupId` matches this loop are allowed).
 - A `LoopCapNode` (which closes the loop body) must have `meta.groupId = <loopNodeId>` set.
 
-See `nodes/loop.md` for the full pattern and a worked example.
+See `losant://flow/nodes/loop` for the full pattern and a worked example.
 
 ## Globals
 
@@ -291,7 +299,7 @@ See `nodes/loop.md` for the full pattern and a worked example.
     {
       "id": "log",
       "type": "DebugNode",
-      "meta": { "category": "debug", "name": "debug", "label": "Debug", "x": 60, "y": 200 },
+      "meta": { "category": "debug", "name": "debug", "label": "Debug", "x": 60, "y": 160 },
       "outputIds": [[]],
       "config": { "message": "still alive", "level": "verbose" }
     }
@@ -307,46 +315,46 @@ See `nodes/loop.md` for the full pattern and a worked example.
 
 | Type | Available | Spec |
 |---|---|---|
-| `appFile` | cloud | `triggers/app-file` |
-| `beckhoff` | edge | `triggers/beckhoff` |
-| `customNodeStart` | custom | `triggers/simple` |
-| `dataTable` | cloud | `triggers/data-table` |
-| `deviceCommand` | edge | `triggers/device-command` |
-| `deviceCreate` | cloud | `triggers/simple` |
-| `deviceId`, `deviceTag` | cloud | `triggers/device-state` |
-| `deviceIdConnect`, `deviceTagConnect` | cloud | `triggers/device-connect` |
-| `deviceIdDisconnect`, `deviceTagDisconnect` | cloud | `triggers/device-disconnect` |
-| `deviceIdInactivity`, `deviceTagInactivity` | cloud | `triggers/device-inactive` |
-| `endpoint` | exp | `triggers/endpoint` |
-| `event` | cloud | `triggers/event` |
-| `fileTail` | edge | `triggers/file-tail` |
-| `fileWatch` | edge | `triggers/file-watch` |
-| `flowError` | cloud, exp, edge | `triggers/flow-error` |
-| `inboundEmail` | cloud | `triggers/email` |
-| `integration` (Amazon SQS) | cloud | `triggers/amazon-sqs` |
-| `integration` (Azure Event Hubs) | cloud | `triggers/azure-event-hubs` |
-| `integration` (GCP Pub/Sub) | cloud | `triggers/google-pub-sub` |
-| `integration` (MQTT) | cloud | `triggers/mqtt-topic` |
-| `integration` (Particle) | cloud | `triggers/particle` |
-| `integration` (WebSocket) | cloud | `triggers/websocket` |
-| `mqttTopic` | cloud, edge | `triggers/mqtt-topic` |
-| `notebook` | cloud | `triggers/simple` |
-| `onBoot` | edge | `triggers/simple` |
-| `onConnect` | edge | `triggers/device-connect` |
-| `onDisconnect` | edge | `triggers/device-disconnect` |
-| `onSync` | edge | `triggers/application-sync` |
-| `opcua` | edge | `triggers/opcua` |
-| `redis` | edge | `triggers/redis` |
-| `request` | edge | `triggers/http-request` |
-| `resourceJobComplete` | cloud | `triggers/simple` |
-| `resourceJobIteration` | cloud | `triggers/simple` |
-| `resourceJobIterationTimeout` | cloud | `triggers/simple` |
-| `serial` | edge | `triggers/serial` |
-| `snmpTrap` | edge | `triggers/snmp-trap` |
-| `timer` | cloud, edge | `triggers/timer` |
-| `udp` | edge | `triggers/udp` |
-| `virtualButton` | cloud, exp, edge | `triggers/simple` |
-| `webhook` | cloud | `triggers/simple` |
+| `appFile` | cloud | `losant://flow/triggers/app-file` |
+| `beckhoff` | edge | `losant://flow/triggers/beckhoff` |
+| `customNodeStart` | custom | `losant://flow/triggers/simple` |
+| `dataTable` | cloud | `losant://flow/triggers/data-table` |
+| `deviceCommand` | edge | `losant://flow/triggers/device-command` |
+| `deviceCreate` | cloud | `losant://flow/triggers/simple` |
+| `deviceId`, `deviceTag` | cloud | `losant://flow/triggers/device-state` |
+| `deviceIdConnect`, `deviceTagConnect` | cloud | `losant://flow/triggers/device-connect` |
+| `deviceIdDisconnect`, `deviceTagDisconnect` | cloud | `losant://flow/triggers/device-disconnect` |
+| `deviceIdInactivity`, `deviceTagInactivity` | cloud | `losant://flow/triggers/device-inactive` |
+| `endpoint` | exp | `losant://flow/triggers/endpoint` |
+| `event` | cloud | `losant://flow/triggers/event` |
+| `fileTail` | edge | `losant://flow/triggers/file-tail` |
+| `fileWatch` | edge | `losant://flow/triggers/file-watch` |
+| `flowError` | cloud, exp, edge | `losant://flow/triggers/flow-error` |
+| `inboundEmail` | cloud | `losant://flow/triggers/email` |
+| `integration` (Amazon SQS) | cloud | `losant://flow/triggers/amazon-sqs` |
+| `integration` (Azure Event Hubs) | cloud | `losant://flow/triggers/azure-event-hubs` |
+| `integration` (GCP Pub/Sub) | cloud | `losant://flow/triggers/google-pub-sub` |
+| `integration` (MQTT) | cloud | `losant://flow/triggers/mqtt-topic` |
+| `integration` (Particle) | cloud | `losant://flow/triggers/particle` |
+| `integration` (WebSocket) | cloud | `losant://flow/triggers/websocket` |
+| `mqttTopic` | cloud, edge | `losant://flow/triggers/mqtt-topic` |
+| `notebook` | cloud | `losant://flow/triggers/simple` |
+| `onBoot` | edge | `losant://flow/triggers/simple` |
+| `onConnect` | edge | `losant://flow/triggers/device-connect` |
+| `onDisconnect` | edge | `losant://flow/triggers/device-disconnect` |
+| `onSync` | edge | `losant://flow/triggers/application-sync` |
+| `opcua` | edge | `losant://flow/triggers/opcua` |
+| `redis` | edge | `losant://flow/triggers/redis` |
+| `request` | edge | `losant://flow/triggers/http-request` |
+| `resourceJobComplete` | cloud | `losant://flow/triggers/simple` |
+| `resourceJobIteration` | cloud | `losant://flow/triggers/simple` |
+| `resourceJobIterationTimeout` | cloud | `losant://flow/triggers/simple` |
+| `serial` | edge | `losant://flow/triggers/serial` |
+| `snmpTrap` | edge | `losant://flow/triggers/snmp-trap` |
+| `timer` | cloud, edge | `losant://flow/triggers/timer` |
+| `udp` | edge | `losant://flow/triggers/udp` |
+| `virtualButton` | cloud, exp, edge | `losant://flow/triggers/simple` |
+| `webhook` | cloud | `losant://flow/triggers/simple` |
 
 ## Node catalog
 
@@ -354,150 +362,150 @@ See `nodes/loop.md` for the full pattern and a worked example.
 
 | Type | meta.name | meta.category | Available | Spec |
 |---|---|---|---|---|
-| `AnnotationNode` | `note` | annotation | all | `nodes/simple` |
-| `ArrayNode` | `array` | logic | all | `nodes/array` |
-| `AwsLambdaNode` | `aws-lambda` | data | cloud, exp, edge, custom | `nodes/aws` |
-| `AwsS3GetNode` | `aws-s3-get` | data | cloud, exp, edge, custom | `nodes/aws` |
-| `AwsS3PutNode` | `aws-s3-put` | data | cloud, exp, edge, custom | `nodes/aws` |
-| `AzureBlobStorageGetNode` | `azure-blob-storage-get` | data | cloud, exp, edge, custom | `nodes/azure-data` |
-| `AzureBlobStoragePutNode` | `azure-blob-storage-put` | data | cloud, exp, edge, custom | `nodes/azure-data` |
-| `AzureFunctionNode` | `azure-function` | data | cloud, exp, edge, custom | `nodes/azure-data` |
-| `AzureTableStorageNode` | `azure-table-storage` | data | cloud, exp, edge, custom | `nodes/azure-data` |
-| `AzureEventHubPublishNode` | `azureEventHubPublish` | output | cloud, exp, edge, custom | `nodes/azure-event-hubs-send` |
-| `Base64DecodeNode` | `base64-decode` | logic | embedded | `nodes/simple` |
-| `Base64EncodeNode` | `base64-encode` | logic | embedded | `nodes/simple` |
-| `BranchOnChangeNode` | `onchange` | logic | cloud, exp, edge, custom | `nodes/simple` |
-| `ConditionalNode` | `conditional` | logic | all | `nodes/conditional` |
-| `CreateDeviceNode` | `create-device` | data | cloud, exp | `nodes/device` |
-| `CSVDecodeNode` | `csv-decode` | logic | cloud, exp, edge, custom | `nodes/csv` |
-| `CSVEncodeNode` | `csv-encode` | logic | cloud, exp, edge, custom | `nodes/csv` |
-| `CryptoSignNode` | `crypto-sign` | logic | cloud, exp, edge, custom | `nodes/crypto` |
-| `CryptoVerifyNode` | `crypto-verify` | logic | cloud, exp, edge, custom | `nodes/crypto` |
-| `DataTableUpdateRowNode` | `delete-table-row` | data | cloud, exp, custom | `nodes/data-table` |
-| `DataTableQueryNode` | `get-table-rows` | data | cloud, exp, custom | `nodes/data-table` |
-| `DataTableInsertRowNode` | `insert-table-row` | data | cloud, exp, custom | `nodes/data-table` |
-| `DataTableUpdateRowNode` | `update-table-row` | data | cloud, exp, custom | `nodes/data-table` |
-| `DateTimeNode` | `date-time` | logic | cloud, exp, edge, custom | `nodes/date-time` |
-| `DebugNode` | `debug` | debug | all | `nodes/simple` |
-| `DelayNode` | `delay` | logic | cloud, exp, edge, custom | `nodes/simple` |
-| `DeviceSendCommandNode` | `device-command` | output | cloud, exp, custom | `nodes/output` |
-| `DeviceDeleteNode` | `delete-device` | data | cloud, exp | `nodes/device` |
-| `GetDeviceNode` | `get-device` | data | cloud, exp, custom | `nodes/device` |
-| `DeviceChangeStateNode` | `device-state` | output | cloud, exp, edge, custom | `nodes/output` |
-| `DeviceUpdateNode` | `update-device` | data | cloud, exp, custom | `nodes/device` |
-| `StructureEmailNode` | `structure-email` | output | cloud, exp, custom | `nodes/output` |
-| `EndpointReplyNode` | `endpoint-reply` | output | cloud, exp | `nodes/output` |
-| `EventCreateNode` | `create-event` | data | cloud, exp, custom | `nodes/event` |
-| `DeleteEventNode` | `delete-event` | data | cloud, exp, custom | `nodes/event` |
-| `EventGetNode` | `get-event` | data | cloud, exp, custom | `nodes/event` |
-| `EventUpdateNode` | `update-event` | data | cloud, exp, custom | `nodes/event` |
-| `FileCreateNode` | `file-create` | data | cloud, exp, custom | `nodes/file` |
-| `FileGetNode` | `file-get` | data | cloud, exp, custom | `nodes/file` |
-| `GaugeNode` | `gauge` | data | cloud, exp, custom | `nodes/time-series` |
-| `GenerateIdNode` | `generate-id` | logic | all | `nodes/simple` |
-| `GeofenceNode` | `geofence` | logic | cloud, exp, edge, custom | `nodes/geofence` |
-| `GetValueNode` | `get-value` | data | all | `nodes/storage` |
-| `GoogleBigQueryNode` | `google-bigquery` | data | cloud, exp, edge, custom | `nodes/google-data` |
-| `GoogleCloudStorageGetNode` | `google-cloud-storage-get` | data | cloud, exp, edge, custom | `nodes/google-data` |
-| `GoogleCloudStoragePutNode` | `google-cloud-storage-put` | data | cloud, exp, edge, custom | `nodes/google-data` |
-| `GoogleFunctionNode` | `google-function` | data | cloud, exp, edge, custom | `nodes/google-data` |
-| `GoogleMlNode` | `google-ml` | data | cloud, exp, edge, custom | `nodes/google-data` |
-| `GooglePublishNode` | `google-publish` | output | cloud, exp, edge, custom | `nodes/google-pub-sub-send` |
-| `HashNode` | `hash` | logic | cloud, exp, edge, custom | `nodes/crypto` |
-| `HttpNode` | `http` | data/output | cloud, exp, edge, custom | `nodes/http` |
-| `HttpResponseNode` | `http-response` | output | edge | `nodes/http-response` |
-| `JsonDecodeNode` | `json-decode` | logic | all | `nodes/simple` |
-| `JsonEncodeNode` | `json-encode` | logic | all | `nodes/simple` |
-| `JWTCreateNode` | `jwt-create` | logic | cloud, exp, edge, custom | `nodes/jwt` |
-| `JWTDecodeNode` | `jwt-decode` | logic | cloud, exp, edge, custom | `nodes/jwt` |
-| `JWTVerifyNode` | `jwt-verify` | logic | cloud, exp, edge, custom | `nodes/jwt` |
-| `LatchNode` | `latch` | logic | all | `nodes/simple` |
-| `LosantApiNode` | `losantapi` | data | cloud, exp, edge, custom | `nodes/losant-api` |
-| `LoopCapNode` | `loop-return` | loop | cloud, exp, edge, custom | `nodes/loop` |
-| `LoopNode` | `loop` | logic | cloud, exp, edge, custom | `nodes/loop` |
-| `MailgunNode` | `mailgun` | output | cloud, exp, edge, custom | `nodes/mailgun` |
-| `MathNode` | `math` | logic | all | `nodes/math` |
-| `MongoNode` | `mongo` | data | cloud, exp, edge, custom | `nodes/mongo` |
-| `MqttMessageNode` | `mqtt` | output | cloud, exp, edge, custom | `nodes/mqtt-output` |
-| `MutateNode` | `mutate` | logic | all | `nodes/mutate` |
-| `NotebookExecuteNode` | `notebook-execute` | output | cloud, exp, custom | `nodes/notebook-execute` |
-| `ObjectNode` | `object` | logic | cloud, exp, edge, custom | `nodes/object` |
-| `ParticleCallNode` | `particle-call` | output | cloud, exp, edge, custom | `nodes/particle-call` |
-| `RandomNumberNode` | `random-number` | logic | all | `nodes/simple` |
-| `RawFunctionNode` | `function` | logic | cloud, exp, edge, custom | `nodes/function` |
-| `RedisNode` | `redis` | data | cloud, exp, edge, custom | `nodes/redis-node` |
-| `ResourceJobAcknowledgeNode` | `resource-job-acknowledge` | output | cloud, exp, custom | `nodes/job` |
-| `ResourceJobExecuteNode` | `resource-job-execute` | output | cloud, exp, custom | `nodes/job` |
-| `SalesforceNode` | `salesforce-service` | data | cloud, exp, custom | `nodes/salesforce` |
-| `SendgridEmailNode` | `sendgrid` | output | cloud, exp, edge, custom | `nodes/sendgrid` |
-| `ServiceNowNode` | `service-now` | data | cloud, exp, edge, custom | `nodes/service-now` |
-| `SlackNode` | `slack` | output | cloud, exp, custom | `nodes/output` |
-| `SnowflakeNode` | `snowflake` | data | cloud, exp, edge, custom | `nodes/snowflake` |
-| `SqlNode` | `sql` | data | cloud, exp, edge, custom | `nodes/sql` |
-| `SqsSendNode` | `sqs-send` | output | cloud, exp, edge, custom | `nodes/sqs-send` |
-| `StoreValueNode` | `store-value` | data | all | `nodes/storage` |
-| `StringNode` | `string` | logic | cloud, exp, edge, custom | `nodes/string` |
-| `SwitchNode` | `switch` | logic | all | `nodes/switch` |
-| `ThrowErrorNode` | `throw-error` | debug | all | `nodes/simple` |
-| `ThrottleNode` | `throttle` | logic | cloud, exp, edge, custom | `nodes/throttle` |
-| `TimeRangeNode` | `time-range` | logic | cloud, exp, edge, custom | `nodes/time-range` |
-| `TimeSeriesNode` | `time-series` | data | cloud, exp, custom | `nodes/time-series` |
-| `TwilioSmsNode` | `twilio` | output | cloud, exp, edge, custom | `nodes/twilio` |
-| `UdpSendNode` | `udp-send` | output | edge | `nodes/udp-send` |
-| `UpdateDeviceNode` | `update-device` | data | cloud, exp, custom | `nodes/device` |
-| `ValidatePayloadNode` | `validate-payload` | logic | cloud, exp, edge, custom | `nodes/validate-payload` |
-| `WebhookReplyNode` | `webhook-reply` | output | cloud, custom | `nodes/webhook-reply` |
-| `WebsocketMessageNode` | `websocket` | output | cloud, exp, custom | `nodes/websocket-message` |
-| `WhatsAppNode` | `whatsapp` | output | cloud, exp, edge, custom | `nodes/whatsapp` |
-| `WorkflowTriggerNode` | `workflow-trigger` | output | cloud, exp, custom | `nodes/workflow-trigger` |
-| `AgentConfigGetNode` | `agent-config-get` | data | edge | `nodes/agent-config` |
-| `AgentConfigSetNode` | `agent-config-set` | data | edge | `nodes/agent-config` |
-| `AllenBradleyReadNode` | `allen-bradley-read` | data | edge | `nodes/allen-bradley` |
-| `AllenBradleyWriteNode` | `allen-bradley-write` | data | edge | `nodes/allen-bradley` |
-| `BacnetReadNode` | `bacnet-read` | data | edge | `nodes/bacnet` |
-| `BacnetWhoIsNode` | `bacnet-who-is` | data | edge | `nodes/bacnet` |
-| `BacnetWriteNode` | `bacnet-write` | data | edge | `nodes/bacnet` |
-| `BeckhoffReadNode` | `beckhoff-read` | data | edge | `nodes/beckhoff-nodes` |
-| `BeckhoffWriteNode` | `beckhoff-write` | data | edge | `nodes/beckhoff-nodes` |
-| `CertificateCreateNode` | `certificate-create` | logic | cloud, exp, edge, custom | `nodes/certificate` |
-| `CertificateReadNode` | `certificate-read` | logic | cloud, exp, edge, custom | `nodes/certificate` |
-| `CreateAccessKeyNode` | `create-access-key` | data | cloud, exp, custom | `nodes/access-key` |
-| `CreateExperienceGroupNode` | `create-experience-group` | experience | cloud, exp, custom | `nodes/experience-group` |
-| `CreateExperienceUserNode` | `create-experience-user` | experience | cloud, exp, custom | `nodes/experience-user` |
-| `DatadogLogsWriteNode` | `datadog-logs-write` | data | cloud, exp, edge, custom | `nodes/datadog` |
-| `DeleteExperienceUserNode` | `delete-experience-user` | experience | cloud, exp, custom | `nodes/experience-user` |
-| `ExecuteNode` | `run-executable` | data | edge | `nodes/run-executable` |
-| `ExperienceGroupSummaryNode` | `group-summary` | experience | cloud, exp, custom | `nodes/experience-group` |
-| `ExperienceUserAuthNode` | `experience-user-auth` | experience | cloud, exp, custom | `nodes/experience-auth` |
-| `ExperienceUserTokenNode` | `experience-user-token` | experience | cloud, exp, custom | `nodes/experience-auth` |
-| `FileReadNode` | `file-read` | data | edge | `nodes/edge-file` |
-| `FileWriteNode` | `file-write` | data | edge | `nodes/edge-file` |
-| `FTPGetNode` | `ftp-get` | data | cloud, exp, edge, custom | `nodes/ftp` |
-| `FTPPutNode` | `ftp-put` | output | cloud, exp, edge, custom | `nodes/ftp` |
-| `GetExperienceGroupNode` | `get-experience-group` | experience | cloud, exp, custom | `nodes/experience-group` |
-| `GetExperienceUserNode` | `get-experience-user` | experience | cloud, exp, custom | `nodes/experience-user` |
-| `GetPeripheralNode` | `get-peripheral` | data | edge | `nodes/peripheral-get` |
-| `HtmlParserNode` | `html-parser` | logic | cloud, exp, edge, custom | `nodes/html-parser` |
-| `LogglyWriteNode` | `loggly-write` | data | cloud, exp, edge, custom | `nodes/loggly` |
-| `ModbusReadNode` | `modbus-read` | data | edge | `nodes/modbus` |
-| `ModbusWriteNode` | `modbus-write` | data | edge | `nodes/modbus` |
-| `OpcUaBrowseNode` | `opcua-browse` | data | edge | `nodes/opcua-nodes` |
-| `OpcUaCallNode` | `opcua-call` | data | edge | `nodes/opcua-nodes` |
-| `OpcUaReadNode` | `opcua-read` | data | edge | `nodes/opcua-nodes` |
-| `OpcUaWriteNode` | `opcua-write` | data | edge | `nodes/opcua-nodes` |
-| `S7ReadNode` | `s7-read` | data | edge | `nodes/siemens-s7` |
-| `S7WriteNode` | `s7-write` | data | edge | `nodes/siemens-s7` |
-| `SamlLoginRedirectNode` | `saml-login` | experience | cloud, exp, custom | `nodes/saml` |
-| `SamlVerifyNode` | `saml-verify` | experience | cloud, exp, custom | `nodes/saml` |
-| `SnmpGetSubtreeNode` | `snmp-get-subtree` | data | edge | `nodes/snmp-nodes` |
-| `SnmpReadNode` | `snmp-read` | data | edge | `nodes/snmp-nodes` |
-| `SnmpWriteNode` | `snmp-write` | data | edge | `nodes/snmp-nodes` |
-| `StructureSmsNode` | `structure-sms` | output | cloud, exp, custom | `nodes/sms` |
-| `TensorFlowPredictNode` | `tensorflow-predict` | data | edge | `nodes/tensorflow` |
-| `UpdateExperienceGroupNode` | `update-experience-group` | experience | cloud, exp, custom | `nodes/experience-group` |
-| `UpdateExperienceUserNode` | `update-experience-user` | experience | cloud, exp, custom | `nodes/experience-user` |
-| `VerifyDeviceNode` | `verify-experience-device` | experience | cloud, exp, custom | `nodes/experience-user` |
-| `VerifyExperienceGroupNode` | `verify-experience-group` | experience | cloud, exp, custom | `nodes/experience-group` |
+| `AnnotationNode` | `note` | annotation | all | `losant://flow/nodes/simple` |
+| `ArrayNode` | `array` | logic | all | `losant://flow/nodes/array` |
+| `AwsLambdaNode` | `aws-lambda` | data | cloud, exp, edge, custom | `losant://flow/nodes/aws` |
+| `AwsS3GetNode` | `aws-s3-get` | data | cloud, exp, edge, custom | `losant://flow/nodes/aws` |
+| `AwsS3PutNode` | `aws-s3-put` | data | cloud, exp, edge, custom | `losant://flow/nodes/aws` |
+| `AzureBlobStorageGetNode` | `azure-blob-storage-get` | data | cloud, exp, edge, custom | `losant://flow/nodes/azure-data` |
+| `AzureBlobStoragePutNode` | `azure-blob-storage-put` | data | cloud, exp, edge, custom | `losant://flow/nodes/azure-data` |
+| `AzureFunctionNode` | `azure-function` | data | cloud, exp, edge, custom | `losant://flow/nodes/azure-data` |
+| `AzureTableStorageNode` | `azure-table-storage` | data | cloud, exp, edge, custom | `losant://flow/nodes/azure-data` |
+| `AzureEventHubPublishNode` | `azureEventHubPublish` | output | cloud, exp, edge, custom | `losant://flow/nodes/azure-event-hubs-send` |
+| `Base64DecodeNode` | `base64-decode` | logic | embedded | `losant://flow/nodes/simple` |
+| `Base64EncodeNode` | `base64-encode` | logic | embedded | `losant://flow/nodes/simple` |
+| `BranchOnChangeNode` | `onchange` | logic | cloud, exp, edge, custom | `losant://flow/nodes/simple` |
+| `ConditionalNode` | `conditional` | logic | all | `losant://flow/nodes/conditional` |
+| `CreateDeviceNode` | `create-device` | data | cloud, exp | `losant://flow/nodes/device` |
+| `CSVDecodeNode` | `csv-decode` | logic | cloud, exp, edge, custom | `losant://flow/nodes/csv` |
+| `CSVEncodeNode` | `csv-encode` | logic | cloud, exp, edge, custom | `losant://flow/nodes/csv` |
+| `CryptoSignNode` | `crypto-sign` | logic | cloud, exp, edge, custom | `losant://flow/nodes/crypto` |
+| `CryptoVerifyNode` | `crypto-verify` | logic | cloud, exp, edge, custom | `losant://flow/nodes/crypto` |
+| `DataTableDeleteRowNode` | `delete-table-row` | data | cloud, exp, custom | `losant://flow/nodes/data-table` |
+| `DataTableQueryNode` | `get-table-rows` | data | cloud, exp, custom | `losant://flow/nodes/data-table` |
+| `DataTableInsertRowNode` | `insert-table-row` | data | cloud, exp, custom | `losant://flow/nodes/data-table` |
+| `DataTableUpdateRowNode` | `update-table-row` | data | cloud, exp, custom | `losant://flow/nodes/data-table` |
+| `DateTimeNode` | `date-time` | logic | cloud, exp, edge, custom | `losant://flow/nodes/date-time` |
+| `DebugNode` | `debug` | debug | all | `losant://flow/nodes/simple` |
+| `DelayNode` | `delay` | logic | cloud, exp, edge, custom | `losant://flow/nodes/simple` |
+| `DeviceSendCommandNode` | `device-command` | output | cloud, exp, custom | `losant://flow/nodes/output` |
+| `DeviceDeleteWorkflowNode` | `delete-device` | data | cloud, exp | `losant://flow/nodes/device` |
+| `GetDeviceNode` | `get-device` | data | cloud, exp, custom | `losant://flow/nodes/device` |
+| `DeviceChangeStateNode` | `device-state` | output | cloud, exp, edge, custom | `losant://flow/nodes/output` |
+| `DeviceUpdateNode` | `update-device` | data | cloud, exp, custom | `losant://flow/nodes/device` |
+| `StructureEmailNode` | `structure-email` | output | cloud, exp, custom | `losant://flow/nodes/output` |
+| `EndpointReplyNode` | `endpoint-reply` | output | cloud, exp | `losant://flow/nodes/output` |
+| `EventCreateNode` | `create-event` | data | cloud, exp, custom | `losant://flow/nodes/event` |
+| `DeleteEventNode` | `delete-event` | data | cloud, exp, custom | `losant://flow/nodes/event` |
+| `EventGetNode` | `get-event` | data | cloud, exp, custom | `losant://flow/nodes/event` |
+| `EventUpdateNode` | `update-event` | data | cloud, exp, custom | `losant://flow/nodes/event` |
+| `FileCreateNode` | `file-create` | data | cloud, exp, custom | `losant://flow/nodes/file` |
+| `FileGetNode` | `file-get` | data | cloud, exp, custom | `losant://flow/nodes/file` |
+| `GaugeNode` | `gauge` | data | cloud, exp, custom | `losant://flow/nodes/time-series` |
+| `GenerateIdNode` | `generate-id` | logic | all | `losant://flow/nodes/simple` |
+| `GeofenceNode` | `geofence` | logic | cloud, exp, edge, custom | `losant://flow/nodes/geofence` |
+| `GetValueNode` | `get-value` | data | all | `losant://flow/nodes/storage` |
+| `GoogleBigQueryNode` | `google-bigquery` | data | cloud, exp, edge, custom | `losant://flow/nodes/google-data` |
+| `GoogleCloudStorageGetNode` | `google-cloud-storage-get` | data | cloud, exp, edge, custom | `losant://flow/nodes/google-data` |
+| `GoogleCloudStoragePutNode` | `google-cloud-storage-put` | data | cloud, exp, edge, custom | `losant://flow/nodes/google-data` |
+| `GoogleFunctionNode` | `google-function` | data | cloud, exp, edge, custom | `losant://flow/nodes/google-data` |
+| `GoogleMlNode` | `google-ml` | data | cloud, exp, edge, custom | `losant://flow/nodes/google-data` |
+| `GooglePublishNode` | `google-publish` | output | cloud, exp, edge, custom | `losant://flow/nodes/google-pub-sub-send` |
+| `HashNode` | `hash` | logic | cloud, exp, edge, custom | `losant://flow/nodes/crypto` |
+| `HttpNode` | `http` | data/output | cloud, exp, edge, custom | `losant://flow/nodes/http` |
+| `HttpResponseNode` | `http-response` | output | edge | `losant://flow/nodes/http-response` |
+| `JsonDecodeNode` | `json-decode` | logic | all | `losant://flow/nodes/simple` |
+| `JsonEncodeNode` | `json-encode` | logic | all | `losant://flow/nodes/simple` |
+| `JWTCreateNode` | `jwt-create` | logic | cloud, exp, edge, custom | `losant://flow/nodes/jwt` |
+| `JWTDecodeNode` | `jwt-decode` | logic | cloud, exp, edge, custom | `losant://flow/nodes/jwt` |
+| `JWTVerifyNode` | `jwt-verify` | logic | cloud, exp, edge, custom | `losant://flow/nodes/jwt` |
+| `LatchNode` | `latch` | logic | all | `losant://flow/nodes/simple` |
+| `LosantApiNode` | `losantapi` | data | cloud, exp, edge, custom | `losant://flow/nodes/losant-api` |
+| `LoopCapNode` | `loop-return` | loop | cloud, exp, edge, custom | `losant://flow/nodes/loop` |
+| `LoopNode` | `loop` | logic | cloud, exp, edge, custom | `losant://flow/nodes/loop` |
+| `MailgunNode` | `mailgun` | output | cloud, exp, edge, custom | `losant://flow/nodes/mailgun` |
+| `MathNode` | `math` | logic | all | `losant://flow/nodes/math` |
+| `MongoNode` | `mongo` | data | cloud, exp, edge, custom | `losant://flow/nodes/mongo` |
+| `MqttMessageNode` | `mqtt` | output | cloud, exp, edge, custom | `losant://flow/nodes/mqtt-output` |
+| `MutateNode` | `mutate` | logic | all | `losant://flow/nodes/mutate` |
+| `NotebookExecuteNode` | `notebook-execute` | output | cloud, exp, custom | `losant://flow/nodes/notebook-execute` |
+| `ObjectNode` | `object` | logic | cloud, exp, edge, custom | `losant://flow/nodes/object` |
+| `ParticleCallNode` | `particle-call` | output | cloud, exp, edge, custom | `losant://flow/nodes/particle-call` |
+| `RandomNumberNode` | `random-number` | logic | all | `losant://flow/nodes/simple` |
+| `RawFunctionNode` | `function` | logic | cloud, exp, edge, custom | `losant://flow/nodes/function` |
+| `RedisNode` | `redis` | data | cloud, exp, edge, custom | `losant://flow/nodes/redis-node` |
+| `ResourceJobAcknowledgeNode` | `resource-job-acknowledge` | output | cloud, exp, custom | `losant://flow/nodes/job` |
+| `ResourceJobExecuteNode` | `resource-job-execute` | output | cloud, exp, custom | `losant://flow/nodes/job` |
+| `SalesforceNode` | `salesforce-service` | data | cloud, exp, custom | `losant://flow/nodes/salesforce` |
+| `SendgridEmailNode` | `sendgrid` | output | cloud, exp, edge, custom | `losant://flow/nodes/sendgrid` |
+| `ServiceNowNode` | `service-now` | data | cloud, exp, edge, custom | `losant://flow/nodes/service-now` |
+| `SlackNode` | `slack` | output | cloud, exp, custom | `losant://flow/nodes/output` |
+| `SnowflakeNode` | `snowflake` | data | cloud, exp, edge, custom | `losant://flow/nodes/snowflake` |
+| `SqlNode` | `sql` | data | cloud, exp, edge, custom | `losant://flow/nodes/sql` |
+| `SqsSendNode` | `sqs-send` | output | cloud, exp, edge, custom | `losant://flow/nodes/sqs-send` |
+| `StoreValueNode` | `store-value` | data | all | `losant://flow/nodes/storage` |
+| `StringNode` | `string` | logic | cloud, exp, edge, custom | `losant://flow/nodes/string` |
+| `SwitchNode` | `switch` | logic | all | `losant://flow/nodes/switch` |
+| `ThrowErrorNode` | `throw-error` | debug | all | `losant://flow/nodes/simple` |
+| `ThrottleNode` | `throttle` | logic | cloud, exp, edge, custom | `losant://flow/nodes/throttle` |
+| `TimeRangeNode` | `time-range` | logic | cloud, exp, edge, custom | `losant://flow/nodes/time-range` |
+| `TimeSeriesNode` | `time-series` | data | cloud, exp, custom | `losant://flow/nodes/time-series` |
+| `TwilioSmsNode` | `twilio` | output | cloud, exp, edge, custom | `losant://flow/nodes/twilio` |
+| `UdpSendNode` | `udp-send` | output | edge | `losant://flow/nodes/udp-send` |
+| `UpdateDeviceNode` | `update-device` | data | cloud, exp, custom | `losant://flow/nodes/device` |
+| `ValidatePayloadNode` | `validate-payload` | logic | cloud, exp, edge, custom | `losant://flow/nodes/validate-payload` |
+| `WebhookReplyNode` | `webhook-reply` | output | cloud, custom | `losant://flow/nodes/webhook-reply` |
+| `WebsocketMessageNode` | `websocket` | output | cloud, exp, custom | `losant://flow/nodes/websocket-message` |
+| `WhatsAppNode` | `whatsapp` | output | cloud, exp, edge, custom | `losant://flow/nodes/whatsapp` |
+| `WorkflowTriggerNode` | `workflow-trigger` | output | cloud, exp, custom | `losant://flow/nodes/workflow-trigger` |
+| `AgentConfigGetNode` | `agent-config-get` | data | edge | `losant://flow/nodes/agent-config` |
+| `AgentConfigSetNode` | `agent-config-set` | data | edge | `losant://flow/nodes/agent-config` |
+| `AllenBradleyReadNode` | `allen-bradley-read` | data | edge | `losant://flow/nodes/allen-bradley` |
+| `AllenBradleyWriteNode` | `allen-bradley-write` | data | edge | `losant://flow/nodes/allen-bradley` |
+| `BacnetReadNode` | `bacnet-read` | data | edge | `losant://flow/nodes/bacnet` |
+| `BacnetWhoIsNode` | `bacnet-who-is` | data | edge | `losant://flow/nodes/bacnet` |
+| `BacnetWriteNode` | `bacnet-write` | data | edge | `losant://flow/nodes/bacnet` |
+| `BeckhoffReadNode` | `beckhoff-read` | data | edge | `losant://flow/nodes/beckhoff-nodes` |
+| `BeckhoffWriteNode` | `beckhoff-write` | data | edge | `losant://flow/nodes/beckhoff-nodes` |
+| `CertificateCreateNode` | `certificate-create` | logic | cloud, exp, edge, custom | `losant://flow/nodes/certificate` |
+| `CertificateReadNode` | `certificate-read` | logic | cloud, exp, edge, custom | `losant://flow/nodes/certificate` |
+| `CreateAccessKeyNode` | `create-access-key` | data | cloud, exp, custom | `losant://flow/nodes/access-key` |
+| `CreateExperienceGroupNode` | `create-experience-group` | experience | cloud, exp, custom | `losant://flow/nodes/experience-group` |
+| `CreateExperienceUserNode` | `create-experience-user` | experience | cloud, exp, custom | `losant://flow/nodes/experience-user` |
+| `DatadogLogsWriteNode` | `datadog-logs-write` | data | cloud, exp, edge, custom | `losant://flow/nodes/datadog` |
+| `DeleteExperienceUserNode` | `delete-experience-user` | experience | cloud, exp, custom | `losant://flow/nodes/experience-user` |
+| `ExecuteNode` | `run-executable` | data | edge | `losant://flow/nodes/run-executable` |
+| `ExperienceGroupSummaryNode` | `group-summary` | experience | cloud, exp, custom | `losant://flow/nodes/experience-group` |
+| `ExperienceUserAuthNode` | `experience-user-auth` | experience | cloud, exp, custom | `losant://flow/nodes/experience-auth` |
+| `ExperienceUserTokenNode` | `experience-user-token` | experience | cloud, exp, custom | `losant://flow/nodes/experience-auth` |
+| `FileReadNode` | `file-read` | data | edge | `losant://flow/nodes/edge-file` |
+| `FileWriteNode` | `file-write` | data | edge | `losant://flow/nodes/edge-file` |
+| `FTPGetNode` | `ftp-get` | data | cloud, exp, edge, custom | `losant://flow/nodes/ftp` |
+| `FTPPutNode` | `ftp-put` | data | cloud, exp, edge, custom | `losant://flow/nodes/ftp` |
+| `GetExperienceGroupNode` | `get-experience-group` | experience | cloud, exp, custom | `losant://flow/nodes/experience-group` |
+| `GetExperienceUserNode` | `get-experience-user` | experience | cloud, exp, custom | `losant://flow/nodes/experience-user` |
+| `GetPeripheralNode` | `get-peripheral` | data | edge | `losant://flow/nodes/peripheral-get` |
+| `HtmlParserNode` | `html-parser` | logic | cloud, exp, edge, custom | `losant://flow/nodes/html-parser` |
+| `LogglyWriteNode` | `loggly-write` | data | cloud, exp, edge, custom | `losant://flow/nodes/loggly` |
+| `ModbusReadNode` | `modbus-read` | data | edge | `losant://flow/nodes/modbus` |
+| `ModbusWriteNode` | `modbus-write` | data | edge | `losant://flow/nodes/modbus` |
+| `OpcUaBrowseNode` | `opcua-browse` | data | edge | `losant://flow/nodes/opcua-nodes` |
+| `OpcUaCallNode` | `opcua-call` | data | edge | `losant://flow/nodes/opcua-nodes` |
+| `OpcUaReadNode` | `opcua-read` | data | edge | `losant://flow/nodes/opcua-nodes` |
+| `OpcUaWriteNode` | `opcua-write` | data | edge | `losant://flow/nodes/opcua-nodes` |
+| `S7ReadNode` | `s7-read` | data | edge | `losant://flow/nodes/siemens-s7` |
+| `S7WriteNode` | `s7-write` | data | edge | `losant://flow/nodes/siemens-s7` |
+| `SamlLoginRedirectNode` | `saml-login` | experience | cloud, exp, custom | `losant://flow/nodes/saml` |
+| `SamlVerifyNode` | `saml-verify` | experience | cloud, exp, custom | `losant://flow/nodes/saml` |
+| `SnmpGetSubtreeNode` | `snmp-get-subtree` | data | edge | `losant://flow/nodes/snmp-nodes` |
+| `SnmpReadNode` | `snmp-read` | data | edge | `losant://flow/nodes/snmp-nodes` |
+| `SnmpWriteNode` | `snmp-write` | data | edge | `losant://flow/nodes/snmp-nodes` |
+| `StructureSmsNode` | `structure-sms` | output | cloud, exp, custom | `losant://flow/nodes/sms` |
+| `TensorFlowPredictNode` | `tensorflow-predict` | data | edge | `losant://flow/nodes/tensorflow` |
+| `UpdateExperienceGroupNode` | `update-experience-group` | experience | cloud, exp, custom | `losant://flow/nodes/experience-group` |
+| `UpdateExperienceUserNode` | `update-experience-user` | experience | cloud, exp, custom | `losant://flow/nodes/experience-user` |
+| `VerifyDeviceNode` | `verify-experience-device` | experience | cloud, exp, custom | `losant://flow/nodes/experience-user` |
+| `VerifyExperienceGroupNode` | `verify-experience-group` | experience | cloud, exp, custom | `losant://flow/nodes/experience-group` |
 
 ---
 

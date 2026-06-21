@@ -44,7 +44,7 @@ Reads current symbol values from a Beckhoff TwinCAT PLC.
     "timeoutTemplate": "30000",
     "readInstructionsType": "array",
     "readInstructions": [
-      { "type": "symbol", "nameTemplate": "GVL_Var.TestDint1", "key": "temperature" }
+      { "nameTemplate": "GVL_Var.TestDint1", "key": "temperature" }
     ],
     "destinationPath": "working.plcData"
   },
@@ -63,7 +63,7 @@ Reads current symbol values from a Beckhoff TwinCAT PLC.
 | `routerTcpPortTemplate` | `"48898"` | Router TCP port. Template. |
 | `timeoutTemplate` | `"30000"` | Request timeout in milliseconds. Template. |
 | `readInstructionsType` | `"array"` | `"array"` or `"payloadPath"`. |
-| `readInstructions` | `[]` | **Required.** Array of `{ type: "symbol", nameTemplate, key }` objects. Key cannot start with `"errors"`. |
+| `readInstructions` | `[]` | **Required.** Array of `{ nameTemplate, key }` objects. `key` is optional — defaults to the symbol name if omitted. |
 | `destinationPath` | `""` | **Required.** Payload path to write symbol values. |
 
 ---
@@ -85,7 +85,6 @@ Writes values to Beckhoff TwinCAT PLC symbols.
     "writeInstructionsType": "array",
     "writeInstructions": [
       {
-        "type": "symbol",
         "nameTemplate": "GVL_Var.SetPoint",
         "dataMethod": "stringTemplate",
         "dataTemplate": "{{working.setpoint}}",

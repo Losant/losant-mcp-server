@@ -1,6 +1,6 @@
 # Time Range Node (`type: "TimeRangeNode"`)
 
-Branches the workflow based on whether the current time (or a specified time) falls within a configured HH:MM range, optionally filtered by day of week. `outputIds[0]` = in range, `outputIds[1]` = out of range.
+Branches the workflow based on whether the current time (or a specified time) falls within a configured HH:MM range, optionally filtered by day of week. `outputIds[0]` = **out of range**; `outputIds[1]` = **in range**.
 
 ## Required Fields
 
@@ -27,7 +27,7 @@ Branches the workflow based on whether the current time (or a specified time) fa
     "branchPath": "working.inBusinessHours"
   },
   "meta": { "category": "logic", "name": "time-range", "label": "Time Range", "x": 200, "y": 200 },
-  "outputIds": [["in-hours"], ["out-of-hours"]]
+  "outputIds": [["out-of-hours"], ["in-hours"]]
 }
 ```
 
@@ -46,8 +46,8 @@ Branches the workflow based on whether the current time (or a specified time) fa
 
 ### Wiring
 
-`outputIds[0]` — fires when the time is within the configured range and day.
-`outputIds[1]` — fires when the time is outside the range or on an excluded day.
+`outputIds[0]` — fires when the time is **outside** the range or on an excluded day.
+`outputIds[1]` — fires when the time is **within** the configured range and day.
 
 ## Experience workflows
 

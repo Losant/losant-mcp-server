@@ -54,7 +54,7 @@ Fetches one or more Experience Groups.
   "type": "GetExperienceGroupNode",
   "config": {
     "findMethod": "id",
-    "groupIdTemplate": "{{data.groupId}}",
+    "idTemplate": "{{data.groupId}}",
     "resultPath": "working.group"
   },
   "meta": { "category": "experience", "name": "get-experience-group", "label": "Group: Get", "x": 200, "y": 200 },
@@ -64,8 +64,10 @@ Fetches one or more Experience Groups.
 
 | Config field | Default | Notes |
 |---|---|---|
-| `findMethod` | `"id"` | How to find the group(s). Common values: `"id"`, `"query"`. |
-| `groupIdTemplate` | `""` | **Required** when `findMethod: "id"`. Group ID. Template. |
+| `findMethod` | `"id"` | `"id"`, `"name"`, `"findByAllTags"`, `"findByAnyTags"`, or `"query"`. |
+| `idTemplate` | `""` | **Required** when `findMethod: "id"` or `"name"`. Group ID or name. Template. |
+| `tags` | `[]` | Array of `{ keyTemplate, valueTemplate }` — used by `findByAllTags` / `findByAnyTags`. |
+| `queryTemplate` | `""` | Advanced query LJSON template — for `findMethod: "query"`. |
 | `resultPath` | `""` | **Required.** Payload path to write the result. |
 
 ---
@@ -82,7 +84,6 @@ Updates an Experience Group's name, description, members, or device associations
     "groupIdTemplate": "{{data.groupId}}",
     "dataMethod": "individualFields",
     "nameTemplate": "{{data.body.name}}",
-    "membershipEditMode": "NONE",
     "resultPath": "working.updatedGroup"
   },
   "meta": { "category": "experience", "name": "update-experience-group", "label": "Group: Update", "x": 200, "y": 200 },
@@ -96,7 +97,9 @@ Updates an Experience Group's name, description, members, or device associations
 | `dataMethod` | `"individualFields"` | `"individualFields"`, `"jsonTemplate"`, or `"payloadPath"`. |
 | `nameTemplate` | `""` | Optional new name. Template. |
 | `descriptionTemplate` | `""` | Optional new description. Template. |
-| `membershipEditMode` | `"NONE"` | `"NONE"` — don't modify members. `"ADD_REMOVE"` — add/remove specific members. `"REPLACE"` — replace full member list. |
+| `membersToAdd` | — | Optional array of user IDs or emails to add to the group. |
+| `membersToRemove` | — | Optional array of user IDs or emails to remove from the group. |
+| `membersReplacement` | — | Optional array of user IDs or emails to set as the complete group membership (replaces existing). Cannot be combined with `membersToAdd`/`membersToRemove`. |
 | `resultPath` | `""` | **Required.** Payload path to write the updated group object. |
 
 ---

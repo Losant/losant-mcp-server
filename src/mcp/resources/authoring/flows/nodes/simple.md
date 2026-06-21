@@ -7,16 +7,16 @@ Trivial node types whose entire spec fits in a few lines. Each entry is independ
 | `type` | `meta.category` | `meta.name` | `meta.label` default | Available in |
 |---|---|---|---|---|
 | `DebugNode` | `debug` | `debug` | `"Debug"` | all |
-| `GenerateIdNode` | `logic` | `generateId` | `"Generate ID"` | all |
-| `JsonDecodeNode` | `logic` | `jsonDecode` | `"JSON Decode"` | all |
-| `JsonEncodeNode` | `logic` | `jsonEncode` | `"JSON Encode"` | all |
-| `Base64DecodeNode` | `logic` | `base64Decode` | `"Base64: Decode"` | all |
-| `Base64EncodeNode` | `logic` | `base64Encode` | `"Base64: Encode"` | all |
+| `GenerateIdNode` | `logic` | `generate-id` | `"Generate ID"` | all |
+| `JsonDecodeNode` | `logic` | `json-decode` | `"JSON Decode"` | all |
+| `JsonEncodeNode` | `logic` | `json-encode` | `"JSON Encode"` | all |
+| `Base64DecodeNode` | `logic` | `base64-decode` | `"Base64: Decode"` | embedded |
+| `Base64EncodeNode` | `logic` | `base64-encode` | `"Base64: Encode"` | embedded |
 | `DelayNode` | `logic` | `delay` | `"Delay"` | cloud, exp, edge, custom |
-| `ThrowErrorNode` | `debug` | `throwError` | `"Throw Error"` | all |
-| `RandomNumberNode` | `logic` | `randomNumber` | `"Random Number"` | all |
+| `ThrowErrorNode` | `debug` | `throw-error` | `"Throw Error"` | all |
+| `RandomNumberNode` | `logic` | `random-number` | `"Random Number"` | all |
 | `LatchNode` | `logic` | `latch` | `"Latch"` | all |
-| `BranchOnChangeNode` | `logic` | `branchOnChange` | `"On Change"` | all |
+| `BranchOnChangeNode` | `logic` | `onchange` | `"On Change"` | all |
 | `AnnotationNode` | `annotation` | `note` | `"Annotation"` | all |
 
 ---
@@ -62,8 +62,8 @@ Writes a generated identifier to a payload path. Available in all flow classes.
 | Field | Default | Notes |
 |---|---|---|
 | `idTypeTemplate` | `"uuidv4"` | `uuidv1`, `uuidv3`, `uuidv4`, `uuidv5`, `objectId`, `nanoid`. |
-| `namespaceTemplate` | - | When idTypeTemplate is `uuidv3` or `uuidv5` this field is **required**. |
-| `valueTemplate` | - | When idTypeTemplate is `uuidv3` or `uuidv5` this field is **required**. |
+| `namespaceTemplate` | — | Required when `idTypeTemplate` is `"uuidv3"` or `"uuidv5"`. A UUID string used as the namespace for hashing. Use one of the RFC 4122 well-known namespaces (e.g. `"6ba7b810-9dad-11d1-80b4-00c04fd430c8"` for DNS) or any valid UUID. Supports Handlebars templates. |
+| `valueTemplate` | — | Required when `idTypeTemplate` is `"uuidv3"` or `"uuidv5"`. The name string to hash against the namespace to produce the UUID. Supports Handlebars templates (e.g. `"{{data.deviceId}}"`). |
 | `destinationPath` | — | **Required.** Payload path where the generated ID is written. |
 
 ---
@@ -82,12 +82,14 @@ Parses a JSON string at a payload path into a structured value. Available in all
 }
 ```
 
+Error handling requires GEA 1.14.0+ on edge.
+
 | Field | Default | Notes |
-|---|---|
-| `source` | - | **Required.** Payload path of the JSON string to decode. |
-| `destination` | - | **Required.** Payload path to write the parsed value. |
-| `errorBehavior` | `throw` |  What to do with JSON parse errors, either `throw` or `payloadPath` |
-| `errorPath` | - | If `errorBehavior` equals `throw` then this path is required  |
+|---|---|---|
+| `source` | — | **Required.** Payload path of the JSON string to decode. |
+| `destination` | — | **Required.** Payload path to write the parsed value. |
+| `errorBehavior` | `"throw"` | `"throw"` — workflow errors on bad JSON. `"payloadPath"` — stores the error at `errorPath` instead. |
+| `errorPath` | — | **Required** when `errorBehavior: "payloadPath"`. Payload path to write the parse error. |
 
 ---
 
@@ -114,7 +116,7 @@ Serializes a value on the payload into a JSON string. Available in all flow clas
 
 ## Base64: Decode Node (`type: "Base64DecodeNode"`)
 
-Decodes a Base64 string to a UTF-8 string. Available in only embedded flow class.
+Decodes a Base64 string on the payload. Available in embedded flow class only.
 
 ```json
 {
@@ -122,20 +124,21 @@ Decodes a Base64 string to a UTF-8 string. Available in only embedded flow class
   "type": "Base64DecodeNode",
   "meta": { "category": "logic", "name": "base64-decode", "label": "Base64: Decode", "x": 0, "y": 0 },
   "outputIds": [["next"]],
-  "config": { "sourceTemplate": "{{working.encoded}}", "resultPath": "working.decoded" }
+  "config": { "source": "working.encoded", "destination": "working.decoded", "stringOutput": true }
 }
 ```
 
-| Field | Notes |
-|---|---|
-| `sourceTemplate` | **Required.** Template resolving to the Base64 string to decode. |
-| `resultPath` | **Required.** Payload path to write the decoded string. |
+| Field | Default | Notes |
+|---|---|---|
+| `source` | — | **Required.** Payload path of the Base64 string to decode. |
+| `destination` | — | **Required.** Payload path to write the result. |
+| `stringOutput` | `false` | When `true`, outputs a UTF-8 string. When `false` (default), outputs an array of binary (byte) values. |
 
 ---
 
 ## Base64: Encode Node (`type: "Base64EncodeNode"`)
 
-Encodes a string to Base64. Available in only embedded flow class.
+Encodes a string or binary array on the payload to Base64. Available in embedded flow class only.
 
 ```json
 {
@@ -143,20 +146,20 @@ Encodes a string to Base64. Available in only embedded flow class.
   "type": "Base64EncodeNode",
   "meta": { "category": "logic", "name": "base64-encode", "label": "Base64: Encode", "x": 0, "y": 0 },
   "outputIds": [["next"]],
-  "config": { "sourceTemplate": "{{working.plaintext}}", "resultPath": "working.encoded" }
+  "config": { "source": "working.plaintext", "destination": "working.encoded" }
 }
 ```
 
 | Field | Notes |
 |---|---|
-| `sourceTemplate` | **Required.** Template resolving to the string to encode. |
-| `resultPath` | **Required.** Payload path to write the Base64 string. |
+| `source` | **Required.** Payload path of the string or binary array to encode. |
+| `destination` | **Required.** Payload path to write the Base64 string. |
 
 ---
 
 ## Delay Node (`type: "DelayNode"`)
 
-Pauses execution for a templated duration. Available in cloud, experience, edge, custom (not embedded).
+Pauses execution for a specified duration. Available in cloud, experience, edge, custom (not embedded).
 
 ```json
 {
@@ -164,15 +167,13 @@ Pauses execution for a templated duration. Available in cloud, experience, edge,
   "type": "DelayNode",
   "meta": { "category": "logic", "name": "delay", "label": "Delay", "x": 0, "y": 0 },
   "outputIds": [["next"]],
-  "config": { "durationTemplate": "5" }
+  "config": { "delay": "5" }
 }
 ```
 
 | Field | Default | Notes |
 |---|---|---|
-| `durationTemplate` | — | **Required.** Renders to a number. |
-
-Maximum delay is bounded by the workflow's overall execution timeout. For cloud, or experience the maximum delay is 59 seconds.
+| `delay` | — | **Required.** Number of seconds as a string template (e.g. `"5"` or `"{{data.waitSecs}}"`). Max 59 seconds for cloud and experience workflows. |
 
 ---
 
@@ -212,8 +213,8 @@ Generates a random number within a configured range and writes it to the payload
 
 | Field | Default | Notes |
 |---|---|---|
-| `min` | `0` | Minimum value (inclusive). |
-| `max` | `100` | Maximum value (inclusive). |
+| `min` | `0` | Minimum value (inclusive). Number or template string (e.g. `"{{data.min}}"`). |
+| `max` | `100` | Maximum value (inclusive). Number or template string (e.g. `"{{data.max}}"`). |
 | `resultPath` | — | **Required.** Payload path to write the result. |
 
 ---
@@ -241,8 +242,8 @@ Branches based on a boolean condition that only transitions when the condition c
 
 | Field | Default | Notes |
 |---|---|---|
-| `latchExpression` | `""` | **Required.** Handlebars expression to evaluate. When true and not latched, fires the true branch and latches. |
-| `resetExpression` | `""` | **Required.** Handlebars expression. When true, resets the latch so the true branch can fire again. |
+| `latchExpression` | `""` | Optional. Handlebars expression to evaluate. When true and not latched, fires `outputIds[1]` and latches. Defaults to `""` (never latches). |
+| `resetExpression` | `""` | Optional. Handlebars expression. When true, resets the latch so `outputIds[1]` can fire again. Defaults to `""` (never resets). |
 | `latchIdTemplate` | `""` | Template for a unique latch identifier. Use `{{triggerId}}` or `{{data.deviceId}}` to scope the latch independently per device. |
 | `latchResultPath` | `""` | Payload path to write the boolean result of `latchExpression`. |
 | `resetResultPath` | `""` | Payload path to write the boolean result of `resetExpression`. |
@@ -261,10 +262,10 @@ Branches based on whether a payload value has changed since the last execution. 
   "id": "on-change",
   "type": "BranchOnChangeNode",
   "meta": { "category": "logic", "name": "onchange", "label": "On Change", "x": 0, "y": 0 },
-  "outputIds": [["value-changed"], ["value-same"]],
+  "outputIds": [["value-same"], ["value-changed"]],
   "config": {
     "valuePath": "data.attributes.status",
-    "changeType": "all",
+    "changeType": "any",
     "onChangeIdTemplate": "statusChange-{{data.deviceId}}"
   }
 }
@@ -275,30 +276,45 @@ Branches based on whether a payload value has changed since the last execution. 
 | Field | Notes |
 |---|---|
 | `valuePath` | **Required.** Payload path of the value to compare. |
-| `changeType` | **Required.** One of `percent`, `percentInc`, `percentDec`, `value`, `valueInc`, `valueDec`, any. Defaults to `any` |
-| `changeThreshold` | Amount of change required - only required if `changeType` does not equal `all`. |
+| `changeType` | Optional. Default `"any"`. Values: `"any"` (change of any kind), `"percent"`, `"percentInc"`, `"percentDec"`, `"value"`, `"valueInc"`, `"valueDec"`. |
+| `changeThreshold` | Amount of change required. Required when `changeType` is anything other than `"any"`. |
 | `prevValuePath` | Payload path of where to set the previously compared value. |
 | `onChangeIdTemplate` | Storage key used to persist the previous value. |
 
 **Note**
-For changeTypes other than 'any', value at valuePath must be a number, or convertible to a number - if it is not, false path will be taken. If we have never seen a value previously for this workflow and valuePath, the false path will be taken.
+For `changeType` values other than `"any"`, the value at `valuePath` must be a number or convertible to a number — if it is not, `outputIds[0]` (unchanged path) is taken. On first execution when no previous value has been stored, `outputIds[0]` (unchanged path) is also taken.
 
 ---
 
 ## Annotation Node (`type: "AnnotationNode"`)
 
-A visual-only node that displays a text label on the workflow canvas. Has no runtime behavior and does not affect payload or execution. Available in all flow classes. This can be used to add notes or describe the logic of the workflow.
+A visual-only node that displays a text label on the workflow canvas. Has no runtime behavior and does not affect payload or execution. Available in all flow classes.
 
 ```json
 {
   "id": "note",
   "type": "AnnotationNode",
-  "meta": { "category": "logic", "name": "note", "label": "Note", "x": 0, "y": 0 },
-  "outputIds": [],
-  "config": { "text": "This section handles error recovery" }
+  "config": {},
+  "meta": {
+    "category": "annotation",
+    "name": "note",
+    "label": "Annotation",
+    "x": 60,
+    "y": 60,
+    "annotationText": "This section handles error recovery",
+    "width": 200,
+    "height": 100
+  },
+  "outputIds": []
 }
 ```
 
-| Field | Notes |
-|---|---|
-| `text` | The text to display in the annotation box on the canvas. |
+`outputIds` must be `[]` (empty array — no outputs).
+
+`config` is always `{}`. All annotation content is stored in `meta`:
+
+| `meta` field | Default | Notes |
+|---|---|---|
+| `annotationText` | `""` | The text displayed inside the annotation box. Markdown is supported. |
+| `width` | `200` | Width in pixels. Must be a multiple of 20 (GRID_SIZE). UI range: 100–600 (5–30 grid steps). |
+| `height` | `100` | Height in pixels. Must be a multiple of 20 (GRID_SIZE). UI range: 100–600 (5–30 grid steps). |

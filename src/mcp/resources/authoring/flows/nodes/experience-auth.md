@@ -13,7 +13,7 @@ Two nodes for authenticating Experience Users and generating auth tokens.
 
 ### Authenticate Node (`type: "ExperienceUserAuthNode"`)
 
-Authenticates an Experience User and issues an auth token. Four authentication modes controlled by **`meta.authMode`** (stored on `meta`, not `config`). Branches — `outputIds[0]` = authenticated, `outputIds[1]` = failed.
+Authenticates an Experience User and issues an auth token. Four authentication modes controlled by **`meta.authMode`** (stored on `meta`, not `config`). Branches — `outputIds[0]` = **failed** (authentication failed); `outputIds[1]` = **authenticated** (success).
 
 **Email + Password mode (most common):**
 
@@ -31,7 +31,7 @@ Authenticates an Experience User and issues an auth token. Four authentication m
     "authMode": "emailPassword",
     "x": 200, "y": 200
   },
-  "outputIds": [["success"], ["failure"]]
+  "outputIds": [["failure"], ["success"]]
 }
 ```
 

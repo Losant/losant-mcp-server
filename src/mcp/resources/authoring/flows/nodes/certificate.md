@@ -13,7 +13,7 @@ Two nodes for creating and reading X.509 certificates.
 
 ### Certificate: Create Node (`type: "CertificateCreateNode"`)
 
-Signs a Certificate Signing Request (CSR) with a CA key and certificate, issuing a new certificate.
+Signs a Certificate Signing Request (CSR) with a CA key and certificate, issuing a new leaf certificate. **This node does not generate self-signed or root certificates** — it requires a pre-existing CA key/cert pair (via credential) and a CSR PEM as input.
 
 ```json
 {
@@ -45,7 +45,7 @@ Signs a Certificate Signing Request (CSR) with a CA key and certificate, issuing
 | `subjectAltNames` | `[]` | Array of Subject Alternative Names `{ type, value }`. |
 | `keyUsages` | `[]` | Array of key usage strings. |
 | `extendedKeyUsages` | `[]` | Array of extended key usage strings. |
-| `resultPath` | `""` | **Required.** Payload path to write the issued certificate PEM. |
+| `resultPath` | `""` | **Required.** Payload path to write the result object: `{ certificate: "<PEM string>", publicKey: "<PEM string>", info: { subject, issuer, validity, ... } }`. Access the cert PEM at `resultPath + ".certificate"`. |
 
 ---
 

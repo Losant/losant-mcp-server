@@ -26,7 +26,7 @@ The Webhook: Reply Node sends a custom HTTP response to a webhook request, or se
     "bodyTemplateType": "string",
     "isWebsocketMessage": false,
     "headerInfo": [
-      { "key": "Content-Type", "valueTemplate": "application/json" }
+      { "keyTemplate": "Content-Type", "valueTemplate": "application/json" }
     ]
   },
   "meta": { "category": "output", "name": "webhook-reply", "label": "Webhook: Reply", "x": 200, "y": 200 },
@@ -60,7 +60,7 @@ The Webhook: Reply Node sends a custom HTTP response to a webhook request, or se
 | `bodyTemplate` | `""` | Response body or WebSocket message. Template or payload path per `bodyTemplateType`. |
 | `bodyTemplateType` | `"string"` | `"string"` — string template. `"path"` — payload path. |
 | `encodingTemplate` | `"utf8"` | Message encoding. Only when `isWebsocketMessage: true`. Template. |
-| `headerInfo` | `[]` | Array of `{ key, valueTemplate }` response headers. Only for HTTP replies. |
+| `headerInfo` | `[]` | Array of `{ keyTemplate, valueTemplate }` response headers. Only for HTTP replies. |
 
 ## Experience workflows
 

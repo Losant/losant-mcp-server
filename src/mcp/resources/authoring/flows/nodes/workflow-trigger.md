@@ -66,9 +66,9 @@ The Workflow Trigger Node triggers another workflow's Virtual Button — immedia
 | Config field | Default | Notes |
 |---|---|---|
 | `behavior` | `"immediate"` | **Required.** `"immediate"`, `"schedule"`, or `"cancel"`. |
-| `triggerWorkflowId` | `""` | **Required** (not cancel). Target workflow ID. |
+| `triggerWorkflowId` | `""` | **Required** (not cancel). Target workflow ID as a plain string — not a template. |
 | `flowVersionTemplate` | `""` | **Required** (not cancel). Workflow version (e.g. `"develop"`, `"v1"`). Template. |
-| `triggerVirtualButtonId` | `""` | **Required** (not cancel). Virtual Button trigger ID in the target workflow. |
+| `triggerVirtualButtonId` | `""` | **Required** (not cancel). The server-generated `key` of the Virtual Button trigger in the target workflow — **not** the node's `id`. This key is assigned by the server when the target workflow is created and is returned in the trigger object. See the two-step pattern below. |
 | `payloadTemplateType` | `"json"` | `"json"`, `"string"`, or `"path"`. |
 | `payloadTemplate` | `""` | Payload to send. JSON template, string, or payload path per `payloadTemplateType`. |
 | `scheduling` | `"relative"` | **Required** when `behavior: "schedule"`. `"relative"` or `"absolute"`. |
@@ -76,6 +76,15 @@ The Workflow Trigger Node triggers another workflow's Virtual Button — immedia
 | `dateTemplate` | `""` | **Required** when `scheduling: "absolute"`. ISO 8601 datetime. Template. |
 | `runIdTemplate` | `""` | **Required** when `behavior: "cancel"`. The run ID from when the execution was scheduled. Template. |
 | `resultPath` | `""` | Payload path to write the result. |
+
+### Getting `triggerVirtualButtonId` — two-step pattern
+
+The `key` of a Virtual Button trigger is server-generated and not known until after the target workflow is created. To wire a WorkflowTriggerNode correctly:
+
+1. **Create the target workflow** via `losant_write`. The response includes the `triggers` array with the server-assigned `key` on the Virtual Button trigger.
+2. **Use that key** as `triggerVirtualButtonId` in the WorkflowTriggerNode config — either hardcode it or store it in workflow globals.
+
+If you are creating a workflow that will trigger *itself* via a virtual button (rare), you must create the workflow first (step 1), retrieve the assigned key from the response, then PATCH the workflow to add the WorkflowTriggerNode using that key.
 
 ## Experience workflows
 

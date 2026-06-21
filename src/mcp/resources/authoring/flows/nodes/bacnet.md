@@ -33,8 +33,9 @@ Reads property values from BACnet device objects.
   "config": {
     "hostTemplate": "192.168.1.100",
     "hostPortTemplate": "",
+    "portTemplate": "",
     "incomingPortTemplate": "",
-    "apduTimeoutTemplate": "",
+    "apduTimeout": "",
     "readInstructionsType": "array",
     "readInstructions": [
       {
@@ -55,13 +56,21 @@ Reads property values from BACnet device objects.
 |---|---|---|
 | `hostTemplate` | `""` | **Required.** Device IP address. Template. |
 | `hostPortTemplate` | `""` | Device BACnet port. Default 47808. Template. |
+| `portTemplate` | `""` | Local source port. Template. |
 | `incomingPortTemplate` | `""` | Local incoming port. Template. |
-| `apduTimeoutTemplate` | `""` | Request timeout in milliseconds. Template. |
+| `apduTimeout` | `""` | APDU request timeout in milliseconds. Template. |
 | `readInstructionsType` | `"array"` | `"array"` or `"payloadPath"`. |
 | `readInstructions` | `[]` | **Required.** Array of read instruction objects. |
 | `destinationPath` | `""` | **Required.** Payload path to write results. |
 
-Read instruction fields: `typeTemplate` (BACnet object type, e.g. `"analogInput"`, `"binaryOutput"`), `instanceTemplate` (object instance 0–4194302), `propertyIdTemplate` (e.g. `"presentValue"`), `key` (result key, cannot be `"errors"`).
+Read instruction fields — all are **Required**:
+
+| Field | Notes |
+|---|---|
+| `typeTemplate` | BACnet object type as an **integer string**. Common values: `"0"` (Analog Input), `"1"` (Analog Output), `"2"` (Analog Value), `"3"` (Binary Input), `"4"` (Binary Output), `"5"` (Binary Value), `"8"` (Device), `"13"` (Multi-State Input), `"14"` (Multi-State Output), `"19"` (Multi-State Value). Full list: all 60 BACnet object types from the BACnet specification. |
+| `instanceTemplate` | Object instance number (0–4194302) as a string template. |
+| `propertyIdTemplate` | BACnet property ID as an **integer string**. Common values: `"85"` (Present Value), `"77"` (Object Name), `"79"` (Object Type), `"28"` (Description), `"111"` (Status Flags), `"103"` (Reliability), `"117"` (Units), `"87"` (Priority Array), `"104"` (Relinquish Default). Full list: 455 BACnet property identifiers. |
+| `key` | Result key in the destination object. Cannot be `"errors"`. |
 
 ---
 
@@ -114,7 +123,9 @@ Writes property values to BACnet device objects.
   "config": {
     "hostTemplate": "192.168.1.100",
     "hostPortTemplate": "",
+    "portTemplate": "",
     "incomingPortTemplate": "",
+    "apduTimeout": "",
     "writeInstructionsType": "array",
     "writeInstructions": [
       {
@@ -134,4 +145,25 @@ Writes property values to BACnet device objects.
 }
 ```
 
-Write instructions require: `typeTemplate`, `instanceTemplate`, `propertyIdTemplate`, `propertyIndexTemplate` (>1), `writeValueTypeTemplate`, `writeValueTemplate`. Optional `writePriorityTemplate` (1–16, default 16).
+| Config field | Default | Notes |
+|---|---|---|
+| `hostTemplate` | `""` | **Required.** Device IP address. Template. |
+| `hostPortTemplate` | `""` | Device BACnet port. Default 47808. Template. |
+| `portTemplate` | `""` | Local source port. Template. |
+| `incomingPortTemplate` | `""` | Local incoming port. Template. |
+| `apduTimeout` | `""` | APDU request timeout in milliseconds. Template. |
+| `writeInstructionsType` | `"array"` | `"array"` or `"payloadPath"`. |
+| `writeInstructions` | `[]` | **Required.** Array of write instruction objects. |
+| `destinationPath` | `""` | Optional. Payload path to write result metadata. |
+
+Write instruction fields:
+
+| Field | Required | Notes |
+|---|---|---|
+| `typeTemplate` | Yes | BACnet object type as an **integer string** — same values as Read (e.g. `"1"` = Analog Output, `"4"` = Binary Output). |
+| `instanceTemplate` | Yes | Object instance number (0–4194302) as a string template. |
+| `propertyIdTemplate` | Yes | BACnet property ID as an **integer string** (e.g. `"85"` = Present Value). |
+| `propertyIndexTemplate` | Yes | Array property index as a string. Use `"-1"` for non-array properties (most common). |
+| `writeValueTypeTemplate` | Yes | BACnet application tag as an **integer string**: `"0"` Null, `"1"` Boolean, `"2"` Unsigned Integer, `"3"` Signed Integer, `"4"` Real, `"5"` Double, `"6"` Octet String, `"7"` Character String, `"8"` Bit String, `"9"` Enumerated, `"10"` Date, `"11"` Time, `"12"` Object Identifier. |
+| `writeValueTemplate` | Yes | Value to write, rendered as a template. |
+| `writePriorityTemplate` | No | Write priority 1–16. Default 16 (lowest). |

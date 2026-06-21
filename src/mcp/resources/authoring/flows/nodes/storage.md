@@ -6,8 +6,8 @@ Two nodes for reading and writing workflow-scoped persistent storage. Values per
 
 | `type` | `meta.category` | `meta.name` | `meta.label` default |
 |---|---|---|---|
-| `GetValueNode` | `data` | `get-value` | `"Get Value"` |
-| `StoreValueNode` | `data` | `store-value` | `"Store Value"` |
+| `GetValueNode` | `data` | `get-value` | `"Storage: Get Value"` |
+| `StoreValueNode` | `data` | `store-value` | `"Storage: Set Value"` |
 
 ## Cloud (Application) workflows
 
@@ -20,21 +20,21 @@ Reads a stored value by key and writes it to a payload path.
   "id": "get-counter",
   "type": "GetValueNode",
   "config": {
-    "keyTemplate": "deviceCounter-{{data.deviceId}}",
-    "resultPath": "working.counter"
+    "keyName": "deviceCounter-{{data.deviceId}}",
+    "valuePath": "working.counter"
   },
-  "meta": { "category": "data", "name": "get-value", "label": "Get Value", "x": 200, "y": 200 },
+  "meta": { "category": "data", "name": "get-value", "label": "Storage: Get Value", "x": 200, "y": 200 },
   "outputIds": [["next"]]
 }
 ```
 
 | Config field | Default | Notes |
 |---|---|---|
-| `keyName` | - | **Required. if getAll is false** Storage key as a template. Use `{{data.deviceId}}` etc. to make keys device-specific. |
-| `valuePath` | - | **Required.** Payload path to write the stored value. If the key doesn't exist, writes `undefined`. |
-| `defaultValue` | - | Optional value to be placed at the value path if keyName does not exist |
-| `defaultValueType` | `template` | Allows `json`, `template`, `path` depending on the default value. |
-| `getAll` | `false` | when true returns everything in storage |
+| `keyName` | — | Required when `getAll` is `false`. Storage key as a template. Use `{{data.deviceId}}` to make keys device-specific. |
+| `valuePath` | — | **Required.** Payload path to write the stored value. Writes `undefined` (or `defaultValue`) if the key doesn't exist. |
+| `defaultValue` | — | Optional. Value written to `valuePath` when `keyName` does not exist in storage. |
+| `defaultValueType` | `"template"` | How to interpret `defaultValue`: `"template"`, `"json"`, or `"path"`. |
+| `getAll` | `false` | When `true`, retrieves all storage keys as an object and writes the result to `valuePath`. `keyName` is ignored and may be omitted. |
 
 ---
 
@@ -51,17 +51,18 @@ Writes a value to a storage key.
     "valueType": "template",
     "value": "{{add working.counter 1}}"
   },
-  "meta": { "category": "data", "name": "store-value", "label": "Store Value", "x": 400, "y": 200 },
+  "meta": { "category": "data", "name": "store-value", "label": "Storage: Set Value", "x": 400, "y": 200 },
   "outputIds": [["next"]]
 }
 ```
 
 | Config field | Default | Notes |
-|---|---|
-| `keyName` | - | **Required.** Storage key as a template. |
-| `valueType` | `path` | **Required** how to handle the value. Valid options: `clear`, `decr`, `incr`, `json`, `number`, `path`, `template`  |
-| `value` | - |**Required.** Value to store, as a template. Rendered string is stored. For numbers: `"{{add working.counter 1}}"`. |
-| `resultPath` | - | Optional: path to store the result of the operation  |
+|---|---|---|
+| `keyName` | — | **Required.** Storage key as a template. |
+| `valueType` | — | **Required.** How to interpret the value. Options: `"template"` (render `value` as Handlebars), `"json"` (parse `value` as JSON), `"number"` (coerce `value` to a number), `"path"` (read from `valuePath` on the payload), `"incr"` (atomically increment the stored number by the amount in `value`), `"decr"` (atomically decrement the stored number by the amount in `value`), `"clear"` (delete the key). |
+| `value` | — | The value to store or operate with. **Required** when `valueType` is `"template"`, `"json"`, `"number"`, `"incr"`, or `"decr"`. For `"incr"` and `"decr"` this is the amount to increment/decrement by (template resolving to a number). |
+| `valuePath` | — | Payload path to read the value from. Used when `valueType` is `"path"`. |
+| `resultPath` | — | Optional. Payload path to write the stored value back onto the payload after storing. |
 
 ### Idiom notes
 

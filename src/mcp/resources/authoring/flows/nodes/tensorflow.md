@@ -46,5 +46,5 @@ Not available.
 | `modelTemplate` | `""` | **Required.** Path to the model directory on the GEA file system. Template. |
 | `dataPath` | `""` | **Required.** Payload path containing the input tensor data (array or nested arrays). |
 | `shapePath` | `""` | Optional payload path to an array specifying the input tensor shape. |
-| `dataTypeTemplate` | `"autodetect"` | Input data type: `"autodetect"`, `"float32"`, `"int32"`, etc. Template. |
+| `dataTypeTemplate` | `"autodetect"` | Input data type: `"autodetect"`, `"float32"`, `"int32"`, `"bool"`, `"string"`. When `"autodetect"`, omitted from config. Template. |
 | `resultPath` | `""` | Payload path to write the prediction results. |

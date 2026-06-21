@@ -100,7 +100,7 @@ Writes values to OIDs on an SNMP agent.
       {
         "oidTemplate": "1.3.6.1.2.1.1.5.0",
         "type": "OctetString",
-        "writeValueTemplate": "{{working.newName}}"
+        "valueTemplate": "{{working.newName}}"
       }
     ],
     "resultPath": "working.writeResult"
@@ -110,7 +110,7 @@ Writes values to OIDs on an SNMP agent.
 }
 ```
 
-Write instruction fields: `oidTemplate`, `type` (value type: `"Boolean"`, `"Integer"`, `"OctetString"`, `"Null"`, `"OID"`, `"IpAddress"`, `"Counter"`, `"Gauge"`, `"TimeTicks"`, default `"Integer"`), `writeValueTemplate` (not required for `"Null"` type).
+Write instruction fields: `oidTemplate`, `type` (value type: `"Boolean"`, `"Integer"`, `"OctetString"`, `"Null"`, `"OID"`, `"IpAddress"`, `"Counter"`, `"Gauge"`, `"TimeTicks"`, default `"Integer"`), `valueTemplate` (not required for `"Null"` type).
 
 ---
 

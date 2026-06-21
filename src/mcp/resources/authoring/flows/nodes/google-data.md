@@ -219,7 +219,7 @@ Executes a Google Cloud Function. Two invocation methods — API trigger (authen
 | `allowUnauthenticated` | `false` | HTTP trigger only. When `true`, no auth is sent. |
 | `sourceDataMethod` | `"workflowPayload"` | `"workflowPayload"` — send full payload. `"payloadPath"` — send value at `sourceDataTemplate`. `"jsonTemplate"` — send `sourceDataTemplate` as JSON. |
 | `sourceDataTemplate` | `""` | **Required** when `sourceDataMethod` is `"payloadPath"` or `"jsonTemplate"`. |
-| `resultPath` | `""` | Payload path to write `{ data: { azureHeaders, statusCode, azureResult } }`. |
+| `resultPath` | `""` | Payload path to write the function response. |
 
 ---
 

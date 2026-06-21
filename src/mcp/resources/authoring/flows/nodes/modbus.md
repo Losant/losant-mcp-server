@@ -21,7 +21,49 @@ Not available.
 
 > **Minimum GEA version:** 1.0.0
 
-Both nodes support TCP (`"tcp"`) and serial (`"serial"`) connection types. ASCII serial (`"asciiSerial"`) requires GEA 1.46.0+.
+Both nodes support TCP, RTU serial, and ASCII serial connection types.
+
+### Connection fields (shared by Read and Write)
+
+#### TCP (`connectionTypeTemplate: "tcp"`)
+
+| Config field | Default | Notes |
+|---|---|---|
+| `connectionTypeTemplate` | `"tcp"` | Connection type. |
+| `hostTemplate` | `""` | **Required.** Server hostname or IP. Template. |
+| `portTemplate` | `"502"` | Port number. Template. |
+
+#### Serial (`connectionTypeTemplate: "serial"`)
+
+> **Minimum GEA version:** 1.10.0
+
+| Config field | Default | Notes |
+|---|---|---|
+| `connectionTypeTemplate` | `"serial"` | Connection type. |
+| `pathTemplate` | `""` | **Required.** Serial port path (e.g. `"/dev/ttyS0"`). Template. |
+| `baudRateTemplate` | `"9600"` | Baud rate. Template. |
+| `parityTemplate` | `"none"` | `"none"`, `"even"`, or `"odd"`. Template. |
+| `dataBitsTemplate` | `"8"` | Data bits (`7` or `8`). Template. |
+| `stopBitsTemplate` | `"1"` | Stop bits (`1` or `2`). Template. |
+
+#### ASCII Serial (`connectionTypeTemplate: "asciiSerial"`)
+
+> **Minimum GEA version:** 1.46.0
+
+Same fields as `"serial"` plus:
+
+| Config field | Default | Notes |
+|---|---|---|
+| `startOfFrameCharTemplate` | `""` | Start-of-frame character. Template. |
+
+#### Common fields (all connection types)
+
+| Config field | Default | Notes |
+|---|---|---|
+| `unitIdTemplate` | `"1"` | **Required.** Modbus unit ID (1–247). Template. |
+| `timeoutTemplate` | `"30000"` | Request timeout in milliseconds. Template. |
+
+---
 
 ### Modbus: Read Node (`type: "ModbusReadNode"`)
 
@@ -36,16 +78,16 @@ Reads values from Modbus registers or coils.
     "hostTemplate": "192.168.1.100",
     "portTemplate": "502",
     "unitIdTemplate": "1",
-    "endianessTemplate": "big",
-    "areUnsignedInts": false,
     "timeoutTemplate": "30000",
+    "endiannessTemplate": "big",
+    "areUnsignedInts": false,
     "readInstructionsType": "array",
     "readInstructions": [
       {
-        "type": "Holding Registers",
-        "key": "temperature",
-        "addressTemplate": "40001",
-        "lengthTemplate": "1"
+        "typeTemplate": "holding-register",
+        "addressTemplate": "0",
+        "lengthTemplate": "1",
+        "key": "temperature"
       }
     ],
     "destinationPath": "working.modbusData"
@@ -57,27 +99,42 @@ Reads values from Modbus registers or coils.
 
 | Config field | Default | Notes |
 |---|---|---|
-| `connectionTypeTemplate` | `""` | **Required.** `"tcp"`, `"serial"`, or `"asciiSerial"` (GEA 1.46.0+). |
-| `hostTemplate` | `""` | **Required** (TCP). Server hostname or IP. Template. |
-| `portTemplate` | `""` | **Required** (TCP). Port (typically 502). Template. |
-| `pathTemplate` | `""` | **Required** (serial). Serial port path. Template. |
-| `baudRateTemplate` | `"9600"` | Baud rate (serial). Template. |
-| `unitIdTemplate` | `"1"` | **Required.** Modbus unit ID (1–247). Template. |
-| `endianessTemplate` | `"big"` | `"big"` or `"little"` byte order. Template. |
-| `areUnsignedInts` | `false` | Treat register values as unsigned integers. |
-| `timeoutTemplate` | `"30000"` | Request timeout in milliseconds. Template. |
+| Connection fields | — | See connection tables above. |
+| `endiannessTemplate` | `"big"` | Byte order for multi-byte values: `"big"` or `"little"`. Template. |
+| `areUnsignedInts` | `false` | When `true`, treat integer register values as unsigned. |
 | `readInstructionsType` | `"array"` | `"array"` or `"payloadPath"`. |
 | `readInstructions` | `[]` | **Required.** Array of read instruction objects (see below). |
 | `destinationPath` | `""` | **Required.** Payload path to write results. |
 
-**Read instruction fields:**
+#### Read instruction types
 
-| Field | Notes |
-|---|---|
-| `type` | **Required.** `"Holding Registers"` (FC03), `"Input Registers"` (FC04), `"Coils"` (FC01), `"Discrete Input"` (FC02), `"Read Device Identification"` (FC43, GEA 1.16.0+). |
-| `key` | **Required.** Result key name (cannot be `"errors"`). |
-| `addressTemplate` | **Required.** Register/coil address (0–65535). Template. |
-| `lengthTemplate` | Number of addresses to read (defaults 1). Template. |
+The `typeTemplate` field selects the Modbus function code. Valid values:
+
+| `typeTemplate` | Modbus FC | Description |
+|---|---|---|
+| `"input-register"` | FC04 | Read input registers (read-only) |
+| `"holding-register"` | FC03 | Read holding registers (read-write) |
+| `"discrete-input"` | FC02 | Read discrete inputs (read-only coils) |
+| `"coil"` | FC01 | Read output coils |
+| `"read-device-identification"` | FC43 | Read device identification objects (GEA 1.16.0+) |
+
+**For standard types (`"input-register"`, `"holding-register"`, `"discrete-input"`, `"coil"`):**
+
+| Field | Required | Notes |
+|---|---|---|
+| `typeTemplate` | Yes | One of the four standard types above. |
+| `addressTemplate` | Yes | Register/coil address (0–65535). Template. |
+| `lengthTemplate` | No | Number of addresses to read. Defaults to 1. Template. |
+| `key` | Yes | Result key in the destination object. Cannot be `"errors"`. |
+
+**For `typeTemplate: "read-device-identification"` (GEA 1.16.0+):**
+
+| Field | Required | Notes |
+|---|---|---|
+| `typeTemplate` | Yes | `"read-device-identification"` |
+| `deviceIdCodeTemplate` | Yes | Read class: `1` (Basic), `2` (Regular), `3` (Individual), `4` (Individual stream). Template. |
+| `objectIdTemplate` | Yes | Object ID to read (0–255). Template. |
+| `key` | Yes | Result key in the destination object. Cannot be `"errors"`. |
 
 ---
 
@@ -98,9 +155,10 @@ Writes values to Modbus registers or coils.
     "writeInstructionsType": "array",
     "writeInstructions": [
       {
-        "type": "Holding Register",
-        "addressTemplate": "40001",
-        "valueTemplate": "{{working.setpoint}}"
+        "typeTemplate": "holding-register",
+        "addressTemplate": "0",
+        "valueTemplate": "{{working.setpoint}}",
+        "key": "setpoint"
       }
     ],
     "destinationPath": "working.writeResult"
@@ -110,18 +168,35 @@ Writes values to Modbus registers or coils.
 }
 ```
 
-| Config field | Notes |
-|---|---|
-| Connection fields | Same as Modbus: Read. |
-| `writeInstructionsType` | `"array"` or `"payloadPath"`. |
-| `writeInstructions` | **Required.** Array of write instruction objects. |
-| `destinationPath` | Payload path to write per-register results. |
+| Config field | Default | Notes |
+|---|---|---|
+| Connection fields | — | See connection tables above. |
+| `writeInstructionsType` | `"array"` | `"array"` or `"payloadPath"`. |
+| `writeInstructions` | `[]` | **Required.** Array of write instruction objects (see below). |
+| `destinationPath` | `""` | Payload path to write per-register results. |
 
-**Write instruction fields:**
+#### Write instruction types
 
-| Field | Notes |
-|---|---|
-| `type` | **Required.** `"Holding Register"` (FC06 single), `"Coils"` (FC05), `"Holding Registers"` (FC16 multiple). |
-| `addressTemplate` | **Required.** Address (0–65535). Template. |
-| `valueTemplate` | **Required.** Value to write. Template. |
-| `key` | Optional result key (defaults to `"addr-{address}"`). |
+| `typeTemplate` | Modbus FC | Description |
+|---|---|---|
+| `"holding-register"` | FC06 | Write a single holding register |
+| `"holding-registers"` | FC16 | Write multiple holding registers from an array |
+| `"coil"` | FC05 | Write a single output coil |
+
+**For `typeTemplate: "holding-register"` (FC06) or `typeTemplate: "coil"` (FC05):**
+
+| Field | Required | Notes |
+|---|---|---|
+| `typeTemplate` | Yes | `"holding-register"` or `"coil"`. |
+| `addressTemplate` | Yes | Register/coil address (0–65535). Template. |
+| `valueTemplate` | Yes | Value to write. Template. |
+| `key` | No | Result key in destination. Defaults to `"addr-{address}"`. |
+
+**For `typeTemplate: "holding-registers"` (FC16) — writes multiple registers:**
+
+| Field | Required | Notes |
+|---|---|---|
+| `typeTemplate` | Yes | `"holding-registers"` |
+| `addressTemplate` | Yes | Starting register address (0–65535). Template. |
+| `valueTemplate` | Yes | **Payload path** (not a template string) pointing to an array of values to write to consecutive registers. |
+| `key` | No | Result key in destination. Defaults to `"addr-{address}"`. |

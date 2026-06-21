@@ -9,7 +9,7 @@ Two nodes for creating and retrieving files within a Losant application's file s
 | `FileCreateNode` | `data` | `file-create` | `"File: Create"` |
 | `FileGetNode` | `data` | `file-get` | `"File: Get"` |
 
-See `reference/error-handling.md` for the `errorBehavior`/`errorPath` pattern.
+See `losant://references/flow/error-handling` for the `errorBehavior`/`errorPath` pattern.
 
 ## Cloud (Application) workflows
 

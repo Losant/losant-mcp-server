@@ -1,6 +1,6 @@
 # SMS Node (`type: "StructureSmsNode"`)
 
-The SMS Node sends SMS messages via Losant's built-in SMS delivery service. For production applications, Losant recommends using the Twilio Node (`nodes/outputs/twilio.md`) instead, which provides more delivery options and reliability.
+The SMS Node sends SMS messages via Losant's built-in SMS delivery service. **Rate limited to 1 send per minute. No `errorBehavior` field on this node.** For production applications, use `losant://flow/nodes/twilio` instead — it provides more delivery options and reliability.
 
 ## Required Fields
 

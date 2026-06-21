@@ -47,7 +47,7 @@ Three connection methods: integration, service credential, or direct connection 
 | `dataTemplate` | `""` | **Required** when `dataMethod: "stringTemplate"`. Message body. Template. |
 | `dataPayloadPath` | `""` | **Required** when `dataMethod: "payloadPath"`. |
 | `propMethod` | `"individualFields"` | `"individualFields"`, `"jsonTemplate"`, or `"payloadPath"` for user properties. |
-| `propFields` | `[]` | Array of `{ name, value }` property pairs. |
+| `propFields` | `[]` | Array of `{ keyTemplate, valueTemplate }` property pairs. |
 | `resultPath` | `""` | Payload path to write the send result. |
 
 ## Experience workflows

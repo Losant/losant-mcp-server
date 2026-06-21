@@ -11,7 +11,7 @@ Makes an outbound HTTP/HTTPS request and optionally stores the response on the w
 | `meta.name` | `"http"` |
 | `meta.label` | `"HTTP"` (default) |
 
-See `reference/templates.md` for the Handlebars dialect, `reference/credentials.md` for `credentialNameTemplate`, and `reference/error-handling.md` for the `errorBehavior`/`errorPath` pattern.
+See `losant://references/flow/templating` for the Handlebars dialect and `losant://references/flow/error-handling` for the `errorBehavior`/`errorPath` pattern. For `authType: "credential"`, `credentialNameTemplate` is the `name` field of a Losant Credential resource — see `losant://guides/credentials`.
 
 ## Cloud (Application) workflows
 
@@ -53,7 +53,7 @@ See `reference/templates.md` for the Handlebars dialect, `reference/credentials.
 
 ### Authentication
 
-| `authType` | Required fields | Notes |
+| `authType` (default: `"none"`) | Required fields | Notes |
 |---|---|---|
 | `"none"` | — | Auth in headers or query params. |
 | `"basic"` | `authCredentials.usernameTemplate`, `authCredentials.passwordTemplate` | Sent as `Authorization: Basic ...`. |
@@ -66,9 +66,9 @@ See `reference/templates.md` for the Handlebars dialect, `reference/credentials.
 |---|---|
 | `responsePath` | Payload path for the response object. Shape: `{ statusCode, headers, body, requestDuration, request }`. Body is auto-parsed as JSON if possible; otherwise left as a string. |
 | `encodingTemplate` | Response encoding. Default `"utf8"`. |
-| `timeoutTemplate` | Per-request timeout in seconds. Max 30 — values above 30 are clamped. |
-| `disableSSLVerification` | Skip TLS verification. Prefer `caCertTemplate` instead. |
-| `disableRedirects` | When `true`, 3xx responses are returned as-is. |
+| `timeoutTemplate` | Default `"10"`. Per-request timeout in seconds. Max 30 — values above 30 are clamped to 30. |
+| `disableSSLVerification` | Default `false`. Skip TLS verification. Prefer `caCertTemplate` instead. |
+| `disableRedirects` | Default `false`. When `true`, 3xx responses are returned as-is instead of followed. |
 | `caCertTemplate` | PEM CA certificate for private-PKI servers. |
 | `headerInfo` | Array of `{ key, valueTemplate }` request headers. |
 

@@ -48,3 +48,13 @@ Same as Cloud. Additional `integrationId` values on edge:
 | `"external"` | External broker via config name | 1.42.0 |
 
 When `integrationId: "external"`, also set `configNameTemplate` to the name of the MQTT client configuration in the GEA config file.
+
+## Embedded workflows
+
+On embedded workflows, `integrationId` is not used. The node invokes the `eea_send_message()` function with the topic and message. An optional `resultPath` field stores the return code (`0` = success, any other value = failure). If `resultPath` is omitted and the function returns a failure code, the workflow errors.
+
+| Config field | Notes |
+|---|---|
+| `topicTemplate` | **Required.** Topic template. |
+| `messageTemplate` | Message template. |
+| `resultPath` | Optional payload path to store the `eea_send_message()` return code. |

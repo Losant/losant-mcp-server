@@ -39,25 +39,11 @@ Executes arbitrary JavaScript against the workflow payload. Use when built-in no
 - **`console.log()`** — output appears in the workflow debug panel.
 - ES5 and ES6+ syntax supported.
 
-### Sync example
+### Example
 
 ```javascript
 payload.working.celsius = parseFloat(payload.data.attributes.tempF - 32) * 5/9;
 payload.working.rounded = Math.round(payload.working.celsius * 10) / 10;
-callback();
-```
-
-### Async example (HTTP fetch)
-
-```javascript
-const https = require('https');
-https.get('https://api.example.com/data', (res) => {
-  let body = '';
-  res.on('data', chunk => body += chunk);
-  res.on('end', () => {
-    payload.working.apiResult = JSON.parse(body);
-  });
-}).on('error', callback);
 ```
 
 ## Experience workflows
@@ -66,7 +52,7 @@ Same as Cloud.
 
 ## Edge workflows
 
-Same as Cloud, with two additional capabilities:
+Same as Cloud. Additionally:
 
-- **Async operations** are supported — you can use `require()` to load Node.js built-in modules and perform async I/O.
 - **`require()`** gives access to Node.js built-in modules (`fs`, `path`, `crypto`, etc.) and any modules bundled with the GEA.
+- **Async/await and Promises** are supported from GEA 1.43.2+. Before 1.43.2, all logic must be synchronous.
