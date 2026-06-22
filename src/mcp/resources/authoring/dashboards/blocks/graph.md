@@ -17,8 +17,8 @@ See `reference/device-queries.md` for the `deviceIds` / `deviceTags` / `query` s
 ```
 
 - `blockType` must be the literal `"graph"`. (The human-facing name is "Time Series Graph".)
-- `applicationId` is required on org / sandbox dashboards, omitted on application-owned dashboards. See `workflow-guide.md`.
-- Standard layout fields apply — see `workflow-guide.md`. A typical width is `4` (full row); typical height is `1.5`–`3` units.
+- `applicationId` is required on org / sandbox dashboards, omitted on application-owned dashboards. See `dashboard-guide.md`.
+- Standard layout fields apply — see `dashboard-guide.md`. A typical width is `4` (full row); typical height is `1.5`–`3` units.
 
 ## Top-level config
 

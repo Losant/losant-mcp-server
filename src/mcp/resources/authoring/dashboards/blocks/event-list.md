@@ -2,7 +2,7 @@
 
 Displays application events in a configurable table. Supports filtering, sorting, and optional viewer-controlled event state updates. Use for alert/event management panels.
 
-See `workflow-guide.md` for block object shape, layout grid, and `applicationId` rules.
+See the parent `dashboard-guide.md` for the block object shape, layout grid, and `applicationId` rules.
 
 ## Block object shape
 
@@ -20,37 +20,45 @@ See `workflow-guide.md` for block object shape, layout grid, and `applicationId`
 
 | Field | Type | Default | Notes |
 |---|---|---|---|
-| `query` | string | — | Events query as a JSON-encoded string. If omitted, shows all `new` (unacknowledged) events. |
-| `allowUpdates` | boolean | `false` | When `true`, viewers (including Experience Users and public viewers) can update event state (acknowledge/resolve). |
-| `columns` | object[] | — | Column definitions. Default columns are Level, Subject, State, and Occurred At. |
-| `sortField` | string | — | Column to sort by. One of `level`, `subject`, `state`, `creationDate`, `lastUpdated`, `id`. |
+| `query` | string | — | Events query as a JSON-encoded string. If omitted, shows all events. |
+| `filter` | string | — | Glob filter on event subject. Max 255 chars. |
+| `eventState` | string | — | Filter by event state: `"new"`, `"acknowledged"`, or `"resolved"`. |
+| `allowUpdates` | boolean | `false` | When `true`, viewers can update event state (acknowledge/resolve). |
+| `sortField` | string | — | Column to sort by. |
 | `sortDirection` | `"asc"` \| `"desc"` | `"desc"` | Sort direction. |
-
-### Query shape
-
-The `query` field is a JSON-encoded string filtering which events to show. Example — show only unresolved `error` or `critical` events:
-
-```json
-"query": "{\"level\":{\"$in\":[\"error\",\"critical\"]},\"state\":{\"$ne\":\"resolved\"}}"
-```
+| `columns` | object[] | — | Column definitions. |
 
 ### Column shapes
 
-**Built-in columns:**
-```json
-{ "type": "level",     "header": "Level" }
-{ "type": "subject",   "header": "Subject" }
-{ "type": "state",     "header": "State" }
-{ "type": "creationDate", "header": "Occurred At" }
-{ "type": "id",        "header": "ID" }
-{ "type": "lastUpdated", "header": "Updated" }
-```
+Each column has `type`, `headerTemplate`, and optionally `rowTemplate` (Handlebars template) and `id`.
 
-**Custom column** (required if you want viewer event-update UX — must include `subject` or `id`):
+**Built-in column types:**
+
+| `type` | Notes |
+|---|---|
+| `level` | Event severity level (critical, error, warning, info). |
+| `subject` | Event subject. |
+| `subjectWithMessage` | Subject plus the event message. |
+| `state` | Current event state (new, acknowledged, resolved). |
+| `creationDate` | When the event was created. |
+| `creationDateWithSource` | Creation date plus the source name. |
+| `lastUpdatedDate` | When the event was last updated. |
+| `lastUpdatedDateWithSource` | Last updated date plus source. |
+| `id` | Event ID. |
+| `tag` | A specific event tag; use `selectedTag` to specify the key. |
+| `deviceName` | Name of the device associated with the event. |
+| `sourceId` | ID of the entity that created the event. |
+
+**Custom column:**
 ```json
-{ "type": "custom", "header": "Details", "template": "{{event.data.message}}" }
+{ "type": "custom", "headerTemplate": "Details", "rowTemplate": "{{event.data.message}}" }
 ```
-`template` has access to the full `event` object: `{{event.subject}}`, `{{event.level}}`, `{{event.state}}`, `{{event.data}}`, etc.
+`rowTemplate` has access to the full `event` object: `{{event.subject}}`, `{{event.level}}`, `{{event.state}}`, `{{event.data}}`, etc.
+
+**Tag column:**
+```json
+{ "type": "tag", "headerTemplate": "Region", "selectedTag": "region" }
+```
 
 ## Worked example — unresolved critical alerts with updates enabled
 
@@ -66,11 +74,11 @@ The `query` field is a JSON-encoded string filtering which events to show. Examp
     "sortField": "creationDate",
     "sortDirection": "desc",
     "columns": [
-      { "type": "level",       "header": "Level" },
-      { "type": "subject",     "header": "Alert" },
-      { "type": "state",       "header": "State" },
-      { "type": "creationDate","header": "When" },
-      { "type": "custom",      "header": "Details", "template": "{{event.data.deviceName}}" }
+      { "type": "level",       "headerTemplate": "Level" },
+      { "type": "subject",     "headerTemplate": "Alert" },
+      { "type": "state",       "headerTemplate": "State" },
+      { "type": "creationDate","headerTemplate": "When" },
+      { "type": "custom",      "headerTemplate": "Details", "rowTemplate": "{{event.data.deviceName}}" }
     ]
   }
 }
@@ -79,5 +87,6 @@ The `query` field is a JSON-encoded string filtering which events to show. Examp
 ## Idiom notes
 
 - `allowUpdates: true` enables viewers to acknowledge and resolve events directly from the dashboard — useful for operator panels.
-- Must include a `subject` or `id` column for the update UI to work.
 - `query` is a **JSON-encoded string** — build the filter object, then JSON.stringify it.
+- Column `headerTemplate` (not `header`) is the column header field name.
+- Column `rowTemplate` (not `template`) is the Handlebars cell content field.

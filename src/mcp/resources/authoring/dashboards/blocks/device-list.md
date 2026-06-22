@@ -2,7 +2,7 @@
 
 Displays a filterable, sortable table of devices with configurable columns. Use to build device management views, fleet overviews, or device selection UIs.
 
-See `workflow-guide.md` for block object shape, layout grid, and `applicationId` rules.
+See the parent `dashboard-guide.md` for the block object shape, layout grid, and `applicationId` rules.
 
 ## Block object shape
 
@@ -20,46 +20,63 @@ See `workflow-guide.md` for block object shape, layout grid, and `applicationId`
 
 | Field | Type | Default | Notes |
 |---|---|---|---|
-| `query` | string | — | Advanced device filter as a JSON-encoded string. If omitted, all devices are shown. |
-| `filterEnabled` | boolean | `false` | When `true`, a search input is shown so dashboard viewers can filter the list by name. |
-| `attributes` | string[] \| `"all"` \| `"none"` | `"all"` | Which device attributes to include in attribute-type columns. `"none"` excludes all. |
-| `columns` | object[] | — | **Required. At least one.** Column definitions. |
-| `sortField` | string | `"name"` | Default sort column. One of `name`, `id`, `creationDate`, `lastUpdated`. |
+| `query` | string | — | Advanced device filter as a JSON-encoded string. Shows all devices if omitted. |
+| `filter` | string \| object | — | Name filter (glob string) or object with `ids` (string[]), `tags` (object[]), and/or `searchParam` (string). |
+| `match` | `"unfiltered"` \| `"all"` \| `"any"` | — | How tag filter criteria are combined. |
+| `sortField` | `"id"` \| `"name"` \| `"creationDate"` \| `"lastUpdated"` | `"name"` | Default sort column. |
 | `sortDirection` | `"asc"` \| `"desc"` | `"asc"` | Default sort direction. |
+| `showPublicFilter` | boolean | `false` | When true, shows a search input so public viewers can filter the list. |
+| `excludeConnectionInfo` | boolean | `false` | When true, omits connection status data from the query. |
+| `additionalAttributes` | `null` \| string[] | — | Controls which device attribute values are returned. **Omit** (undefined) = return the most recent value for every attribute on each device (includes newly added attributes automatically). `["tempC", "humidity"]` = return only those named attributes. `null` or `[]` = return no attribute values. If you have `attribute`-type columns, set this to `undefined` or include each referenced attribute name — `null`/`[]` will leave those columns empty. |
+| `deviceLinkType` | `"default"` \| `"custom"` | `"default"` | Whether device-name links use the default Losant link or a custom URL. |
+| `deviceLinkUrl` | string | — | Custom URL for device-name links (when `deviceLinkType: "custom"`). Supports templates: `{{deviceId}}`, `{{deviceName}}`, etc. Max 2048 chars. |
+| `deviceLinkNewWindow` | boolean | `false` | When true, device-name links open in a new tab. |
+| `columns` | object[] | — | **Required. At least one.** Column definitions. |
 
 ### Column shapes
 
-**Device Name column:**
-```json
-{ "type": "deviceName", "header": "Device", "url": "/devices/{{deviceId}}" }
-```
-`url` is optional — when set, the device name becomes a link. Supports `{{deviceId}}`, `{{deviceName}}`, `{{ctx.<name>}}`, and `{{deviceTags.KEY}}`.
+Each column has `type`, `headerTemplate`, and `id` (optional). **`rowTemplate` is required for most column types** — without it the cell renders empty. The default value for data-bearing columns is `{{format value}}`, which uses Losant's `format` helper to render the cell value.
 
-**Device ID column:**
+**Name column** — `rowTemplate` not required; the block renders the device name (and optional link) automatically. **Requires `deviceLinkType: "default"` in the block config** — omitting it or setting a different value will break the name column rendering:
 ```json
-{ "type": "deviceId", "header": "ID" }
+{ "type": "name", "headerTemplate": "Device" }
 ```
 
-**Attribute column:**
+**Connection Status column** — `rowTemplate` not required; renders a built-in status badge:
 ```json
-{ "type": "attribute", "header": "Temperature", "attribute": "tempC" }
+{ "type": "connectionStatus", "headerTemplate": "Status" }
 ```
 
-**Device Tag column:**
+**Attribute column** — `source` is the attribute name; `rowTemplate` required:
 ```json
-{ "type": "deviceTag", "header": "Location", "tag": "location" }
+{ "type": "attribute", "source": "tempC", "headerTemplate": "Temperature", "rowTemplate": "{{format value}}" }
 ```
 
-**Connection Status column:**
+**Tag column** — `source` is the tag key; `rowTemplate` required:
 ```json
-{ "type": "deviceConnectionStatus", "header": "Status" }
+{ "type": "tag", "source": "location", "headerTemplate": "Location", "rowTemplate": "{{format value}}" }
 ```
 
-**Custom column (Handlebars template):**
+**Device ID column** — `rowTemplate` required:
 ```json
-{ "type": "custom", "header": "Firmware", "template": "{{deviceTags.firmware}}" }
+{ "type": "id", "headerTemplate": "ID", "rowTemplate": "{{format value}}" }
 ```
-Available in `template`: `{{deviceId}}`, `{{deviceName}}`, `{{deviceTags.KEY}}`, `{{attributes.NAME}}` (if included in `attributes`), `{{ctx.<name>}}`.
+
+**Creation Date column** — `rowTemplate` required:
+```json
+{ "type": "created", "headerTemplate": "Created", "rowTemplate": "{{format value}}" }
+```
+
+**Last Updated column** — `rowTemplate` required:
+```json
+{ "type": "updated", "headerTemplate": "Updated", "rowTemplate": "{{format value}}" }
+```
+
+**Custom column** — `rowTemplate` required; full device context available:
+```json
+{ "type": "custom", "headerTemplate": "Info", "rowTemplate": "{{deviceTags.firmware}} — {{attributes.tempC}}" }
+```
+Available in all `rowTemplate` values: `{{value}}` (the cell's data value), `{{deviceId}}`, `{{deviceName}}`, `{{deviceTags.KEY}}`, `{{attributes.ATTR}}` (requires `additionalAttributes`), `{{ctx.<name>}}`.
 
 ## Worked example — fleet list with status and location
 
@@ -70,16 +87,26 @@ Available in `template`: `{{deviceId}}`, `{{deviceName}}`, `{{deviceTags.KEY}}`,
   "title": "Truck Fleet",
   "startX": 0, "startY": 0, "width": 4, "height": 3,
   "config": {
-    "filterEnabled": true,
-    "attributes": ["odometer", "fuelLevel"],
     "sortField": "name",
+    "sortDirection": "asc",
+    "deviceLinkType": "default",
+    "additionalAttributes": ["odometer", "fuelLevel"],
     "columns": [
-      { "type": "deviceConnectionStatus", "header": "Status" },
-      { "type": "deviceName", "header": "Truck", "url": "/trucks/{{deviceId}}" },
-      { "type": "deviceTag", "header": "Location", "tag": "location" },
-      { "type": "attribute", "header": "Odometer", "attribute": "odometer" },
-      { "type": "attribute", "header": "Fuel %", "attribute": "fuelLevel" }
+      { "type": "connectionStatus", "headerTemplate": "Status" },
+      { "type": "name", "headerTemplate": "Truck" },
+      { "type": "tag", "source": "location", "headerTemplate": "Location", "rowTemplate": "{{format value}}" },
+      { "type": "attribute", "source": "odometer", "headerTemplate": "Odometer", "rowTemplate": "{{format value}}" },
+      { "type": "attribute", "source": "fuelLevel", "headerTemplate": "Fuel %", "rowTemplate": "{{format value}}" }
     ]
   }
 }
 ```
+
+## Idiom notes
+
+- Use `filter` (string glob) for simple name-based filtering, or `query` (JSON-encoded advanced query) for tag/attribute-based filtering.
+- `source` on `attribute` and `tag` columns is the attribute name or tag key respectively.
+- Always include `rowTemplate: "{{format value}}"` on data-bearing columns (`attribute`, `tag`, `id`, `created`, `updated`). Omitting it leaves the cell empty. `name` and `connectionStatus` render automatically without a template.
+- `additionalAttributes` controls which device attribute values are fetched. Omitting it (undefined) returns all attributes — safe default, but loads everything. Pass a named list like `["odometer", "fuelLevel"]` to fetch only what your `attribute` columns need. Never pass `null` or `[]` when you have `attribute`-type columns — that suppresses all attribute data and leaves those columns empty.
+- **Always set `deviceLinkType: "default"` when using a `name` column.** Without it the name column will not render correctly.
+- Device link behavior is controlled at the config level (`deviceLinkType`, `deviceLinkUrl`, `deviceLinkNewWindow`), not per-column.

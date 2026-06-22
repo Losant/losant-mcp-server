@@ -1,8 +1,8 @@
 # Device Count Block (`blockType: "device-count"`)
 
-Displays counts of devices matching one or more queries, formatted with a Handlebars template. Use for fleet statistics like "online devices", "devices with low battery", or combined summaries.
+Displays counts of devices matching one or more named queries, formatted with a Handlebars template. Use for fleet statistics like "online devices", "devices with low battery", or combined summaries.
 
-See `workflow-guide.md` for block object shape, layout grid, and `applicationId` rules.
+See the parent `dashboard-guide.md` for the block object shape, layout grid, and `applicationId` rules.
 
 ## Block object shape
 
@@ -18,43 +18,48 @@ See `workflow-guide.md` for block object shape, layout grid, and `applicationId`
 
 ## Config
 
-| Field | Type | Notes |
-|---|---|---|
-| `queries` | object[] | **Required. Up to 100.** Each query returns a count accessible as `{{value-i.count}}` (0-indexed). |
-| `displayTemplate` | string | **Required.** Handlebars template for the displayed value. |
-| `conditionalColors` | object[] | Optional conditions for block background color. |
+| Field | Notes |
+|---|---|
+| `segments` | **Required. At least 1, up to 100.** Named device count queries. |
+| `conditions` | Optional conditional display rules. |
+| `defaultCondition` | **Required.** Display properties when no condition matches (or when `conditions` is absent). |
 
-### Query shape
+### `segments`
+
+Array of named count queries. Each segment's count is available in conditions and the `defaultCondition.value` template via `{{segmentId.count}}`.
 
 ```json
 {
-  "query": "{\"tags\":{\"$tagKey\":\"status\",\"$tagValue\":\"online\"}}",
-  "label": "Online"
+  "id": "total",
+  "query": "{}"
 }
 ```
 
-`query` is an advanced device query as a **JSON-encoded string**. The result count is accessed as `{{value-i.count}}` in `displayTemplate` (i = 0-based index of the query in the array).
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `id` | string | yes | Name used to reference this count (e.g., `total`). Max 48 chars. |
+| `query` | string | yes | Advanced device query as a **JSON-encoded string**. Use `"{}"` to count all devices. |
 
-`query` can also be `{}` (as a JSON string: `"{}"`) to count all devices.
+### `conditions`
 
-### displayTemplate
+Optional ordered list of conditional display overrides — same `condition` array used by gauge and indicator blocks. Each entry:
 
-Handlebars template. Available variables: `{{value-0.count}}`, `{{value-1.count}}`, etc. (one per query).
+| Field | Type | Notes |
+|---|---|---|
+| `condition` | string | Handlebars expression. Available: `{{segmentId.count}}` for each segment. Truthy = this condition applies. |
+| `color` | string | Block background CSS color. |
+| `label` | string | Display label (supports Markdown). |
+| `id` | string | Optional identifier. |
 
-```json
-"displayTemplate": "{{value-0.count}} / {{value-1.count}} online"
-```
+### `defaultCondition`
 
-Supports full Handlebars and Markdown. Large values often look good with just `{{value-0.count}}`.
+**Required.** Applied when no `conditions` entry is truthy (or `conditions` is empty).
 
-### Conditional colors
-
-```json
-"conditionalColors": [
-  { "expression": "{{value-0.count}} < 5", "color": "#E74C3C" },
-  { "expression": "{{value-0.count}} >= 5", "color": "#27AE60" }
-]
-```
+| Field | Type | Required | Notes |
+|---|---|---|---|
+| `color` | string | yes | Block background CSS color. |
+| `label` | string | — | Optional label (supports Markdown). |
+| `value` | string | — | Handlebars template for the displayed value. Use `{{segmentId.count}}` to show counts. |
 
 ## Worked example — online vs. total count
 
@@ -65,19 +70,24 @@ Supports full Handlebars and Markdown. Large values often look good with just `{
   "title": "Fleet Status",
   "startX": 0, "startY": 0, "width": 2, "height": 1,
   "config": {
-    "queries": [
-      { "query": "{\"connectionStatus\":{\"$eq\":\"connected\"}}", "label": "Online" },
-      { "query": "{}", "label": "Total" }
+    "segments": [
+      { "id": "online", "query": "{\"connectionStatus\":{\"$eq\":\"connected\"}}" },
+      { "id": "total", "query": "{}" }
     ],
-    "displayTemplate": "**{{value-0.count}}** / {{value-1.count}} online",
-    "conditionalColors": [
-      { "expression": "{{value-0.count}} < 3", "color": "#E74C3C" }
-    ]
+    "conditions": [
+      { "condition": "{{online.count}} < 3", "color": "#E74C3C", "label": "Low online count" }
+    ],
+    "defaultCondition": {
+      "color": "#27AE60",
+      "value": "**{{online.count}}** / {{total.count}} online"
+    }
   }
 }
 ```
 
 ## Idiom notes
 
-- `query` in each query object is a **JSON-encoded string** — build the query object and JSON.stringify it.
-- Use `{{ctx.<name>}}` inside `query` strings and `displayTemplate` to parameterize by context variable.
+- `query` in each segment is a **JSON-encoded string** — build the query object and JSON.stringify it.
+- Segment `id` is the key used in condition and value templates: `{{segmentId.count}}`.
+- Use `query: "{}"` to count all devices in the application.
+- Use `{{ctx.<name>}}` inside query strings and templates to parameterize by context variable.

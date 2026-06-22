@@ -2,7 +2,7 @@
 
 Displays current (or historical) attribute values from one or more devices in a configurable table. Use when you want a grid of devices × attributes, or want to compare attribute values across a fleet.
 
-See `workflow-guide.md` for block object shape, layout grid, and `applicationId` rules.
+See the parent `dashboard-guide.md` for the block object shape, layout grid, and `applicationId` rules.
 
 ## Block object shape
 
@@ -20,44 +20,47 @@ See `workflow-guide.md` for block object shape, layout grid, and `applicationId`
 
 | Field | Type | Default | Notes |
 |---|---|---|---|
-| `duration` | integer (ms) \| `"{{dashboard.duration}}"` | — | Time window. Use `"last-data-point"` (special string) to show only the most recent data point per device. |
-| `deviceIds` | string[] | — | Device IDs to display. |
+| `deviceIds` | string[] | — | Device IDs to display. Supports context templates. |
 | `deviceTags` | object[] | — | Tag-based device selection. |
-| `query` | string | — | Advanced device query as JSON-encoded string. |
-| `columns` | object[] | — | **Required. At least one attribute column.** |
-| `sortField` | string | `"name"` | Default sort column. |
-| `sortDirection` | `"asc"` \| `"desc"` | `"asc"` | Default sort direction. |
-| `downloadCsv` | boolean | `false` | When `true`, a CSV download button is shown. |
+| `query` | string | — | Advanced device query as a JSON-encoded string. |
+| `duration` | integer (ms) \| `"{{dashboard.duration}}"` | — | Time window. Use `0` to show only the most recent data point per device. |
+| `sortIndex` | integer (0–100) | `0` | Index of the column to sort by (0-based, matching `columns` array order). |
+| `sortDirection` | integer (-1, 0, 1) | `1` | Sort direction: `1` = ascending, `-1` = descending, `0` = unsorted. |
+| `columns` | object[] | — | **Required. At least one attribute column.** See column types below. |
+| `attributes` | string[] | — | **Required when using `attribute`-type columns.** List every attribute name referenced by your columns (e.g. `["tempC", "humidity"]`). Must match the `attribute` field on each attribute column exactly. |
 
-### Column shapes
+### Column types
 
-Every column has a `header` (template string) and a `type`. At least one `attribute` column is required.
+Every column has a `headerTemplate` (string template) and a `type`. **`rowTemplate` is required for most column types** — without it the cell renders empty. The standard default is `{{format value}}`.
 
-**Attribute column:**
+**Attribute column** — shows the value of a device attribute; `rowTemplate` required:
 ```json
-{ "type": "attribute", "header": "Temperature", "attribute": "tempC" }
-```
-In the cell template field: `{{value}}` is the attribute value, `{{time}}` is the timestamp, `{{deviceId}}`, `{{deviceName}}`, `{{deviceTags.KEY}}`.
-
-**Timestamp column:**
-```json
-{ "type": "timestamp", "header": "Last Updated" }
+{ "type": "attribute", "headerTemplate": "Temperature", "attribute": "tempC", "rowTemplate": "{{format value}}" }
 ```
 
-**Device Name column:**
+**Timestamp column** — `rowTemplate` required:
 ```json
-{ "type": "deviceName", "header": "Device" }
+{ "type": "timestamp", "headerTemplate": "Last Updated", "rowTemplate": "{{format value}}" }
 ```
 
-**Device ID column:**
+**Device Name column** — `rowTemplate` required:
 ```json
-{ "type": "deviceId", "header": "ID" }
+{ "type": "deviceName", "headerTemplate": "Device", "rowTemplate": "{{format value}}" }
 ```
 
-**Device Tags column:**
+**Device ID column** — `rowTemplate` required:
 ```json
-{ "type": "deviceTags", "header": "Tags" }
+{ "type": "deviceId", "headerTemplate": "ID", "rowTemplate": "{{format value}}" }
 ```
+
+**Device Tags column** — `rowTemplate` required:
+```json
+{ "type": "deviceTags", "headerTemplate": "Tags", "rowTemplate": "{{format value}}" }
+```
+
+All columns also accept `id` (string, optional) — a column identifier, max 48 chars.
+
+Available in `rowTemplate`: `{{value}}` (the cell's data value), `{{time}}` (state timestamp), `{{deviceId}}`, `{{deviceName}}`, `{{deviceTags.KEY}}`.
 
 ## Worked example — temperature and humidity across a fleet
 
@@ -68,16 +71,17 @@ In the cell template field: `{{value}}` is the attribute value, `{{time}}` is th
   "title": "Current Readings",
   "startX": 0, "startY": 0, "width": 4, "height": 3,
   "config": {
-    "duration": "last-data-point",
+    "duration": 0,
     "deviceTags": [{ "key": "type", "value": "sensor" }],
-    "sortField": "name",
-    "sortDirection": "asc",
+    "attributes": ["tempC", "humidity"],
+    "sortIndex": 0,
+    "sortDirection": 1,
     "columns": [
-      { "type": "deviceName",  "header": "Sensor" },
-      { "type": "deviceTags",  "header": "Location" },
-      { "type": "attribute",   "header": "Temp (°C)",  "attribute": "tempC" },
-      { "type": "attribute",   "header": "Humidity %", "attribute": "humidity" },
-      { "type": "timestamp",   "header": "Updated" }
+      { "type": "deviceName",  "headerTemplate": "Sensor",      "rowTemplate": "{{format value}}" },
+      { "type": "deviceTags",  "headerTemplate": "Location",    "rowTemplate": "{{format value}}" },
+      { "type": "attribute",   "headerTemplate": "Temp (°C)",   "attribute": "tempC",     "rowTemplate": "{{format value}}" },
+      { "type": "attribute",   "headerTemplate": "Humidity %",  "attribute": "humidity",  "rowTemplate": "{{format value}}" },
+      { "type": "timestamp",   "headerTemplate": "Updated",     "rowTemplate": "{{format value}}" }
     ]
   }
 }
@@ -85,6 +89,9 @@ In the cell template field: `{{value}}` is the attribute value, `{{time}}` is th
 
 ## Idiom notes
 
-- Use `duration: "last-data-point"` for "current state" displays — shows the single most recent reading per device.
-- `duration: "{{dashboard.duration}}"` makes the block respect the dashboard-level time range selector.
-- Block limits: max 1,000 devices, 25,000 unique timestamps per device.
+- Always include `rowTemplate: "{{format value}}"` on every column — omitting it leaves the cell empty.
+- Set `attributes` to the exact list of attribute names used in your `attribute`-type columns (e.g. `["tempC", "humidity"]`). This must match the `attribute` field on each column.
+- Use `duration: 0` for "current state" displays — shows the single most recent reading per device.
+- Use `duration: "{{dashboard.duration}}"` to respect the dashboard-level time range selector.
+- `sortIndex` is the 0-based index of the column in the `columns` array to sort by.
+- `sortDirection: 1` = ascending, `-1` = descending (integer, not string).

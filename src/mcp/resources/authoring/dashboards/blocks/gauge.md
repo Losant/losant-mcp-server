@@ -2,7 +2,7 @@
 
 Displays a single aggregated value from a device attribute — either as a plain number or as a visual gauge (dial, battery, thermometer, tank, needle). The canonical block for "show me the current value of this sensor."
 
-See `workflow-guide.md` for the block object shape, layout grid, and `applicationId` rules.
+See the parent `dashboard-guide.md` for the block object shape, layout grid, and `applicationId` rules.
 
 ## Block object shape
 
@@ -20,29 +20,46 @@ See `workflow-guide.md` for the block object shape, layout grid, and `applicatio
 
 | Field | Type | Default | Notes |
 |---|---|---|---|
-| `dataType` | `"live"` \| `"gauge"` | `"gauge"` | `"live"` = live stream (updates in real time as device reports); `"gauge"` = historical (aggregated over duration). |
+| `realTime` | boolean | `false` | When `true`, streams live device readings. When `false`, queries historical data over `duration`. |
 | `duration` | integer (ms) | — | Historical only. Time window to aggregate over. |
-| `deviceId` | string | — | Device ID (or `{{ctx.deviceId}}`). |
-| `deviceTags` | object[] | — | Tag-based device selection. |
-| `query` | string | — | Advanced device query as a JSON-encoded string. |
-| `attribute` | string | — | **Required.** Device attribute to display. |
-| `aggregation` | enum | `"MEAN"` | How to aggregate readings in the time window. One of `MEAN`, `MAX`, `MIN`, `SUM`, `COUNT`, `FIRST`, `LAST`, `MEDIAN`, `STDDEV`. |
 | `gaugeType` | `"number"` \| `"dial"` \| `"battery"` \| `"thermometer"` \| `"tank"` \| `"needle"` | `"number"` | Visual style. |
-| `label` | string | — | Text below the value. |
-| `min` | number | — | Minimum of the visual scale (required for most gauge types). |
-| `max` | number | — | Maximum of the visual scale. |
-| `precision` | integer | `4` | Number of significant digits to display. |
-| `displayColor` | string | — | CSS color for the displayed value. |
-| `expression` | string | — | Optional Handlebars expression to transform the value before display. Available: `{{value}}`, `{{time}}`, `{{ctx.<name>}}`. |
+| `gaugeMin` | number \| string | — | Minimum of the visual scale. Required for `dial`, `thermometer`, `tank`, `needle`. |
+| `gaugeMax` | number \| string | — | Maximum of the visual scale. Required for the same gauge types. |
+| `precision` | number \| string | **`4`** | **Required.** Number of digits to display. Always include this — omitting it leaves the value unformatted. |
+| `precisionType` | `"floating"` \| `"significant"` | **`"significant"`** | **Required.** Controls whether `precision` counts significant figures (`"significant"`) or decimal places (`"floating"`). Always include this alongside `precision`. |
+| `displayAsPercentage` | boolean | `false` | Show the value as a percentage of the `gaugeMin`–`gaugeMax` range. |
+| `segment` | object | — | **Required.** Single device data query (see Segment below). |
+| `conditions` | object[] | — | Ordered list of conditional display overrides. First truthy `condition` expression wins. |
 
-### Conditional colors
+### `segment` — device data query
 
-`conditionalColors`: array of `{ expression, color }` — evaluated top-to-bottom. The first truthy expression's color wins. Available in expressions: `{{value}}`, `{{percent}}`, `{{ctx.<name>}}`.
+The gauge block uses a single `segment` object (not an array):
+
+| Field | Type | Notes |
+|---|---|---|
+| `deviceIds` | string[] | Device IDs to query. Supports context templates (`{{ctx.deviceId}}`). |
+| `deviceTags` | object[] | Tag-based device selection. |
+| `query` | string | Advanced device query as a JSON-encoded string. |
+| `attribute` | string | Device attribute to display. |
+| `aggregation` | enum | `MEAN`, `MAX`, `MIN`, `SUM`, `COUNT`, `FIRST`, `LAST`, `MEDIAN`, `STDDEV`. Use `LAST` for current state. |
+| `label` | string | Optional display label. |
+| `expression` | string | Optional Handlebars transform applied to the value before display. Available: `{{value}}`, `{{time}}`, `{{ctx.<name>}}`. |
+
+### `conditions` — conditional display
+
+Array of condition objects, evaluated top-to-bottom. The first truthy condition's properties override the display:
+
+| Field | Type | Notes |
+|---|---|---|
+| `condition` | string | Handlebars expression (truthy = this condition applies). Available: `{{value}}`, `{{time}}`, `{{ctx.<name>}}`. |
+| `color` | string | CSS color to apply when this condition is truthy. |
+| `label` | string | Optional label override. |
+| `id` | string | Optional identifier. |
 
 ```json
-"conditionalColors": [
-  { "expression": "{{value}} > 90", "color": "#E74C3C" },
-  { "expression": "{{value}} > 70", "color": "#F39C12" }
+"conditions": [
+  { "condition": "{{value}} > 90", "color": "#E74C3C" },
+  { "condition": "{{value}} > 70", "color": "#F39C12" }
 ]
 ```
 
@@ -55,18 +72,21 @@ See `workflow-guide.md` for the block object shape, layout grid, and `applicatio
   "title": "Engine Temp",
   "startX": 0, "startY": 0, "width": 2, "height": 2,
   "config": {
-    "dataType": "gauge",
+    "realTime": false,
     "duration": 3600000,
-    "deviceId": "{{ctx.deviceId}}",
-    "attribute": "engineTempC",
-    "aggregation": "LAST",
+    "segment": {
+      "deviceIds": ["{{ctx.deviceId}}"],
+      "attribute": "engineTempC",
+      "aggregation": "LAST"
+    },
     "gaugeType": "thermometer",
-    "label": "°C",
-    "min": 0,
-    "max": 120,
-    "conditionalColors": [
-      { "expression": "{{value}} > 95", "color": "#E74C3C" },
-      { "expression": "{{value}} > 75", "color": "#F39C12" }
+    "gaugeMin": 0,
+    "gaugeMax": 120,
+    "precision": 4,
+    "precisionType": "significant",
+    "conditions": [
+      { "condition": "{{value}} > 95", "color": "#E74C3C" },
+      { "condition": "{{value}} > 75", "color": "#F39C12" }
     ]
   }
 }
@@ -74,6 +94,8 @@ See `workflow-guide.md` for the block object shape, layout grid, and `applicatio
 
 ## Idiom notes
 
+- Always include `precision: 4` and `precisionType: "significant"` (the defaults). Omitting them leaves the displayed value unformatted.
 - Use `aggregation: "LAST"` to show the most recent value (equivalent to "current state").
-- Use `dataType: "live"` only when you need real-time streaming — it consumes more resources.
-- For the `thermometer`, `tank`, and `needle` styles, `min` and `max` are required — the block won't render correctly without them.
+- Use `realTime: true` only when you need real-time streaming — it consumes more resources.
+- For `thermometer`, `tank`, and `needle` styles, `gaugeMin` and `gaugeMax` are required — the block won't render correctly without them.
+- The `segment` field is a single object, not an array — unlike most other data blocks.

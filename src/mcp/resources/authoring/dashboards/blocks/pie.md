@@ -2,7 +2,7 @@
 
 Displays proportional data from one or more device attributes as pie slices. Use to show relative distribution (e.g., device counts by state, power contribution by source).
 
-See `workflow-guide.md` for block object shape, layout grid, and `applicationId` rules.
+See the parent `dashboard-guide.md` for block object shape, layout grid, and `applicationId` rules.
 
 ## Block object shape
 
@@ -20,7 +20,7 @@ See `workflow-guide.md` for block object shape, layout grid, and `applicationId`
 
 | Field | Type | Default | Notes |
 |---|---|---|---|
-| `dataType` | `"live"` \| `"gauge"` | `"gauge"` | Live stream or historical aggregation. |
+| `realTime` | boolean | `false` | When `true`, live-streams device readings. When `false`, queries historical data. |
 | `duration` | integer (ms) | — | Historical only. Time window. |
 | `valueFormat` | string | — | D3 format string for the absolute value (e.g. `".1f"`, `",.0f"`). |
 | `percentFormat` | string | — | D3 format string for the percentage (e.g. `".1%"`). |
@@ -50,7 +50,7 @@ Same device-selection fields as the bar block: `deviceIds`, `deviceTags`, `query
   "title": "Energy Mix",
   "startX": 0, "startY": 0, "width": 2, "height": 2,
   "config": {
-    "dataType": "gauge",
+    "realTime": false,
     "duration": 86400000,
     "percentFormat": ".1%",
     "segments": [

@@ -2,7 +2,7 @@
 
 Displays rows from a Losant application data table with optional filtering, sorting, and pagination. Use to show structured tabular data stored in a Losant data table.
 
-See `workflow-guide.md` for block object shape, layout grid, and `applicationId` rules.
+See the parent `dashboard-guide.md` for the block object shape, layout grid, and `applicationId` rules.
 
 ## Block object shape
 
@@ -20,24 +20,27 @@ See `workflow-guide.md` for block object shape, layout grid, and `applicationId`
 
 | Field | Type | Default | Notes |
 |---|---|---|---|
-| `dataTableIdTemplate` | string | — | **Required.** Data table ID (or template). |
-| `queryTemplate` | string | — | Optional filter query as a JSON-encoded string template. Build JSON then JSON.stringify. |
-| `sortColumnTemplate` | string | — | Column to sort by (template). |
-| `sortDirectionTemplate` | `"asc"` \| `"desc"` | `"asc"` | Sort direction (template). |
-| `offsetTemplate` | string | `"0"` | Pagination offset (template). |
-| `limitTemplate` | string | `"10"` | Rows per page (template, max 200). |
-| `columns` | object[] | — | Column definitions. If omitted, all columns display. |
+| `dataTableId` | string | — | **Required.** The 24-char hex ID of the data table to display. |
+| `query` | string | — | Row filter query as a JSON-encoded string. Same format as the Table: Get Rows node. |
+| `queryMode` | `"$or"` \| `"$and"` \| `"advanced"` | — | How filter conditions in `query` are combined. |
+| `defaultSortColumn` | string | — | Column to sort by. Max 255 chars. |
+| `defaultSortDirection` | `"asc"` \| `"desc"` | — | Sort direction. Supports templates. |
+| `defaultLimit` | string | — | Max rows to display. Supports templates. |
+| `defaultOffset` | string | — | Row offset for pagination. Supports templates. |
+| `columns` | object[] | — | Column definitions. If omitted, all data table columns are shown. |
 
-### Column shape
+### Column shapes
 
-```json
-{
-  "header": "Sensor Name",
-  "template": "{{row.sensorName}}"
-}
-```
+Each column in `columns` has:
 
-`template` is a Handlebars template with access to the full `row` object. Use `{{row.columnName}}` to display column values. Supports Markdown.
+| Field | Type | Notes |
+|---|---|---|
+| `type` | string \| `"$custom"` | Column key from the data table (e.g., `"Name"`, `"temperature"`), or `"$custom"` for a Handlebars-rendered column. |
+| `headerTemplate` | string | Column header text (template). Max 1024 chars. |
+| `rowTemplate` | string | Handlebars template for cell content. Available: `{{row.columnName}}` for each data table column. Supports Markdown. |
+| `id` | string | Optional column identifier. Max 48 chars. |
+
+To show a data table column without a custom template, set `type` to the column name and omit `rowTemplate`.
 
 ## Worked example — filtered data table
 
@@ -48,16 +51,17 @@ See `workflow-guide.md` for block object shape, layout grid, and `applicationId`
   "title": "Recent Alerts",
   "startX": 0, "startY": 0, "width": 4, "height": 3,
   "config": {
-    "dataTableIdTemplate": "5f1c2d3e4f5a6b7c8d9e0f1a",
-    "queryTemplate": "{\"severity\":{\"$eq\":\"high\"}}",
-    "sortColumnTemplate": "timestamp",
-    "sortDirectionTemplate": "desc",
-    "limitTemplate": "20",
+    "dataTableId": "5f1c2d3e4f5a6b7c8d9e0f1a",
+    "query": "{\"severity\":{\"$eq\":\"high\"}}",
+    "queryMode": "$and",
+    "defaultSortColumn": "timestamp",
+    "defaultSortDirection": "desc",
+    "defaultLimit": "20",
     "columns": [
-      { "header": "Time",     "template": "{{row.timestamp}}" },
-      { "header": "Device",   "template": "{{row.deviceName}}" },
-      { "header": "Severity", "template": "{{row.severity}}" },
-      { "header": "Message",  "template": "{{row.message}}" }
+      { "type": "timestamp",  "headerTemplate": "Time" },
+      { "type": "deviceName", "headerTemplate": "Device" },
+      { "type": "severity",   "headerTemplate": "Severity" },
+      { "type": "$custom",    "headerTemplate": "Summary", "rowTemplate": "{{row.severity}}: {{row.message}}" }
     ]
   }
 }
@@ -65,6 +69,7 @@ See `workflow-guide.md` for block object shape, layout grid, and `applicationId`
 
 ## Idiom notes
 
-- `queryTemplate` is a **JSON-encoded string** — build the query object in code, then `JSON.stringify` it.
-- Leave `columns` empty to auto-display all columns.
-- `{{ctx.<name>}}` works inside all template fields — use it to filter by a context-variable device or attribute.
+- `query` is a **JSON-encoded string** — build the query object in code, then `JSON.stringify` it.
+- Omit `columns` to auto-display all data table columns.
+- `{{ctx.<name>}}` works inside `defaultSortColumn`, `defaultLimit`, `defaultOffset`, and filter templates.
+- `type: "$custom"` is for columns where you provide a full `rowTemplate`. For standard columns, set `type` to the column name string.

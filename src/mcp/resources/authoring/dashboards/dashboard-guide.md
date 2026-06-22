@@ -162,8 +162,6 @@ See `reference/context-configuration.md` for the full variable-type details and 
 
 ## Block catalog
 
-> _Demo subset — production version covers all 24 block types._
-
 | `blockType` | Human-facing name | Needs app? | Spec |
 |---|---|---|---|
 | `application-list` | Application List | no | `blocks/simple.md#application-list` |
@@ -185,10 +183,10 @@ See `reference/context-configuration.md` for the full variable-type details and 
 | `image-overlay` | Image Overlay | yes | `blocks/image-overlay.md` |
 | `indicator` | Indicator | yes | `blocks/indicator.md` |
 | `input` | Input Controls | yes | `blocks/input.md` |
-| `map` | Map | yes | `blocks/map.md` |
+| `map` | GPS History | yes | `blocks/map.md` |
 | `open-event-indicator` | Open Event Indicator | yes | `blocks/simple.md#open-event-indicator` |
 | `pie` | Pie Chart | yes | `blocks/pie.md` |
-| `position-chart` | GPS History | yes | `blocks/position-chart.md` |
+| `position-chart` | Position Chart | yes | `blocks/position-chart.md` |
 | `section-header` | Section Header | yes\* | `blocks/simple.md#section-header` |
 | `workflow-list` | Workflow List | yes | `blocks/simple.md#workflow-list` |
 
@@ -222,13 +220,3 @@ The **Needs app?** column says whether a block's per-block `applicationId` is re
 - `reference/templates.md` — Losant's Handlebars dialect, the helpers available in block templates and conditions (`format`, expressions, etc.), and the dashboard render context (`{{ctx.x}}`, `{{dashboard.duration}}`, `{{value-i}}`, `{{time-i}}`).
 - `reference/device-queries.md` — the device-query JSON shape used in `deviceIds` / `deviceTags` / `query` selectors on many blocks.
 - `reference/aggregations.md` — the aggregation enum (`MEAN`, `MAX`, `MIN`, `COUNT`, `SUM`, `MEDIAN`, `STDDEV`, `FIRST`, `LAST`, `NONE`) used by time-series and gauge-style blocks.
-
-## Worked examples
-
-See `examples/` for end-to-end dashboard bodies covering multi-block patterns:
-
-- `examples/single-device-overview.md` — application-owned, section header + graph + indicator + gauge for one device
-- `examples/parameterized-by-context.md` — same layout, driven by a `deviceId` context variable so one dashboard works for the whole fleet
-- `examples/org-multi-application.md` — organization-owned, blocks pulling from multiple applications
-- `examples/public-status-page.md` — public dashboard, password-free, intended for external embedding
-- `examples/email-report-config.md` — adding `reportConfigs` for a recurring PDF emailed to a list

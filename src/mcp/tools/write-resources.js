@@ -162,7 +162,7 @@ export default {
             response = await losantClient[resourceType === 'applicationDashboard' ? 'dashboard' : resourceType].patch({
               ...requestParams,
               [getResourceFieldId(resourceType)]: resourceId,
-              [resourceType]: body
+              [resourceType === 'applicationDashboard' ? 'dashboard' : resourceType]: body
             });
           }
         }

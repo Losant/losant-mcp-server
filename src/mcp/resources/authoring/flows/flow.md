@@ -176,7 +176,7 @@ Every node object has the same outer shape:
 - `type` is the PascalCase class name (`HttpNode`, `MutateNode`, `ConditionalNode`, etc.).
 - `id` is optional on create — the server assigns one if omitted. **You must supply `id` if anything else (a trigger, another node) wants to reference this node in its `outputIds`.**
 - `config` is type-specific. Look up the per-node detail file via the catalog.
-- `meta` is required: at minimum `category`, `name`, `label`, `x`, `y`. `category` and `name` come from each node's definition. `x` / `y` are canvas coordinates. `label` is required — default to the titlized form of `name` (e.g. `"http"` → `"HTTP"`, `"mutate"` → `"Mutate"`). `meta.groupId` is used only for nodes inside a loop (see Loops below). There are several triggers and nodes that also require additional `meta` fields — see their detail docs.
+- `meta` is required: at minimum `category`, `name`, `label`, `x`, `y`, `description`. `category` and `name` come from each node's definition. `x` / `y` are canvas coordinates. `label` is required — default to the titlized form of `name` (e.g. `"http"` → `"HTTP"`, `"mutate"` → `"Mutate"`). `description` is optional - but should default to an empty string, this field should describe what the nodes purpose. `meta.groupId` is used only for nodes inside a loop (see Loops below). There are several triggers and nodes that also require additional `meta` fields — see their detail docs.
 - `outputIds` controls which nodes fire next. Shape rules in the next section.
 
 ## Canvas layout — `meta.x` and `meta.y`
