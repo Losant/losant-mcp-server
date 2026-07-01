@@ -77,7 +77,7 @@ POST the \`.ipynb\` content to \`upload.url\` as multipart/form-data, including 
 
 Use \`operation=updateOne\` to change the notebook's name, imageVersion, inputs, or outputs. The response again includes a fresh \`upload\` object to re-upload the \`.ipynb\` file if needed.
 
-## Common LLM Workflows
+## Common LLM Procedures
 
 ### Create a notebook with device data input
 1. Identify which devices and attributes to include

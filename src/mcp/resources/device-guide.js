@@ -64,7 +64,7 @@ When a user wants to templatize an existing device:
 1. Get the device with \`losant_query\` \`operation=get\`
 2. Create a recipe using that device's attributes, tags, and deviceClass as the body
 
-## Common LLM Workflows
+## Common LLM Procedures
 
 ### Create a single device
 1. Confirm \`deviceClass\` (default: \`standalone\`)

@@ -82,7 +82,7 @@ losant_write:
 \`\`\`
 No upload step needed — directories are pure metadata.
 
-## Common LLM Workflows
+## Common LLM Procedures
 
 ### Upload a new file
 1. Call \`losant_write\` \`operation=createOne\` with \`name\`, \`type: "file"\`, \`contentType\`, and \`fileSize\`

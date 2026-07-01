@@ -47,7 +47,6 @@ export const WRITABLE_RESOURCE_TYPES = [
   'file',
   'privateFile',
   'notebook',
-  'applicationDashboard',
   'experienceDomain',
   'experienceEndpoint',
   'experienceGroup',
@@ -57,20 +56,15 @@ export const WRITABLE_RESOURCE_TYPES = [
   'experienceView',
   'application',
   'applicationReadme'
+  // 'applicationDashboard',
   // 'flow', will be added in another branch
   // 'flowVersion', will be added in another branch
 ];
-
-export const ALLOW_BULK_CREATE_TYPES = new Set([
-  'deviceRecipe',
-  'dataTableRow'
-]);
 
 export const ALLOW_UPDATE_MANY_TYPES = new Set(['event']);
 // events created by devices/workflows, not the LLM
 // applications and their readmes are not created by the MCP
 export const NO_CREATE_TYPES = new Set(['event', 'application', 'applicationReadme']);
-export const NO_UPDATE_TYPES = new Set(['flowVersion']); // versions are immutable after creation
 
 // require.resolve('losant-rest') returns .../losant-rest/lib/index.js
 // Go up one directory from lib/ to get the package root
@@ -100,7 +94,7 @@ export const SCHEMA_FILE_ALIASES = {
   privateFilePost: 'filePost.json',
   privateFilePatch: 'filePatch.json',
   // applicationDashboard has no separate Patch schema
-  applicationDashboardPatch: 'applicationDashboardPost.json'
+  applicationDashboardPatch: 'dashboardPatch.json'
 };
 export const SCHEMA_FILES = readdirSync(SCHEMAS_PATH).filter((f) => {
   if (!f.endsWith('.json')) { return false; }

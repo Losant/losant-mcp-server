@@ -79,7 +79,7 @@ losant_query:
 
 See \`losant://guides/advanced-queries\` for query syntax and \`losant://schemas/dataTableRowQuery\` for the row query schema.
 
-## Common LLM Workflows
+## Common LLM Procedures
 
 ### Create a data table with columns
 1. Confirm the column names, types, and constraints with the user

@@ -8,8 +8,6 @@ import integrationGuide from './integration-guide.js';
 import dataTableGuide from './data-table-guide.js';
 import resourceJobGuide from './resource-job-guide.js';
 import credentialGuide from './credential-guide.js';
-import flowGuide from './flow-guide.js';
-import dashboardGuide from './dashboard-guide.js';
 import fileGuide from './file-guide.js';
 import notebookGuide from './notebook-guide.js';
 import experienceGuide from './experience-guide.js';
@@ -25,11 +23,9 @@ const GUIDES_TO_REGISTER = [
   advancedQueryGuide,
   queryToolGuide,
   credentialGuide,
-  dashboardGuide,
   dataTableGuide,
   deviceGuide,
   experienceGuide,
-  flowGuide,
   fileGuide,
   integrationGuide,
   notebookGuide,

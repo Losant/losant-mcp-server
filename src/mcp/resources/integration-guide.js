@@ -117,7 +117,7 @@ Requires a stored GCP service account credential. Do not embed credentials inlin
 - **\`credentialName\`** (string): name of a stored Losant credential resource. Use instead of embedding secrets inline where supported.
 - **\`topics\`** (array of strings): used by \`mqtt\` and \`googlePubSub\` to specify which topics/subscriptions to consume.
 
-## Common LLM Workflows
+## Common LLM Procedures
 
 ### Check if a credential exists before using credentialName
 1. Query \`losant_query\` with \`resourceType=credential\` to list available credentials

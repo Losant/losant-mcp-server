@@ -2,7 +2,7 @@ const content = `# Resource Jobs Guide
 
 A resource job defines a **"for each matching resource, run a workflow iteration"** operation. It is not a one-shot API call — it is a reusable job definition that, when triggered, iterates over a filtered set of resources and fires a workflow once per resource.
 
-**Creating a resource job only defines its configuration.** To run the job, it must be triggered separately (via the Losant UI, a manual trigger, or a Workflow trigger node).
+**Creating a resource job only defines its configuration.** To run the job, it must be triggered separately (via the Losant API or through, or by a workflow running a ResourceJobExecuteNode node).
 
 ## How It Works
 
@@ -72,7 +72,7 @@ A JSON string that is passed as context to each workflow iteration. Use this to 
 }
 \`\`\`
 
-## Common LLM Workflows
+## Common LLM Procedures
 
 ### Create a resource job
 1. Confirm the target \`resourceType\` and the filter (what subset of resources to iterate)
