@@ -1,7 +1,7 @@
 import { buildReferenceSection } from './helpers.js';
 const content = `# Credentials Guide
 
-Credentials store reusable secrets for connecting to external services. They are referenced by name in integrations, workflow nodes, and other resources — avoiding the need to embed secrets inline.
+Credentials store reusable secrets for connecting to external services. They are referenced by name in integrations, flow nodes, and other resources — avoiding the need to embed secrets inline.
 
 See [credentialPost](losant://schemas/credentialPost) for the full body schema and required properties per type.
 
@@ -55,7 +55,7 @@ export default {
   uriName: 'losant://guides/credentials',
   resourceConfig: {
     title: 'Credentials Guide',
-    description: 'Domain guide for Losant credentials — required config objects, and common workflows',
+    description: 'Domain guide for Losant credentials — required config objects, and common procedures for creating and referencing credentials by name',
     mimeType: 'text/markdown'
   },
   getContent: async (uri) => {

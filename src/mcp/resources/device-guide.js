@@ -1,7 +1,7 @@
 import { buildReferenceSection } from './helpers.js';
 const content = `# Devices & Device Recipes Guide
 
-Devices are the backbone concept of Losant. Almost everything in the platform exists to serve devices — workflows react to their state, dashboards visualize their data, experiences expose their data to end users. Treat \`device\` and \`deviceRecipe\` as the most important and most nuanced resource types.
+Devices are the backbone concept of Losant. Almost everything in the platform exists to serve devices — flows react to their state, dashboards visualize their data, experiences expose their data to end users. Treat \`device\` and \`deviceRecipe\` as the most important and most nuanced resource types.
 
 ## Device Classes
 
@@ -41,7 +41,7 @@ Key-value pairs for organizing, querying, and filtering devices.
 - Keys: alphanumeric + underscores/hyphens, max 255 chars, case-sensitive
 - Values: any UTF-8, max 255 chars
 
-Tags are first-class query targets — use advanced queries with \`tags\` to filter devices by tag key/value. Tags can also store per-device configuration accessible in workflows and dashboards.
+Tags are first-class query targets — use advanced queries with \`tags\` to filter devices by tag key/value. Tags can also store per-device configuration accessible in flows and dashboards.
 
 ## Device Recipes
 
@@ -51,14 +51,14 @@ A device recipe is a **template** for creating devices with predefined configura
 
 **DeviceRecipe tag**: Every device created from a recipe automatically receives a tag with key \`DeviceRecipe\` and value set to the recipe's ID. This is how you find all devices associated with a recipe. This tag can be removed from a device, which decouples it from the recipe's tracking.
 
-### Workflow: Recipe → Devices
+### Common Procedures: Recipe → Devices
 
 When a user wants to create many similar devices:
 1. Check if a deviceRecipe already exists with the right configuration — query \`resourceType=deviceRecipe\`
 2. If not, create the recipe first with \`losant_write\` \`operation=createOne\`, \`resourceType=deviceRecipe\`
 3. Then bulk-create devices from the recipe
 
-### Workflow: Device → Recipe
+### Common Procedures: Device → Recipe
 
 When a user wants to templatize an existing device:
 1. Get the device with \`losant_query\` \`operation=get\`
@@ -135,7 +135,7 @@ export default {
   uriName: 'losant://guides/devices',
   resourceConfig: {
     title: 'Devices & Device Recipes Guide',
-    description: 'Domain guide for working with Losant devices and device recipes — classes, attributes, tags, recipes, and common workflows',
+    description: 'Domain guide for working with Losant devices and device recipes — classes, attributes, tags, recipes, and common procedures for creating and managing devices and recipes',
     mimeType: 'text/markdown'
   },
   getContent: async (uri) => {

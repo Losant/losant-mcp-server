@@ -1,14 +1,14 @@
 const content = `# Resource Jobs Guide
 
-A resource job defines a **"for each matching resource, run a workflow iteration"** operation. It is not a one-shot API call — it is a reusable job definition that, when triggered, iterates over a filtered set of resources and fires a workflow once per resource.
+A resource job defines a **"for each matching resource, run a flow iteration"** operation. It is not a one-shot API call — it is a reusable job definition that, when triggered, iterates over a filtered set of resources and fires a flow once per resource.
 
-**Creating a resource job only defines its configuration.** To run the job, it must be triggered separately (via the Losant API or through, or by a workflow running a ResourceJobExecuteNode node).
+**Creating a resource job only defines its configuration.** To run the job, it must be triggered separately (via the Losant API or through, or by a flow running a ResourceJobExecuteNode node).
 
 ## How It Works
 
 1. **Define the job** with \`losant_write\` — set \`resourceType\`, \`queryJson\`, concurrency, and retry settings
-2. **Pair with a Workflow** — create a workflow with a "Resource Job Trigger" node that references this job's ID
-3. **Trigger the job** — the job iterates over matching resources; for each one, the paired workflow fires with that resource as context
+2. **Pair with a flow** — create a flow with a "Resource Job Trigger" node that references this job's ID
+3. **Trigger the job** — the job iterates over matching resources; for each one, the paired flow fires with that resource as context
 
 ## Required Fields
 
@@ -38,22 +38,22 @@ When \`resourceType=dataTableRow\`, you must also provide \`dataTableId\` — th
 
 | Field | Type | Values | Notes |
 |---|---|---|---|
-| \`maxIterationConcurrency\` | integer | \`1\` or \`10\` | How many workflow iterations run at once. Start with \`1\` unless throughput is critical. |
+| \`maxIterationConcurrency\` | integer | \`1\` or \`10\` | How many flow iterations run at once. Start with \`1\` unless throughput is critical. |
 | \`iterationDelay\` | integer (ms) | 0–60000 | Delay between starting iterations. 0 = no delay. |
-| \`iterationTimeout\` | integer (ms) | 60000–900000 | Max time allowed for each workflow iteration before it's considered timed out. |
+| \`iterationTimeout\` | integer (ms) | 60000–900000 | Max time allowed for each flow iteration before it's considered timed out. |
 
 ## Retry Settings
 
 | Field | Type | Notes |
 |---|---|---|
 | \`retryOnTimeout\` | boolean | Retry the iteration if it times out |
-| \`retryOnFailure\` | boolean | Retry the iteration if the workflow errors |
+| \`retryOnFailure\` | boolean | Retry the iteration if the flow errors |
 | \`maxIterationRetries\` | integer (1–5) | Max retry attempts per iteration |
 | \`retryDelay\` | integer (ms, 0–30000) | Delay before retrying a failed iteration |
 
 ## \`defaultContext\`
 
-A JSON string that is passed as context to each workflow iteration. Use this to pass configuration values that apply to all iterations (e.g., a target endpoint URL, a mode flag). Must be a valid JSON-serialized string, max 32767 chars.
+A JSON string that is passed as context to each flow iteration. Use this to pass configuration values that apply to all iterations (e.g., a target endpoint URL, a mode flag). Must be a valid JSON-serialized string, max 32767 chars.
 
 ## Example: Create a job that iterates all devices in a location
 
@@ -80,7 +80,7 @@ A JSON string that is passed as context to each workflow iteration. Use this to 
 3. Confirm concurrency preference (default to \`1\` unless user asks for parallel)
 4. Call \`losant_write\` with \`operation=createOne\`, \`resourceType=resourceJob\`
 5. Check \`losant://schemas/resourceJobPost\` for the full body schema
-6. Remind the user: they need to pair the job with a Workflow "Resource Job Trigger" node before it will do anything
+6. Remind the user: they need to pair the job with a flow "Resource Job Trigger" node before it will do anything
 
 ### Iterate all rows in a data table
 \`\`\`json
@@ -99,7 +99,7 @@ export default {
   uriName: 'losant://guides/resource-jobs',
   resourceConfig: {
     title: 'Resource Jobs Guide',
-    description: 'Domain guide for Losant resource jobs — the iterate-resources-trigger-workflow pattern, queryJson, concurrency, and retry settings',
+    description: 'Domain guide for Losant resource jobs — the iterate-resources-trigger-flow pattern, queryJson, concurrency, and retry settings',
     mimeType: 'text/markdown'
   },
   getContent: async (uri) => {

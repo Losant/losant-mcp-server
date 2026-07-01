@@ -148,7 +148,7 @@ export default {
   uriName: 'losant://guides/data-tables',
   resourceConfig: {
     title: 'Data Tables Guide',
-    description: 'Domain guide for Losant data tables — column schema, constraints, the dataTable/dataTableRow relationship, and common workflows',
+    description: 'Domain guide for Losant data tables — column schema, constraints, the dataTable/dataTableRow relationship, and common procedures for creating and managing tables and rows',
     mimeType: 'text/markdown'
   },
   getContent: async (uri) => {

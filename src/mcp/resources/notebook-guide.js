@@ -52,7 +52,7 @@ Outputs define where the notebook writes its results after execution.
 | \`dataTable\` | Writes rows to a Losant data table | \`dataTableId\`, \`keyColumn\` (for upsert), \`mode\` (\`append\`, \`replace\`, \`upsert\`) |
 | \`file\` | Creates/replaces a Losant file | \`fileName\`, \`parentDirectory\`, \`contentType\` |
 | \`directory\` | Uploads multiple files to a Losant directory | \`parentDirectory\` |
-| \`executionResult\` | Makes notebook output available to the triggering workflow node | (no extra config) |
+| \`executionResult\` | Makes notebook output available to the triggering flow node | (no extra config) |
 | \`temporaryUrl\` | Generates a short-lived download URL for a notebook-produced file | \`fileName\` |
 
 Each output requires a \`name\` — this is the Python variable the notebook writes its result to (e.g., \`name: "result"\` → notebook sets \`result = df\`).
@@ -86,7 +86,7 @@ Use \`operation=updateOne\` to change the notebook's name, imageVersion, inputs,
 4. Check \`losant://schemas/notebookPost\` for the full input/output schema
 
 ### Trigger a notebook
-Notebooks are executed by a **Notebook Execute** workflow node, not directly via the write tool. After creating the notebook, wire it to a workflow trigger.
+Notebooks are executed by a **Notebook Execute** flow node, not directly via the write tool. After creating the notebook, wire it to a flow trigger.
 
 ${buildReferenceSection(['notebook'])}
 `;
@@ -96,7 +96,7 @@ export default {
   uriName: 'losant://guides/notebooks',
   resourceConfig: {
     title: 'Notebooks Guide',
-    description: 'Domain guide for Losant notebooks — the two-step create-then-upload pattern, input/output types, and common workflows',
+    description: 'Domain guide for Losant notebooks — the two-step create-then-upload pattern, input/output types, and common procedures',
     mimeType: 'text/markdown'
   },
   getContent: async (uri) => {
