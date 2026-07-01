@@ -44,9 +44,6 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
     const disclaimerLines = ['## Endpoint to MCP Tools\n'];
     if (filePath.includes('device-recipe')) {
       disclaimerLines.push('\nSee [losant://guides/devices](losant://guides/devices) for domain context, the relationship between devices and device recipes, and common procedures.');
-      if (filePath.endsWith('device-recipe.md')) {
-        disclaimerLines.push('- endpoint "bulkCreate" used by tool `losant_write` as operation "createMany"');
-      }
     }
     if (filePath.includes('integration')) {
       disclaimerLines.push('\nSee [losant://guides/integrations](losant://guides/integrations) for integration types, required config objects, and flow pairing.');

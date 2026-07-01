@@ -33,6 +33,7 @@ export const RESOURCE_TYPES = [
 ];
 
 export const RESOURCE_TYPE_SET = new Set(RESOURCE_TYPES);
+// applicationJobLog is omitted because we do not write them - the jobs created them it's a read only reasource
 export const WRITABLE_RESOURCE_TYPES = [
   'device',
   'deviceRecipe',
@@ -55,13 +56,14 @@ export const WRITABLE_RESOURCE_TYPES = [
   'experienceVersion',
   'experienceView',
   'application',
-  'applicationReadme'
-  // 'applicationDashboard',
+  'applicationReadme',
+  'edgeDeployment',
+  'embeddedDeployment'
+  // 'applicationDashboard', will be added in another branch
   // 'flow', will be added in another branch
   // 'flowVersion', will be added in another branch
 ];
 
-export const ALLOW_UPDATE_MANY_TYPES = new Set(['event']);
 // events created by devices/flows, not the LLM
 // applications and their readmes are not created by the MCP
 export const NO_CREATE_TYPES = new Set(['event', 'application', 'applicationReadme']);
@@ -92,9 +94,9 @@ export const SCHEMA_FILE_ALIASES = {
   dataTableRowPatch: 'dataTableRowInsertUpdate.json',
   // privateFile shares schemas with file
   privateFilePost: 'filePost.json',
-  privateFilePatch: 'filePatch.json',
+  privateFilePatch: 'filePatch.json'
   // applicationDashboard has no separate Patch schema
-  applicationDashboardPatch: 'dashboardPatch.json'
+  // applicationDashboardPatch: 'dashboardPatch.json'
 };
 export const SCHEMA_FILES = readdirSync(SCHEMAS_PATH).filter((f) => {
   if (!f.endsWith('.json')) { return false; }

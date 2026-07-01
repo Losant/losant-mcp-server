@@ -85,36 +85,6 @@ When a user wants to templatize an existing device:
 2. For each matching device, call \`losant_write\` \`operation=updateOne\` with the change
 3. See \`losant://guides/advanced-queries\` for tag query syntax
 
-### Create devices from an existing recipe (bulk)
-See losant://docs/deviceRecipe for the schema and required fields for bulkCreate.
-**Never copy a recipe's fields and create devices individually.** Use \`createMany\` — it is faster, handles naming automatically, and is the only way to provision credentials per device at scale.
-
-Simple mode — create N devices using the recipe's configuration:
-\`\`\`
-losant_write:
-  operation: createMany
-  resourceType: deviceRecipe
-  applicationId: <applicationId>
-  resourceId: <deviceRecipeId>
-  body: { "count": 10 }
-\`\`\`
-
-CSV mode — create devices with custom names, descriptions, tags, parentId and gatewayId assignments:
-\`\`\`
-losant_write:
-  operation: createMany
-  resourceType: deviceRecipe
-  applicationId: <applicationId>
-  resourceId: <deviceRecipeId>
-  body: {
-    "csv": "name,description,location,floor\\nSensor-001,First sensor,warehouse-a,2\\nSensor-002,Second sensor,warehouse-b,1",
-    "nameColumn": "name",
-    "descriptionColumn": "description",
-    "gatewayIdColumn": "gatewayId",
-    "parentIdColumn": "parentId"
-  }
-\`\`\`
-
 **CSV column mapping rules**: \`name\`, \`description\`, \`gatewayId\`, and \`parentId\` each have an explicit mapping field (\`nameColumn\`, \`descriptionColumn\`, \`gatewayIdColumn\`, \`parentIdColumn\`) that tells the API which CSV column header to read from. **Tags are implicit** — any CSV column that is NOT mapped to one of those four fields is automatically applied as a device tag, with the column header as the tag key and the cell value as the tag value. In the example above, \`location\` and \`floor\` become device tags.
 
 To provision a unique access key per device (required for devices that connect to Losant), add \`"makeUniqueKeySecret": true\` to the body. The response will include \`losantDeviceId\`, \`losantDeviceKey\`, and \`losantDeviceSecret\` for each created device.

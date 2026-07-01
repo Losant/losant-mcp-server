@@ -115,17 +115,6 @@ Body is a flat \`{ columnName: value }\` object — no nesting. Values must matc
 
 Check \`losant://schemas/dataTableRowPost\` for the full body schema.
 
-### Insert multiple rows at once
-\`\`\`
-losant_write:
-  operation: createMany
-  resourceType: dataTableRow
-  applicationId: <applicationId>
-  parentResourceId: <dataTableId>
-  body: [{ "columnName": value }, { "columnName": value }, ...]
-\`\`\`
-Body must be an **array** of row objects. Each element follows the same rules as a single insert. Use this instead of looping \`createOne\` when inserting multiple rows.
-
 ### Update a row
 \`\`\`
 losant_write:
