@@ -59,6 +59,8 @@ Each output requires a \`name\` — this is the Python variable the notebook wri
 
 ## Step 2: Upload the Notebook File
 
+> **This step requires HTTP capabilities outside of this MCP server.** If you do not have a tool that can make arbitrary HTTP requests (e.g. a bash/curl tool), provide the user with the \`upload.url\`, the \`upload.fields\` object, and the curl command below so they can perform the upload themselves.
+
 After creating the notebook object, upload the \`.ipynb\` file content. The create response includes an \`upload\` object identical to the file upload pattern:
 
 \`\`\`json
@@ -73,6 +75,17 @@ After creating the notebook object, upload the \`.ipynb\` file content. The crea
 
 POST the \`.ipynb\` content to \`upload.url\` as multipart/form-data, including all \`upload.fields\` first, then the file content as the \`file\` field last.
 
+\`\`\`bash
+curl -X POST "<upload.url>" \\
+  -F "key=<upload.fields.key>" \\
+  -F "bucket=<upload.fields.bucket>" \\
+  -F "Content-Type=application/json" \\
+  -F "AWSAccessKeyId=<upload.fields.AWSAccessKeyId>" \\
+  -F "Policy=<upload.fields.Policy>" \\
+  -F "Signature=<upload.fields.Signature>" \\
+  -F "file=@/path/to/notebook.ipynb"
+\`\`\`
+
 ## Updating a Notebook
 
 Use \`operation=updateOne\` to change the notebook's name, imageVersion, inputs, or outputs. The response again includes a fresh \`upload\` object to re-upload the \`.ipynb\` file if needed.
@@ -82,7 +95,7 @@ Use \`operation=updateOne\` to change the notebook's name, imageVersion, inputs,
 ### Create a notebook with device data input
 1. Identify which devices and attributes to include
 2. Call \`losant_write\` \`operation=createOne\` \`resourceType=notebook\` with inputs configured
-3. Upload the \`.ipynb\` file content to the returned \`upload.url\`
+3. **Requires HTTP outside this MCP server** — upload the \`.ipynb\` file content to the returned \`upload.url\`. If you lack that capability, give the user the curl command from the Step 2 section above.
 4. Check \`losant://schemas/notebookPost\` for the full input/output schema
 
 ### Trigger a notebook

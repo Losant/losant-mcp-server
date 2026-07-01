@@ -57,12 +57,7 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
     if (filePath.endsWith('credential.md') || filePath.endsWith('credentials.md')) {
       disclaimerLines.push('\nSee [losant://guides/credentials](losant://guides/credentials) for credential types, required config objects, and common procedures.');
     }
-    if (filePath.endsWith('flow.md') || filePath.endsWith('flows.md') || filePath.endsWith('flowVersion.md') || filePath.endsWith('flowVersions.md')) {
-      disclaimerLines.push('\nSee [losant://guides/flows](losant://guides/flows) for flow classes, trigger/node authoring, and flow versioning.');
-    }
-    if (filePath.endsWith('applicationDashboard.md') || filePath.endsWith('applicationDashboards.md')) {
-      disclaimerLines.push('\nSee [losant://guides/dashboards](losant://guides/dashboards) for the block model, layout grid, and context variables.');
-    }
+
     if (filePath.endsWith('file.md') || filePath.endsWith('files.md') || filePath.endsWith('privateFile.md') || filePath.endsWith('privateFiles.md')) {
       disclaimerLines.push('\nSee [losant://guides/files](losant://guides/files) for the two-step create-then-upload pattern and public vs. private file differences.');
     }

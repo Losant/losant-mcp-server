@@ -14,7 +14,7 @@ export default {
       destructiveHint: false
     },
     title: 'Create or Update Losant Resources',
-    description: `Create or update Losant resources: ${WRITABLE_RESOURCE_TYPES.join(', ')}. Check losant://schemas/{resourceType}Post or losant://schemas/{resourceType}Patch for the body schema before calling. Read the relevant guide first: losant://guides/devices (device, deviceRecipe), losant://guides/integrations (integration), losant://guides/data-tables (dataTable, dataTableRow), losant://guides/resource-jobs (resourceJob), losant://guides/credentials (credential), losant://guides/files (file, privateFile), losant://guides/notebooks (notebook), losant://guides/experiences (experienceDomain, experienceEndpoint, experienceGroup, experienceSlug, experienceUser, experienceVersion, experienceView).`,
+    description: `Read losant://guides/losant-write-tool before using this tool. Create or update Losant resources: ${WRITABLE_RESOURCE_TYPES.join(', ')}.`,
     inputSchema: z.fromJSONSchema({
       type: 'object',
       properties: {

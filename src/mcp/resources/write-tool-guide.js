@@ -45,7 +45,7 @@ Use \`losant_write\` to create or update Losant resources.
 
 1. Obtain \`applicationId\` by following the application-selection procedure in [losant://guides/losant-query-tool](losant://guides/losant-query-tool).
 2. Read the domain guide for the resource type (Guide column below) for constraints and common patterns.
-3. Fetch the Post or Patch schema for the exact body shape before constructing the \`body\` parameter.
+3. Check \`losant://schemas/{resourceType}Post\` (createOne) or \`losant://schemas/{resourceType}Patch\` (updateOne) for the exact body shape before constructing the \`body\` parameter. Schema links are in the table below.
 
 ## Operations
 
@@ -54,6 +54,8 @@ Use \`losant_write\` to create or update Losant resources.
 | \`createOne\` | POST a new resource | \`resourceType\`, \`applicationId\`, \`body\` |
 | \`updateOne\` | PATCH an existing resource | \`resourceType\`, \`applicationId\`, \`resourceId\`, \`body\` |
 
+> **PATCH is partial**: send only the fields you want to change — omitted fields are left unchanged. Do not send an empty body assuming it is safe; send only the delta.
+
 > \`application\` and \`applicationReadme\` do not require \`resourceId\` for \`updateOne\` — they are identified by \`applicationId\` alone.
 
 ## Writable Resource Types
@@ -61,6 +63,8 @@ Use \`losant_write\` to create or update Losant resources.
 | Resource Type | Post Schema | Patch Schema | Guide |
 |---|---|---|---|
 ${resourceRows}
+
+> **\`applicationKey\`**: the API key and secret are returned once on \`createOne\` and never again — surface them to the user immediately before taking any further action.
 
 ## Nested Resources
 
@@ -71,6 +75,8 @@ ${nestedNote}
 ## Restrictions
 
 - \`createOne\` is not supported for ${noCreateList} — these resources are not created through the API.
+- \`event\` is only valid for \`updateOne\` (e.g. to change an event's state or comment).
+- \`applicationReadme\` body must be \`{ "content": "..." }\` — pass the markdown string as the \`content\` field, not as a bare string.
 `;
 
 export default {
