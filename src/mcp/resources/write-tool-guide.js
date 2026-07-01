@@ -19,10 +19,11 @@ const GUIDE_FOR_TYPE = {
   experienceVersion: 'losant://guides/experiences',
   experienceView: 'losant://guides/experiences'
 };
-
-const nestedNote = Object.entries(NESTED_RESOURCES)
-  .map(([type, { parentField, parentType }]) => `- \`${type}\` — requires \`parentResourceId\` (the \`${parentField}\`); query \`${parentType}\` first to obtain the id`)
-  .join('\n');
+let nestedNote = '';
+Object.entries(NESTED_RESOURCES).forEach(([type, { parentField, parentType }]) => {
+  if (type === 'flowVersion') { return; }
+  nestedNote += `- \`${type}\` — requires \`parentResourceId\` (the \`${parentField}\`); query \`${parentType}\` first to obtain the id\n`;
+});
 
 const resourceRows = WRITABLE_RESOURCE_TYPES
   .map((type) => {
