@@ -57,7 +57,7 @@ export default {
       if (operation === 'createOne' && NO_CREATE_TYPES.has(resourceType)) {
         return invalidRequestError({
           message: 'Tool input validation failed',
-          errors: [{ fieldName: 'operation', details: `The "createOne" operation is not supported for "${resourceType}" — these resources are created by devices and workflows, not the API.` }]
+          errors: [{ fieldName: 'operation', details: `The "createOne" operation is not supported for "${resourceType}" — these resources are created by devices and flows, not the API.` }]
         });
       }
 

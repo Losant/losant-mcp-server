@@ -62,7 +62,7 @@ export const WRITABLE_RESOURCE_TYPES = [
 ];
 
 export const ALLOW_UPDATE_MANY_TYPES = new Set(['event']);
-// events created by devices/workflows, not the LLM
+// events created by devices/flows, not the LLM
 // applications and their readmes are not created by the MCP
 export const NO_CREATE_TYPES = new Set(['event', 'application', 'applicationReadme']);
 
