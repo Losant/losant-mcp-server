@@ -33,6 +33,40 @@ export const RESOURCE_TYPES = [
 ];
 
 export const RESOURCE_TYPE_SET = new Set(RESOURCE_TYPES);
+// applicationJobLog is omitted because we do not write them - the jobs created them it's a read only reasource
+// omitting embeddedDeployment until embedded authoring is complete
+// omitting edgeDeployment I'm thinking this may go into a device or flow tool
+export const WRITABLE_RESOURCE_TYPES = [
+  'device',
+  'deviceRecipe',
+  'dataTable',
+  'dataTableRow',
+  'webhook',
+  'integration',
+  'resourceJob',
+  'event',
+  'applicationKey',
+  'credential',
+  'file',
+  'privateFile',
+  'notebook',
+  'experienceDomain',
+  'experienceEndpoint',
+  'experienceGroup',
+  'experienceSlug',
+  'experienceUser',
+  'experienceVersion',
+  'experienceView',
+  'application',
+  'applicationReadme'
+  // 'applicationDashboard', will be added in another branch
+  // 'flow', will be added in another branch
+  // 'flowVersion', will be added in another branch
+];
+
+// events created by devices/flows, not the LLM
+// applications and their readmes are not created by the MCP
+export const NO_CREATE_TYPES = new Set(['event', 'application', 'applicationReadme']);
 
 // require.resolve('losant-rest') returns .../losant-rest/lib/index.js
 // Go up one directory from lib/ to get the package root
@@ -47,8 +81,28 @@ export const MD_FILES = DOC_FILES.filter((f) => {
   const singleFileName = f.replace('.md', '').replace(/s$/, '');
   return f.endsWith('.md') && f !== '_schemas.md' && (RESOURCE_TYPE_SET.has(singleFileName) || singleFileName === 'data');
 });
-export const SCHEMA_FILES = readdirSync(SCHEMAS_PATH).filter((f) => f.endsWith('.json') && f.includes('Query'));
 
+const WRITE_SCHEMA_SUFFIXES = new Set(
+  WRITABLE_RESOURCE_TYPES.flatMap((t) => [`${t}Post`, `${t}Patch`])
+);
+WRITE_SCHEMA_SUFFIXES.add('deviceRecipeBulkCreatePost'); // special case for bulk create schema that doesn't follow the usual naming pattern
+
+// Schemas whose canonical MCP name differs from the losant-rest filename.
+// Keys are the exposed name (e.g. dataTableRowPost); values are the actual filename.
+export const SCHEMA_FILE_ALIASES = {
+  dataTableRowPost: 'dataTableRowInsert.json',
+  dataTableRowPatch: 'dataTableRowInsertUpdate.json',
+  // privateFile shares schemas with file
+  privateFilePost: 'filePost.json',
+  privateFilePatch: 'filePatch.json'
+  // applicationDashboard has no separate Patch schema
+  // applicationDashboardPatch: 'dashboardPatch.json'
+};
+export const SCHEMA_FILES = readdirSync(SCHEMAS_PATH).filter((f) => {
+  if (!f.endsWith('.json')) { return false; }
+  const name = f.replace('.json', '');
+  return name.includes('Query') || WRITE_SCHEMA_SUFFIXES.has(name);
+});
 // Resources supported by the unified tool
 export const NESTED_RESOURCES = {
   flowVersion: { parentField: 'flowId', parentType: 'flow' },
@@ -70,3 +124,14 @@ export const ALLOWS_ADVANCED_QUERIES_SET = new Set([
   'experienceUser',
   'applicationJobLog'
 ]);
+
+// Maps every valid schema name to its filename on disk (canonical + aliases)
+export const SCHEMA_NAME_TO_FILE = Object.fromEntries([
+  ...SCHEMA_FILES.map((f) => [f.replace('.json', ''), f]),
+  ...Object.entries(SCHEMA_FILE_ALIASES)
+]);
+
+// Maps every valid doc name (URI path segment) to its filename on disk
+export const DOC_NAME_TO_FILE = Object.fromEntries(
+  MD_FILES.map((f) => [f.replace('.md', ''), f])
+);

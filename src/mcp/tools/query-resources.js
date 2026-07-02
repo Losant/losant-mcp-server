@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { NESTED_RESOURCES, RESOURCE_TYPES, APPLICATION_RESOURCES, ALLOWS_ADVANCED_QUERIES_SET } from '../../constants.js';
 import debug from 'debug';
 import { restToMCPError, invalidRequestError } from '../../helpers/errors.js';
+import { getResourceFieldId } from './helpers.js';
 const log = debug('losant-mcp-server:tools:query-resources');
 
 const omittedFieldsByResourceType = {
@@ -101,23 +102,6 @@ const omitFieldByResourceType = {
 };
 omitFieldByResourceType.edgeDeployment = omitFieldByResourceType.embeddedDeployment; // same structure for edge and embedded deployments
 omitFieldByResourceType.flowVersion = omitFieldByResourceType.flow; // same structure as flow
-
-const getResourceFieldId = (resourceType) => {
-  if (resourceType === 'dataTableRow') {
-    return 'rowId';
-  }
-  if (resourceType === 'experienceVersion') {
-    return 'experienceVersionIdOrName';
-  }
-  if (resourceType === 'applicationDashboard') {
-    return 'dashboardId';
-  }
-  if (resourceType === 'applicationJobLog') {
-    return 'jobId';
-  }
-  // Default to resourceType + 'Id', e.g. deviceId, flowId, etc.
-  return `${resourceType}Id`;
-};
 
 const checkForUnexpectedPageOps = (listInput, errors, resourceType, operation) => {
   ['page', 'perPage'].forEach((param) => {
@@ -233,7 +217,7 @@ const getResourceTool = async (losantClient, { resourceType, resourceId }, reque
     ]);
     response.readme = readmeResponse?.content || '';
     responseContext.push({ type: 'text', text: JSON.stringify(response, null, 2) });
-    if (!response.readme) {
+    if (!readmeResponse?.lastUpdated) {
       responseContext.push({ type: 'text', text: readmeTxt });
     }
   } else {
@@ -284,7 +268,7 @@ const listResourceTool = async (losantClient, { resourceType }, requestParams, l
         details: `The resource type '${resourceType}' does not support advanced queries. Remove the 'query' parameter and use 'filterField' and 'filter' for simple filtering instead.`
       });
     }
-    if (listInput.filterField) {
+    if (listInput.filterField && resourceType !== 'applicationJobLog') {
       errors.push({
         fieldName: 'filterField',
         details: 'The \'filterField\' parameter cannot be used together with the \'query\' parameter. The \'query\' parameter overrides simple filters. Remove the \'filterField\' parameter and include any filtering logic in the \'query\' object instead.'
@@ -356,7 +340,7 @@ export default {
   name: 'losant_query',
   inputInfo: {
     title: 'Query Losant Resources',
-    description: `List or get Losant resources: ${RESOURCE_TYPES.join(', ')}. See losant://guides/losant-resources-query for the full workflow, including how to select an application, handle nested resources, and links to per-resource documentation. For advanced MongoDB-style queries, see losant://guides/advanced-queries.`,
+    description: `List or get Losant resources: ${RESOURCE_TYPES.join(', ')}. See losant://guides/losant-query-tool for the step by step procedures, including how to select an application, handle nested resources, and links to per-resource documentation. For advanced MongoDB-style queries, see losant://guides/advanced-queries.`,
     inputSchema: z.fromJSONSchema({
       type: 'object',
       properties: {

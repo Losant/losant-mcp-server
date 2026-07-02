@@ -11,6 +11,7 @@
 - 🔐 **OAuth 2.0 Authentication** - RFC-compliant bearer token auth (RFC 6750, RFC 7235, RFC 8707, RFC 9728)
 - 🛠️ **Two Powerful MCP Tools**:
   - `losant_query` - Query applications, devices, flows, data tables, and more
+  - `losant_write` - Create/Update devices, flows, data tables, files and more
   - `losant_timeseries` - Retrieve time-series device data and state
 - 📚 **Dynamic Documentation** - API docs and schemas loaded from `losant-rest` package
 - 🚀 **Stateless & Scalable** - Per-request MCP server instances for horizontal scaling
@@ -360,7 +361,84 @@ Query Losant resources (applications, devices, flows, data tables, etc.).
 }
 ```
 
-### 2. losant_timeseries
+### 2. losant_write
+
+Create or update Losant resources. Read `losant://guides/losant-write-tool` before calling for operations, schema links, PATCH semantics, and resource-specific notes.
+
+**Parameters:**
+- `operation` - `"createOne"` (POST) or `"updateOne"` (PATCH)
+- `resourceType` - Type of resource to create or update
+- `applicationId` - Application ID (required for all app-scoped resources)
+- `resourceId` - Resource ID (required for `updateOne`, except `application` and `applicationReadme`)
+- `parentResourceId` - Parent resource ID (required for nested resources)
+- `body` - Resource data — check `losant://schemas/{resourceType}Post` or `losant://schemas/{resourceType}Patch` for the exact shape
+
+**Supported Resource Types:**
+- `device`, `deviceRecipe`, `dataTable`, `dataTableRow`, `webhook`, `integration`, `resourceJob`, `applicationKey`, `credential`, `file`, `privateFile`, `notebook`
+- `experienceDomain`, `experienceEndpoint`, `experienceGroup`, `experienceSlug`, `experienceUser`, `experienceVersion`, `experienceView`
+- `application`, `applicationReadme`
+- Nested: `dataTableRow` (requires `parentResourceId` = `dataTableId`)
+
+**Key behaviors:**
+- PATCH is partial — send only the fields you want to change; omitted fields are left unchanged
+- `createOne` is not supported for `event`, `application`, or `applicationReadme`
+- `application` and `applicationReadme` do not require `resourceId` for `updateOne`
+- `applicationKey` returns the key and secret on `createOne` only — surface them to the user immediately
+- `applicationReadme` body shape: `{ "content": "..." }`
+
+**Example: Create a Device**
+```json
+{
+  "name": "losant_write",
+  "arguments": {
+    "operation": "createOne",
+    "resourceType": "device",
+    "applicationId": "507f1f77bcf86cd799439011",
+    "body": {
+      "name": "My Sensor",
+      "deviceClass": "standalone",
+      "attributes": [
+        { "name": "temperature", "dataType": "number" }
+      ]
+    }
+  }
+}
+```
+
+**Example: Update a Webhook**
+```json
+{
+  "name": "losant_write",
+  "arguments": {
+    "operation": "updateOne",
+    "resourceType": "webhook",
+    "applicationId": "507f1f77bcf86cd799439011",
+    "resourceId": "507f1f77bcf86cd799439012",
+    "body": {
+      "name": "Updated Webhook Name"
+    }
+  }
+}
+```
+
+**Example: Insert a Data Table Row**
+```json
+{
+  "name": "losant_write",
+  "arguments": {
+    "operation": "createOne",
+    "resourceType": "dataTableRow",
+    "applicationId": "507f1f77bcf86cd799439011",
+    "parentResourceId": "507f1f77bcf86cd799439013",
+    "body": {
+      "sensorId": "abc123",
+      "temperature": 22.5
+    }
+  }
+}
+```
+
+### 3. losant_timeseries
 
 Query time-series device data and state information.
 
