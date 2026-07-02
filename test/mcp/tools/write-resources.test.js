@@ -1,7 +1,7 @@
 import { nock } from '../../common.js';
 import should from 'should';
 import writeResourcesTool from '../../../src/mcp/tools/write-resources.js';
-import { LOSANT_API_URL, APP_ID, LOSANT_API_TOKEN } from '../../fixtures/losant-responses.js';
+import { LOSANT_API_URL, APP_ID, DATA_TABLE_ID, LOSANT_API_TOKEN } from '../../fixtures/losant-responses.js';
 import { createClient } from 'losant-rest';
 
 const losantClient = createClient({
@@ -105,6 +105,106 @@ describe('write-resources tool', () => {
       should.not.exist(result.isError);
       const response = JSON.parse(result.content[0].text);
       response.should.have.property('name', 'Updated Recipe');
+    });
+  });
+
+  describe('Update Operation — Special Cases', () => {
+    it('should update application without resourceId', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .patch(`/applications/${APP_ID}`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .reply(200, { id: APP_ID, applicationId: APP_ID, name: 'Updated App' });
+
+      const result = await writeTool({
+        operation: 'updateOne',
+        resourceType: 'application',
+        applicationId: APP_ID,
+        body: { name: 'Updated App' }
+      });
+
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('name', 'Updated App');
+    });
+
+    it('should update applicationReadme without resourceId', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .patch(`/applications/${APP_ID}/readme`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .reply(200, { content: '# My App' });
+
+      const result = await writeTool({
+        operation: 'updateOne',
+        resourceType: 'applicationReadme',
+        applicationId: APP_ID,
+        body: { content: '# My App' }
+      });
+
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('content', '# My App');
+    });
+  });
+
+  describe('Nested Resources', () => {
+    it('should create a dataTableRow with parentResourceId', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .post(`/applications/${APP_ID}/data-tables/${DATA_TABLE_ID}/rows`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .reply(201, { id: 'row123', str: 'hello', num: 42 });
+
+      const result = await writeTool({
+        operation: 'createOne',
+        resourceType: 'dataTableRow',
+        applicationId: APP_ID,
+        parentResourceId: DATA_TABLE_ID,
+        body: { str: 'hello', num: 42 }
+      });
+
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('id', 'row123');
+    });
+
+    it('should return error when parentResourceId is missing for dataTableRow', async () => {
+      const result = await writeTool({
+        operation: 'createOne',
+        resourceType: 'dataTableRow',
+        applicationId: APP_ID,
+        body: { str: 'hello' }
+      });
+
+      result.isError.should.be.true();
+      const error = JSON.parse(result.content[0].text);
+      error.data.errors[0].should.have.property('fieldName', 'parentResourceId');
+    });
+  });
+
+  describe('Validation', () => {
+    it('should reject createOne for NO_CREATE_TYPES (event)', async () => {
+      const result = await writeTool({
+        operation: 'createOne',
+        resourceType: 'event',
+        applicationId: APP_ID,
+        body: { level: 'info', message: 'test' }
+      });
+
+      result.isError.should.be.true();
+      const error = JSON.parse(result.content[0].text);
+      error.data.errors[0].should.have.property('fieldName', 'operation');
+    });
+
+    it('should reject updateOne without resourceId for non-application types', async () => {
+      const result = await writeTool({
+        operation: 'updateOne',
+        resourceType: 'webhook',
+        applicationId: APP_ID,
+        body: { name: 'test' }
+      });
+
+      result.isError.should.be.true();
+      const error = JSON.parse(result.content[0].text);
+      error.data.errors[0].should.have.property('fieldName', 'resourceId');
     });
   });
 

@@ -46,7 +46,7 @@ export default {
   uriName: 'losant://guides/losant-query-tool',
   resourceConfig: {
     title: 'Losant Query Tool Guide',
-    description: 'READ THIS BEFORE USING: losant_query tool. Workflow guide for the losant_query tool: application selection, nested resources, resource documentation links, and resource-specific query documentation links.',
+    description: 'READ THIS BEFORE USING: losant_query tool - This includes procedural guide for the losant_query tool: application selection, nested resources, resource documentation links, and resource-specific query documentation links.',
     mimeType: 'text/markdown'
   },
   getContent: async (uri) => {

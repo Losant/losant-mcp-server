@@ -1,7 +1,7 @@
 import { buildReferenceSection } from './helpers.js';
 const content = `# Experiences Guide
 
-Losant Experiences let you build custom web portals and APIs on top of your device data. A request hits an **Endpoint**, which either replies immediately via a static reply (redirect or render a page) or triggers an **Experience Workflow** that builds the reply dynamically. All seven experience resource types are tightly coupled — read this guide before writing any \`experience*\` resource.
+Losant Experiences let you build custom web portals and APIs on top of your device data. A request hits an **Endpoint**, which either replies immediately via a static reply (redirect or render a page) or triggers an **Experience Flow** that builds the reply dynamically. All seven experience resource types are tightly coupled — read this guide before writing any \`experience*\` resource.
 
 ## Experience Versions
 
@@ -9,9 +9,9 @@ Versions are snapshots of your experience configuration that can be published to
 
 **Critical**: \`develop\` is the only editable version. All endpoint/view creation and editing happens in develop. Named versions are immutable snapshots published from develop.
 
-**Versioned** (only editable in develop): endpoints, views, experience-type workflows, authorization settings, CORS configuration, version globals.
+**Versioned** (only editable in develop): endpoints, views, experience-type flows, authorization settings, CORS configuration, version globals.
 
-**NOT versioned** (shared across all versions): users, groups, application globals, application workflow storage.
+**NOT versioned** (shared across all versions): users, groups, application globals, application flow storage.
 
 Key fields for \`experienceVersion\`:
 - \`name\`: required, unique within application
@@ -20,9 +20,9 @@ Key fields for \`experienceVersion\`:
 - \`corsWhitelist\`: array of allowed origin URLs (only used when \`corsRestricted\` is true)
 - \`unauthorizedReply\`: what to return when a user hits an access-protected endpoint without auth — \`redirect\` (to a URL), \`render\` (a view), or \`json\` (fallback JSON response)
 - \`notFoundReply\`: same options for unmatched routes
-- \`globals\`: array of \`{ "key": "...", "value": "..." }\` pairs, max 100 — available in all views and workflows for that version
+- \`globals\`: array of \`{ "key": "...", "value": "..." }\` pairs, max 100 — available in all views and flows for that version
 
-### Workflow: Develop → Publish
+### Common Procedure: Develop → Publish
 
 1. Build and test in \`develop\`
 2. Create a named version with \`losant_write\` \`operation=createOne\` \`resourceType=experienceVersion\`
@@ -54,9 +54,9 @@ Key fields for \`experienceView\`:
 - \`{{element "dashboardId"}}\` — embeds a Losant dashboard
 - \`{{file "fileId" ttl=3600}}\` — returns the URL for a public or private application file
 
-**Context always available**: \`time\`, \`application\`, \`experience.user\`, \`experience.endpoint\`, \`experience.page\`, \`experience.version\`, \`request\`, \`pageData\` (set by the workflow via the "Experience Page" node).
+**Context always available**: \`time\`, \`application\`, \`experience.user\`, \`experience.endpoint\`, \`experience.page\`, \`experience.version\`, \`request\`, \`pageData\` (set by the flow via the "Experience Page" node).
 
-### Workflow: Create a view
+### Common Procedure: Create a view
 
 1. Confirm \`viewType\` — layout, page, or component
 2. For pages: query \`resourceType=experienceView\` to find the layout ID if the page should use one
@@ -65,7 +65,7 @@ Key fields for \`experienceView\`:
 
 ## Experience Endpoints
 
-An endpoint is an HTTP method + route combination. When a request matches, it can reply immediately via a **static reply** configured on the endpoint itself, or hand off to an **experience workflow** to build the reply dynamically — or both (static reply takes priority).
+An endpoint is an HTTP method + route combination. When a request matches, it can reply immediately via a **static reply** configured on the endpoint itself, or hand off to an **experience flow** to build the reply dynamically — or both (static reply takes priority).
 
 **Method**: \`GET\`, \`POST\`, \`PUT\`, \`PATCH\`, \`DELETE\`, or \`OPTIONS\`
 
@@ -86,13 +86,13 @@ Routes are matched by specificity — static segments beat parameters, parameter
 | \`device\` | Requests authenticated with a device token — also set \`deviceIdTemplate\` |
 
 **Authorized reply** (\`staticReply\` field) — how to respond to authorized/public requests:
-- \`null\` or omitted: a workflow's Endpoint Reply Node must respond (workflow-driven reply)
-- \`{ "type": "page", "value": "<experienceViewId>", "statusCode": 200 }\` — render an experience page directly, no workflow needed
-- \`{ "type": "redirect", "value": "/home", "statusCode": 301 }\` — redirect to a URL or path, no workflow needed
+- \`null\` or omitted: a flow's Endpoint Reply Node must respond (flow-driven reply)
+- \`{ "type": "page", "value": "<experienceViewId>", "statusCode": 200 }\` — render an experience page directly, no flow needed
+- \`{ "type": "redirect", "value": "/home", "statusCode": 301 }\` — redirect to a URL or path, no flow needed
 
-**Important**: If \`staticReply\` is set AND a workflow fires an Endpoint Reply Node, **the static reply wins**. Workflows still execute but their reply is ignored.
+**Important**: If \`staticReply\` is set AND a flow fires an Endpoint Reply Node, **the static reply wins**. Flows still execute but their reply is ignored.
 
-**Unauthorized reply** (\`unauthorizedReply\` field) — how to respond when an unauthorized user hits a non-public endpoint. No workflows fire for unauthorized requests.
+**Unauthorized reply** (\`unauthorizedReply\` field) — how to respond when an unauthorized user hits a non-public endpoint. No flows fire for unauthorized requests.
 - \`null\` or omitted: falls through to the version's default unauthorized reply setting
 - \`{ "type": "redirect", "value": "/login", "statusCode": 302 }\` — redirect to login
 - \`{ "type": "page", "value": "<experienceViewId>", "statusCode": 401 }\` — render a specific page
@@ -111,14 +111,14 @@ Key fields for \`experienceEndpoint\`:
 
 Rate limit: 50 requests/sec sustained, 500 burst per endpoint.
 
-### Workflow: Create an endpoint
+### Common Procedure: Create an endpoint
 
 1. Confirm method + route + access level
-2. Decide reply strategy: static page render, static redirect, or workflow-driven
+2. Decide reply strategy: static page render, static redirect, or flow-driven
 3. For static page reply: get the experience view ID first (\`losant_query\` \`resourceType=experienceView\`)
 4. Call \`losant_write\` \`operation=createOne\` \`resourceType=experienceEndpoint\`
 5. Check \`losant://schemas/experienceEndpointPost\` for the full body schema
-6. If using workflow-driven reply: create or update an experience-type workflow with an Endpoint Trigger matching this endpoint's method and route
+6. If using flow-driven reply: create or update an experience-type flow with an Endpoint Trigger matching this endpoint's method and route
 
 ## Experience Users
 
@@ -135,7 +135,7 @@ Optional fields:
 
 Users support advanced queries — see \`losant://guides/advanced-queries\` for query syntax.
 
-### Workflow: Add a user and assign to a group
+### Common Procedure: Add a user and assign to a group
 
 1. Confirm email and password
 2. Query for the group IDs if assigning at creation time: \`losant_query\` \`operation=list\` \`resourceType=experienceGroup\`
@@ -172,7 +172,7 @@ Two distinct resource types for routing traffic to an experience version.
 
 Multiple domains/slugs can point to the same version. Change which version a domain/slug serves by updating its \`versionName\`.
 
-### Workflow: Assign a slug to a version
+### Common Procedure: Assign a slug to a version
 
 1. Create a slug: \`losant_write\` \`operation=createOne\` \`resourceType=experienceSlug\` with the \`slug\` name and \`versionName\`
 2. Or update an existing slug: \`losant_write\` \`operation=updateOne\` \`resourceType=experienceSlug\` — set \`versionName\` to the new version name

@@ -53,7 +53,7 @@ export default {
   name: 'losant_timeseries',
   inputInfo:  {
     title: 'Query Losant Timeseries Data',
-    description: "Query device attribute timeseries data, state history, commands, and logs. WORKFLOW: Use this tool to retrieve actual data FROM devices (not device metadata). If device name is provided but deviceId is unknown, first use losant_query to find the device and extract its 'id' field. OPERATION SELECTION: Use 'timeSeriesQuery' or 'lastValueQuery' for multi-device/multi-attribute queries across many devices. Use device-specific operations ('getState', 'getCompositeState', 'getCommand', 'getLogEntries') when querying a single named device. Check losant://docs/data and losant://docs/device for parameter details.",
+    description: "Query device attribute timeseries data, state history, commands, and logs. PROCEDURE: Use this tool to retrieve actual data FROM devices (not device metadata). If device name is provided but deviceId is unknown, first use losant_query to find the device and extract its 'id' field. OPERATION SELECTION: Use 'timeSeriesQuery' or 'lastValueQuery' for multi-device/multi-attribute queries across many devices. Use device-specific operations ('getState', 'getCompositeState', 'getCommand', 'getLogEntries') when querying a single named device. Check losant://docs/data and losant://docs/device for parameter details.",
     inputSchema: z.fromJSONSchema({
       type: 'object',
       properties: {

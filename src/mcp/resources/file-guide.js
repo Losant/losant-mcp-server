@@ -55,9 +55,23 @@ losant_write:
 
 ## Step 2: Upload the File Content
 
+> **This step requires HTTP capabilities outside of this MCP server.** If you do not have a tool that can make arbitrary HTTP requests (e.g. a bash/curl tool), provide the user with the \`upload.url\`, the \`upload.fields\` object, and the curl command below so they can perform the upload themselves.
+
 POST the file content to \`upload.url\` as **multipart/form-data**:
 1. Add all fields from \`upload.fields\` as form fields (they are S3 policy fields — include ALL of them)
 2. Add the file content as the \`file\` form field **last** (S3 requires this ordering)
+
+Example curl:
+\`\`\`bash
+curl -X POST "<upload.url>" \\
+  -F "key=<upload.fields.key>" \\
+  -F "bucket=<upload.fields.bucket>" \\
+  -F "Content-Type=<upload.fields.Content-Type>" \\
+  -F "AWSAccessKeyId=<upload.fields.AWSAccessKeyId>" \\
+  -F "Policy=<upload.fields.Policy>" \\
+  -F "Signature=<upload.fields.Signature>" \\
+  -F "file=@/path/to/your/file"
+\`\`\`
 
 The upload URL is short-lived — upload immediately after receiving the create response.
 
@@ -82,12 +96,12 @@ losant_write:
 \`\`\`
 No upload step needed — directories are pure metadata.
 
-## Common LLM Workflows
+## Common LLM Procedures
 
 ### Upload a new file
 1. Call \`losant_write\` \`operation=createOne\` with \`name\`, \`type: "file"\`, \`contentType\`, and \`fileSize\`
 2. Extract \`response.upload.url\` and \`response.upload.fields\` from the response
-3. POST the file content to the upload URL using multipart/form-data with all \`upload.fields\` fields included
+3. **Requires HTTP outside this MCP server** — POST the file content to the upload URL as multipart/form-data. If you lack that capability, give the user the curl command from the Step 2 section above.
 4. Optionally verify with \`losant_query\` \`operation=get\` that \`status\` is \`"completed"\`
 
 ### Check for an existing file before uploading

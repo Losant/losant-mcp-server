@@ -79,7 +79,7 @@ losant_query:
 
 See \`losant://guides/advanced-queries\` for query syntax and \`losant://schemas/dataTableRowQuery\` for the row query schema.
 
-## Common LLM Workflows
+## Common LLM Procedures
 
 ### Create a data table with columns
 1. Confirm the column names, types, and constraints with the user
@@ -115,17 +115,6 @@ Body is a flat \`{ columnName: value }\` object — no nesting. Values must matc
 
 Check \`losant://schemas/dataTableRowPost\` for the full body schema.
 
-### Insert multiple rows at once
-\`\`\`
-losant_write:
-  operation: createMany
-  resourceType: dataTableRow
-  applicationId: <applicationId>
-  parentResourceId: <dataTableId>
-  body: [{ "columnName": value }, { "columnName": value }, ...]
-\`\`\`
-Body must be an **array** of row objects. Each element follows the same rules as a single insert. Use this instead of looping \`createOne\` when inserting multiple rows.
-
 ### Update a row
 \`\`\`
 losant_write:
@@ -148,7 +137,7 @@ export default {
   uriName: 'losant://guides/data-tables',
   resourceConfig: {
     title: 'Data Tables Guide',
-    description: 'Domain guide for Losant data tables — column schema, constraints, the dataTable/dataTableRow relationship, and common workflows',
+    description: 'Domain guide for Losant data tables — column schema, constraints, the dataTable/dataTableRow relationship, and common procedures for creating and managing tables and rows',
     mimeType: 'text/markdown'
   },
   getContent: async (uri) => {

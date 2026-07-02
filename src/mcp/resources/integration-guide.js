@@ -1,7 +1,7 @@
 import { buildReferenceSection } from './helpers.js';
 const content = `# Integrations Guide
 
-Integrations are bi-directional data bridges between Losant and external messaging systems. When an integration receives a message, it triggers any workflow that has a matching Integration Trigger node. Creating an integration does not process data by itself — it must be paired with a workflow.
+Integrations are bi-directional data bridges between Losant and external messaging systems. When an integration receives a message, it triggers any flow that has a matching Integration Trigger node. Creating an integration does not process data by itself — it must be paired with a flow.
 
 ## Integration Types
 
@@ -117,7 +117,7 @@ Requires a stored GCP service account credential. Do not embed credentials inlin
 - **\`credentialName\`** (string): name of a stored Losant credential resource. Use instead of embedding secrets inline where supported.
 - **\`topics\`** (array of strings): used by \`mqtt\` and \`googlePubSub\` to specify which topics/subscriptions to consume.
 
-## Common LLM Workflows
+## Common LLM Procedures
 
 ### Check if a credential exists before using credentialName
 1. Query \`losant_query\` with \`resourceType=credential\` to list available credentials
@@ -130,7 +130,7 @@ Requires a stored GCP service account credential. Do not embed credentials inlin
 4. Check \`losant://schemas/integrationPost\` for the full body schema
 
 ### After creating an integration
-The integration alone does nothing. To process incoming messages, a Workflow must be configured with an **Integration Trigger** node that references this integration's ID. This is done through the Losant UI or workflow API — it cannot be configured via \`losant_write\`.
+The integration alone does nothing. To process incoming messages, a flow must be configured with an **Integration Trigger** node that references this integration's ID. This is done through the Losant UI or flow API — it cannot be configured via \`losant_write\`.
 
 
 ${buildReferenceSection(['integration'])}
@@ -141,7 +141,7 @@ export default {
   uriName: 'losant://guides/integrations',
   resourceConfig: {
     title: 'Integrations Guide',
-    description: 'Domain guide for Losant integrations — integration types, config objects, credentials, and workflow pairing',
+    description: 'Domain guide for Losant integrations — integration types, config objects, credentials, and common procedures for creating and pairing integrations with flows',
     mimeType: 'text/markdown'
   },
   getContent: async (uri) => {

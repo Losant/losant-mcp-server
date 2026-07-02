@@ -1,7 +1,7 @@
 import { buildReferenceSection } from './helpers.js';
 const content = `# Devices & Device Recipes Guide
 
-Devices are the backbone concept of Losant. Almost everything in the platform exists to serve devices — workflows react to their state, dashboards visualize their data, experiences expose their data to end users. Treat \`device\` and \`deviceRecipe\` as the most important and most nuanced resource types.
+Devices are the backbone concept of Losant. Almost everything in the platform exists to serve devices — flows react to their state, dashboards visualize their data, experiences expose their data to end users. Treat \`device\` and \`deviceRecipe\` as the most important and most nuanced resource types.
 
 ## Device Classes
 
@@ -41,7 +41,7 @@ Key-value pairs for organizing, querying, and filtering devices.
 - Keys: alphanumeric + underscores/hyphens, max 255 chars, case-sensitive
 - Values: any UTF-8, max 255 chars
 
-Tags are first-class query targets — use advanced queries with \`tags\` to filter devices by tag key/value. Tags can also store per-device configuration accessible in workflows and dashboards.
+Tags are first-class query targets — use advanced queries with \`tags\` to filter devices by tag key/value. Tags can also store per-device configuration accessible in flows and dashboards.
 
 ## Device Recipes
 
@@ -51,20 +51,20 @@ A device recipe is a **template** for creating devices with predefined configura
 
 **DeviceRecipe tag**: Every device created from a recipe automatically receives a tag with key \`DeviceRecipe\` and value set to the recipe's ID. This is how you find all devices associated with a recipe. This tag can be removed from a device, which decouples it from the recipe's tracking.
 
-### Workflow: Recipe → Devices
+### Common Procedures: Recipe → Devices
 
 When a user wants to create many similar devices:
 1. Check if a deviceRecipe already exists with the right configuration — query \`resourceType=deviceRecipe\`
 2. If not, create the recipe first with \`losant_write\` \`operation=createOne\`, \`resourceType=deviceRecipe\`
 3. Then bulk-create devices from the recipe
 
-### Workflow: Device → Recipe
+### Common Procedures: Device → Recipe
 
 When a user wants to templatize an existing device:
 1. Get the device with \`losant_query\` \`operation=get\`
 2. Create a recipe using that device's attributes, tags, and deviceClass as the body
 
-## Common LLM Workflows
+## Common LLM Procedures
 
 ### Create a single device
 1. Confirm \`deviceClass\` (default: \`standalone\`)
@@ -84,36 +84,6 @@ When a user wants to templatize an existing device:
 1. Use \`losant_query\` \`operation=list\`, \`resourceType=device\` with an advanced \`query\` on \`tags\`
 2. For each matching device, call \`losant_write\` \`operation=updateOne\` with the change
 3. See \`losant://guides/advanced-queries\` for tag query syntax
-
-### Create devices from an existing recipe (bulk)
-See losant://docs/deviceRecipe for the schema and required fields for bulkCreate.
-**Never copy a recipe's fields and create devices individually.** Use \`createMany\` — it is faster, handles naming automatically, and is the only way to provision credentials per device at scale.
-
-Simple mode — create N devices using the recipe's configuration:
-\`\`\`
-losant_write:
-  operation: createMany
-  resourceType: deviceRecipe
-  applicationId: <applicationId>
-  resourceId: <deviceRecipeId>
-  body: { "count": 10 }
-\`\`\`
-
-CSV mode — create devices with custom names, descriptions, tags, parentId and gatewayId assignments:
-\`\`\`
-losant_write:
-  operation: createMany
-  resourceType: deviceRecipe
-  applicationId: <applicationId>
-  resourceId: <deviceRecipeId>
-  body: {
-    "csv": "name,description,location,floor\\nSensor-001,First sensor,warehouse-a,2\\nSensor-002,Second sensor,warehouse-b,1",
-    "nameColumn": "name",
-    "descriptionColumn": "description",
-    "gatewayIdColumn": "gatewayId",
-    "parentIdColumn": "parentId"
-  }
-\`\`\`
 
 **CSV column mapping rules**: \`name\`, \`description\`, \`gatewayId\`, and \`parentId\` each have an explicit mapping field (\`nameColumn\`, \`descriptionColumn\`, \`gatewayIdColumn\`, \`parentIdColumn\`) that tells the API which CSV column header to read from. **Tags are implicit** — any CSV column that is NOT mapped to one of those four fields is automatically applied as a device tag, with the column header as the tag key and the cell value as the tag value. In the example above, \`location\` and \`floor\` become device tags.
 
@@ -135,7 +105,7 @@ export default {
   uriName: 'losant://guides/devices',
   resourceConfig: {
     title: 'Devices & Device Recipes Guide',
-    description: 'Domain guide for working with Losant devices and device recipes — classes, attributes, tags, recipes, and common workflows',
+    description: 'Domain guide for working with Losant devices and device recipes — classes, attributes, tags, recipes, and common procedures for creating and managing devices and recipes',
     mimeType: 'text/markdown'
   },
   getContent: async (uri) => {

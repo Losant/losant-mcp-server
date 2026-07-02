@@ -268,7 +268,7 @@ const listResourceTool = async (losantClient, { resourceType }, requestParams, l
         details: `The resource type '${resourceType}' does not support advanced queries. Remove the 'query' parameter and use 'filterField' and 'filter' for simple filtering instead.`
       });
     }
-    if (listInput.filterField) {
+    if (listInput.filterField && resourceType !== 'applicationJobLog') {
       errors.push({
         fieldName: 'filterField',
         details: 'The \'filterField\' parameter cannot be used together with the \'query\' parameter. The \'query\' parameter overrides simple filters. Remove the \'filterField\' parameter and include any filtering logic in the \'query\' object instead.'
@@ -340,7 +340,7 @@ export default {
   name: 'losant_query',
   inputInfo: {
     title: 'Query Losant Resources',
-    description: `List or get Losant resources: ${RESOURCE_TYPES.join(', ')}. See losant://guides/losant-query-tool for the full workflow, including how to select an application, handle nested resources, and links to per-resource documentation. For advanced MongoDB-style queries, see losant://guides/advanced-queries.`,
+    description: `List or get Losant resources: ${RESOURCE_TYPES.join(', ')}. See losant://guides/losant-query-tool for the step by step procedures, including how to select an application, handle nested resources, and links to per-resource documentation. For advanced MongoDB-style queries, see losant://guides/advanced-queries.`,
     inputSchema: z.fromJSONSchema({
       type: 'object',
       properties: {

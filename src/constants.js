@@ -34,6 +34,9 @@ export const RESOURCE_TYPES = [
 ];
 
 export const RESOURCE_TYPE_SET = new Set(RESOURCE_TYPES);
+// applicationJobLog is omitted because we do not write them - the jobs created them it's a read only reasource
+// omitting embeddedDeployment until embedded authoring is complete
+// omitting edgeDeployment I'm thinking this may go into a device or flow tool
 export const WRITABLE_RESOURCE_TYPES = [
   'device',
   'deviceRecipe',
@@ -48,7 +51,6 @@ export const WRITABLE_RESOURCE_TYPES = [
   'file',
   'privateFile',
   'notebook',
-  'applicationDashboard',
   'experienceDomain',
   'experienceEndpoint',
   'experienceGroup',
@@ -62,16 +64,9 @@ export const WRITABLE_RESOURCE_TYPES = [
   'flowVersion'
 ];
 
-export const ALLOW_BULK_CREATE_TYPES = new Set([
-  'deviceRecipe',
-  'dataTableRow'
-]);
-
-export const ALLOW_UPDATE_MANY_TYPES = new Set(['event']);
-// events created by devices/workflows, not the LLM
+// events created by devices/flows, not the LLM
 // applications and their readmes are not created by the MCP
 export const NO_CREATE_TYPES = new Set(['event', 'application', 'applicationReadme']);
-export const NO_UPDATE_TYPES = new Set(['flowVersion']); // versions are immutable after creation
 
 // require.resolve('losant-rest') returns .../losant-rest/lib/index.js
 // Go up one directory from lib/ to get the package root
@@ -101,7 +96,7 @@ export const SCHEMA_FILE_ALIASES = {
   privateFilePost: 'filePost.json',
   privateFilePatch: 'filePatch.json',
   // applicationDashboard has no separate Patch schema
-  applicationDashboardPatch: 'applicationDashboardPost.json'
+  applicationDashboardPatch: 'dashboardPatch.json'
 };
 export const SCHEMA_FILES = readdirSync(SCHEMAS_PATH).filter((f) => {
   if (!f.endsWith('.json')) { return false; }
