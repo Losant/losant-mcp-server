@@ -15,7 +15,9 @@ import experienceGuide from './experience-guide.js';
 import indexContent from './build-api-index-content.js';
 import debug from 'debug';
 import memoizee from 'memoizee';
-import { SCHEMA_NAME_TO_FILE, DOC_NAME_TO_FILE, DOCS_PATH, RESOURCE_TYPE_SET, SCHEMAS_PATH, WRITABLE_RESOURCE_TYPES } from '../../constants.js';
+import { SCHEMA_NAME_TO_FILE, DOC_NAME_TO_FILE,
+  DOCS_PATH, RESOURCE_TYPE_SET, SCHEMAS_PATH,
+  WRITABLE_RESOURCE_TYPES, NO_CREATE_TYPES } from '../../constants.js';
 
 const WRITABLE_RESOURCE_TYPE_SET = new Set(WRITABLE_RESOURCE_TYPES);
 const log = debug('losant-mcp-server:mcp:resources');
@@ -87,7 +89,7 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
       }
     } else {
       disclaimerLines.push('- endpoint "get" used by tool `losant_query` as operation "list"');
-      if (WRITABLE_RESOURCE_TYPE_SET.has(fileName.replace(/s$/, ''))) {
+      if (WRITABLE_RESOURCE_TYPE_SET.has(fileName.replace(/s$/, '')) && !NO_CREATE_TYPES.has(fileName.replace(/s$/, ''))) {
         disclaimerLines.push('- endpoint "post" used by tool `losant_write` as operation "createOne"');
       }
     }
@@ -141,7 +143,6 @@ export default (server) => {
   GUIDES_TO_REGISTER.forEach(({ name, uriName, resourceConfig, getContent }) => {
     server.registerResource(name, uriName, resourceConfig, getContent);
   });
-  // log(`Registering schema template for ${Object.keys(SCHEMA_NAME_TO_FILE).length} schemas...`);
 
   server.registerResource(
     'schema',

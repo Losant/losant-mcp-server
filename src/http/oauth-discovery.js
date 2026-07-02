@@ -76,6 +76,9 @@ export const createOAuthServerRoute = () => ({
   handler: async (_request, h) => {
     try {
       const metadata = await fetchAuthServerMetadata();
+      if (!metadata) {
+        throw new Error('Failed to fetch authorization server metadata');
+      }
       return h.response(metadata).type('application/json');
     } catch (error) {
       rollbar.error('OAuth discovery endpoint error', { error });

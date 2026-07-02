@@ -217,7 +217,7 @@ const getResourceTool = async (losantClient, { resourceType, resourceId }, reque
     ]);
     response.readme = readmeResponse?.content || '';
     responseContext.push({ type: 'text', text: JSON.stringify(response, null, 2) });
-    if (!response.readme) {
+    if (!readmeResponse?.lastUpdated) {
       responseContext.push({ type: 'text', text: readmeTxt });
     }
   } else {
