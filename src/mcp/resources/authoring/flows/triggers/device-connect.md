@@ -111,3 +111,10 @@ Edge workflows use `type: "onConnect"` — fires only for the Edge Compute Devic
 ```
 
 - `data.lastDisconnectTime` — ISO timestamp of the last disconnect, or `null` if the device has never disconnected or the GEA was restarted.
+
+## Idiom notes
+
+- **Pair with a Device: Disconnect trigger in the same or a companion workflow** to track full connectivity lifecycle (connect → do work → disconnect → record downtime).
+- **Use the `deviceTag` variant for fleet monitoring.** One trigger fires for every device matching the tag that connects — no need to enumerate individual device IDs.
+- **`triggerId` is the connecting device's ID.** Use it directly instead of querying for the device.
+- **On edge, only the gateway device's own connect fires this trigger.** Peripheral devices connecting through a gateway do not fire it.

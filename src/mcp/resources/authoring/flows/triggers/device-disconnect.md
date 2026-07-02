@@ -117,3 +117,11 @@ Edge workflows use `type: "onDisconnect"` — fires only for the Edge Compute De
 
 - `data.lastConnectTime` — when this session started.
 - `data.reason` — human-readable disconnect reason.
+
+## Idiom notes
+
+- **Pair with a Device: Connect trigger** to track the full connectivity lifecycle.
+- **Use the `deviceTag` variant for fleet monitoring.** One trigger covers all matching devices without enumerating IDs.
+- **`data.disconnectReason` indicates why the connection ended.** Check it to distinguish intentional disconnects from unexpected drops before deciding what action to take.
+- **`triggerId` is the disconnecting device's ID.** Use it to look up or update the specific device without a separate query.
+- **On edge, only the gateway device's own disconnect fires this trigger.** Peripheral device disconnects do not.

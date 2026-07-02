@@ -101,3 +101,10 @@ If multiple triggers have routes that both match a request, **all matching trigg
 - `data.query` — URL query parameters.
 - `data.replyId` — unique request identifier. Pass to an HTTP Response node to send a reply. Every request must be replied to or the client will hang.
 - `triggerId` — always the literal string `"request"`.
+
+## Idiom notes
+
+- **Edge only — this is not an Experience endpoint.** The HTTP Request trigger opens a local HTTP server on the edge device, not a Losant cloud route. Use it for local integrations (Modbus gateways, SCADA systems, local tooling) not for serving end users.
+- **Every request must be replied to.** Wire every execution path to an HTTP Response node — the client will hang until a response is sent or the connection times out.
+- **`data.params` contains path parameters from the configured route.** If the route is `/sensors/{sensorId}`, the sensor ID is at `data.params.sensorId`.
+- **Keep response latency low.** The HTTP client is typically a local device or service expecting a fast reply. Avoid long-running operations (external API calls, heavy computation) in the hot path.

@@ -50,3 +50,10 @@ Same as Cloud.
 ## Edge workflows
 
 Same as Cloud. Minimum GEA 1.5.0.
+
+## Idiom notes
+
+- **Use for testing and manual overrides, not for production triggers.** Virtual buttons are best for one-off tests, manual re-runs, and developer workflows — not for event-driven automation.
+- **Set `meta.payload` to a realistic test payload** to simulate what a real trigger would provide. This lets you test downstream nodes without spinning up a real device or endpoint.
+- **Multiple virtual buttons in one workflow.** Add multiple `virtualButton` entries to the `triggers` array with different `meta.payload` values to test different code paths from the same workflow.
+- **`meta.payload` must be a JSON object string, not a primitive.** `"{\"key\":\"value\"}"` is valid; `"\"hello\""` or `"42"` are not.

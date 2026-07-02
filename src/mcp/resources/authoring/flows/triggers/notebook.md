@@ -59,3 +59,10 @@ Not available.
 ## Edge workflows
 
 Not available.
+
+## Idiom notes
+
+- **Always check `data.success` before acting on outputs.** A `false` value means the notebook execution failed — inspect `data.execution.executionErrors` for details before trying to use output files or `templateContext`.
+- **`data.execution.templateContext` is a JSON-encoded string.** Use a JSON Decode node to parse it into a usable object before accessing its properties.
+- **Output file URLs in `data.execution.outputInfo` are time-limited presigned URLs.** Download or forward them promptly — they expire and cannot be regenerated from the trigger payload.
+- **One trigger per notebook.** The `key` field targets a specific notebook by ID. If you need to react to multiple notebooks, use separate workflows or a single workflow with multiple notebook triggers in the `triggers` array.

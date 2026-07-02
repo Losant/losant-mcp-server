@@ -102,3 +102,10 @@ Not available.
 ## Edge workflows
 
 Not available.
+
+## Idiom notes
+
+- **Always acknowledge each iteration.** Use a Job: Acknowledge node on every execution path of a `resourceJobIteration` workflow — including error branches. Unacknowledged iterations count against the timeout.
+- **Use the accumulator for cross-iteration state.** `data.accumulator` is a JSON-encoded string that persists between iterations. Decode it with a JSON Decode node, update the value, re-encode it, and pass it to the acknowledge node. It is reset to `{}` at the start of each job run.
+- **Handle the timeout trigger separately.** Wire a `resourceJobIterationTimeout` trigger to log or alert on slow iterations. It fires when a single iteration exceeds the job's configured timeout — the iteration is then retried or marked as failed depending on the job config.
+- **Check `data.success` in the `resourceJobComplete` handler** before acting on results. A `false` value means some iterations failed — use `data.execution.executionSummary` to see counts and `data.execution.executionReportUrl` to download the full report.

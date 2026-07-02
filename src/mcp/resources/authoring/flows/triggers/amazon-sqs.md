@@ -132,3 +132,10 @@ Not available.
 ## Edge workflows
 
 Not available.
+
+## Idiom notes
+
+- **Handle `connect`, `disconnect`, and `failure` events alongside `message`.** The integration fires lifecycle events when it connects, disconnects, or fails — branch on `data.status` or `triggerType` to route them correctly rather than assuming every execution is a message.
+- **`data.message` contains the raw SQS message body.** If the producer sends JSON, decode it with a JSON Decode node before processing.
+- **The integration automatically deletes messages from the queue after delivery.** There is no need to manually acknowledge or delete them.
+- **Use `data.attributes` and `data.messageAttributes` for routing metadata** without parsing the message body — SQS allows producers to attach structured metadata to each message.

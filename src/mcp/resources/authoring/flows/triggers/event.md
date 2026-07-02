@@ -106,3 +106,11 @@ Not available.
 ## Edge workflows
 
 Not available.
+
+## Idiom notes
+
+- **Filter by `config.level` to target specific severity tiers.** Use `"critical"` or `"error"` for alerting workflows and `"any"` only for audit/logging workflows that must capture everything.
+- **`data.latestUpdate` is undefined on a freshly created event with no updates.** Check for its presence before accessing `data.latestUpdate.stateChange` or similar fields.
+- **`relayType: "public"` means the event was created or updated by an unauthenticated caller** (public dashboard or unauthenticated Experience User). Use it to distinguish user-initiated event updates from system-generated ones.
+- **This trigger fires on both creation and updates.** Use `data.latestUpdate` to determine whether this is a new event or an update to an existing one — a missing `latestUpdate` means it was just created.
+- **`triggerId` is the event level string** (`"info"`, `"warning"`, `"error"`, `"critical"`, `"any"`), not an event ID. Use `data.event.id` to get the actual event ID.

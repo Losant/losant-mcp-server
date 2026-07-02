@@ -108,3 +108,10 @@ Not available.
 ## Edge workflows
 
 Not available.
+
+## Idiom notes
+
+- **Renaming or moving a file fires the trigger twice** — once as a `delete` at the old path and once as a `create` at the new path. If your workflow needs to handle renames atomically, track the two events via storage or a data table keyed on the file ID.
+- **Scope the `key` path as narrowly as possible.** A trigger watching `"/"` fires on every file operation in the application. Narrow it to the directory your workflow cares about to avoid unnecessary executions.
+- **`data.file` contains the full file object after the operation.** For delete events, the file metadata is still present in the payload even though the file no longer exists.
+- **Use `data.changeType` to branch** on `create`, `update`, and `delete` in a single workflow rather than creating separate triggers for each operation type.

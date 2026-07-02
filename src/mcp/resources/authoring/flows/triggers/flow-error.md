@@ -149,7 +149,7 @@ In Edge Workflows, the trigger only fires for errors within the same workflow. S
 
 The payload shape is identical to Cloud, with one difference: when `scope: "global"` and the error occurred in a **different** workflow, `triggerId` will be `"global-flowError"` instead of `"<workflowId>-flowError"`. To find the erroring workflow's ID in that case, read `data.erroredPayload.flowId`.
 
-## Important notes
+## Idiom notes
 
 - **Only halting errors fire this trigger.** Non-halting errors (where the node places an error object at a result path instead of stopping execution) do not fire it.
 - **No cascading.** If a workflow execution started by a Workflow Error Trigger throws an error itself, it does **not** fire another Workflow Error Trigger. Keep error-handler workflows short and simple.

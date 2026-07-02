@@ -90,3 +90,11 @@ Not available.
 ## Edge workflows
 
 Not available.
+
+## Idiom notes
+
+- **The inactivity timer does not start until after the trigger is saved and the device next reports state.** Devices that are already silent when the trigger is created will not fire it until they report once and then go silent again.
+- **Only state reports reset the inactivity timer.** Connect/disconnect events and other platform activity do not count. Set `config.seconds` based purely on expected state report frequency.
+- **This trigger fires once per inactivity period.** It will not re-fire until the device reports state and then exceeds the threshold again — no repeated alerts for a persistently silent device.
+- **Changing `config.seconds` discards all in-progress timers.** After a save, existing inactivity periods restart fresh on the device's next state report.
+- **Use `data.lastActivity` to compute how long the device has been silent** — subtract it from `time` in a Date/Time node.

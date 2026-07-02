@@ -121,3 +121,11 @@ Not available.
 ## Edge workflows
 
 Not available.
+
+## Idiom notes
+
+- **Use `deviceId` variant for per-device workflows, `deviceTag` variant for fleet-wide workflows.** The tag variant fires once per reporting device, not once per tag group.
+- **`batchBehavior: "once"` fires once across all matching devices.** Use it for fleet aggregations (e.g. "when any truck reports, compute the fleet average"). Use individual (no `batchBehavior`) when you need to act on each device's data separately.
+- **Filter by specific attributes using `attributeFilter`.** Without it the trigger fires on any state report, even if the attributes you care about haven't changed. Narrowing the filter reduces unnecessary executions.
+- **`triggerId` is the reporting device's ID.** Use it as the payload path `data.deviceId` to get the device's ID without hardcoding it.
+- **State timestamps in the payload are the report arrival time, not necessarily the sensor measurement time.** If the device embeds its own timestamp in a state attribute, use that for time-accurate processing.

@@ -244,3 +244,11 @@ Fires when a message arrives from an external MQTT broker configured in the GEA 
 
 - `triggerId` is the MQTT client configuration name, not the topic. The actual topic is in `data.topic`.
 - `data.message` — always a string.
+
+## Idiom notes
+
+- **Use the Losant broker variant for device-to-workflow messaging.** The MQTT integration variant is for external broker subscriptions; the Losant broker variant is the right choice when devices publish to Losant's built-in MQTT endpoint.
+- **Topic wildcards work for the Losant broker.** `losant/<applicationId>/+/state` matches state messages from any device. `#` at the end matches all subtopics. Do not use wildcards that would match unintended topics.
+- **`data.body` is a parsed object when the message is valid JSON, otherwise a raw string.** Always check or JSON Decode it before treating it as structured data.
+- **On edge, the local GEA broker topic uses the raw MQTT path** — not the Losant cloud topic format. Configure the topic to match what local edge agents or peripherals actually publish.
+- **Avoid overlapping topic subscriptions in multiple workflows.** Each matching workflow fires independently; if two workflows share the same topic, both execute on every message.
