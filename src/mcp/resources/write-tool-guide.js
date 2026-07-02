@@ -21,7 +21,6 @@ const GUIDE_FOR_TYPE = {
 };
 let nestedNote = '';
 Object.entries(NESTED_RESOURCES).forEach(([type, { parentField, parentType }]) => {
-  if (type === 'flowVersion') { return; }
   nestedNote += `- \`${type}\` — requires \`parentResourceId\` (the \`${parentField}\`); query \`${parentType}\` first to obtain the id\n`;
 });
 

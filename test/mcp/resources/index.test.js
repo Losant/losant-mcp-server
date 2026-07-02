@@ -206,5 +206,32 @@ describe('MCP Resources', () => {
       indexText.should.match(/## API Documentation/);
       indexText.should.match(/## Query Schemas/);
     });
+
+    it('should provide handler for authoring flow hub', async () => {
+      const result = await client.readResource({ uri: 'losant://authoring/flow' });
+
+      result.should.have.property('contents');
+      result.contents[0].should.have.property('uri', 'losant://authoring/flow');
+      result.contents[0].should.have.property('mimeType', 'text/markdown');
+      result.contents[0].text.should.match(/trigger|node|workflow/i);
+    });
+
+    it('should provide handler for flow node access-key', async () => {
+      const result = await client.readResource({ uri: 'losant://flow/nodes/access-key' });
+
+      result.should.have.property('contents');
+      result.contents[0].should.have.property('uri', 'losant://flow/nodes/access-key');
+      result.contents[0].should.have.property('mimeType', 'text/markdown');
+      result.contents[0].text.should.match(/CreateAccessKeyNode/);
+    });
+
+    it('should provide handler for dashboard block bar', async () => {
+      const result = await client.readResource({ uri: 'losant://dashboard/blocks/bar' });
+
+      result.should.have.property('contents');
+      result.contents[0].should.have.property('uri', 'losant://dashboard/blocks/bar');
+      result.contents[0].should.have.property('mimeType', 'text/markdown');
+      result.contents[0].text.should.match(/Bar Chart Block/);
+    });
   });
 });

@@ -6,7 +6,7 @@ Flows (workflows) are the automation engine of Losant. A flow defines triggers (
 ## Key Concepts
 
 - **flowClass**: determines which triggers and nodes are available — \`cloud\` (general purpose), \`experience\` (backend for Experience endpoints), \`edge\` (runs on gateway hardware), \`embedded\` (low-power devices), \`customNode\` (reusable sub-flow)
-- **Develop version vs. versions**: every flow has a live "develop" version. Use \`losant_write\` with \`resourceType=flow\` to update the develop version. Use \`resourceType=flowVersion\` to snapshot an immutable version.
+- **Develop version vs. versions**: every flow has a live "develop" version. Use \`losant_write\` with \`resourceType=flow\` to update the develop version. Use \`resourceType=flowVersion\` to snapshot a named version.
 - **Triggers and nodes**: both are arrays of objects with type-specific \`config\` and wiring via \`outputIds\`
 
 ## Creating a Flow
@@ -54,7 +54,9 @@ Use \`resourceType=flowVersion\` with \`operation=createOne\` to snapshot the cu
   "enabled": true
 }
 \`\`\`
-Requires \`parentResourceId\` = the \`flowId\`. Versions are immutable — \`updateOne\` is not supported for \`flowVersion\`.
+Requires \`parentResourceId\` = the \`flowId\`.
+
+> **flowVersion triggers and nodes are frozen.** Once a version is created, its trigger and node configuration cannot be changed. \`updateOne\` on a \`flowVersion\` only allows patching \`notes\` and \`enabled\` — nothing structural. To revise the logic, make changes on the develop version (the \`flow\` itself via \`updateOne\`) and then snapshot a new \`flowVersion\`.
 
 ## Common LLM Workflows
 
@@ -71,6 +73,12 @@ Requires \`parentResourceId\` = the \`flowId\`. Versions are immutable — \`upd
 
 ### Snapshot a version
 After the develop version is stable, call \`losant_write\` \`operation=createOne\` \`resourceType=flowVersion\` with \`parentResourceId\` = flowId.
+
+### Revise a published version's logic
+Triggers and nodes in a \`flowVersion\` cannot be edited. To revise:
+1. Use \`losant_query\` \`operation=get\` \`resourceType=flow\` to retrieve the current develop version
+2. Apply your changes to \`triggers\` and \`nodes\` on the develop version via \`losant_write\` \`operation=updateOne\` \`resourceType=flow\`
+3. Snapshot a new \`flowVersion\` with a new version name
 
 ${buildReferenceSection(['flow', 'flowVersion'])}
 `;

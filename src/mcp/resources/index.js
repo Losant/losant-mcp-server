@@ -113,7 +113,7 @@ const readAuthoringContent = memoizee(async (filePath, href) => {
 }, { maxAge: 1000 * 60 * 60, primitive: true });
 
 export default (server) => {
-  log(`Registering ${GUIDES_TO_REGISTER.length + 3} resources...`);
+  log(`Registering ${GUIDES_TO_REGISTER.length} guides resources...`);
   server.registerResource(
     'index',
     'losant://index',
@@ -132,6 +132,7 @@ export default (server) => {
       };
     }
   );
+  log('Registering resource templates...');
   server.registerResource(
     'doc',
     new ResourceTemplate('losant://docs/{docName}', { list: undefined }),

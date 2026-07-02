@@ -108,6 +108,151 @@ describe('write-resources tool', () => {
     });
   });
 
+  describe('Flow Operations', () => {
+    const flowId = '575ed18f7ae143cd83dc4aa6';
+
+    it('should create a flow', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .post(`/applications/${APP_ID}/flows`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .reply(201, {
+          id: flowId, flowId, applicationId: APP_ID, name: 'My Workflow', enabled: true, triggers: [], nodes: [], globals: []
+        });
+
+      const result = await writeTool({
+        operation: 'createOne',
+        resourceType: 'flow',
+        applicationId: APP_ID,
+        body: { name: 'My Workflow', flowClass: 'cloud' }
+      });
+
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('flowId', flowId);
+      response.should.have.property('name', 'My Workflow');
+    });
+
+    it('should update a flow', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .patch(`/applications/${APP_ID}/flows/${flowId}`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .reply(200, {
+          id: flowId, flowId, applicationId: APP_ID, name: 'Updated Workflow', enabled: false, triggers: [], nodes: [], globals: []
+        });
+
+      const result = await writeTool({
+        operation: 'updateOne',
+        resourceType: 'flow',
+        applicationId: APP_ID,
+        resourceId: flowId,
+        body: { name: 'Updated Workflow', enabled: false }
+      });
+
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('name', 'Updated Workflow');
+      response.should.have.property('enabled', false);
+    });
+  });
+
+  describe('FlowVersion Operations', () => {
+    const flowId = '575ed18f7ae143cd83dc4aa6';
+    const flowVersionId = '675ed18f7ae143cd83dc4bb7';
+
+    it('should create a flowVersion with parentResourceId', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .post(`/applications/${APP_ID}/flows/${flowId}/versions`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .reply(201, {
+          id: flowVersionId, flowVersionId, flowId, applicationId: APP_ID, version: 'v1.2.3', enabled: true, triggers: [], nodes: [], globals: []
+        });
+
+      const result = await writeTool({
+        operation: 'createOne',
+        resourceType: 'flowVersion',
+        applicationId: APP_ID,
+        parentResourceId: flowId,
+        body: { version: 'v1.2.3', notes: 'Initial release', enabled: true }
+      });
+
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('flowVersionId', flowVersionId);
+      response.should.have.property('flowId', flowId);
+      response.should.have.property('version', 'v1.2.3');
+    });
+
+    it('should update a flowVersion (notes and enabled only)', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .patch(`/applications/${APP_ID}/flows/${flowId}/versions/${flowVersionId}`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .reply(200, {
+          id: flowVersionId, flowVersionId, flowId, applicationId: APP_ID, version: 'v1.2.3', notes: 'Updated notes', enabled: false, triggers: [], nodes: [], globals: []
+        });
+
+      const result = await writeTool({
+        operation: 'updateOne',
+        resourceType: 'flowVersion',
+        applicationId: APP_ID,
+        parentResourceId: flowId,
+        resourceId: flowVersionId,
+        body: { notes: 'Updated notes', enabled: false }
+      });
+
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('notes', 'Updated notes');
+      response.should.have.property('enabled', false);
+    });
+  });
+
+  describe('ApplicationDashboard Operations', () => {
+    const dashboardId = '575ece2b7ae143cd83dc4a9b';
+
+    it('should create an applicationDashboard using "dashboard" as the body key', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .post(`/applications/${APP_ID}/dashboards`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .reply(201, {
+          id: dashboardId, dashboardId, applicationId: APP_ID, name: 'My Dashboard', public: false, blocks: []
+        });
+
+      const result = await writeTool({
+        operation: 'createOne',
+        resourceType: 'applicationDashboard',
+        applicationId: APP_ID,
+        body: { name: 'My Dashboard', public: false }
+      });
+
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('dashboardId', dashboardId);
+      response.should.have.property('name', 'My Dashboard');
+    });
+
+    it('should update an applicationDashboard using "dashboard" as the body key', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .patch(`/applications/${APP_ID}/dashboards/${dashboardId}`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .reply(200, {
+          id: dashboardId, dashboardId, applicationId: APP_ID, name: 'Updated Dashboard', public: true, blocks: []
+        });
+
+      const result = await writeTool({
+        operation: 'updateOne',
+        resourceType: 'applicationDashboard',
+        applicationId: APP_ID,
+        resourceId: dashboardId,
+        body: { name: 'Updated Dashboard', public: true }
+      });
+
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('name', 'Updated Dashboard');
+      response.should.have.property('public', true);
+    });
+  });
+
   describe('Update Operation — Special Cases', () => {
     it('should update application without resourceId', async () => {
       nock(LOSANT_API_URL, { encodedQueryParams: true })

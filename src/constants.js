@@ -60,6 +60,7 @@ export const WRITABLE_RESOURCE_TYPES = [
   'experienceView',
   'application',
   'applicationReadme',
+  'applicationDashboard',
   'flow',
   'flowVersion'
 ];
