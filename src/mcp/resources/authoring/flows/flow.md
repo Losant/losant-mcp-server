@@ -5,7 +5,7 @@ description: Build, edit, and publish Losant workflows through the API — workf
 
 # Losant Workflow Create and Update
 
-This guide is the entry point for creating and updating Losant workflows through the API. The **envelope and wiring** are described here in full. The **per-type detail** — what goes in a node's or trigger's `config` — is accessed via `losant://flow/nodes/<name>` and `losant://flow/triggers/<name>`, indexed by the catalog tables below. Trivial node and trigger types (the ones whose entire spec fits in ~10 lines) are documented in `losant://flow/nodes/simple` and `losant://flow/triggers/simple`. Cross-cutting concepts that several detail docs reference are at `losant://references/flow/<name>`.
+This guide is the entry point for creating and updating Losant workflows through the API. The **envelope and wiring** are described here in full. The **per-type detail** — what goes in a node's or trigger's `config` — is accessed via `losant://flow/nodes/<name>` and `losant://flow/triggers/<name>`, indexed by the catalog tables below. Cross-cutting concepts that several detail docs reference are at `losant://references/flow/<name>`.
 
 **Reading order for a new authoring task:**
 1. Read the envelope and wiring sections of this file (you're already here).
@@ -317,10 +317,10 @@ See `losant://flow/nodes/loop` for the full pattern and a worked example.
 |---|---|---|
 | `appFile` | cloud | `losant://flow/triggers/app-file` |
 | `beckhoff` | edge | `losant://flow/triggers/beckhoff` |
-| `customNodeStart` | custom | `losant://flow/triggers/simple` |
+| `customNodeStart` | custom | `losant://flow/triggers/custom-node-start` |
 | `dataTable` | cloud | `losant://flow/triggers/data-table` |
 | `deviceCommand` | edge | `losant://flow/triggers/device-command` |
-| `deviceCreate` | cloud | `losant://flow/triggers/simple` |
+| `deviceCreate` | cloud | `losant://flow/triggers/device-create` |
 | `deviceId`, `deviceTag` | cloud | `losant://flow/triggers/device-state` |
 | `deviceIdConnect`, `deviceTagConnect` | cloud | `losant://flow/triggers/device-connect` |
 | `deviceIdDisconnect`, `deviceTagDisconnect` | cloud | `losant://flow/triggers/device-disconnect` |
@@ -338,23 +338,23 @@ See `losant://flow/nodes/loop` for the full pattern and a worked example.
 | `integration` (Particle) | cloud | `losant://flow/triggers/particle` |
 | `integration` (WebSocket) | cloud | `losant://flow/triggers/websocket` |
 | `mqttTopic` | cloud, edge | `losant://flow/triggers/mqtt-topic` |
-| `notebook` | cloud | `losant://flow/triggers/simple` |
-| `onBoot` | edge | `losant://flow/triggers/simple` |
+| `notebook` | cloud | `losant://flow/triggers/notebook` |
+| `onBoot` | edge | `losant://flow/triggers/on-boot` |
 | `onConnect` | edge | `losant://flow/triggers/device-connect` |
 | `onDisconnect` | edge | `losant://flow/triggers/device-disconnect` |
 | `onSync` | edge | `losant://flow/triggers/application-sync` |
 | `opcua` | edge | `losant://flow/triggers/opcua` |
 | `redis` | edge | `losant://flow/triggers/redis` |
 | `request` | edge | `losant://flow/triggers/http-request` |
-| `resourceJobComplete` | cloud | `losant://flow/triggers/simple` |
-| `resourceJobIteration` | cloud | `losant://flow/triggers/simple` |
-| `resourceJobIterationTimeout` | cloud | `losant://flow/triggers/simple` |
+| `resourceJobComplete` | cloud | `losant://flow/triggers/resource-job` |
+| `resourceJobIteration` | cloud | `losant://flow/triggers/resource-job` |
+| `resourceJobIterationTimeout` | cloud | `losant://flow/triggers/resource-job` |
 | `serial` | edge | `losant://flow/triggers/serial` |
 | `snmpTrap` | edge | `losant://flow/triggers/snmp-trap` |
 | `timer` | cloud, edge | `losant://flow/triggers/timer` |
 | `udp` | edge | `losant://flow/triggers/udp` |
-| `virtualButton` | cloud, exp, edge | `losant://flow/triggers/simple` |
-| `webhook` | cloud | `losant://flow/triggers/simple` |
+| `virtualButton` | cloud, exp, edge | `losant://flow/triggers/virtual-button` |
+| `webhook` | cloud | `losant://flow/triggers/webhook` |
 
 ## Node catalog
 
@@ -362,7 +362,7 @@ See `losant://flow/nodes/loop` for the full pattern and a worked example.
 
 | Type | meta.name | meta.category | Available | Spec |
 |---|---|---|---|---|
-| `AnnotationNode` | `note` | annotation | all | `losant://flow/nodes/simple` |
+| `AnnotationNode` | `note` | annotation | all | `losant://flow/nodes/annotation` |
 | `ArrayNode` | `array` | logic | all | `losant://flow/nodes/array` |
 | `AwsLambdaNode` | `aws-lambda` | data | cloud, exp, edge, custom | `losant://flow/nodes/aws` |
 | `AwsS3GetNode` | `aws-s3-get` | data | cloud, exp, edge, custom | `losant://flow/nodes/aws` |
@@ -372,9 +372,9 @@ See `losant://flow/nodes/loop` for the full pattern and a worked example.
 | `AzureFunctionNode` | `azure-function` | data | cloud, exp, edge, custom | `losant://flow/nodes/azure-data` |
 | `AzureTableStorageNode` | `azure-table-storage` | data | cloud, exp, edge, custom | `losant://flow/nodes/azure-data` |
 | `AzureEventHubPublishNode` | `azureEventHubPublish` | output | cloud, exp, edge, custom | `losant://flow/nodes/azure-event-hubs-send` |
-| `Base64DecodeNode` | `base64-decode` | logic | embedded | `losant://flow/nodes/simple` |
-| `Base64EncodeNode` | `base64-encode` | logic | embedded | `losant://flow/nodes/simple` |
-| `BranchOnChangeNode` | `onchange` | logic | cloud, exp, edge, custom | `losant://flow/nodes/simple` |
+| `Base64DecodeNode` | `base64-decode` | logic | embedded | `losant://flow/nodes/base64-decode` |
+| `Base64EncodeNode` | `base64-encode` | logic | embedded | `losant://flow/nodes/base64-encode` |
+| `BranchOnChangeNode` | `onchange` | logic | cloud, exp, edge, custom | `losant://flow/nodes/on-change` |
 | `ConditionalNode` | `conditional` | logic | all | `losant://flow/nodes/conditional` |
 | `CreateDeviceNode` | `create-device` | data | cloud, exp | `losant://flow/nodes/device` |
 | `CSVDecodeNode` | `csv-decode` | logic | cloud, exp, edge, custom | `losant://flow/nodes/csv` |
@@ -386,15 +386,15 @@ See `losant://flow/nodes/loop` for the full pattern and a worked example.
 | `DataTableInsertRowNode` | `insert-table-row` | data | cloud, exp, custom | `losant://flow/nodes/data-table` |
 | `DataTableUpdateRowNode` | `update-table-row` | data | cloud, exp, custom | `losant://flow/nodes/data-table` |
 | `DateTimeNode` | `date-time` | logic | cloud, exp, edge, custom | `losant://flow/nodes/date-time` |
-| `DebugNode` | `debug` | debug | all | `losant://flow/nodes/simple` |
-| `DelayNode` | `delay` | logic | cloud, exp, edge, custom | `losant://flow/nodes/simple` |
-| `DeviceSendCommandNode` | `device-command` | output | cloud, exp, custom | `losant://flow/nodes/output` |
+| `DebugNode` | `debug` | debug | all | `losant://flow/nodes/debug` |
+| `DelayNode` | `delay` | logic | cloud, exp, edge, custom | `losant://flow/nodes/delay` |
+| `DeviceSendCommandNode` | `device-command` | output | cloud, exp, custom | `losant://flow/nodes/device-command` |
 | `DeviceDeleteWorkflowNode` | `delete-device` | data | cloud, exp | `losant://flow/nodes/device` |
 | `GetDeviceNode` | `get-device` | data | cloud, exp, custom | `losant://flow/nodes/device` |
-| `DeviceChangeStateNode` | `device-state` | output | cloud, exp, edge, custom | `losant://flow/nodes/output` |
+| `DeviceChangeStateNode` | `device-state` | output | cloud, exp, edge, custom | `losant://flow/nodes/device-state` |
 | `DeviceUpdateNode` | `update-device` | data | cloud, exp, custom | `losant://flow/nodes/device` |
-| `StructureEmailNode` | `structure-email` | output | cloud, exp, custom | `losant://flow/nodes/output` |
-| `EndpointReplyNode` | `endpoint-reply` | output | cloud, exp | `losant://flow/nodes/output` |
+| `StructureEmailNode` | `structure-email` | output | cloud, exp, custom | `losant://flow/nodes/email` |
+| `EndpointReplyNode` | `endpoint-reply` | output | cloud, exp | `losant://flow/nodes/endpoint-reply` |
 | `EventCreateNode` | `create-event` | data | cloud, exp, custom | `losant://flow/nodes/event` |
 | `DeleteEventNode` | `delete-event` | data | cloud, exp, custom | `losant://flow/nodes/event` |
 | `EventGetNode` | `get-event` | data | cloud, exp, custom | `losant://flow/nodes/event` |
@@ -402,7 +402,7 @@ See `losant://flow/nodes/loop` for the full pattern and a worked example.
 | `FileCreateNode` | `file-create` | data | cloud, exp, custom | `losant://flow/nodes/file` |
 | `FileGetNode` | `file-get` | data | cloud, exp, custom | `losant://flow/nodes/file` |
 | `GaugeNode` | `gauge` | data | cloud, exp, custom | `losant://flow/nodes/time-series` |
-| `GenerateIdNode` | `generate-id` | logic | all | `losant://flow/nodes/simple` |
+| `GenerateIdNode` | `generate-id` | logic | all | `losant://flow/nodes/generate-id` |
 | `GeofenceNode` | `geofence` | logic | cloud, exp, edge, custom | `losant://flow/nodes/geofence` |
 | `GetValueNode` | `get-value` | data | all | `losant://flow/nodes/storage` |
 | `GoogleBigQueryNode` | `google-bigquery` | data | cloud, exp, edge, custom | `losant://flow/nodes/google-data` |
@@ -414,12 +414,12 @@ See `losant://flow/nodes/loop` for the full pattern and a worked example.
 | `HashNode` | `hash` | logic | cloud, exp, edge, custom | `losant://flow/nodes/crypto` |
 | `HttpNode` | `http` | data/output | cloud, exp, edge, custom | `losant://flow/nodes/http` |
 | `HttpResponseNode` | `http-response` | output | edge | `losant://flow/nodes/http-response` |
-| `JsonDecodeNode` | `json-decode` | logic | all | `losant://flow/nodes/simple` |
-| `JsonEncodeNode` | `json-encode` | logic | all | `losant://flow/nodes/simple` |
+| `JsonDecodeNode` | `json-decode` | logic | all | `losant://flow/nodes/json-decode` |
+| `JsonEncodeNode` | `json-encode` | logic | all | `losant://flow/nodes/json-encode` |
 | `JWTCreateNode` | `jwt-create` | logic | cloud, exp, edge, custom | `losant://flow/nodes/jwt` |
 | `JWTDecodeNode` | `jwt-decode` | logic | cloud, exp, edge, custom | `losant://flow/nodes/jwt` |
 | `JWTVerifyNode` | `jwt-verify` | logic | cloud, exp, edge, custom | `losant://flow/nodes/jwt` |
-| `LatchNode` | `latch` | logic | all | `losant://flow/nodes/simple` |
+| `LatchNode` | `latch` | logic | all | `losant://flow/nodes/latch` |
 | `LosantApiNode` | `losantapi` | data | cloud, exp, edge, custom | `losant://flow/nodes/losant-api` |
 | `LoopCapNode` | `loop-return` | loop | cloud, exp, edge, custom | `losant://flow/nodes/loop` |
 | `LoopNode` | `loop` | logic | cloud, exp, edge, custom | `losant://flow/nodes/loop` |
@@ -431,7 +431,7 @@ See `losant://flow/nodes/loop` for the full pattern and a worked example.
 | `NotebookExecuteNode` | `notebook-execute` | output | cloud, exp, custom | `losant://flow/nodes/notebook-execute` |
 | `ObjectNode` | `object` | logic | cloud, exp, edge, custom | `losant://flow/nodes/object` |
 | `ParticleCallNode` | `particle-call` | output | cloud, exp, edge, custom | `losant://flow/nodes/particle-call` |
-| `RandomNumberNode` | `random-number` | logic | all | `losant://flow/nodes/simple` |
+| `RandomNumberNode` | `random-number` | logic | all | `losant://flow/nodes/random-number` |
 | `RawFunctionNode` | `function` | logic | cloud, exp, edge, custom | `losant://flow/nodes/function` |
 | `RedisNode` | `redis` | data | cloud, exp, edge, custom | `losant://flow/nodes/redis-node` |
 | `ResourceJobAcknowledgeNode` | `resource-job-acknowledge` | output | cloud, exp, custom | `losant://flow/nodes/job` |
@@ -439,14 +439,14 @@ See `losant://flow/nodes/loop` for the full pattern and a worked example.
 | `SalesforceNode` | `salesforce-service` | data | cloud, exp, custom | `losant://flow/nodes/salesforce` |
 | `SendgridEmailNode` | `sendgrid` | output | cloud, exp, edge, custom | `losant://flow/nodes/sendgrid` |
 | `ServiceNowNode` | `service-now` | data | cloud, exp, edge, custom | `losant://flow/nodes/service-now` |
-| `SlackNode` | `slack` | output | cloud, exp, custom | `losant://flow/nodes/output` |
+| `SlackNode` | `slack` | output | cloud, exp, custom | `losant://flow/nodes/slack` |
 | `SnowflakeNode` | `snowflake` | data | cloud, exp, edge, custom | `losant://flow/nodes/snowflake` |
 | `SqlNode` | `sql` | data | cloud, exp, edge, custom | `losant://flow/nodes/sql` |
 | `SqsSendNode` | `sqs-send` | output | cloud, exp, edge, custom | `losant://flow/nodes/sqs-send` |
 | `StoreValueNode` | `store-value` | data | all | `losant://flow/nodes/storage` |
 | `StringNode` | `string` | logic | cloud, exp, edge, custom | `losant://flow/nodes/string` |
 | `SwitchNode` | `switch` | logic | all | `losant://flow/nodes/switch` |
-| `ThrowErrorNode` | `throw-error` | debug | all | `losant://flow/nodes/simple` |
+| `ThrowErrorNode` | `throw-error` | debug | all | `losant://flow/nodes/throw-error` |
 | `ThrottleNode` | `throttle` | logic | cloud, exp, edge, custom | `losant://flow/nodes/throttle` |
 | `TimeRangeNode` | `time-range` | logic | cloud, exp, edge, custom | `losant://flow/nodes/time-range` |
 | `TimeSeriesNode` | `time-series` | data | cloud, exp, custom | `losant://flow/nodes/time-series` |

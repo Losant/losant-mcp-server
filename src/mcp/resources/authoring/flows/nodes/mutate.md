@@ -124,3 +124,11 @@ Equivalent to `copy` + `remove` in a single operation.
 - **Rules run in order** — a later rule can reference a value written by an earlier rule in the same node.
 - The `working` namespace is the idiomatic scratchpad for intermediate values.
 - Setting `valueTemplateType: "json"` on a template that doesn't produce valid JSON will store `undefined`.
+
+## Experience workflows
+
+Same as Cloud.
+
+## Edge workflows
+
+Same as Cloud.

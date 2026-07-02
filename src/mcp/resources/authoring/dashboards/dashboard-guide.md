@@ -10,7 +10,8 @@ This guide is the entry point for creating and updating Losant dashboards throug
 **Reading order for a new authoring task:**
 1. Read the envelope, layout, and block-shape sections of this file (you're already here).
 2. For each block type you intend to use, locate it in the catalog and read its Spec file.
-3. If the user wants the dashboard to be parameterized (one layout, different devices/attributes/users), read `reference/context-configuration.md`.
+3. If the user wants the dashboard to be parameterized (one layout, different devices/attributes/users), read `losant://references/dashboard/context-configuration`.
+4. If the dashboard will be served inside a Losant Experience (as part of a web portal for experience users), read `losant://authoring/experience-view` — dashboards can be embedded via a dedicated Dashboard Page view type or inline in an HTML page using the `{{element 'dashboard' ...}}` Handlebars helper, with context variable values driven directly from the experience request context.
 
 ---
 
@@ -216,7 +217,8 @@ The **Needs app?** column says whether a block's per-block `applicationId` is re
 
 ## Cross-cutting reference
 
-- `reference/context-configuration.md` — the six context-variable types, how blocks reference them, validation, and the URL `?ctx[name]=value` mechanism.
+- [losant://references/dashboard/context-configuration](losant://references/dashboard/context-configuration) — the six context-variable types, how blocks reference them, validation, the URL `?ctx[name]=value` mechanism, and how context values are supplied when dashboards are embedded in Experience pages.
 - `reference/templates.md` — Losant's Handlebars dialect, the helpers available in block templates and conditions (`format`, expressions, etc.), and the dashboard render context (`{{ctx.x}}`, `{{dashboard.duration}}`, `{{value-i}}`, `{{time-i}}`).
 - `reference/device-queries.md` — the device-query JSON shape used in `deviceIds` / `deviceTags` / `query` selectors on many blocks.
 - `reference/aggregations.md` — the aggregation enum (`MEAN`, `MAX`, `MIN`, `COUNT`, `SUM`, `MEDIAN`, `STDDEV`, `FIRST`, `LAST`, `NONE`) used by time-series and gauge-style blocks.
+- [losant://authoring/experience-view](losant://authoring/experience-view) — how to embed this dashboard in a Losant Experience view, and how to wire experience request context (user, path params, pageData) into dashboard context variables.

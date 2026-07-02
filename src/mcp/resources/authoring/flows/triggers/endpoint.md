@@ -11,6 +11,58 @@ The Endpoint Trigger fires a workflow when the selected Experience Endpoint rece
 | `meta.name` | `"endpoint"` |
 | `meta.label` | `"Endpoint"` (default) |
 
+## Cloud (Application) workflows
+
+> **Not recommended.** Endpoint triggers in cloud workflows bypass Experience Version routing. Use `flowClass: "experience"` instead. Cloud support exists only for legacy reasons.
+
+Three selection modes are available in cloud workflows. `config.experienceVersion` is always sent and defaults to `"develop"`.
+
+### Specific endpoint in a version
+
+```json
+{
+  "type": "endpoint",
+  "key": "5f1c2d3e4f5a6b7c8d9e0f1a",
+  "config": { "experienceVersion": "develop" },
+  "meta": {
+    "category": "trigger",
+    "name": "endpoint",
+    "label": "Endpoint",
+    "x": 60,
+    "y": 60
+  },
+  "outputIds": [["handle-request"]]
+}
+```
+
+### Any endpoint in a specific version
+
+```json
+{
+  "type": "endpoint",
+  "key": "000000000000000000000000",
+  "config": { "experienceVersion": "develop" },
+  "meta": { "category": "trigger", "name": "endpoint", "label": "Endpoint", "x": 60, "y": 60 },
+  "outputIds": [["log-request"]]
+}
+```
+
+### Any endpoint in any version
+
+```json
+{
+  "type": "endpoint",
+  "key": "000000000000000000000000",
+  "config": {},
+  "meta": { "category": "trigger", "name": "endpoint", "label": "Endpoint", "x": 60, "y": 60 },
+  "outputIds": [["log-request"]]
+}
+```
+
+**`config.experienceVersion`** — Required for "specific endpoint" and "any endpoint in a specific version" modes. Defaults to `"develop"`. Omit only for "any endpoint in any version".
+
+The payload shape is identical to experience workflows.
+
 ## Experience workflows
 
 > **Strongly recommended.** Always use `flowClass: "experience"` for endpoint triggers. Experience workflows are version-aware — a request to your `develop` domain fires only the develop version of the workflow, keeping routing behavior predictable. Using cloud workflows for endpoints bypasses versioning and leads to unpredictable behavior.
@@ -105,58 +157,6 @@ Fires on any request to any endpoint in the same Experience Version as the workf
 ### Notes on "any endpoint" triggers
 
 Fires for requests that match no endpoint (404), unauthorized requests (401/403). Does **not** fire for 429, 400, 413, or automatic OPTIONS/CORS replies.
-
-## Cloud (Application) workflows
-
-> **Not recommended.** Endpoint triggers in cloud workflows bypass Experience Version routing. Use `flowClass: "experience"` instead. Cloud support exists only for legacy reasons.
-
-Three selection modes are available in cloud workflows. `config.experienceVersion` is always sent and defaults to `"develop"`.
-
-### Specific endpoint in a version
-
-```json
-{
-  "type": "endpoint",
-  "key": "5f1c2d3e4f5a6b7c8d9e0f1a",
-  "config": { "experienceVersion": "develop" },
-  "meta": {
-    "category": "trigger",
-    "name": "endpoint",
-    "label": "Endpoint",
-    "x": 60,
-    "y": 60
-  },
-  "outputIds": [["handle-request"]]
-}
-```
-
-### Any endpoint in a specific version
-
-```json
-{
-  "type": "endpoint",
-  "key": "000000000000000000000000",
-  "config": { "experienceVersion": "develop" },
-  "meta": { "category": "trigger", "name": "endpoint", "label": "Endpoint", "x": 60, "y": 60 },
-  "outputIds": [["log-request"]]
-}
-```
-
-### Any endpoint in any version
-
-```json
-{
-  "type": "endpoint",
-  "key": "000000000000000000000000",
-  "config": {},
-  "meta": { "category": "trigger", "name": "endpoint", "label": "Endpoint", "x": 60, "y": 60 },
-  "outputIds": [["log-request"]]
-}
-```
-
-**`config.experienceVersion`** — Required for "specific endpoint" and "any endpoint in a specific version" modes. Defaults to `"develop"`. Omit only for "any endpoint in any version".
-
-The payload shape is identical to experience workflows.
 
 ## Edge workflows
 

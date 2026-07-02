@@ -142,9 +142,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const AUTHORING_PATH = path.join(__dirname, 'mcp/resources/authoring');
 
 export const AUTHORING_HUB_TO_FILE = {
-  flow: path.join(AUTHORING_PATH, 'flows/flow.md'),
-  dashboard: path.join(AUTHORING_PATH, 'dashboards/dashboard-guide.md'),
-  experience: path.join(AUTHORING_PATH, 'experiences/experience-view.md')
+  'flow': path.join(AUTHORING_PATH, 'flows/flow.md'),
+  'dashboard': path.join(AUTHORING_PATH, 'dashboards/dashboard-guide.md'),
+  'experience-view': path.join(AUTHORING_PATH, 'experiences/experience-view.md')
 };
 
 const flowNodesDir = path.join(AUTHORING_PATH, 'flows/nodes');
