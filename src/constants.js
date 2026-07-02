@@ -34,6 +34,8 @@ export const RESOURCE_TYPES = [
 
 export const RESOURCE_TYPE_SET = new Set(RESOURCE_TYPES);
 // applicationJobLog is omitted because we do not write them - the jobs created them it's a read only reasource
+// omitting embeddedDeployment until embedded authoring is complete
+// omitting edgeDeployment I'm thinking this may go into a device or flow tool
 export const WRITABLE_RESOURCE_TYPES = [
   'device',
   'deviceRecipe',
@@ -56,9 +58,7 @@ export const WRITABLE_RESOURCE_TYPES = [
   'experienceVersion',
   'experienceView',
   'application',
-  'applicationReadme',
-  'edgeDeployment',
-  'embeddedDeployment'
+  'applicationReadme'
   // 'applicationDashboard', will be added in another branch
   // 'flow', will be added in another branch
   // 'flowVersion', will be added in another branch
