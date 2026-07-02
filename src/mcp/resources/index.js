@@ -12,6 +12,8 @@ import credentialGuide from './credential-guide.js';
 import fileGuide from './file-guide.js';
 import notebookGuide from './notebook-guide.js';
 import experienceGuide from './experience-guide.js';
+import dashboardGuide from './dashboard-guide.js';
+import flowGuide from './flow-guide.js';
 import indexContent from './build-api-index-content.js';
 import debug from 'debug';
 import memoizee from 'memoizee';
@@ -24,12 +26,13 @@ const GUIDES_TO_REGISTER = [
   advancedQueryGuide,
   queryToolGuide,
   writeToolGuide,
+  dashboardGuide,
   credentialGuide,
   dataTableGuide,
   deviceGuide,
   experienceGuide,
   fileGuide,
-  // flowGuide,
+  flowGuide,
   integrationGuide,
   notebookGuide,
   resourceJobGuide
