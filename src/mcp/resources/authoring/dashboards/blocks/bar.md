@@ -28,7 +28,7 @@ See the parent `dashboard-guide.md` for block object shape, layout grid, and `ap
 | `xAxisMax` | number \| string | — | Manual upper bound for the X axis. |
 | `segments` | object[] | — | **Required. At least one.** Each segment is one series of bars. |
 
-### Segment shape
+### Segments
 
 Each `segments` entry is a `commonSegment` object:
 
@@ -70,3 +70,11 @@ Each `segments` entry is a `commonSegment` object:
   }
 }
 ```
+
+## Idiom notes
+
+- Use `aggregation: "LAST"` for "current value" comparisons; use `"MEAN"` or `"MAX"` when comparing over a historical window.
+- One device per segment is the standard pattern — it gives each bar a distinct label. To compare multiple attributes on one device, use one segment per attribute.
+- `realTime: false` is the typical choice; bar charts are point-in-time snapshots.
+- Assign explicit `color` values to make bars distinguishable — auto-assigned colors repeat on long segment lists.
+- `xAxisMin` / `xAxisMax` are useful when you want a fixed scale across dashboard refreshes (e.g., always 0–100 for a percentage metric).

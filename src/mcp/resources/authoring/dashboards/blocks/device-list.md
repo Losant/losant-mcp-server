@@ -33,7 +33,7 @@ See the parent `dashboard-guide.md` for the block object shape, layout grid, and
 | `deviceLinkNewWindow` | boolean | `false` | When true, device-name links open in a new tab. |
 | `columns` | object[] | — | **Required. At least one.** Column definitions. |
 
-### Column shapes
+### Column types
 
 Each column has `type`, `headerTemplate`, and `id` (optional). **`rowTemplate` is required for most column types** — without it the cell renders empty. The default value for data-bearing columns is `{{format value}}`, which uses Losant's `format` helper to render the cell value.
 

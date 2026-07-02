@@ -30,36 +30,26 @@ Key fields for \`experienceVersion\`:
 
 ## Experience Views
 
-Views render HTML, CSS, JavaScript, JSON, or dashboard content. Set \`viewType\` at creation — it cannot be changed.
+Views render HTML, CSS, JavaScript, JSON, or dashboard content to the user. Three view types: \`layout\` (wrapper), \`page\` (primary content), \`component\` (reusable snippet). \`viewType\` cannot be changed after creation.
 
-| viewType | Purpose | Key constraint |
-|---|---|---|
-| \`layout\` | Wrapper template for pages | Must include \`{{page}}\` placeholder |
-| \`page\` | Primary content rendered to the user | Optionally references a \`layoutId\` |
-| \`component\` | Reusable snippet included in other views | Invoked via \`{{component "name"}}\` |
-
-**Page content types** (set via \`pageType\` inside \`page\` views): \`haml\` (default), \`css\`, \`javascript\`, \`json\`, \`dashboard\` (embeds a Losant dashboard), or a custom MIME type string.
+**For full view authoring detail** — body constraints, page types, headers, versions, all Handlebars helpers, and worked examples — read \`losant://authoring/experience\`.
 
 Key fields for \`experienceView\`:
-- \`name\`: required, must be unique per \`viewType\` within the version
-- \`description\`: optional
+- \`name\`: required, unique per \`viewType\` within the version
 - \`viewType\`: required — \`layout\`, \`page\`, or \`component\`
-- \`layoutId\`: optional for pages, omit for layouts and components
+- \`versions\`: array of version names the view belongs to (e.g. \`["develop"]\`)
+- \`body\`: Handlebars template content, max 131,072 bytes, validated at save
+- \`layoutId\`: page only — ID of the layout to wrap this page (must be in the same \`versions\`)
+- \`pageType\`: page only — \`haml\` (default), \`css\`, \`javascript\`, \`json\`, \`dashboard\`, or custom MIME string
+- \`headers\`: page only — up to one custom HTTP response header
 - \`viewTags\`: array of \`{ "key": "...", "value": "..." }\` metadata pairs
 
-**Handlebars helpers available in all views:**
-- \`{{page}}\` — required in layouts; injects the page content
-- \`{{#fillSection "name"}} ... {{/fillSection}}\` — in pages; fills a named section defined in the layout
-- \`{{component "name" context}}\` — renders a component view with optional context
-- \`{{element "dashboardId"}}\` — embeds a Losant dashboard
-- \`{{file "fileId" ttl=3600}}\` — returns the URL for a public or private application file
-
-**Context always available**: \`time\`, \`application\`, \`experience.user\`, \`experience.endpoint\`, \`experience.page\`, \`experience.version\`, \`request\`, \`pageData\` (set by the flow via the "Experience Page" node).
+The render context (\`request\`, \`experience.user\`, \`pageData\`, \`globals\`, etc.) is documented at \`losant://references/experience/context\`.
 
 ### Common Procedure: Create a view
 
-1. Confirm \`viewType\` — layout, page, or component
-2. For pages: query \`resourceType=experienceView\` to find the layout ID if the page should use one
+1. Confirm \`viewType\` and \`pageType\` (for pages)
+2. For pages with a layout: query \`resourceType=experienceView\` to find the layout ID, confirm it is in \`versions: ["develop"]\`
 3. Call \`losant_write\` \`operation=createOne\` \`resourceType=experienceView\`
 4. Check \`losant://schemas/experienceViewPost\` for the full body schema
 

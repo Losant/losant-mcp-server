@@ -26,7 +26,7 @@ See the parent `dashboard-guide.md` for block object shape, layout grid, and `ap
 | `percentFormat` | string | — | D3 format string for the percentage (e.g. `".1%"`). |
 | `segments` | object[] | — | **Required. At least one.** Each segment is one slice. |
 
-### Segment shape
+### Segments
 
 ```json
 {
@@ -41,7 +41,7 @@ See the parent `dashboard-guide.md` for block object shape, layout grid, and `ap
 
 Same device-selection fields as the bar block: `deviceIds`, `deviceTags`, `query`. `expression` allows value transformation.
 
-## Worked example — energy mix by source
+## Worked example — energy mix by three sources
 
 ```json
 {
@@ -61,3 +61,11 @@ Same device-selection fields as the bar block: `deviceIds`, `deviceTags`, `query
   }
 }
 ```
+
+## Idiom notes
+
+- Use `aggregation: "MEAN"` or `"LAST"` to show current proportions; use `"SUM"` when you want total contribution over the duration (e.g., total energy produced).
+- Keep segments to 7 or fewer — more slices become hard to distinguish visually.
+- `realTime: false` is almost always correct for pie charts; they represent a point-in-time distribution, not a stream.
+- Omit `valueFormat` and `percentFormat` to use the defaults — add them only when you need specific decimal precision or currency formatting.
+- Each segment maps to one slice. To compare one attribute across multiple devices, use one segment per device with explicit `deviceIds`.

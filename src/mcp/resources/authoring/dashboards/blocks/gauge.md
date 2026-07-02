@@ -31,7 +31,7 @@ See the parent `dashboard-guide.md` for the block object shape, layout grid, and
 | `segment` | object | — | **Required.** Single device data query (see Segment below). |
 | `conditions` | object[] | — | Ordered list of conditional display overrides. First truthy `condition` expression wins. |
 
-### `segment` — device data query
+### Segment
 
 The gauge block uses a single `segment` object (not an array):
 
@@ -45,7 +45,7 @@ The gauge block uses a single `segment` object (not an array):
 | `label` | string | Optional display label. |
 | `expression` | string | Optional Handlebars transform applied to the value before display. Available: `{{value}}`, `{{time}}`, `{{ctx.<name>}}`. |
 
-### `conditions` — conditional display
+### Conditions
 
 Array of condition objects, evaluated top-to-bottom. The first truthy condition's properties override the display:
 

@@ -108,6 +108,57 @@ Anywhere a block config field is templated, `{{ctx.<name>}}` substitutes the var
 
 Most blocks' `deviceIds` and `deviceTags` arrays accept context-variable placeholders directly (see the `deviceIdsAllowCtx` / `deviceTagsAllowCtx` references in block specs). Plain string fields (titles, expressions, decorator labels) accept Handlebars in general.
 
+## Supplying context from an Experience page
+
+When a dashboard is rendered inside a Losant Experience, context variable values are injected by the experience page rather than by the viewer via the toolbar or URL. There are two patterns, and both draw from the same experience request context tree (`request.params`, `request.query`, `request.body`, `experience.user`, `pageData`).
+
+### Dashboard Page type
+
+A dedicated experience view type ("Dashboard" page type) lets you select a dashboard and define each context variable's value directly in the page configuration. Values can be static or Handlebars templates referencing any part of the request context:
+
+```
+deviceId  → {{request.params.deviceId}}
+userId    → {{experience.user.id}}
+range     → {{request.query.range}}
+threshold → {{pageData.alertThreshold}}
+```
+
+No URL construction or iframes required — the page configuration flatly maps request-context properties onto dashboard context variables.
+
+### `{{element}}` helper in an HTML page
+
+An HTML experience page can embed a dashboard inline using the `{{element}}` Handlebars helper. Context is passed as named arguments via the `ctx` key:
+
+```handlebars
+{{element
+  'dashboard'
+  dashboardId=pageData.dashboardId
+  ctx=(obj
+    deviceId=request.params.deviceId
+    experienceUserId=experience.user.id
+    range=request.query.range
+  )
+}}
+```
+
+The `(obj ...)` helper builds the context object inline from any values available in the page's render context.
+
+### The experience request context
+
+Both patterns draw from the same root context object available to any experience view:
+
+| Source | What it provides |
+|---|---|
+| `request.params` | URL path parameters (e.g. `/devices/:deviceId` → `request.params.deviceId`) |
+| `request.query` | Query string values (e.g. `?range=86400000`) |
+| `request.body` | POST/PATCH request body |
+| `experience.user` | Logged-in user's ID, tags, groups, and other properties |
+| `pageData` | Any data the backing Experience Workflow computed and passed to the page via the Endpoint Reply node |
+
+`pageData` is the most flexible source — the backing workflow can query devices, look up records, perform calculations, and pass the results as a structured object, any field of which can flow into a dashboard context variable.
+
+See `losant://guides/experiences` for Experience endpoint, view, and workflow authoring.
+
 ## Idiom
 
 - Build the dashboard around one or two context variables; resist the urge to parameterize everything.

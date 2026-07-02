@@ -5,7 +5,7 @@ description: Build, edit, and update Losant dashboards through the API — dashb
 
 # Losant Dashboard Authoring
 
-This guide is the entry point for creating and updating Losant dashboards through the API. The **envelope, layout grid, and shared block shape** are described here in full. The **per-block detail** — what goes in a block's `config` — lives in `blocks/<name>.md`, indexed by the catalog table below. Trivial block types (the ones whose entire spec fits in ~10 lines) are documented in `blocks/simple.md`. Cross-cutting concepts that several block docs reference live in `reference/`.
+This guide is the entry point for creating and updating Losant dashboards through the API. The **envelope, layout grid, and shared block shape** are described here in full. The **per-block detail** — what goes in a block's `config` — lives in `losant://dashboard/blocks/{blockType}`, indexed by the catalog table below. Cross-cutting concepts that several block docs reference live in `reference/`.
 
 **Reading order for a new authoring task:**
 1. Read the envelope, layout, and block-shape sections of this file (you're already here).
@@ -164,31 +164,31 @@ See `reference/context-configuration.md` for the full variable-type details and 
 
 | `blockType` | Human-facing name | Needs app? | Spec |
 |---|---|---|---|
-| `application-list` | Application List | no | `blocks/simple.md#application-list` |
-| `bar` | Bar Chart | yes | `blocks/bar.md` |
-| `custom-chart` | Custom Chart | yes | `blocks/custom-block.md` |
-| `custom-html` | Custom HTML | yes | `blocks/custom-block.md` |
-| `dashboard-list` | Dashboard List | no | `blocks/simple.md#dashboard-list` |
-| `data-table` | Data Table | yes | `blocks/data-table.md` |
-| `device-count` | Device Count | yes | `blocks/device-count.md` |
-| `device-list` | Device List | yes | `blocks/device-list.md` |
-| `device-log` | Device Connection Log | yes | `blocks/simple.md#device-log` |
-| `device-state-table` | Device State Table | yes | `blocks/device-state-table.md` |
-| `event-list` | Event List | yes | `blocks/event-list.md` |
-| `gauge` | Gauge | yes | `blocks/gauge.md` |
-| `graph` | **Time Series Graph** | yes | `blocks/graph.md` |
-| `heatmap` | GPS Heatmap | yes | `blocks/heatmap.md` |
-| `iframe` | External Website | no | `blocks/simple.md#iframe` |
-| `image` | Image | yes | `blocks/simple.md#image` |
-| `image-overlay` | Image Overlay | yes | `blocks/image-overlay.md` |
-| `indicator` | Indicator | yes | `blocks/indicator.md` |
-| `input` | Input Controls | yes | `blocks/input.md` |
-| `map` | GPS History | yes | `blocks/map.md` |
-| `open-event-indicator` | Open Event Indicator | yes | `blocks/simple.md#open-event-indicator` |
-| `pie` | Pie Chart | yes | `blocks/pie.md` |
-| `position-chart` | Position Chart | yes | `blocks/position-chart.md` |
-| `section-header` | Section Header | yes\* | `blocks/simple.md#section-header` |
-| `workflow-list` | Workflow List | yes | `blocks/simple.md#workflow-list` |
+| `application-list` | Application List | no | [losant://dashboard/blocks/application-list](losant://dashboard/blocks/application-list) |
+| `bar` | Bar Chart | yes | [losant://dashboard/blocks/bar](losant://dashboard/blocks/bar) |
+| `custom-chart` | Custom Chart | yes | [losant://dashboard/blocks/custom-block](losant://dashboard/blocks/custom-block) |
+| `custom-html` | Custom HTML | yes | [losant://dashboard/blocks/custom-block](losant://dashboard/blocks/custom-block) |
+| `dashboard-list` | Dashboard List | no | [losant://dashboard/blocks/dashboard-list](losant://dashboard/blocks/dashboard-list) |
+| `data-table` | Data Table | yes | [losant://dashboard/blocks/data-table](losant://dashboard/blocks/data-table) |
+| `device-count` | Device Count | yes | [losant://dashboard/blocks/device-count](losant://dashboard/blocks/device-count) |
+| `device-list` | Device List | yes | [losant://dashboard/blocks/device-list](losant://dashboard/blocks/device-list) |
+| `device-log` | Device Connection Log | yes | [losant://dashboard/blocks/device-log](losant://dashboard/blocks/device-log) |
+| `device-state-table` | Device State Table | yes | [losant://dashboard/blocks/device-state-table](losant://dashboard/blocks/device-state-table) |
+| `event-list` | Event List | yes | [losant://dashboard/blocks/event-list](losant://dashboard/blocks/event-list) |
+| `gauge` | Gauge | yes | [losant://dashboard/blocks/gauge](losant://dashboard/blocks/gauge) |
+| `graph` | **Time Series Graph** | yes | [losant://dashboard/blocks/graph](losant://dashboard/blocks/graph) |
+| `heatmap` | GPS Heatmap | yes | [losant://dashboard/blocks/heatmap](losant://dashboard/blocks/heatmap) |
+| `iframe` | External Website | no | [losant://dashboard/blocks/iframe](losant://dashboard/blocks/iframe) |
+| `image` | Image | yes | [losant://dashboard/blocks/image](losant://dashboard/blocks/image) |
+| `image-overlay` | Image Overlay | yes | [losant://dashboard/blocks/image-overlay](losant://dashboard/blocks/image-overlay) |
+| `indicator` | Indicator | yes | [losant://dashboard/blocks/indicator](losant://dashboard/blocks/indicator) |
+| `input` | Input Controls | yes | [losant://dashboard/blocks/input](losant://dashboard/blocks/input) |
+| `map` | GPS History | yes | [losant://dashboard/blocks/map](losant://dashboard/blocks/map) |
+| `open-event-indicator` | Open Event Indicator | yes | [losant://dashboard/blocks/open-event-indicator](losant://dashboard/blocks/open-event-indicator) |
+| `pie` | Pie Chart | yes | [losant://dashboard/blocks/pie](losant://dashboard/blocks/pie) |
+| `position-chart` | Position Chart | yes | [losant://dashboard/blocks/position-chart](losant://dashboard/blocks/position-chart) |
+| `section-header` | Section Header | yes\* | [losant://dashboard/blocks/section-header](losant://dashboard/blocks/section-header) |
+| `workflow-list` | Workflow List | yes | [losant://dashboard/blocks/workflow-list](losant://dashboard/blocks/workflow-list) |
 
 \* `section-header` carries an `applicationId` in org/sandbox dashboards even though it doesn't query application data — the field is set per the dashboard's data-source scope.
 

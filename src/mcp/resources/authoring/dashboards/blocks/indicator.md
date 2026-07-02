@@ -26,7 +26,7 @@ See the parent `dashboard-guide.md` for the block object shape, layout grid, and
 | `conditions` | object[] | — | **Required.** Ordered list of conditions. First truthy condition wins. |
 | `defaultCondition` | object | — | The display to use when no condition matches. |
 
-### Segment shape
+### Segments
 
 Each entry in `segments` is a `commonSegment` — the same shape used by bar, pie, and other multi-segment blocks:
 
@@ -49,7 +49,7 @@ Each entry in `segments` is a `commonSegment` — the same shape used by bar, pi
 
 The `i`-th segment result is accessible in conditions as `{{value-i}}` and `{{time-i}}` (0-indexed, so the first segment → `{{value-0}}`).
 
-### Condition shape
+### Conditions
 
 ```json
 { "condition": "{{value-0}} > 80", "label": "**CRITICAL**", "color": "#E74C3C" }

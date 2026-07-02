@@ -20,7 +20,7 @@ See `reference/device-queries.md` for the `deviceIds` / `deviceTags` / `query` s
 - `applicationId` is required on org / sandbox dashboards, omitted on application-owned dashboards. See `dashboard-guide.md`.
 - Standard layout fields apply — see `dashboard-guide.md`. A typical width is `4` (full row); typical height is `1.5`–`3` units.
 
-## Top-level config
+## Config
 
 | Field | Type | Default | Notes |
 |---|---|---|---|
@@ -31,7 +31,7 @@ See `reference/device-queries.md` for the `deviceIds` / `deviceTags` / `query` s
 | `hideLegend` | boolean | `false` | When `true`, the legend at the bottom is hidden. |
 | `displayType` | `"stick"` \| `"line"` | — | Rarely set — segment-level `graphType` is the usual control. |
 
-## `segments` — what to plot
+### Segments
 
 `segments` is an array (max 100) of one or more series to draw on the chart. **At least one segment is required.**
 
@@ -66,7 +66,7 @@ See `reference/device-queries.md` for the `deviceIds` / `deviceTags` / `query` s
 | `dotWeight` | integer 0–5 | Data-point dot thickness. Disabled for bar segments. |
 | `yAxisLabel`, `yAxisFormat`, `yAxisMax`, `yAxisMin` | various | Legacy segment-level Y-axis overrides; prefer configuring on the matching entry in `yAxes` instead. |
 
-## `yAxes` — what scale to draw the segments against
+### Y axes
 
 `yAxes` is an array (max 10) of Y axis definitions. **At least one is required** if you have segments. Each segment references one axis via `yAxisId`.
 
@@ -93,7 +93,7 @@ See `reference/device-queries.md` for the `deviceIds` / `deviceTags` / `query` s
 | `format` | string | — | [D3 format string](https://github.com/d3/d3-format#locale_format) for ticks and tooltip values (e.g. `".1f"`, `".2s"`, `"$,.2f"`). |
 | `stacked` | boolean | `false` | When `true`, area and bar segments on this axis are stacked. Line segments on the same axis remain unstacked. |
 
-## `decorators` — static reference lines / bands
+### Decorators
 
 Optional. Array (max 10). Useful for marking thresholds, target ranges, etc.
 

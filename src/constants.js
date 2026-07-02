@@ -143,7 +143,8 @@ export const AUTHORING_PATH = path.join(__dirname, 'mcp/resources/authoring');
 
 export const AUTHORING_HUB_TO_FILE = {
   flow: path.join(AUTHORING_PATH, 'flows/flow.md'),
-  dashboard: path.join(AUTHORING_PATH, 'dashboards/dashboard-guide.md')
+  dashboard: path.join(AUTHORING_PATH, 'dashboards/dashboard-guide.md'),
+  experience: path.join(AUTHORING_PATH, 'experiences/experience-view.md')
 };
 
 const flowNodesDir = path.join(AUTHORING_PATH, 'flows/nodes');
@@ -170,5 +171,6 @@ export const REFERENCES_TO_FILE = {
   'flow/payload': path.join(AUTHORING_PATH, 'flows/reference/payload.md'),
   'flow/globals': path.join(AUTHORING_PATH, 'flows/reference/globals.md'),
   'flow/templating': path.join(AUTHORING_PATH, 'flows/reference/templating.md'),
-  'dashboard/context-configuration': path.join(AUTHORING_PATH, 'dashboards/reference/context-configuration.md')
+  'dashboard/context-configuration': path.join(AUTHORING_PATH, 'dashboards/reference/context-configuration.md'),
+  'experience/context': path.join(AUTHORING_PATH, 'experiences/reference/context.md')
 };
