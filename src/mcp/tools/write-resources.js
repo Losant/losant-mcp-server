@@ -82,7 +82,7 @@ export default {
         if (operation === 'createOne') {
           response = await losantClient[`${resourceType}s`].post({
             ...requestParams,
-            [resourceType]: body
+            [resourceType === 'applicationDashboard' ? 'dashboard' : resourceType]: body
           });
         } else {
           if (resourceType === 'applicationReadme') {
@@ -99,7 +99,7 @@ export default {
             response = await losantClient[resourceType].patch({
               ...requestParams,
               [getResourceFieldId(resourceType)]: resourceId,
-              [resourceType]: body
+              [resourceType === 'applicationDashboard' ? 'dashboard' : resourceType]: body
             });
           }
         }
