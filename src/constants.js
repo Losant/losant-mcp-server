@@ -1,6 +1,7 @@
 import { createRequire } from 'node:module';
 import { readdirSync } from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 export const RESOURCE_TYPES = [
   'application',         // Top-level resource for application lookup
@@ -58,8 +59,8 @@ export const WRITABLE_RESOURCE_TYPES = [
   'experienceVersion',
   'experienceView',
   'application',
-  'applicationReadme'
-  // 'applicationDashboard', will be added in another branch
+  'applicationReadme',
+  'applicationDashboard'
   // 'flow', will be added in another branch
   // 'flowVersion', will be added in another branch
 ];
@@ -94,9 +95,9 @@ export const SCHEMA_FILE_ALIASES = {
   dataTableRowPatch: 'dataTableRowInsertUpdate.json',
   // privateFile shares schemas with file
   privateFilePost: 'filePost.json',
-  privateFilePatch: 'filePatch.json'
+  privateFilePatch: 'filePatch.json',
   // applicationDashboard has no separate Patch schema
-  // applicationDashboardPatch: 'dashboardPatch.json'
+  applicationDashboardPatch: 'dashboardPatch.json'
 };
 export const SCHEMA_FILES = readdirSync(SCHEMAS_PATH).filter((f) => {
   if (!f.endsWith('.json')) { return false; }
@@ -135,3 +136,21 @@ export const SCHEMA_NAME_TO_FILE = Object.fromEntries([
 export const DOC_NAME_TO_FILE = Object.fromEntries(
   MD_FILES.map((f) => [f.replace('.md', ''), f])
 );
+
+// Authoring content — deep-dive markdown files for dashboard construction
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+export const AUTHORING_PATH = path.join(__dirname, 'mcp/resources/authoring');
+
+export const AUTHORING_HUB_TO_FILE = {
+  dashboard: path.join(AUTHORING_PATH, 'dashboards/dashboard-guide.md')
+};
+
+const dashboardBlocksDir = path.join(AUTHORING_PATH, 'dashboards/blocks');
+export const DASHBOARD_BLOCK_TO_FILE = Object.fromEntries(
+  readdirSync(dashboardBlocksDir).filter((f) => f.endsWith('.md'))
+    .map((f) => [f.replace('.md', ''), path.join(dashboardBlocksDir, f)])
+);
+
+export const REFERENCES_TO_FILE = {
+  'dashboard/context-configuration': path.join(AUTHORING_PATH, 'dashboards/reference/context-configuration.md')
+};
