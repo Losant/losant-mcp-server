@@ -23,7 +23,7 @@ See the parent `dashboard-guide.md` for the block object shape, layout grid, and
 | Field | Type | Notes |
 |---|---|---|
 | `deviceIds` | string[] | Explicit device IDs. Supports context templates. |
-| `deviceTags` | object[] | Tag-based selection (`[{ "key": "fleet", "value": "east" }]`). |
+| `deviceTags` | object[] | Tag-based selection (`[{ "key": "fleet", "value": "east" }]`). Each entry also supports `"fromCtx": "varName"` to drive the tag value from a context variable: `[{ "key": "fleet", "fromCtx": "fleetVar" }]`. |
 | `query` | string | Advanced device query as a JSON-encoded string. |
 
 ### Data source and duration
@@ -32,7 +32,7 @@ See the parent `dashboard-guide.md` for the block object shape, layout grid, and
 |---|---|---|---|
 | `attribute` | string | — | GPS attribute name on the device(s). Use this or `locationTagKey`. |
 | `locationTagKey` | string | — | Device tag key whose value is a GPS string. Use for statically-located devices. |
-| `duration` | integer (ms) | last received | Time window to query. Omit to show only the most recent position. |
+| `duration` | integer (ms) \| `"{{dashboard.duration}}"` | last received | Time window to query. Omit to show only the most recent position. Use the string form to inherit the dashboard's global duration control. |
 | `resolution` | integer (ms) | — | Limit data density by returning only the last point per resolution bucket. |
 | `compositeResult` | boolean | `false` | When true, returns the last known attribute values at the time of each GPS point. |
 
@@ -63,7 +63,7 @@ See the parent `dashboard-guide.md` for the block object shape, layout grid, and
 | Field | Type | Notes |
 |---|---|---|
 | `pinMode` | `"simple"` \| `"advanced"` | `"simple"` uses `startColor`/`endColor`. `"advanced"` uses `iconTemplate`. |
-| `iconTemplate` | string | Handlebars template resolving to an image URL for each point pin. Available: `isFirstPoint`, `isLastPoint`, `index`, `deviceName`, `deviceId`, `deviceTags`, `gps` (lat/lon), `time`, `data.<attr>`. |
+| `iconTemplate` | string | Handlebars template resolving to an image URL for each point pin. Available: `isFirstPoint`, `isLastPoint`, `index`, `deviceName`, `deviceId`, `deviceTags`, `latitude`, `longitude`, `time`, `data.<attr>`. |
 | `popupTemplate` | string | Handlebars template for the popup shown when a pin is clicked. Same variables as `iconTemplate`. |
 
 ### Additional attributes
@@ -101,5 +101,5 @@ See the parent `dashboard-guide.md` for the block object shape, layout grid, and
 - Without `duration`, only the last received GPS point per device is shown — use `clusterPoints: true` to group nearby devices at low zoom.
 - `resolution` limits data points to one per bucket, reducing visual clutter and improving performance for high-frequency GPS reporters.
 - `compositeResult: true` makes other attribute values available at each historical GPS point (e.g., speed, temperature at that moment) for use in `popupTemplate`.
-- `iconTemplate` must resolve to an image URL. The built-in `colorMarker` Handlebars helper produces the same markers as simple mode: `{{colorMarker (if isLastPoint endColor startColor)}}`.
+- `iconTemplate` must resolve to an image URL. Use `latitude` and `longitude` as separate template variables — there is no `gps` variable. The built-in `colorMarker` helper takes a literal hex string, not a sub-expression: `{{#if isLastPoint}}{{colorMarker '#27AE60'}}{{else}}{{colorMarker '#E74C3C'}}{{/if}}`.
 - `locationTagKey` is for devices that don't report GPS via state — they have a static tag with a GPS string value.

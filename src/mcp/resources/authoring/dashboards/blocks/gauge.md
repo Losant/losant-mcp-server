@@ -25,8 +25,8 @@ See the parent `dashboard-guide.md` for the block object shape, layout grid, and
 | `gaugeType` | `"number"` \| `"dial"` \| `"battery"` \| `"thermometer"` \| `"tank"` \| `"needle"` | `"number"` | Visual style. |
 | `gaugeMin` | number \| string | — | Minimum of the visual scale. Required for `dial`, `thermometer`, `tank`, `needle`. |
 | `gaugeMax` | number \| string | — | Maximum of the visual scale. Required for the same gauge types. |
-| `precision` | number \| string | **`4`** | **Required.** Number of digits to display. Always include this — omitting it leaves the value unformatted. |
-| `precisionType` | `"floating"` \| `"significant"` | **`"significant"`** | **Required.** Controls whether `precision` counts significant figures (`"significant"`) or decimal places (`"floating"`). Always include this alongside `precision`. |
+| `precision` | number \| string | `4` | Number of digits to display. The platform defaults to `4` if omitted. |
+| `precisionType` | `"floating"` \| `"significant"` | `"significant"` | Controls whether `precision` counts significant figures (`"significant"`) or decimal places (`"floating"`). Defaults to `"significant"` if omitted. |
 | `displayAsPercentage` | boolean | `false` | Show the value as a percentage of the `gaugeMin`–`gaugeMax` range. |
 | `segment` | object | — | **Required.** Single device data query (see Segment below). |
 | `conditions` | object[] | — | Ordered list of conditional display overrides. First truthy `condition` expression wins. |
@@ -41,7 +41,7 @@ The gauge block uses a single `segment` object (not an array):
 | `deviceTags` | object[] | Tag-based device selection. |
 | `query` | string | Advanced device query as a JSON-encoded string. |
 | `attribute` | string | Device attribute to display. |
-| `aggregation` | enum | `MEAN`, `MAX`, `MIN`, `SUM`, `COUNT`, `FIRST`, `LAST`, `MEDIAN`, `STDDEV`. Use `LAST` for current state. |
+| `aggregation` | enum | `MEAN`, `MAX`, `MIN`, `SUM`, `COUNT`, `FIRST`, `LAST`, `MEDIAN`, `STD_DEV`. Use `LAST` for current state. |
 | `label` | string | Optional display label. |
 | `expression` | string | Optional Handlebars transform applied to the value before display. Available: `{{value}}`, `{{time}}`, `{{ctx.<name>}}`. |
 
@@ -94,7 +94,7 @@ Array of condition objects, evaluated top-to-bottom. The first truthy condition'
 
 ## Idiom notes
 
-- Always include `precision: 4` and `precisionType: "significant"` (the defaults). Omitting them leaves the displayed value unformatted.
+- The platform defaults to `precisionType: "significant"` and `precision: 4` — include them explicitly when you need a different format, omit otherwise.
 - Use `aggregation: "LAST"` to show the most recent value (equivalent to "current state").
 - Use `realTime: true` only when you need real-time streaming — it consumes more resources.
 - For `thermometer`, `tank`, and `needle` styles, `gaugeMin` and `gaugeMax` are required — the block won't render correctly without them.

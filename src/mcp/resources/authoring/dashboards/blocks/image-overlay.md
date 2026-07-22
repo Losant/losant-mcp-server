@@ -41,7 +41,7 @@ Up to 300 gauge-type queries backing the overlays. Each segment has a `queryType
 | `deviceTags` | object[] | Tag-based selection. |
 | `query` | string | Advanced device query JSON string. |
 | `attribute` | string | Attribute to query. Max 255 chars. |
-| `aggregation` | enum | `MEAN`, `MAX`, `MIN`, `SUM`, `COUNT`, `FIRST`, `LAST`, `MEDIAN`, `STDDEV`. |
+| `aggregation` | enum | `MEAN`, `MAX`, `MIN`, `SUM`, `COUNT`, `FIRST`, `LAST`, `MEDIAN`, `STD_DEV`. |
 | `duration` | integer (ms) | Omit for last received value. |
 
 ### `overlays` — items placed on the image
@@ -55,15 +55,15 @@ Up to 100 overlays. Each overlay has:
 | `type` | string | yes | One of `"indicator"`, `"value"`, `"bar"`, `"image"`, `"label"`. |
 | `position` | string | yes | `"x,y"` coordinates in image pixels from the top-left corner (`"0,0"`). |
 | `size` | `"small"` \| `"medium"` \| `"large"` | yes | Relative size of the overlay. |
-| `defaultCondition` | object | yes | The condition applied when no `conditions` expression matches (see Conditions). |
-| `conditions` | object[] | — | Ordered list of `{ expression, … }` objects evaluated top-to-bottom; first truthy match wins. |
+| `defaultCondition` | object | yes | The condition applied when no `conditions` condition matches (see Conditions). |
+| `conditions` | object[] | — | Ordered list of `{ condition, … }` objects evaluated top-to-bottom; first truthy match wins. |
 | `popupTemplate` | string | — | Markdown template shown when the overlay is clicked. Available: `{{QUERY_ID.value}}`, `{{QUERY_ID.time}}`, `{{ctx.VAR}}`, `{{block.width}}`, `{{block.height}}`, `{{block.theme}}`. |
 
 **Type-specific fields:**
 
-#### `"indicator"` — colored icon (circle, square, triangle, octagon)
+#### `"indicator"` — colored icon
 
-Conditional properties: `shape` (string), `color` (CSS color string).
+Conditional properties: `shape` (`"circle"` | `"square"` | `"triangle"` | `"octagon"`, defaults to `"circle"`), `color` (CSS color string).
 
 ```json
 {
@@ -72,7 +72,7 @@ Conditional properties: `shape` (string), `color` (CSS color string).
   "size": "medium",
   "defaultCondition": { "color": "#27AE60" },
   "conditions": [
-    { "expression": "{{tempQuery.value}} > 90", "color": "#E74C3C" }
+    { "condition": "{{tempQuery.value}} > 90", "color": "#E74C3C" }
   ]
 }
 ```
@@ -91,7 +91,7 @@ Conditional properties: `color` (background CSS color), `label` (string template
   "valueTemplate": "{{tempQuery.value}}°C",
   "defaultCondition": { "color": "#2C3E50" },
   "conditions": [
-    { "expression": "{{tempQuery.value}} > 90", "color": "#E74C3C" }
+    { "condition": "{{tempQuery.value}} > 90", "color": "#E74C3C" }
   ]
 }
 ```
@@ -115,7 +115,7 @@ Conditional properties: `color` (fill CSS color).
   "backgroundColor": "#ECF0F1",
   "defaultCondition": { "color": "#2980B9" },
   "conditions": [
-    { "expression": "{{tankQuery.value}} < 20", "color": "#E74C3C" }
+    { "condition": "{{tankQuery.value}} < 20", "color": "#E74C3C" }
   ]
 }
 ```
@@ -131,7 +131,7 @@ Conditional properties: `imageUrl` (string template).
   "size": "small",
   "defaultCondition": { "imageUrl": "https://example.com/green-light.png" },
   "conditions": [
-    { "expression": "{{statusQuery.value}} == 0", "imageUrl": "https://example.com/red-light.png" }
+    { "condition": "{{statusQuery.value}} == 0", "imageUrl": "https://example.com/red-light.png" }
   ]
 }
 ```
@@ -177,7 +177,7 @@ Conditional properties: `label` (string template), `color` (CSS text color).
         "valueTemplate": "{{pressure.value}} bar",
         "defaultCondition": { "color": "#27AE60" },
         "conditions": [
-          { "expression": "{{pressure.value}} > 8", "color": "#E74C3C" }
+          { "condition": "{{pressure.value}} > 8", "color": "#E74C3C" }
         ]
       },
       {
@@ -186,7 +186,7 @@ Conditional properties: `label` (string template), `color` (CSS text color).
         "size": "small",
         "defaultCondition": { "color": "#27AE60" },
         "conditions": [
-          { "expression": "{{pressure.value}} > 8", "color": "#E74C3C" }
+          { "condition": "{{pressure.value}} > 8", "color": "#E74C3C" }
         ]
       }
     ]

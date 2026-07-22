@@ -30,7 +30,7 @@ Shows a chronological list of connect and disconnect events for one or more devi
 | `deviceTags` | object[] | — | Tag-based device selection (`[{ "key": "type", "value": "sensor" }]`). |
 | `query` | string | — | Advanced device query as a JSON-encoded string. Use when `deviceIds`/`deviceTags` are insufficient. |
 | `includeDeviceInfo` | boolean | `false` | When `true`, adds device name and ID columns alongside the connection log data. |
-| `maxResultsPerDevice` | string | `"20"` | Maximum log entries to show per device. Templatable string (e.g. `"{{ctx.limit}}"`). |
+| `maxResultsPerDevice` | string | `"10"` | Maximum log entries to show per device. Templatable string (e.g. `"{{ctx.limit}}"`). |
 
 ## Worked example — connectivity log with device info for a single device
 

@@ -45,7 +45,7 @@ Each entry in `segments` is a `commonSegment` — the same shape used by bar, pi
 | `deviceTags` | Tag-based device selection. |
 | `query` | Advanced device query as a JSON-encoded string. |
 | `attribute` | Device attribute to aggregate. |
-| `aggregation` | `MEAN`, `MAX`, `MIN`, `SUM`, `COUNT`, `FIRST`, `LAST`, `MEDIAN`, `STDDEV`. |
+| `aggregation` | `MEAN`, `MAX`, `MIN`, `SUM`, `COUNT`, `FIRST`, `LAST`, `MEDIAN`, `STD_DEV`. |
 
 The `i`-th segment result is accessible in conditions as `{{value-i}}` and `{{time-i}}` (0-indexed, so the first segment → `{{value-0}}`).
 
@@ -59,12 +59,14 @@ The `i`-th segment result is accessible in conditions as `{{value-i}}` and `{{ti
 |---|---|
 | `condition` | Handlebars expression — truthy = this condition applies. Available: all `{{value-i}}` and `{{time-i}}`, plus `{{ctx.<name>}}`. |
 | `label` | Shown below the color block. Supports Markdown. |
-| `color` | CSS color. |
+| `color` | CSS color of the indicator. |
+| `shape` | `"circle"` \| `"square"` \| `"triangle"` \| `"octagon"` — shape of the indicator icon. Defaults to `"circle"`. |
+| `imageUrl` | string — URL of a custom image to use as the indicator icon. When set, overrides `color` and `shape`. |
 | `id` | Optional identifier. |
 
 ### `defaultCondition`
 
-Same shape as a condition object, but without `condition` — it is the fallback when no condition matches:
+Same shape as a condition object, but without `condition` — it is the fallback when no condition matches. Supports `label`, `color`, `shape`, and `imageUrl`:
 
 ```json
 { "label": "Unknown", "color": "#808080" }
