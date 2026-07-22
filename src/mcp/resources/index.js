@@ -170,7 +170,8 @@ export default (server) => {
       if (!file) {
         throw new Error(`Schema not found: ${schemaName}`);
       }
-      return readFileContent(path.join(SCHEMAS_PATH, file), 'application/json', uri.href);
+      const schemaPath = path.isAbsolute(file) ? file : path.join(SCHEMAS_PATH, file);
+      return readFileContent(schemaPath, 'application/json', uri.href);
     }
   );
 

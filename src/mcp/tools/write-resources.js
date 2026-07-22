@@ -80,7 +80,10 @@ export default {
       try {
         let response;
         if (operation === 'createOne') {
-          response = await losantClient[`${resourceType}s`].post({
+          const pluralClient = resourceType === 'applicationCertificateAuthority'
+            ? 'applicationCertificateAuthorities'
+            : `${resourceType}s`;
+          response = await losantClient[pluralClient].post({
             ...requestParams,
             [resourceType === 'applicationDashboard' ? 'dashboard' : resourceType]: body
           });

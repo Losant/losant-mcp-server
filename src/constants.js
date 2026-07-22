@@ -30,7 +30,9 @@ export const RESOURCE_TYPES = [
   'experienceView',
   'applicationJobLog',
   'edgeDeployment',
-  'embeddedDeployment'
+  'embeddedDeployment',
+  'applicationCertificate',
+  'applicationCertificateAuthority'
 ];
 
 export const RESOURCE_TYPE_SET = new Set(RESOURCE_TYPES);
@@ -62,7 +64,9 @@ export const WRITABLE_RESOURCE_TYPES = [
   'applicationReadme',
   'applicationDashboard',
   'flow',
-  'flowVersion'
+  'flowVersion',
+  'applicationCertificate',
+  'applicationCertificateAuthority'
 ];
 
 // events created by devices/flows, not the LLM
@@ -123,10 +127,11 @@ export const ALLOWS_ADVANCED_QUERIES_SET = new Set([
   'experienceGroup',
   'dataTableRow',
   'experienceUser',
-  'applicationJobLog'
+  'applicationJobLog',
+  'applicationCertificate'
 ]);
 
-// Maps every valid schema name to its filename on disk (canonical + aliases)
+// Maps every valid schema name to its filename on disk (canonical + aliases) or absolute path (local supplements)
 export const SCHEMA_NAME_TO_FILE = Object.fromEntries([
   ...SCHEMA_FILES.map((f) => [f.replace('.json', ''), f]),
   ...Object.entries(SCHEMA_FILE_ALIASES)
