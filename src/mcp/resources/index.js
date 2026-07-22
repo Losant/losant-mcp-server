@@ -12,6 +12,7 @@ import credentialGuide from './credential-guide.js';
 import fileGuide from './file-guide.js';
 import notebookGuide from './notebook-guide.js';
 import experienceGuide from './experience-guide.js';
+import deviceAuthGuide from './device-auth-guide.js';
 import indexContent from './build-api-index-content.js';
 import debug from 'debug';
 import memoizee from 'memoizee';
@@ -29,6 +30,7 @@ const GUIDES_TO_REGISTER = [
   credentialGuide,
   dataTableGuide,
   deviceGuide,
+  deviceAuthGuide,
   experienceGuide,
   fileGuide,
   integrationGuide,
@@ -68,6 +70,12 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
     }
     if (filePath.includes('experience')) {
       disclaimerLines.push('\nSee [losant://guides/experiences](losant://guides/experiences) for the versioning model, view sub-types, endpoint access control, and common procedures.');
+    }
+    if (filePath.includes('applicationCertificate') || filePath.includes('applicationCertificateAuthority')) {
+      disclaimerLines.push('\nSee [losant://guides/device-auth](losant://guides/device-auth) for the API/UI naming difference (Device Certificate vs. applicationCertificate), certificate authority setup, and MQTT mutual TLS authentication workflow.');
+    }
+    if (filePath.endsWith('applicationKey.md') || filePath.endsWith('applicationKeys.md')) {
+      disclaimerLines.push('\nSee [losant://guides/device-auth](losant://guides/device-auth) for MQTT credential fields, device restriction options, and the access secret one-time return behavior.');
     }
     if (filePath.endsWith('data.md')) {
       disclaimerLines.push('- endpoint "timeSeriesQuery" used by tool `losant_timeseries` as operation "timeSeriesQuery"');
@@ -157,7 +165,8 @@ export default (server) => {
       if (!file) {
         throw new Error(`Schema not found: ${schemaName}`);
       }
-      return readFileContent(path.join(SCHEMAS_PATH, file), 'application/json', uri.href);
+      const schemaPath = path.isAbsolute(file) ? file : path.join(SCHEMAS_PATH, file);
+      return readFileContent(schemaPath, 'application/json', uri.href);
     }
   );
 

@@ -183,6 +183,18 @@ describe('MCP Resources', () => {
       result.contents[0].text.should.match(/MongoDB|query|operator/i);
     });
 
+    it('should provide handler for device auth guide', async () => {
+      const result = await client.readResource({ uri: 'losant://guides/device-auth' });
+
+      result.should.have.property('contents');
+      result.contents[0].should.have.property('uri', 'losant://guides/device-auth');
+      result.contents[0].should.have.property('mimeType', 'text/markdown');
+      result.contents[0].text.should.match(/applicationCertificate/);
+      result.contents[0].text.should.match(/Device Certificate/);
+      result.contents[0].text.should.match(/Access Key/i);
+      result.contents[0].text.should.match(/mutual TLS/i);
+    });
+
     it('should provide handler for API index with links', async () => {
       const result = await client.readResource({ uri: 'losant://index' });
 

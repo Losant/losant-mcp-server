@@ -29,7 +29,9 @@ export const RESOURCE_TYPES = [
   'experienceView',
   'applicationJobLog',
   'edgeDeployment',
-  'embeddedDeployment'
+  'embeddedDeployment',
+  'applicationCertificate',
+  'applicationCertificateAuthority'
 ];
 
 export const RESOURCE_TYPE_SET = new Set(RESOURCE_TYPES);
@@ -58,7 +60,9 @@ export const WRITABLE_RESOURCE_TYPES = [
   'experienceVersion',
   'experienceView',
   'application',
-  'applicationReadme'
+  'applicationReadme',
+  'applicationCertificate',
+  'applicationCertificateAuthority'
   // 'applicationDashboard', will be added in another branch
   // 'flow', will be added in another branch
   // 'flowVersion', will be added in another branch
@@ -122,7 +126,8 @@ export const ALLOWS_ADVANCED_QUERIES_SET = new Set([
   'experienceGroup',
   'dataTableRow',
   'experienceUser',
-  'applicationJobLog'
+  'applicationJobLog',
+  'applicationCertificate'
 ]);
 
 // Maps every valid schema name to its filename on disk (canonical + aliases)

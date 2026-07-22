@@ -96,6 +96,25 @@ Creating more than 750 devices triggers a background job — include \`"email"\`
 2. Call \`losant_write\` with \`operation=createOne\`, \`resourceType=deviceRecipe\`
 3. Check \`losant://schemas/deviceRecipePost\` for the full body schema
 
+## Device Authentication & MQTT
+
+Devices connect to the Losant MQTT broker at \`mqtts://broker.losant.com:8883\` (TLS) or \`mqtt://broker.losant.com:1883\` (TCP). Two authentication mechanisms are supported — read \`losant://guides/device-auth\` before provisioning credentials.
+
+### Access Keys (most common)
+- \`client id\` — Device ID
+- \`username\` — Access Key value
+- \`password\` — Access Secret
+
+The access secret is returned **once** on \`createOne applicationKey\` and is never retrievable again. Losant strongly recommends one key per device (scoped to that device's ID). Device restrictions and topic restrictions are set at key creation — some fields cannot be changed afterward.
+
+### Client Certificates (mutual TLS)
+- No username/password — the device authenticates via an X.509 client certificate in the TLS handshake
+- Requires a registered \`applicationCertificateAuthority\` (your CA's public certificate) and a signed \`applicationCertificate\` (the device's client cert, signed by that CA)
+- In the Losant UI these are called **Device Certificate Authority** and **Device Certificate**
+
+### Edge Compute devices (\`edgeCompute\` class)
+Edge Compute devices run the Losant Gateway Edge Agent (GEA), which supports both auth methods. Access key auth uses \`DEVICE_ID\` / \`ACCESS_KEY\` / \`ACCESS_SECRET\` environment variables; certificate auth requires configuring the GEA's TLS client certificate settings. Refer to the Losant Edge Agent documentation for GEA-specific configuration details.
+
 ${buildReferenceSection(['device', 'deviceRecipe'])}
 `;
 
