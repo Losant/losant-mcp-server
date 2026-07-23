@@ -63,16 +63,16 @@ Up to 100 overlays. Each overlay has:
 
 #### `"indicator"` — colored icon
 
-Conditional properties: `shape` (`"circle"` | `"square"` | `"triangle"` | `"octagon"`, defaults to `"circle"`), `color` (CSS color string).
+Conditional properties: `shape` (`"circle"` | `"square"` | `"triangle"` | `"octagon"`), `color` (CSS color string). **`shape` is required on every condition object and on `defaultCondition` — the API does not default it and the UI will error if it is absent. Always set it explicitly; use `"circle"` when no specific shape is needed.**
 
 ```json
 {
   "type": "indicator",
   "position": "120,85",
   "size": "medium",
-  "defaultCondition": { "color": "#27AE60" },
+  "defaultCondition": { "color": "#27AE60", "shape": "circle" },
   "conditions": [
-    { "condition": "{{tempQuery.value}} > 90", "color": "#E74C3C" }
+    { "condition": "{{tempQuery.value}} > 90", "color": "#E74C3C", "shape": "circle" }
   ]
 }
 ```
@@ -184,9 +184,9 @@ Conditional properties: `label` (string template), `color` (CSS text color).
         "type": "indicator",
         "position": "180,140",
         "size": "small",
-        "defaultCondition": { "color": "#27AE60" },
+        "defaultCondition": { "color": "#27AE60", "shape": "circle" },
         "conditions": [
-          { "condition": "{{pressure.value}} > 8", "color": "#E74C3C" }
+          { "condition": "{{pressure.value}} > 8", "color": "#E74C3C", "shape": "circle" }
         ]
       }
     ]
@@ -200,3 +200,4 @@ Conditional properties: `label` (string template), `color` (CSS text color).
 - Overlay `position` is in image-pixel coordinates from the top-left — drag overlays interactively in the UI to set positions, then read them back via the API.
 - Conditions are evaluated top-to-bottom; the first truthy expression wins. The `defaultCondition` is the fallback when no condition matches.
 - Query values are referenced in templates as `{{QUERY_ID.value}}` and `{{QUERY_ID.time}}`, matching the `id` field on the segment.
+- **For `"indicator"` overlays: always set `shape` explicitly on every condition object and on `defaultCondition`.** The API does not default `shape` and the UI will error if it is missing. Use `"circle"` when no specific shape is needed.

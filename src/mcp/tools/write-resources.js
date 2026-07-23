@@ -3,6 +3,11 @@ import { WRITABLE_RESOURCE_TYPES, NO_CREATE_TYPES, NESTED_RESOURCES } from '../.
 import debug from 'debug';
 import { restToMCPError, invalidRequestError } from '../../helpers/errors.js';
 import { getResourceFieldId } from './helpers.js';
+
+// SDK body field names that differ from the resourceType name
+const SDK_BODY_KEY = {
+  applicationDashboard: 'dashboard'
+};
 const log = debug('losant-mcp-server:tools:write-resources');
 
 export default {
@@ -77,12 +82,13 @@ export default {
       }
       const requestParams = { applicationId, _links: false, _actions: false, _embedded: false };
       if (parentFieldName) { requestParams[parentFieldName] = parentResourceId; }
+      const sdkBodyKey = SDK_BODY_KEY[resourceType] ?? resourceType;
       try {
         let response;
         if (operation === 'createOne') {
           response = await losantClient[`${resourceType}s`].post({
             ...requestParams,
-            [resourceType]: body
+            [sdkBodyKey]: body
           });
         } else {
           if (resourceType === 'applicationReadme') {
@@ -99,7 +105,7 @@ export default {
             response = await losantClient[resourceType].patch({
               ...requestParams,
               [getResourceFieldId(resourceType)]: resourceId,
-              [resourceType]: body
+              [sdkBodyKey]: body
             });
           }
         }
