@@ -15,6 +15,11 @@ import experienceGuide from './experience-guide.js';
 import deviceAuthGuide from './device-auth-guide.js';
 import indexContent from './build-api-index-content.js';
 import conf from '../../config.js';
+import memoizee from 'memoizee';
+import { SCHEMA_NAME_TO_FILE, DOC_NAME_TO_FILE,
+  DOCS_PATH, RESOURCE_TYPE_SET, SCHEMAS_PATH,
+  WRITABLE_RESOURCE_TYPES, NO_CREATE_TYPES } from '../../constants.js';
+import { getPluralResourceName } from '../tools/helpers.js';
 import debug from 'debug';
 
 const apiUrl = conf.get('losant.apiUrl');
@@ -34,12 +39,13 @@ Losant is an IoT application enablement platform for building, connecting, and m
 ---
 
 `;
-import memoizee from 'memoizee';
-import { SCHEMA_NAME_TO_FILE, DOC_NAME_TO_FILE,
-  DOCS_PATH, RESOURCE_TYPE_SET, SCHEMAS_PATH,
-  WRITABLE_RESOURCE_TYPES, NO_CREATE_TYPES } from '../../constants.js';
 
 const WRITABLE_RESOURCE_TYPE_SET = new Set(WRITABLE_RESOURCE_TYPES);
+// Set of plural API collection names for writable, creatable types — used to add the write disclaimer to plural doc pages.
+// Built via getPluralResourceName so irregular plurals (e.g. applicationCertificateAuthorities) are handled correctly.
+const WRITABLE_PLURAL_NAME_SET = new Set(
+  WRITABLE_RESOURCE_TYPES.filter((t) => !NO_CREATE_TYPES.has(t)).map(getPluralResourceName)
+);
 const log = debug('losant-mcp-server:mcp:resources');
 
 const GUIDES_TO_REGISTER = [
@@ -80,7 +86,6 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
     if (filePath.endsWith('credential.md') || filePath.endsWith('credentials.md')) {
       disclaimerLines.push('\nSee [losant://guides/credentials](losant://guides/credentials) for credential types, required config objects, and common procedures.');
     }
-
     if (filePath.endsWith('file.md') || filePath.endsWith('files.md') || filePath.endsWith('privateFile.md') || filePath.endsWith('privateFiles.md')) {
       disclaimerLines.push('\nSee [losant://guides/files](losant://guides/files) for the two-step create-then-upload pattern and public vs. private file differences.');
     }
@@ -116,7 +121,7 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
       }
     } else {
       disclaimerLines.push('- endpoint "get" used by tool `losant_query` as operation "list"');
-      if (WRITABLE_RESOURCE_TYPE_SET.has(fileName.replace(/s$/, '')) && !NO_CREATE_TYPES.has(fileName.replace(/s$/, ''))) {
+      if (WRITABLE_PLURAL_NAME_SET.has(fileName)) {
         disclaimerLines.push('- endpoint "post" used by tool `losant_write` as operation "createOne"');
       }
     }
@@ -132,6 +137,7 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
 }, { maxAge: 1000 * 60 * 60, primitive: true }); // cache for 1 hour
 
 export default (server) => {
+  // +3 = losant://info, losant://docs/{docName} template, losant://schemas/{schemaName} template
   log(`Registering ${GUIDES_TO_REGISTER.length + 3} resources...`);
   server.registerResource(
     'info',

@@ -117,6 +117,8 @@ openssl x509 -req \\
 openssl verify -CAfile ca.crt device.crt
 \`\`\`
 
+> **Note**: \`<(echo "...")\` is bash process substitution and does not work in \`sh\` or PowerShell. On those shells, write the extension to a file first: \`echo "extendedKeyUsage=clientAuth" > device-ext.cnf\` and use \`-extfile device-ext.cnf\` instead.
+
 **\`extendedKeyUsage=clientAuth\` is required by the Losant API** — the \`createOne applicationCertificate\` call returns a 400 error without it.
 
 Only \`device.crt\` is uploaded to Losant. \`device.key\` stays on the device and is never shared.
@@ -128,7 +130,7 @@ Only \`device.crt\` is uploaded to Losant. \`device.key\` stays on the device an
 4. Ask the user for device cert CN, validity period, and optional start date
 5. Generate a device key and CSR, sign it with the CA (see above)
 6. Call \`losant_write\` \`operation=createOne\` \`resourceType=applicationCertificate\` with the signed cert PEM and the target \`deviceId\`
-7. Configure the device to connect to \`mqtts://broker.losant.com:8883\` with:
+7. Check [losant://info](losant://info) for the \`MQTT Broker Host\` and configure the device to connect to \`mqtts://<broker-host>:8883\` with:
    - Client certificate: the signed cert (\`device.crt\`)
    - Client private key: the corresponding private key (\`device.key\`) — stays on the device, never sent to Losant
    - No username/password required
