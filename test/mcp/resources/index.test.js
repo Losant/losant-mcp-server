@@ -86,9 +86,9 @@ describe('MCP Resources', () => {
     it('should generate API index with all docs and schemas', async () => {
       registerResourceLoader(mockServer);
 
-      const apiIndex = registeredResources.find((r) => r.uri === 'losant://index');
+      const apiIndex = registeredResources.find((r) => r.uri === 'losant://info');
       should.exist(apiIndex);
-      apiIndex.config.should.have.property('title', 'Losant MCP Application Index Guide');
+      apiIndex.config.should.have.property('title', 'Losant MCP Server Info');
       apiIndex.config.should.have.property('mimeType', 'text/markdown');
     });
 
@@ -196,7 +196,7 @@ describe('MCP Resources', () => {
     });
 
     it('should provide handler for API index with links', async () => {
-      const result = await client.readResource({ uri: 'losant://index' });
+      const result = await client.readResource({ uri: 'losant://info' });
 
       result.should.have.property('contents');
       result.contents[0].should.have.property('text');

@@ -14,7 +14,26 @@ import notebookGuide from './notebook-guide.js';
 import experienceGuide from './experience-guide.js';
 import deviceAuthGuide from './device-auth-guide.js';
 import indexContent from './build-api-index-content.js';
+import conf from '../../config.js';
 import debug from 'debug';
+
+const apiUrl = conf.get('losant.apiUrl');
+const apiHost = new URL(apiUrl).hostname;
+const brokerHost = apiHost.replace(/^api\./, 'broker.');
+const infoPreamble = `# Losant MCP Server — Info
+
+## About Losant
+Losant is an IoT application enablement platform for building, connecting, and managing IoT solutions at scale. It provides connected devices via MQTT and REST, a visual workflow engine for device automation and business logic, real-time dashboards for data visualization, Experience Builder for custom end-user web interfaces and APIs, and Edge Compute for running workflows locally on gateway devices without cloud dependency.
+
+## Environment
+- **API URL**: ${apiUrl}
+- **MQTT Broker Host**: ${brokerHost}
+
+> The broker host is derived from the API URL by replacing \`api.\` with \`broker.\`. Use \`${brokerHost}\` as the \`BROKER_HOST\` environment variable when configuring the Losant Gateway Edge Agent — only set this if it differs from the default (\`broker.losant.com\`).
+
+---
+
+`;
 import memoizee from 'memoizee';
 import { SCHEMA_NAME_TO_FILE, DOC_NAME_TO_FILE,
   DOCS_PATH, RESOURCE_TYPE_SET, SCHEMAS_PATH,
@@ -115,11 +134,11 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
 export default (server) => {
   log(`Registering ${GUIDES_TO_REGISTER.length + 3} resources...`);
   server.registerResource(
-    'index',
-    'losant://index',
+    'info',
+    'losant://info',
     {
-      title: 'Losant MCP Application Index Guide',
-      description: 'Discovery index for all guides, API documentation URIs, and schema URIs available in this MCP server',
+      title: 'Losant MCP Server Info',
+      description: 'Start here: Losant platform overview, environment info (API URL, MQTT broker host), and a discovery index of all guides, API documentation URIs, and schema URIs available in this MCP server',
       mimeType: 'text/markdown'
     },
     async (uri) => {
@@ -127,7 +146,7 @@ export default (server) => {
         contents: [{
           uri: uri.href,
           mimeType: 'text/markdown',
-          text: indexContent
+          text: infoPreamble + indexContent
         }]
       };
     }

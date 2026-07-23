@@ -66,11 +66,11 @@ describe('MCP Server', () => {
     });
 
     it('should have API index resource', () => {
-      should.exist(server._registeredResources['losant://index']);
-      const apiIndex = server._registeredResources['losant://index'];
+      should.exist(server._registeredResources['losant://info']);
+      const apiIndex = server._registeredResources['losant://info'];
 
-      apiIndex.should.have.property('name', 'index');
-      apiIndex.metadata.should.have.property('title', 'Losant MCP Application Index Guide');
+      apiIndex.should.have.property('name', 'info');
+      apiIndex.metadata.should.have.property('title', 'Losant MCP Server Info');
       apiIndex.metadata.should.have.property('mimeType', 'text/markdown');
     });
 
