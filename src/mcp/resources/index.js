@@ -117,7 +117,8 @@ const readAuthoringContent = memoizee(async (filePath, href) => {
 }, { maxAge: 1000 * 60 * 60, primitive: true });
 
 export default (server) => {
-  log(`Registering ${GUIDES_TO_REGISTER.length + 3} resources...`);
+  // +6 = losant://index, doc template, schema template, authoring-hub template, dashboard-block template, reference template
+  log(`Registering ${GUIDES_TO_REGISTER.length + 6} resources...`);
   server.registerResource(
     'index',
     'losant://index',
