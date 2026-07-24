@@ -22,8 +22,8 @@ Devices authenticate to the Losant MQTT broker using one of two mechanisms:
 Both resource types share these optional fields:
 
 **Identity**
-- \`name\` — human-readable label shown in the Losant UI (max 255 chars)
-- \`description\` — free-text notes (max 32,767 chars)
+- \`name\` — optional human-readable label shown in the Losant UI (note: \`name\` is **required** for \`applicationCertificateAuthority\`)
+- \`description\` — free-text notes
 
 **IP address filtering** — restrict which client IP addresses may connect using this credential:
 - \`addressFilterType\`: \`"all"\` (default — no restriction), \`"whitelist"\` (only listed IPs allowed), \`"blacklist"\` (listed IPs denied)
@@ -71,8 +71,8 @@ For \`name\`, \`description\`, IP address filtering, and MQTT topic filtering se
 
 ### Procedure: Create an access key for a device
 1. Call \`losant_write\` \`operation=createOne\` \`resourceType=applicationKey\`
-2. Include \`deviceIds\` (array of one device ID) in the body to scope the key to that device — Losant strongly recommends one key per device
-3. Capture \`key\` and \`secret\` from the response immediately
+2. Include \`deviceIds\` (array of one device ID) and filterType: "none" in the body — omitting filterType defaults to "all" (unrestricted topic access to all MQTT topics). This scopes the key to that device — Losant strongly recommends one key per device
+3.  Capture \`key\` and \`secret\` from the response immediately
 4. Flash the device with these values as its MQTT credentials
 
 ---
@@ -80,6 +80,8 @@ For \`name\`, \`description\`, IP address filtering, and MQTT topic filtering se
 ## Device Certificate Authorities (\`applicationCertificateAuthority\`)
 
 A certificate authority (CA) record stores a PEM-encoded CA certificate bundle. Losant validates device certificates against all registered CAs in the application. One CA can back many device certificates.
+
+**Required fields**: \`name\` and \`caBundle\` — both must be provided when creating a CA record.
 
 The CA certificate is generated outside Losant using OpenSSL or your existing PKI. Only the public CA certificate is uploaded — never the private key.
 
@@ -89,8 +91,8 @@ The CA cert is generated outside Losant using any PKI tool (OpenSSL, your existi
 
 The uploaded CA certificate **must**:
 - Be PEM-encoded
-- Have \`basicConstraints=critical,CA:TRUE\`
-- Have \`keyUsage=critical,keyCertSign,cRLSign\`
+- Have \`basicConstraints\` with \`CA:TRUE\` (the \`critical\` flag is not enforced by Losant)
+- Have \`keyUsage\` with \`keyCertSign\` (the \`critical\` flag and \`cRLSign\` are not enforced by Losant)
 
 Both extensions are enforced by the Losant API — \`createOne applicationCertificateAuthority\` returns a 400 error if either is missing. Only the public CA certificate is uploaded — never the private key.
 
@@ -131,9 +133,9 @@ Only the public certificate is uploaded to Losant. The private key stays on the 
 ### Procedure: Set up certificate-based authentication
 1. Ask the user what PKI tooling they have available (OpenSSL, existing CA, etc.)
 2. Generate a CA private key and self-signed CA certificate meeting the requirements above
-3. Call \`losant_write\` \`operation=createOne\` \`resourceType=applicationCertificateAuthority\` with the CA PEM
+Call losant_write createOne applicationCertificateAuthority with body { "name": "<CA name>", "caBundle": "<PEM>" } — both fields are required.
 4. Generate a device private key and a certificate signed by that CA, meeting the requirements above
-5. Call \`losant_write\` \`operation=createOne\` \`resourceType=applicationCertificate\` with the signed cert PEM and the target \`deviceId\`
+5. Call losant_write createOne applicationCertificate with body { "certificate": "<signed device cert PEM>", "deviceId": "<deviceId>" } — certificate is required; omitting deviceId is valid but leaves the cert unusable (no device can authenticate with it).
 6. Check [losant://info](losant://info) for the \`MQTT Broker Host\` and configure the device to connect to \`mqtts://<broker-host>:8883\` with:
    - Client certificate: the signed cert (\`device.crt\`)
    - Client private key: the corresponding private key (\`device.key\`) — stays on the device, never sent to Losant
@@ -151,10 +153,8 @@ Once credentials are provisioned, devices need to connect to the Losant MQTT bro
 
 \`edgeCompute\` devices run the Losant Gateway Edge Agent (GEA) and support both auth methods.
 
-> **Broker host**: Check [losant://info](losant://info) for the \`MQTT Broker Host\` before generating any deployment config. Only set \`BROKER_HOST\` if it differs from the default (\`broker.losant.com\`).
-
 **Never use \`latest\`** — Losant publishes GEA releases approximately every 6 weeks. Always pin to a specific version tag. Look up the current version on Docker Hub before generating any config:
-- \`https://hub.docker.com/r/losant/edge-agent/tags\`
+- [losant/edge-agent tags](https://hub.docker.com/r/losant/edge-agent/tags)
 
 | Tag format | Description |
 |---|---|
@@ -163,8 +163,15 @@ Once credentials are provisioned, devices need to connect to the Losant MQTT bro
 
 The GEA is configured entirely via environment variables. For the full reference read the Docker Hub readme: \`https://hub.docker.com/r/losant/edge-agent\`
 
-The one Losant-specific variable to confirm before generating any deployment config:
-- \`BROKER_HOST\` — MQTT broker hostname (see above)
+**Always required:**
+- \`DEVICE_ID\` — the Losant device ID of the edgeCompute device
+- Auth credentials — one of:
+  - Access key auth: \`ACCESS_KEY\` + \`ACCESS_SECRET\`
+  - Certificate auth (path-based, recommended): \`BROKER_CLIENT_SSL_CERT_PATH\` + \`BROKER_CLIENT_SSL_KEY_PATH\`
+  - Certificate auth (inline, not recommended): \`BROKER_CLIENT_SSL_CERT\` + \`BROKER_CLIENT_SSL_KEY\`
+
+**Required only for non-production environments:**
+- \`BROKER_HOST\` — MQTT broker hostname. Check [losant://info](losant://info) for the correct value. Omit entirely when connecting to the default production broker (\`broker.losant.com\`).
 
 Ask the user how they intend to deploy the GEA (Docker run, Compose, Helm, etc.) before generating a deployment config — do not assume a specific deployment method.
 

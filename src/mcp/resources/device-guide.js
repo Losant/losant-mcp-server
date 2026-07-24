@@ -98,7 +98,7 @@ Creating more than 750 devices triggers a background job — include \`"email"\`
 
 ## Device Authentication & MQTT
 
-Devices connect to the Losant MQTT broker at \`mqtts://broker.losant.com:8883\` (TLS) or \`mqtt://broker.losant.com:1883\` (TCP). Two authentication mechanisms are supported — read \`losant://guides/device-auth\` before provisioning credentials.
+Devices connect to the Losant MQTT broker (check losant://info for the correct hostname) at port 8883 (TLS/mqtts) or 1883 (TCP/mqtt). Two authentication mechanisms are supported — read \`losant://guides/device-auth\` before provisioning credentials.
 
 ### Access Keys (most common)
 - \`client id\` — Device ID

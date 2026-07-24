@@ -2,6 +2,12 @@ import { createRequire } from 'node:module';
 import { readdirSync } from 'node:fs';
 import path from 'node:path';
 
+const pluralToSingluarResourceName = (pluralResourceName) => {
+  if (pluralResourceName === 'applicationCertificateAuthorities') { return 'applicationCertificateAuthority'; }
+  // Default to removing the trailing 's', e.g. devices -> device, flows -> flow, etc.
+  return pluralResourceName.endsWith('s') ? pluralResourceName.slice(0, -1) : pluralResourceName;
+};
+
 export const RESOURCE_TYPES = [
   'application',         // Top-level resource for application lookup
   'event',
@@ -82,7 +88,7 @@ export const SCHEMAS_PATH = path.join(losantRestPath, 'lib/schemas');
 
 const DOC_FILES = readdirSync(DOCS_PATH);
 export const MD_FILES = DOC_FILES.filter((f) => {
-  const singleFileName = f.replace('.md', '').replace(/s$/, '');
+  const singleFileName = pluralToSingluarResourceName(f.replace('.md', ''));
   return f.endsWith('.md') && f !== '_schemas.md' && (RESOURCE_TYPE_SET.has(singleFileName) || singleFileName === 'data');
 });
 

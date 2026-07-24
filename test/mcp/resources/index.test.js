@@ -159,6 +159,38 @@ describe('MCP Resources', () => {
       parsed.should.have.property('type', 'object');
     });
 
+    describe('applicationCertificateAuthority resources', () => {
+      it('should load schema for applicationCertificateAuthorityPost', async () => {
+        const result = await client.readResource({ uri: 'losant://schemas/applicationCertificateAuthorityPost' });
+        result.contents[0].should.have.property('uri', 'losant://schemas/applicationCertificateAuthorityPost');
+        result.contents[0].should.have.property('mimeType', 'application/json');
+        const parsed = JSON.parse(result.contents[0].text);
+        parsed.should.have.property('type', 'object');
+      });
+
+      it('should load schema for applicationCertificateAuthorityPatch', async () => {
+        const result = await client.readResource({ uri: 'losant://schemas/applicationCertificateAuthorityPatch' });
+        result.contents[0].should.have.property('uri', 'losant://schemas/applicationCertificateAuthorityPatch');
+        result.contents[0].should.have.property('mimeType', 'application/json');
+        const parsed = JSON.parse(result.contents[0].text);
+        parsed.should.have.property('type', 'object');
+      });
+
+      it('should load doc for applicationCertificateAuthority (singular)', async () => {
+        const result = await client.readResource({ uri: 'losant://docs/applicationCertificateAuthority' });
+        result.contents[0].should.have.property('uri', 'losant://docs/applicationCertificateAuthority');
+        result.contents[0].should.have.property('mimeType', 'text/markdown');
+        result.contents[0].text.should.containEql('Application Certificate Authority Actions');
+      });
+
+      it('should load doc for applicationCertificateAuthorities (plural)', async () => {
+        const result = await client.readResource({ uri: 'losant://docs/applicationCertificateAuthorities' });
+        result.contents[0].should.have.property('uri', 'losant://docs/applicationCertificateAuthorities');
+        result.contents[0].should.have.property('mimeType', 'text/markdown');
+        result.contents[0].text.should.containEql('Application Certificate Authorities Actions');
+      });
+    });
+
     it('should provide handler for losant query tool guide', async () => {
       const result = await client.readResource({ uri: 'losant://guides/losant-query-tool' });
 
