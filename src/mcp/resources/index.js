@@ -34,7 +34,6 @@ const GUIDES_TO_REGISTER = [
   credentialGuide,
   dataTableGuide,
   deviceGuide,
-  dashboardGuide,
   experienceGuide,
   fileGuide,
   flowGuide,
