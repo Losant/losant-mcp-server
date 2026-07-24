@@ -30,13 +30,15 @@ Both resource types share these optional fields:
 - \`addresses\`: array of IPv4/IPv6 addresses or CIDR ranges (max 100 entries, max 48 chars each)
 
 **MQTT topic filtering** — controls which MQTT topics the credential may publish to or subscribe from:
-- \`filterType\` (default for both resource types: \`"none"\`):
+- \`filterType\`:
   - \`"none"\` — no additional topic access beyond the standard device MQTT topics (state and commands)
-  - \`"all"\` — all MQTT topics permitted
+  - \`"all"\` — all MQTT topics permitted (**API default for \`applicationKey\`** — if omitted, the key will have unrestricted topic access)
   - \`"whitelist"\` — only the topics listed in \`pubTopics\` / \`subTopics\` are permitted
   - \`"blacklist"\` — all topics permitted except those listed in \`pubTopics\` / \`subTopics\`
 - \`pubTopics\`: topic patterns for publish restrictions (used with both \`"whitelist"\` and \`"blacklist"\`)
 - \`subTopics\`: topic patterns for subscribe restrictions (used with both \`"whitelist"\` and \`"blacklist"\`)
+
+The API default differs by resource type: \`applicationKey\` defaults to \`"all"\`; \`applicationCertificate\` defaults to \`"none"\`. **Always explicitly set \`filterType: "none"\` on access keys** unless broad topic access is intentional — omitting it leaves the key open to all topics.
 
 **Recommendation**: use \`"none"\` unless you specifically need to expand beyond the standard device MQTT topics (state and commands).
 
