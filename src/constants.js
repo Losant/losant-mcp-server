@@ -92,10 +92,8 @@ const WRITE_SCHEMA_SUFFIXES = new Set(
 WRITE_SCHEMA_SUFFIXES.add('deviceRecipeBulkCreatePost'); // special case for bulk create schema that doesn't follow the usual naming pattern
 
 // Schemas whose canonical MCP name differs from the losant-rest filename.
-// Keys are the exposed name (e.g. dataTableRowPost); values are the actual filename.
+// Keys are the exposed name; values are the actual filename.
 export const SCHEMA_FILE_ALIASES = {
-  dataTableRowPost: 'dataTableRowInsert.json',
-  dataTableRowPatch: 'dataTableRowInsertUpdate.json',
   // privateFile shares schemas with file
   privateFilePost: 'filePost.json',
   privateFilePatch: 'filePatch.json'
