@@ -29,12 +29,16 @@ Both resource types share these optional fields:
 - \`addressFilterType\`: \`"all"\` (default — no restriction), \`"whitelist"\` (only listed IPs allowed), \`"blacklist"\` (listed IPs denied)
 - \`addresses\`: array of IPv4/IPv6 addresses or CIDR ranges (max 100 entries, max 48 chars each)
 
-**MQTT topic filtering** — restrict which MQTT topics the credential may publish to or subscribe from beyond the device-specific defaults:
-- \`filterType\`: \`"all"\` (default — device-specific topics only), \`"whitelist"\` (only listed topics), \`"blacklist"\` (deny listed topics). \`applicationCertificate\` also supports \`"none"\` (no topic access).
-- \`pubTopics\`: array of additional topics allowed for publish (used with \`"whitelist"\`)
-- \`subTopics\`: array of additional topics allowed for subscribe (used with \`"whitelist"\`)
+**MQTT topic filtering** — controls which MQTT topics the credential may publish to or subscribe from:
+- \`filterType\` (default for both resource types: \`"none"\`):
+  - \`"none"\` — no additional topic access beyond the standard device MQTT topics (state and commands)
+  - \`"all"\` — all MQTT topics permitted
+  - \`"whitelist"\` — only the topics listed in \`pubTopics\` / \`subTopics\` are permitted
+  - \`"blacklist"\` — all topics permitted except those listed in \`pubTopics\` / \`subTopics\`
+- \`pubTopics\`: topic patterns for publish restrictions (used with both \`"whitelist"\` and \`"blacklist"\`)
+- \`subTopics\`: topic patterns for subscribe restrictions (used with both \`"whitelist"\` and \`"blacklist"\`)
 
-By default both resources grant access to the standard device MQTT topics (state, commands) only. Only set \`filterType\` when you need to expand or restrict beyond that default.
+**Recommendation**: use \`"none"\` unless you specifically need to expand beyond the standard device MQTT topics (state and commands).
 
 ---
 
@@ -49,9 +53,17 @@ An access key is a key/secret pair. The device provides the key as the MQTT user
 
 **Critical**: The access secret is returned **once** in the \`createOne\` response and is never retrievable again. Surface it to the user immediately.
 
-**Device restrictions** (set at creation, cannot be changed):
-- \`deviceIds\` — array of specific device IDs this key is scoped to (Losant strongly recommends one key per device)
-- Omit to create an unrestricted key valid for any device in the application
+**Device scoping** — an access key can authenticate on behalf of multiple devices. Scope it using either or both:
+- \`deviceIds\` — array of specific device IDs allowed to authenticate with this key
+- \`deviceTags\` — array of \`{ key, value }\` tag pairs; any device matching all specified tags may authenticate
+
+Omit both to create an unrestricted key valid for any device in the application. Losant strongly recommends scoping each key to a single device.
+
+> **Device scoping is permanently immutable after creation.** The \`deviceIds\` and \`deviceTags\` fields cannot be changed once the key is created. If the scope needs to change, delete the key and create a new one.
+
+> **Tag scoping is resolved at connection time.** If a device connects using a tag-scoped key and its tags later change so it no longer matches, it will remain connected until it disconnects for another reason — it is not kicked mid-session. Likewise, a device whose tags are updated to match will gain access only on its next connection attempt.
+
+**Revocation**: Delete or disable the \`applicationKey\` resource — the device is kicked from the broker immediately.
 
 For \`name\`, \`description\`, IP address filtering, and MQTT topic filtering see [Common Optional Fields](#common-optional-fields-applicationkey-and-applicationcertificate) above.
 
@@ -88,6 +100,8 @@ Both extensions are enforced by the Losant API — \`createOne applicationCertif
 }
 \`\`\`
 
+**Revocation**: Delete or disable the \`applicationCertificateAuthority\` resource — all devices currently connected using certificates signed by this CA are kicked from the broker immediately.
+
 ---
 
 ## Device Certificates (\`applicationCertificate\`)
@@ -96,11 +110,11 @@ A device certificate record registers an X.509 client certificate signed by a CA
 
 **Key fields:**
 - \`certificate\` (required) — PEM-encoded X.509 certificate signed by a registered CA
-- \`deviceId\` (optional) — scope this certificate to a specific device; if omitted, no device in the application can authenticate with it
+- \`deviceId\` (optional) — scope this certificate to a specific device; if omitted, no device can authenticate with it. Can be left blank at creation and set later via \`updateOne\`, but once set it is permanently immutable.
 
-For \`name\`, \`description\`, IP address filtering, and MQTT topic filtering (\`filterType\` / \`pubTopics\` / \`subTopics\`) see [Common Optional Fields](#common-optional-fields-applicationkey-and-applicationcertificate) above. Note that \`applicationCertificate\` additionally supports \`filterType: "none"\` to deny all topic access.
+For \`name\`, \`description\`, IP address filtering, and MQTT topic filtering (\`filterType\` / \`pubTopics\` / \`subTopics\`) see [Common Optional Fields](#common-optional-fields-applicationkey-and-applicationcertificate) above.
 
-**Revocation**: Delete the \`applicationCertificate\` resource. The device will be rejected at its next connect attempt.
+**Revocation**: Delete or disable the \`applicationCertificate\` resource — the device is kicked from the broker immediately.
 
 ### Device certificate requirements
 

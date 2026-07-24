@@ -14,7 +14,7 @@ let indexContent = `# Losant API Documentation
 - [Experiences Guide](losant://guides/experiences) - Versioning model, views, endpoints, users, groups, domains, and slugs
 - [Device Authentication Guide](losant://guides/device-auth) - Access keys and device certificates for MQTT broker authentication; API vs. UI naming for certificate resources
 
-> **API naming note**: Two resource types have names in the API that differ from their display names in the Losant UI:
+> **API naming note**: Some resource types have names in the API that differ from their display names in the Losant UI:
 > - API: \`applicationCertificate\` → UI: **Device Certificate**
 > - API: \`applicationCertificateAuthority\` → UI: **Device Certificate Authority**
 > - API: \`applicationKey\` → UI: **Access Key**
