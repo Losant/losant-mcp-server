@@ -142,7 +142,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const AUTHORING_PATH = path.join(__dirname, 'mcp/resources/authoring');
 
 export const AUTHORING_HUB_TO_FILE = {
-  dashboard: path.join(AUTHORING_PATH, 'dashboards/dashboard-guide.md')
+  'dashboard': path.join(AUTHORING_PATH, 'dashboards/dashboard-guide.md'),
+  'experience-view': path.join(AUTHORING_PATH, 'experiences/experience-view.md')
 };
 
 const dashboardBlocksDir = path.join(AUTHORING_PATH, 'dashboards/blocks');
@@ -152,5 +153,6 @@ export const DASHBOARD_BLOCK_TO_FILE = Object.fromEntries(
 );
 
 export const REFERENCES_TO_FILE = {
+  'experience/context': path.join(AUTHORING_PATH, 'experiences/reference/context.md'),
   'dashboard/context-configuration': path.join(AUTHORING_PATH, 'dashboards/reference/context-configuration.md')
 };
