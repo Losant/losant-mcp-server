@@ -81,7 +81,7 @@ Returns an array of `{ time, value }` objects aggregated over a duration/resolut
 | `deviceTags` | object[] | Tag-based device selection. |
 | `query` | string | Advanced device query JSON string. |
 | `attribute` | string | Attribute name to aggregate. Max 255 chars. |
-| `aggregation` | enum | `MEAN`, `MAX`, `MIN`, `SUM`, `COUNT`, `FIRST`, `LAST`, `MEDIAN`, `STDDEV`. |
+| `aggregation` | enum | `MEAN`, `MAX`, `MIN`, `SUM`, `COUNT`, `FIRST`, `LAST`, `MEDIAN`, `STD_DEV`. |
 | `duration` | integer (ms) | Time window. |
 | `resolution` | integer (ms) | Bucket size (≤ duration). |
 
@@ -201,6 +201,12 @@ Returns an array of event objects.
 ## Idiom notes
 
 - Segment `id` values become the named data source names in Vega (`"name": "temps"`) for custom-chart, and are accessed as `input.queries.<id>` in the `renderBlock(input)` callback for custom-html.
+<<<<<<< HEAD
 - For `custom-chart`, the `bodyContent` is the Vega/Vega-Lite JSON spec serialized as a string — the server injects `$schema` automatically based on `vegaVersion`.
 - Use `{{block.width}}` / `{{block.height}}` inside the spec string for responsive sizing.
 - `custom-html` uses `DashboardBlock.on('data', callback)` to receive segment data after queries resolve.
+=======
+- For `custom-chart`, the `configuration` field IS the Vega/Vega-Lite JSON spec, serialized as a string. Do not nest it inside `bodyContent` — that subfield only exists for `custom-html`. A spec placed in `configuration.bodyContent` is silently ignored.
+- Use `{{block.width}}` / `{{block.height}}` inside the spec string for responsive sizing.
+- `custom-html` uses `DashboardBlock.on('change', callback)` to receive segment data when query results arrive. `DashboardBlock.on('queryChange', callback)` fires when query parameters change. There is no `'data'` event — listening to it receives nothing.
+>>>>>>> dashboard-blocks

@@ -45,29 +45,31 @@ Each entry in `segments` is a `commonSegment` — the same shape used by bar, pi
 | `deviceTags` | Tag-based device selection. |
 | `query` | Advanced device query as a JSON-encoded string. |
 | `attribute` | Device attribute to aggregate. |
-| `aggregation` | `MEAN`, `MAX`, `MIN`, `SUM`, `COUNT`, `FIRST`, `LAST`, `MEDIAN`, `STDDEV`. |
+| `aggregation` | `MEAN`, `MAX`, `MIN`, `SUM`, `COUNT`, `FIRST`, `LAST`, `MEDIAN`, `STD_DEV`. |
 
 The `i`-th segment result is accessible in conditions as `{{value-i}}` and `{{time-i}}` (0-indexed, so the first segment → `{{value-0}}`).
 
 ### Conditions
 
 ```json
-{ "condition": "{{value-0}} > 80", "label": "**CRITICAL**", "color": "#E74C3C" }
+{ "condition": "{{value-0}} > 80", "label": "**CRITICAL**", "color": "#E74C3C", "shape": "circle" }
 ```
 
 | Condition field | Notes |
 |---|---|
 | `condition` | Handlebars expression — truthy = this condition applies. Available: all `{{value-i}}` and `{{time-i}}`, plus `{{ctx.<name>}}`. |
 | `label` | Shown below the color block. Supports Markdown. |
-| `color` | CSS color. |
+| `color` | CSS color of the indicator. |
+| `shape` | `"circle"` \| `"square"` \| `"triangle"` \| `"octagon"` — shape of the indicator icon. **Required — the API does not default this; the UI will error if omitted. Always set explicitly; use `"circle"` when in doubt.** |
+| `imageUrl` | string — URL of a custom image to use as the indicator icon. When set, overrides `color` and `shape`. |
 | `id` | Optional identifier. |
 
 ### `defaultCondition`
 
-Same shape as a condition object, but without `condition` — it is the fallback when no condition matches:
+Same shape as a condition object, but without `condition` — it is the fallback when no condition matches. Supports `label`, `color`, `shape`, and `imageUrl`. **`shape` is required here too — always set it explicitly.**
 
 ```json
-{ "label": "Unknown", "color": "#808080" }
+{ "label": "Unknown", "color": "#808080", "shape": "circle" }
 ```
 
 ## Worked example — two-query status indicator
@@ -86,10 +88,10 @@ Same shape as a condition object, but without `condition` — it is the fallback
       { "deviceIds": ["{{ctx.deviceId}}"], "attribute": "flowRate", "aggregation": "LAST" }
     ],
     "conditions": [
-      { "condition": "{{value-0}} < 5", "label": "**LOW PRESSURE**", "color": "#E74C3C" },
-      { "condition": "{{value-1}} < 1", "label": "**LOW FLOW**", "color": "#F39C12" }
+      { "condition": "{{value-0}} < 5", "label": "**LOW PRESSURE**", "color": "#E74C3C", "shape": "circle" },
+      { "condition": "{{value-1}} < 1", "label": "**LOW FLOW**", "color": "#F39C12", "shape": "circle" }
     ],
-    "defaultCondition": { "label": "Normal", "color": "#27AE60" }
+    "defaultCondition": { "label": "Normal", "color": "#27AE60", "shape": "circle" }
   }
 }
 ```
@@ -100,3 +102,4 @@ Same shape as a condition object, but without `condition` — it is the fallback
 - Conditions are evaluated in order. Put the most critical conditions first.
 - Use `aggregation: "LAST"` to reflect current device state.
 - `defaultCondition` catches the "no devices matched" or "all queries returned null" case — always set a meaningful `label`.
+- **Always set `shape` explicitly on every condition object and on `defaultCondition`.** The API does not provide a default and the UI will error if `shape` is absent. Use `"circle"` when no specific shape is required.

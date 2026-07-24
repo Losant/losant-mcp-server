@@ -21,7 +21,7 @@ See the parent `dashboard-guide.md` for block object shape, layout grid, and `ap
 | Field | Type | Default | Notes |
 |---|---|---|---|
 | `realTime` | boolean | `false` | When `true`, live-streams device readings. When `false`, queries historical data. |
-| `duration` | integer (ms) | — | Historical only. Time window. |
+| `duration` | integer (ms) \| `"{{dashboard.duration}}"` | — | Historical only. Time window. Use the string form to inherit the dashboard's global duration control. |
 | `valueFormat` | string | — | D3 format string for the absolute value (e.g. `".1f"`, `",.0f"`). |
 | `percentFormat` | string | — | D3 format string for the percentage (e.g. `".1%"`). |
 | `segments` | object[] | — | **Required. At least one.** Each segment is one slice. |
@@ -39,7 +39,7 @@ See the parent `dashboard-guide.md` for block object shape, layout grid, and `ap
 }
 ```
 
-Same device-selection fields as the bar block: `deviceIds`, `deviceTags`, `query`. `expression` allows value transformation.
+Same device-selection fields as the bar block: `deviceIds`, `deviceTags`, `query`. `expression` allows value transformation. Additional commonSegment fields — `graphType`, `detectDataGaps`, `lineWeight`, `yAxisLabel` — are part of the shared schema but have no meaningful effect on pie slices.
 
 ## Worked example — energy mix by three sources
 

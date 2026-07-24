@@ -21,7 +21,7 @@ See the parent `dashboard-guide.md` for block object shape, layout grid, and `ap
 | Field | Type | Default | Notes |
 |---|---|---|---|
 | `realTime` | boolean | `false` | When `true`, live-streams device readings. When `false`, queries historical data. |
-| `duration` | integer (ms) | — | Time window for historical queries. |
+| `duration` | integer (ms) \| `"{{dashboard.duration}}"` | — | Time window for historical queries. Use the string form to inherit the dashboard's global duration control. |
 | `xAxisLabel` | string | — | Label displayed along the X axis. Max 255 chars. |
 | `xAxisFormat` | string | — | D3 format string for X axis ticks. Max 255 chars. |
 | `xAxisMin` | number \| string | — | Manual lower bound for the X axis. |
@@ -50,6 +50,10 @@ Each `segments` entry is a `commonSegment` object:
 | `label` | Bar label. Defaults to the attribute name. |
 | `color` | CSS color. |
 | `expression` | Optional Handlebars transform: `{{value}}`, `{{time}}`, `{{ctx.<name>}}` available. |
+| `graphType` | `"bar"` \| `"line"` \| `"area"` — controls segment rendering style. Primarily significant in graph blocks; bar blocks render as bars regardless. |
+| `detectDataGaps` | boolean — when `true`, breaks line/area rendering where no data was reported. |
+| `lineWeight` | integer 0–5 — line thickness. Applies to line/area rendering modes. |
+| `yAxisLabel` | string — legacy segment-level Y-axis label override. |
 
 ## Worked example — compare temperature across three devices
 

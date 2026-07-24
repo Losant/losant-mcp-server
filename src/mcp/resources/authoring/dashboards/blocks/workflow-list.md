@@ -18,7 +18,7 @@ Lists workflows in the application with their enabled/disabled status and 24-hou
     "includeCloud": true,
     "includeEdge": true,
     "includeEmbedded": true,
-    "includeExperience": true
+    "includeExperience": false
   }
 }
 ```
@@ -31,7 +31,7 @@ Lists workflows in the application with their enabled/disabled status and 24-hou
 | `includeCloud` | boolean | `true` | Include cloud (application) workflows. |
 | `includeEdge` | boolean | `true` | Include edge workflows. |
 | `includeEmbedded` | boolean | `true` | Include embedded workflows. |
-| `includeExperience` | boolean | `true` | Include experience workflows. |
+| `includeExperience` | boolean | `false` | Include experience workflows. **Defaults to `false`** — experience workflows are excluded unless this is explicitly set to `true`. |
 | `experienceVersion` | string | — | When set, only shows experience workflows belonging to this experience version slug. |
 
 ## Worked example — cloud-only alert workflows with name filter
@@ -58,7 +58,7 @@ Lists workflows in the application with their enabled/disabled status and 24-hou
 
 ## Idiom notes
 
-- All four `include*` fields default to `true` — set the ones you don't need to `false` explicitly rather than omitting them, to make intent clear.
+- `includeCloud`, `includeEdge`, and `includeEmbedded` default to `true`. `includeExperience` defaults to `false` — set it explicitly to `true` if you want experience workflows shown.
 - The list is read-only; it shows status and counts but does not allow enabling/disabling workflows from the dashboard.
 - `experienceVersion` only applies to experience workflows; it is ignored when `includeExperience` is `false`.
 - Moderately tall blocks (`height: 3+`) work best; the list needs vertical space to show several workflows without scrolling.

@@ -17,7 +17,8 @@ const GUIDE_FOR_TYPE = {
   experienceSlug: 'losant://guides/experiences',
   experienceUser: 'losant://guides/experiences',
   experienceVersion: 'losant://guides/experiences',
-  experienceView: 'losant://guides/experiences'
+  experienceView: 'losant://guides/experiences',
+  applicationDashboard: 'losant://guides/dashboards'
 };
 let nestedNote = '';
 Object.entries(NESTED_RESOURCES).forEach(([type, { parentField, parentType }]) => {

@@ -34,7 +34,7 @@ export const RESOURCE_TYPES = [
 ];
 
 export const RESOURCE_TYPE_SET = new Set(RESOURCE_TYPES);
-// applicationJobLog is omitted because we do not write them - the jobs created them it's a read only reasource
+// applicationJobLog is omitted because we do not write them - the jobs created them it's a read only resource
 // omitting embeddedDeployment until embedded authoring is complete
 // omitting edgeDeployment I'm thinking this may go into a device or flow tool
 export const WRITABLE_RESOURCE_TYPES = [
@@ -137,7 +137,7 @@ export const DOC_NAME_TO_FILE = Object.fromEntries(
   MD_FILES.map((f) => [f.replace('.md', ''), f])
 );
 
-// Authoring content — deep-dive markdown files for flow and dashboard construction
+// Authoring content — deep-dive markdown files for dashboard construction
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const AUTHORING_PATH = path.join(__dirname, 'mcp/resources/authoring');
 
@@ -171,6 +171,6 @@ export const REFERENCES_TO_FILE = {
   'flow/payload': path.join(AUTHORING_PATH, 'flows/reference/payload.md'),
   'flow/globals': path.join(AUTHORING_PATH, 'flows/reference/globals.md'),
   'flow/templating': path.join(AUTHORING_PATH, 'flows/reference/templating.md'),
-  'dashboard/context-configuration': path.join(AUTHORING_PATH, 'dashboards/reference/context-configuration.md'),
-  'experience/context': path.join(AUTHORING_PATH, 'experiences/reference/context.md')
+  'experience/context': path.join(AUTHORING_PATH, 'experiences/reference/context.md'),
+  'dashboard/context-configuration': path.join(AUTHORING_PATH, 'dashboards/reference/context-configuration.md')
 };

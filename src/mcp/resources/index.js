@@ -34,6 +34,7 @@ const GUIDES_TO_REGISTER = [
   credentialGuide,
   dataTableGuide,
   deviceGuide,
+  dashboardGuide,
   experienceGuide,
   fileGuide,
   flowGuide,
@@ -74,6 +75,9 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
     }
     if (filePath.includes('experience')) {
       disclaimerLines.push('\nSee [losant://guides/experiences](losant://guides/experiences) for the versioning model, view sub-types, endpoint access control, and common procedures.');
+    }
+    if (filePath.endsWith('applicationDashboard.md') || filePath.endsWith('applicationDashboards.md')) {
+      disclaimerLines.push('\nSee [losant://guides/dashboards](losant://guides/dashboards) for the block catalog, layout rules, context variables, and common workflows.');
     }
     if (filePath.endsWith('data.md')) {
       disclaimerLines.push('- endpoint "timeSeriesQuery" used by tool `losant_timeseries` as operation "timeSeriesQuery"');
@@ -117,7 +121,8 @@ const readAuthoringContent = memoizee(async (filePath, href) => {
 }, { maxAge: 1000 * 60 * 60, primitive: true });
 
 export default (server) => {
-  log(`Registering ${GUIDES_TO_REGISTER.length} guides resources...`);
+  // +6 = losant://index, doc template, schema template, authoring-hub template, dashboard-block template, reference template
+  log(`Registering ${GUIDES_TO_REGISTER.length + 6} resources...`);
   server.registerResource(
     'index',
     'losant://index',
@@ -239,7 +244,7 @@ export default (server) => {
     new ResourceTemplate('losant://references/{resourceType}/{referenceName}', { list: undefined }),
     {
       title: 'Losant Authoring Reference',
-      description: 'Cross-cutting reference docs for flow and dashboard authoring — discovered via authoring guide links',
+      description: 'Cross-cutting reference docs for dashboard authoring — discovered via authoring guide links',
       mimeType: 'text/markdown'
     },
     async (uri, { resourceType, referenceName }) => {

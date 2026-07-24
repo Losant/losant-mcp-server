@@ -21,7 +21,7 @@ See the parent `dashboard-guide.md` for the block object shape, layout grid, and
 | Field | Type | Default | Notes |
 |---|---|---|---|
 | `query` | string | — | Advanced device filter as a JSON-encoded string. Shows all devices if omitted. |
-| `filter` | string \| object | — | Name filter (glob string) or object with `ids` (string[]), `tags` (object[]), and/or `searchParam` (string). |
+| `filter` | string \| object | — | Name filter (glob string) or object with `ids` (string[]), `tags` (object[]), and/or `searchParam` (string). Tag entries support `"fromCtx": "varName"` to drive the tag value from a context variable: `{ "key": "fleet", "fromCtx": "fleetVar" }`. |
 | `match` | `"unfiltered"` \| `"all"` \| `"any"` | — | How tag filter criteria are combined. |
 | `sortField` | `"id"` \| `"name"` \| `"creationDate"` \| `"lastUpdated"` | `"name"` | Default sort column. |
 | `sortDirection` | `"asc"` \| `"desc"` | `"asc"` | Default sort direction. |
@@ -31,13 +31,13 @@ See the parent `dashboard-guide.md` for the block object shape, layout grid, and
 | `deviceLinkType` | `"default"` \| `"custom"` | `"default"` | Whether device-name links use the default Losant link or a custom URL. |
 | `deviceLinkUrl` | string | — | Custom URL for device-name links (when `deviceLinkType: "custom"`). Supports templates: `{{deviceId}}`, `{{deviceName}}`, etc. Max 2048 chars. |
 | `deviceLinkNewWindow` | boolean | `false` | When true, device-name links open in a new tab. |
-| `columns` | object[] | — | **Required. At least one.** Column definitions. |
+| `columns` | object[] | — | **Required. At least one.** Column definitions. Max 100 columns — exceeding this fails schema validation. |
 
 ### Column types
 
 Each column has `type`, `headerTemplate`, and `id` (optional). **`rowTemplate` is required for most column types** — without it the cell renders empty. The default value for data-bearing columns is `{{format value}}`, which uses Losant's `format` helper to render the cell value.
 
-**Name column** — `rowTemplate` not required; the block renders the device name (and optional link) automatically. **Requires `deviceLinkType: "default"` in the block config** — omitting it or setting a different value will break the name column rendering:
+**Name column** — `rowTemplate` not required; the block renders the device name (and optional link) automatically. Default link behavior applies without specifying `deviceLinkType` — set `deviceLinkType: "custom"` only when you want to override link destinations:
 ```json
 { "type": "name", "headerTemplate": "Device" }
 ```
@@ -74,9 +74,17 @@ Each column has `type`, `headerTemplate`, and `id` (optional). **`rowTemplate` i
 
 **Custom column** — `rowTemplate` required; full device context available:
 ```json
-{ "type": "custom", "headerTemplate": "Info", "rowTemplate": "{{deviceTags.firmware}} — {{attributes.tempC}}" }
+{ "type": "custom", "headerTemplate": "Info", "rowTemplate": "{{device.tags.firmware.[0]}} — {{device.attributeValues.tempC}}" }
 ```
-Available in all `rowTemplate` values: `{{value}}` (the cell's data value), `{{deviceId}}`, `{{deviceName}}`, `{{deviceTags.KEY}}`, `{{attributes.ATTR}}` (requires `additionalAttributes`), `{{ctx.<name>}}`.
+
+For standard columns (`attribute`, `tag`, `id`, `created`, `updated`): `{{value}}` is the cell's data value; `{{ctx.<name>}}` accesses context variables.
+
+For `custom` columns, the following device-scoped variables are available:
+- `{{device.id}}` — device ID
+- `{{device.name}}` — device name
+- `{{device.tags.KEY.[0]}}` — first value of a tag (tags are arrays; use `.[0]` for the first entry)
+- `{{device.attributeValues.ATTR}}` — attribute value (requires `additionalAttributes` to include `ATTR`)
+- `{{device.connectionInfo.connected}}` — boolean connection status
 
 ## Worked example — fleet list with status and location
 
@@ -108,5 +116,5 @@ Available in all `rowTemplate` values: `{{value}}` (the cell's data value), `{{d
 - `source` on `attribute` and `tag` columns is the attribute name or tag key respectively.
 - Always include `rowTemplate: "{{format value}}"` on data-bearing columns (`attribute`, `tag`, `id`, `created`, `updated`). Omitting it leaves the cell empty. `name` and `connectionStatus` render automatically without a template.
 - `additionalAttributes` controls which device attribute values are fetched. Omitting it (undefined) returns all attributes — safe default, but loads everything. Pass a named list like `["odometer", "fuelLevel"]` to fetch only what your `attribute` columns need. Never pass `null` or `[]` when you have `attribute`-type columns — that suppresses all attribute data and leaves those columns empty.
-- **Always set `deviceLinkType: "default"` when using a `name` column.** Without it the name column will not render correctly.
+- The `name` column renders correctly without specifying `deviceLinkType` — default link behavior applies automatically. Set `deviceLinkType: "custom"` only when you want to override link destinations.
 - Device link behavior is controlled at the config level (`deviceLinkType`, `deviceLinkUrl`, `deviceLinkNewWindow`), not per-column.

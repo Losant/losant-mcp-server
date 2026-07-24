@@ -57,7 +57,7 @@ The \`config\` object is block-type-specific — read the per-block guide file b
 
 ### Create an empty dashboard, then add blocks
 1. Call \`losant_write\` \`operation=createOne\` \`resourceType=applicationDashboard\` with just \`name\`
-2. Read \`losant://guides/dashboards\` to understand the block catalog and layout rules
+2. Read \`losant://authoring/dashboard\` for the full block catalog and layout rules
 3. For each block type you want to add, read \`losant://dashboard/blocks/{blockType}\`
 4. Assemble the full \`blocks\` array
 5. Call \`losant_write\` \`operation=updateOne\` with the blocks array
