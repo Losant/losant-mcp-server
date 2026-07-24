@@ -1,7 +1,12 @@
 import { buildReferenceSection } from './helpers.js';
 const content = `# Device Authentication Guide
 
-> **API naming vs. UI naming**: The Losant REST API uses \`applicationCertificate\` and \`applicationCertificateAuthority\`. The Losant UI and documentation call these **Device Certificate** and **Device Certificate Authority**. They are identical resources — only the name differs.
+> **API naming vs. UI naming**: Several resources in this guide have different names in the API vs. the Losant UI:
+> - API: \`applicationKey\` → UI: **Access Key**
+> - API: \`applicationCertificate\` → UI: **Device Certificate**
+> - API: \`applicationCertificateAuthority\` → UI: **Device Certificate Authority**
+>
+> Use the API names with \`losant_query\` and \`losant_write\`.
 
 Devices authenticate to the Losant MQTT broker using one of two mechanisms:
 
@@ -9,6 +14,27 @@ Devices authenticate to the Losant MQTT broker using one of two mechanisms:
 |---|---|---|---|
 | Access Key | \`applicationKey\` | username = key, password = secret | Most devices; simple setup |
 | Client Certificate | \`applicationCertificate\` + CA | mutual TLS (X.509) | High-security PKI environments |
+
+---
+
+## Common Optional Fields (\`applicationKey\` and \`applicationCertificate\`)
+
+Both resource types share these optional fields:
+
+**Identity**
+- \`name\` — human-readable label shown in the Losant UI (max 255 chars)
+- \`description\` — free-text notes (max 32,767 chars)
+
+**IP address filtering** — restrict which client IP addresses may connect using this credential:
+- \`addressFilterType\`: \`"all"\` (default — no restriction), \`"whitelist"\` (only listed IPs allowed), \`"blacklist"\` (listed IPs denied)
+- \`addresses\`: array of IPv4/IPv6 addresses or CIDR ranges (max 100 entries, max 48 chars each)
+
+**MQTT topic filtering** — restrict which MQTT topics the credential may publish to or subscribe from beyond the device-specific defaults:
+- \`filterType\`: \`"all"\` (default — device-specific topics only), \`"whitelist"\` (only listed topics), \`"blacklist"\` (deny listed topics). \`applicationCertificate\` also supports \`"none"\` (no topic access).
+- \`pubTopics\`: array of additional topics allowed for publish (used with \`"whitelist"\`)
+- \`subTopics\`: array of additional topics allowed for subscribe (used with \`"whitelist"\`)
+
+By default both resources grant access to the standard device MQTT topics (state, commands) only. Only set \`filterType\` when you need to expand or restrict beyond that default.
 
 ---
 
@@ -24,12 +50,10 @@ An access key is a key/secret pair. The device provides the key as the MQTT user
 **Critical**: The access secret is returned **once** in the \`createOne\` response and is never retrievable again. Surface it to the user immediately.
 
 **Device restrictions** (set at creation, cannot be changed):
-- Unrestricted — any device in the application can authenticate with this key
-- Scoped — restrict to specific device IDs or devices matching a tag query
+- \`deviceIds\` — array of specific device IDs this key is scoped to (Losant strongly recommends one key per device)
+- Omit to create an unrestricted key valid for any device in the application
 
-**Topic restrictions** (optional):
-- By default, keys grant access to device-specific MQTT topics only (state, commands)
-- Optionally allow additional custom topics or restrict to a whitelist/blacklist
+For \`name\`, \`description\`, IP address filtering, and MQTT topic filtering see [Common Optional Fields](#common-optional-fields-applicationkey-and-applicationcertificate) above.
 
 ### Procedure: Create an access key for a device
 1. Call \`losant_write\` \`operation=createOne\` \`resourceType=applicationKey\`
@@ -45,36 +69,22 @@ A certificate authority (CA) record stores a PEM-encoded CA certificate bundle. 
 
 The CA certificate is generated outside Losant using OpenSSL or your existing PKI. Only the public CA certificate is uploaded — never the private key.
 
-### Generating a CA with OpenSSL
+### CA certificate requirements
 
-**Before running, ask the user for:**
-- **Common Name (CN)** — identifies the CA (e.g. "My Device CA", "Acme IoT Root CA")
-- **Organization (O)**, **Country (C)**, and other DN fields — all optional but common
-- **Validity period** — how many days the CA cert should be valid (e.g. \`365\`, \`3650\`)
-- **Start date** — defaults to now; ask if they need a future start date
+The CA cert is generated outside Losant using any PKI tool (OpenSSL, your existing certificate authority, etc.). Ask the user what tooling they have before offering to help generate one.
 
-\`\`\`bash
-openssl req -x509 -newkey rsa:4096 \\
-  -keyout ca.key \\
-  -out ca.crt \\
-  -days <DAYS> \\
-  -nodes \\
-  -subj "/CN=<Common Name>/O=<Organization>/C=<Country>" \\
-  -addext "basicConstraints=critical,CA:TRUE" \\
-  -addext "keyUsage=critical,keyCertSign,cRLSign"
-\`\`\`
+The uploaded CA certificate **must**:
+- Be PEM-encoded
+- Have \`basicConstraints=critical,CA:TRUE\`
+- Have \`keyUsage=critical,keyCertSign,cRLSign\`
 
-Omit any DN fields the user doesn't want (e.g. \`-subj "/CN=My Device CA"\` is valid). To start validity from a specific future date, replace \`-days <DAYS>\` with \`-not_before <YYYY-MM-DD> -not_after <YYYY-MM-DD>\` (OpenSSL 3.x+).
+Both extensions are enforced by the Losant API — \`createOne applicationCertificateAuthority\` returns a 400 error if either is missing. Only the public CA certificate is uploaded — never the private key.
 
-**Both extensions are required by the Losant API** — the \`createOne applicationCertificateAuthority\` call returns a 400 error if either is missing:
-- \`basicConstraints=critical,CA:TRUE\` — marks this as a CA certificate
-- \`keyUsage=critical,keyCertSign,cRLSign\` — grants certificate-signing authority
-
-**Creating a CA record** (after generating the cert):
+**Creating a CA record:**
 \`\`\`json
 {
   "name": "My Device CA",
-  "caBundle": "<contents of ca.crt>"
+  "caBundle": "<PEM-encoded CA certificate>"
 }
 \`\`\`
 
@@ -86,51 +96,29 @@ A device certificate record registers an X.509 client certificate signed by a CA
 
 **Key fields:**
 - \`certificate\` (required) — PEM-encoded X.509 certificate signed by a registered CA
-- \`deviceId\` (optional) — Scope this certificate to a single device. If omitted, any device in the application can authenticate with this certificate.
-- \`filterType\` / \`pubTopics\` / \`subTopics\` — MQTT topic restrictions (same semantics as access key topic restrictions)
+- \`deviceId\` (optional) — scope this certificate to a specific device; if omitted, no device in the application can authenticate with it
+
+For \`name\`, \`description\`, IP address filtering, and MQTT topic filtering (\`filterType\` / \`pubTopics\` / \`subTopics\`) see [Common Optional Fields](#common-optional-fields-applicationkey-and-applicationcertificate) above. Note that \`applicationCertificate\` additionally supports \`filterType: "none"\` to deny all topic access.
 
 **Revocation**: Delete the \`applicationCertificate\` resource. The device will be rejected at its next connect attempt.
 
-### Generating a device certificate with OpenSSL
+### Device certificate requirements
 
-**Before running, ask the user for:**
-- **Common Name (CN)** for the device cert — typically the device name or ID
-- **Validity period** (days) and optional start date, same as the CA
+The device cert is generated and signed outside Losant using any PKI tool. Ask the user what tooling they have before offering to help generate one.
 
-\`\`\`bash
-# 1. Generate the device private key and a certificate signing request (CSR)
-openssl req -newkey rsa:2048 \\
-  -keyout device.key \\
-  -out device.csr \\
-  -nodes \\
-  -subj "/CN=<device-name>"
+The uploaded device certificate **must**:
+- Be PEM-encoded X.509, signed by a CA registered in this application
+- Have \`extendedKeyUsage=clientAuth\` — \`createOne applicationCertificate\` returns a 400 error without it
 
-# 2. Sign the CSR with your CA to produce the device certificate
-openssl x509 -req \\
-  -in device.csr \\
-  -CA ca.crt -CAkey ca.key -CAcreateserial \\
-  -out device.crt \\
-  -days <DAYS> \\
-  -extfile <(echo "extendedKeyUsage=clientAuth")
-
-# 3. Verify the chain
-openssl verify -CAfile ca.crt device.crt
-\`\`\`
-
-> **Note**: \`<(echo "...")\` is bash process substitution and does not work in \`sh\` or PowerShell. On those shells, write the extension to a file first: \`echo "extendedKeyUsage=clientAuth" > device-ext.cnf\` and use \`-extfile device-ext.cnf\` instead.
-
-**\`extendedKeyUsage=clientAuth\` is required by the Losant API** — the \`createOne applicationCertificate\` call returns a 400 error without it.
-
-Only \`device.crt\` is uploaded to Losant. \`device.key\` stays on the device and is never shared.
+Only the public certificate is uploaded to Losant. The private key stays on the device and is never shared.
 
 ### Procedure: Set up certificate-based authentication
-1. Ask the user for CA subject fields (CN required, O/C optional), validity period, and optional start date
-2. Generate a CA key and self-signed CA cert with OpenSSL (see above)
+1. Ask the user what PKI tooling they have available (OpenSSL, existing CA, etc.)
+2. Generate a CA private key and self-signed CA certificate meeting the requirements above
 3. Call \`losant_write\` \`operation=createOne\` \`resourceType=applicationCertificateAuthority\` with the CA PEM
-4. Ask the user for device cert CN, validity period, and optional start date
-5. Generate a device key and CSR, sign it with the CA (see above)
-6. Call \`losant_write\` \`operation=createOne\` \`resourceType=applicationCertificate\` with the signed cert PEM and the target \`deviceId\`
-7. Check [losant://info](losant://info) for the \`MQTT Broker Host\` and configure the device to connect to \`mqtts://<broker-host>:8883\` with:
+4. Generate a device private key and a certificate signed by that CA, meeting the requirements above
+5. Call \`losant_write\` \`operation=createOne\` \`resourceType=applicationCertificate\` with the signed cert PEM and the target \`deviceId\`
+6. Check [losant://info](losant://info) for the \`MQTT Broker Host\` and configure the device to connect to \`mqtts://<broker-host>:8883\` with:
    - Client certificate: the signed cert (\`device.crt\`)
    - Client private key: the corresponding private key (\`device.key\`) — stays on the device, never sent to Losant
    - No username/password required
@@ -160,44 +148,14 @@ Only \`device.crt\` is uploaded to Losant. \`device.key\` stays on the device an
 
 Ask the user which variant they need if it isn't clear from context. Default to the standard image unless they specifically need a smaller image or have confirmed they don't use TensorFlow nodes.
 
-### Access key auth
-Set these environment variables:
-- \`DEVICE_ID\` — Losant device ID
-- \`ACCESS_KEY\` — access key value
-- \`ACCESS_SECRET\` — access secret
-- \`BROKER_HOST\` — MQTT broker hostname (omit if using production \`broker.losant.com\`)
+### Environment variables
 
-\`\`\`bash
-docker run -d \\
-  -e DEVICE_ID=<device-id> \\
-  -e ACCESS_KEY=<access-key> \\
-  -e ACCESS_SECRET=<access-secret> \\
-  -e BROKER_HOST=<broker-host> \\
-  losant/edge-agent:<version>
-\`\`\`
+The GEA is configured entirely via environment variables. For the full, always-current reference read the Docker Hub readme: \`https://hub.docker.com/r/losant/edge-agent\`
 
-### Certificate auth
-Set these environment variables (\`ACCESS_KEY\` and \`ACCESS_SECRET\` are not needed):
-- \`DEVICE_ID\` — Losant device ID (still required)
-- \`BROKER_CLIENT_SSL_CERT_PATH\` — path inside the container to the PEM client certificate (\`device.crt\`)
-- \`BROKER_CLIENT_SSL_KEY_PATH\` — path inside the container to the PEM client private key (\`device.key\`)
-- \`BROKER_HOST\` — MQTT broker hostname (omit if using production \`broker.losant.com\`)
+The one Losant-specific variable to be aware of before generating any deployment config:
+- \`BROKER_HOST\` — MQTT broker hostname. Check [losant://info](losant://info) for the \`MQTT Broker Host\` value. Omit this variable if the host is the default (\`broker.losant.com\`); set it explicitly for staging and dedicated instances.
 
-Because the cert and key files live on the host, mount them into the container with a read-only Docker volume:
-
-\`\`\`bash
-docker run -d \\
-  -e DEVICE_ID=<device-id> \\
-  -e BROKER_HOST=<broker-host> \\
-  -v /path/to/certs:/certs:ro \\
-  -e BROKER_CLIENT_SSL_CERT_PATH=/certs/device.crt \\
-  -e BROKER_CLIENT_SSL_KEY_PATH=/certs/device.key \\
-  losant/edge-agent:<version>
-\`\`\`
-
-Replace \`/path/to/certs\` with the host directory containing \`device.crt\` and \`device.key\`. The container path (\`/certs\`) can be anything as long as the env vars match.
-
-Edge compute specifics — GEA offline buffering, peripheral device management, edge flows — are outside the scope of this guide. Refer to the Losant Edge Agent documentation for GEA configuration details.
+Ask the user how they intend to deploy the GEA (Docker run, Compose, Helm, etc.) before generating a deployment config — do not assume a specific deployment method.
 
 ${buildReferenceSection(['applicationCertificate', 'applicationCertificateAuthority', 'applicationKey'])}
 `;

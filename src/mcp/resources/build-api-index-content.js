@@ -17,7 +17,8 @@ let indexContent = `# Losant API Documentation
 > **API naming note**: Two resource types have names in the API that differ from their display names in the Losant UI:
 > - API: \`applicationCertificate\` → UI: **Device Certificate**
 > - API: \`applicationCertificateAuthority\` → UI: **Device Certificate Authority**
-> Use the API names (\`applicationCertificate\`, \`applicationCertificateAuthority\`) with \`losant_query\` and \`losant_write\`.
+> - API: \`applicationKey\` → UI: **Access Key**
+> Use the API names (\`applicationCertificate\`, \`applicationCertificateAuthority\`, \`applicationKey\`) with \`losant_query\` and \`losant_write\`.
 
 ## Supported Resources
 The following resources can be queried with the losant_query tool:
