@@ -139,41 +139,46 @@ Only the public certificate is uploaded to Losant. The private key stays on the 
    - Client private key: the corresponding private key (\`device.key\`) — stays on the device, never sent to Losant
    - No username/password required
 
+${buildReferenceSection(['applicationCertificate', 'applicationCertificateAuthority', 'applicationKey'])}
+
 ---
 
-## Edge Compute Devices
+## Connecting Devices — Next Steps
+
+Once credentials are provisioned, devices need to connect to the Losant MQTT broker at \`mqtts://broker.losant.com:8883\` (check [losant://info](losant://info) for the correct broker host in non-production environments). Two paths:
+
+### Gateway Edge Agent (edgeCompute devices)
 
 \`edgeCompute\` devices run the Losant Gateway Edge Agent (GEA) and support both auth methods.
 
-> **Broker host**: Check [losant://info](losant://info) for the \`MQTT Broker Host\` before generating any edge agent command. The default for Losant's multi-tenant production environment is \`broker.losant.com\`, but staging and dedicated instances use a different host. Only include \`BROKER_HOST\` in the command if it differs from \`broker.losant.com\`.
+> **Broker host**: Check [losant://info](losant://info) for the \`MQTT Broker Host\` before generating any deployment config. Only set \`BROKER_HOST\` if it differs from the default (\`broker.losant.com\`).
 
-### Image tag and variants
-
-**Never use \`latest\`** — Losant publishes GEA releases approximately every 6 weeks and an unplanned image update can break a running deployment. Always pin to a specific version tag.
-
-**Before generating any \`docker run\` command**, look up the current version on Docker Hub:
-- Page: \`https://hub.docker.com/r/losant/edge-agent/tags\`
-- Use a web search or \`WebFetch\` to find the most recently pushed numbered tag (e.g. \`2.4.1\`)
-
-**Available image variants** — choose based on the target hardware and requirements:
+**Never use \`latest\`** — Losant publishes GEA releases approximately every 6 weeks. Always pin to a specific version tag. Look up the current version on Docker Hub before generating any config:
+- \`https://hub.docker.com/r/losant/edge-agent/tags\`
 
 | Tag format | Description |
 |---|---|
 | \`<version>\` | Standard image — full feature set including TensorFlow Node; amd64 and arm64 |
 | \`<version>-alpine\` | Smaller footprint; excludes TensorFlow Node and some native modules |
 
-Ask the user which variant they need if it isn't clear from context. Default to the standard image unless they specifically need a smaller image or have confirmed they don't use TensorFlow nodes.
+The GEA is configured entirely via environment variables. For the full reference read the Docker Hub readme: \`https://hub.docker.com/r/losant/edge-agent\`
 
-### Environment variables
-
-The GEA is configured entirely via environment variables. For the full, always-current reference read the Docker Hub readme: \`https://hub.docker.com/r/losant/edge-agent\`
-
-The one Losant-specific variable to be aware of before generating any deployment config:
-- \`BROKER_HOST\` — MQTT broker hostname. Check [losant://info](losant://info) for the \`MQTT Broker Host\` value. Omit this variable if the host is the default (\`broker.losant.com\`); set it explicitly for staging and dedicated instances.
+The one Losant-specific variable to confirm before generating any deployment config:
+- \`BROKER_HOST\` — MQTT broker hostname (see above)
 
 Ask the user how they intend to deploy the GEA (Docker run, Compose, Helm, etc.) before generating a deployment config — do not assume a specific deployment method.
 
-${buildReferenceSection(['applicationCertificate', 'applicationCertificateAuthority', 'applicationKey'])}
+### Custom client code
+
+For devices connecting with custom code, Losant publishes official MQTT client libraries that handle the broker connection and Losant's device-specific topic conventions (state reporting, command listening) automatically:
+
+| Language | Package | Repository |
+|---|---|---|
+| JavaScript (Node.js) | \`losant-mqtt-js\` | https://github.com/Losant/losant-mqtt-js |
+| Python | \`losant-mqtt-python\` | https://github.com/Losant/losant-mqtt-python |
+| Ruby | \`losant-mqtt-ruby\` | https://github.com/Losant/losant-mqtt-ruby |
+
+These libraries are Losant-aware — they know the broker address, topic structure, and message format for device state and commands. Each repo includes usage examples and authentication configuration for both access key and certificate auth methods. Recommend them when a user wants to write their own device client rather than use the GEA.
 `;
 
 export default {
