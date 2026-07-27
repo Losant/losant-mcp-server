@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { NESTED_RESOURCES, RESOURCE_TYPES, APPLICATION_RESOURCES, ALLOWS_ADVANCED_QUERIES_SET } from '../../constants.js';
 import debug from 'debug';
 import { restToMCPError, invalidRequestError } from '../../helpers/errors.js';
-import { getResourceFieldId } from './helpers.js';
+import { getResourceFieldId, getPluralResourceName } from './helpers.js';
 const log = debug('losant-mcp-server:tools:query-resources');
 
 const omittedFieldsByResourceType = {
@@ -294,7 +294,7 @@ const listResourceTool = async (losantClient, { resourceType }, requestParams, l
   if (resourceType === 'dataTableRow') {
     listResponse = await queryDataTableRows(losantClient, requestParams);
   } else {
-    listResponse = await losantClient[`${resourceType}s`].get(requestParams);
+    listResponse = await losantClient[getPluralResourceName(resourceType)].get(requestParams);
   }
   const responseContent = [];
   if (omitFieldByResourceType[resourceType]) {

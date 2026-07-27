@@ -12,14 +12,40 @@ import credentialGuide from './credential-guide.js';
 import fileGuide from './file-guide.js';
 import notebookGuide from './notebook-guide.js';
 import experienceGuide from './experience-guide.js';
+import deviceAuthGuide from './device-auth-guide.js';
 import indexContent from './build-api-index-content.js';
-import debug from 'debug';
+import conf from '../../config.js';
 import memoizee from 'memoizee';
 import { SCHEMA_NAME_TO_FILE, DOC_NAME_TO_FILE,
   DOCS_PATH, RESOURCE_TYPE_SET, SCHEMAS_PATH,
   WRITABLE_RESOURCE_TYPES, NO_CREATE_TYPES } from '../../constants.js';
+import { getPluralResourceName } from '../tools/helpers.js';
+import debug from 'debug';
+
+const apiUrl = conf.get('losant.apiUrl');
+const apiHost = new URL(apiUrl).hostname;
+const brokerHost = apiHost.replace(/^api\./, 'broker.');
+const infoPreamble = `# Losant MCP Server — Info
+
+## About Losant
+Losant is an IoT application enablement platform for building, connecting, and managing IoT solutions at scale. It provides connected devices via MQTT and REST, a visual workflow engine for device automation and business logic, real-time dashboards for data visualization, Experience Builder for custom end-user web interfaces and APIs, and Edge Compute for running workflows locally on gateway devices without cloud dependency.
+
+## Environment
+- **API URL**: ${apiUrl}
+- **MQTT Broker Host**: ${brokerHost}
+
+> The broker host is derived from the API URL by replacing \`api.\` with \`broker.\`. Use \`${brokerHost}\` as the \`BROKER_HOST\` environment variable when configuring the Losant Gateway Edge Agent — only set this if it differs from the default (\`broker.losant.com\`).
+
+---
+
+`;
 
 const WRITABLE_RESOURCE_TYPE_SET = new Set(WRITABLE_RESOURCE_TYPES);
+// Set of plural API collection names for writable, creatable types — used to add the write disclaimer to plural doc pages.
+// Built via getPluralResourceName so irregular plurals (e.g. applicationCertificateAuthorities) are handled correctly.
+const WRITABLE_PLURAL_NAME_SET = new Set(
+  WRITABLE_RESOURCE_TYPES.filter((t) => !NO_CREATE_TYPES.has(t)).map(getPluralResourceName)
+);
 const log = debug('losant-mcp-server:mcp:resources');
 
 const GUIDES_TO_REGISTER = [
@@ -29,6 +55,7 @@ const GUIDES_TO_REGISTER = [
   credentialGuide,
   dataTableGuide,
   deviceGuide,
+  deviceAuthGuide,
   experienceGuide,
   fileGuide,
   integrationGuide,
@@ -59,7 +86,6 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
     if (filePath.endsWith('credential.md') || filePath.endsWith('credentials.md')) {
       disclaimerLines.push('\nSee [losant://guides/credentials](losant://guides/credentials) for credential types, required config objects, and common procedures.');
     }
-
     if (filePath.endsWith('file.md') || filePath.endsWith('files.md') || filePath.endsWith('privateFile.md') || filePath.endsWith('privateFiles.md')) {
       disclaimerLines.push('\nSee [losant://guides/files](losant://guides/files) for the two-step create-then-upload pattern and public vs. private file differences.');
     }
@@ -68,6 +94,12 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
     }
     if (filePath.includes('experience')) {
       disclaimerLines.push('\nSee [losant://guides/experiences](losant://guides/experiences) for the versioning model, view sub-types, endpoint access control, and common procedures.');
+    }
+    if (filePath.includes('applicationCertificate') || filePath.includes('applicationCertificateAuthority')) {
+      disclaimerLines.push('\nSee [losant://guides/device-auth](losant://guides/device-auth) for the API/UI naming difference (Device Certificate vs. applicationCertificate), certificate authority setup, and MQTT mutual TLS authentication workflow.');
+    }
+    if (filePath.endsWith('applicationKey.md') || filePath.endsWith('applicationKeys.md')) {
+      disclaimerLines.push('\nSee [losant://guides/device-auth](losant://guides/device-auth) for MQTT credential fields, device restriction options, and the access secret one-time return behavior.');
     }
     if (filePath.endsWith('data.md')) {
       disclaimerLines.push('- endpoint "timeSeriesQuery" used by tool `losant_timeseries` as operation "timeSeriesQuery"');
@@ -89,7 +121,7 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
       }
     } else {
       disclaimerLines.push('- endpoint "get" used by tool `losant_query` as operation "list"');
-      if (WRITABLE_RESOURCE_TYPE_SET.has(fileName.replace(/s$/, '')) && !NO_CREATE_TYPES.has(fileName.replace(/s$/, ''))) {
+      if (WRITABLE_PLURAL_NAME_SET.has(fileName)) {
         disclaimerLines.push('- endpoint "post" used by tool `losant_write` as operation "createOne"');
       }
     }
@@ -105,13 +137,14 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
 }, { maxAge: 1000 * 60 * 60, primitive: true }); // cache for 1 hour
 
 export default (server) => {
+  // +3 = losant://info, losant://docs/{docName} template, losant://schemas/{schemaName} template
   log(`Registering ${GUIDES_TO_REGISTER.length + 3} resources...`);
   server.registerResource(
-    'index',
-    'losant://index',
+    'info',
+    'losant://info',
     {
-      title: 'Losant MCP Application Index Guide',
-      description: 'Discovery index for all guides, API documentation URIs, and schema URIs available in this MCP server',
+      title: 'Losant MCP Server Info',
+      description: 'Start here: Losant platform overview, environment info (API URL, MQTT broker host), and a discovery index of all guides, API documentation URIs, and schema URIs available in this MCP server',
       mimeType: 'text/markdown'
     },
     async (uri) => {
@@ -119,7 +152,7 @@ export default (server) => {
         contents: [{
           uri: uri.href,
           mimeType: 'text/markdown',
-          text: indexContent
+          text: infoPreamble + indexContent
         }]
       };
     }

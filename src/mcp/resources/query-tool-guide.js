@@ -34,7 +34,7 @@ Some resources require a parent resource ID via the \`parentResourceId\` paramet
 
 ${nestedNote}
 
-For a complete index of all available documentation and schemas, see [losant://index](losant://index).
+For a complete index of all available documentation and schemas, and environment info (API URL, MQTT broker host), see [losant://info](losant://info).
 
 ## Advanced Queries
 

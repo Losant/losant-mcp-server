@@ -2,6 +2,12 @@ import { createRequire } from 'node:module';
 import { readdirSync } from 'node:fs';
 import path from 'node:path';
 
+const pluralToSingluarResourceName = (pluralResourceName) => {
+  if (pluralResourceName === 'applicationCertificateAuthorities') { return 'applicationCertificateAuthority'; }
+  // Default to removing the trailing 's', e.g. devices -> device, flows -> flow, etc.
+  return pluralResourceName.endsWith('s') ? pluralResourceName.slice(0, -1) : pluralResourceName;
+};
+
 export const RESOURCE_TYPES = [
   'application',         // Top-level resource for application lookup
   'event',
@@ -29,11 +35,13 @@ export const RESOURCE_TYPES = [
   'experienceView',
   'applicationJobLog',
   'edgeDeployment',
-  'embeddedDeployment'
+  'embeddedDeployment',
+  'applicationCertificate',
+  'applicationCertificateAuthority'
 ];
 
 export const RESOURCE_TYPE_SET = new Set(RESOURCE_TYPES);
-// applicationJobLog is omitted because we do not write them - the jobs created them it's a read only reasource
+// applicationJobLog is omitted because we do not write them - the jobs created them it's a read only resource
 // omitting embeddedDeployment until embedded authoring is complete
 // omitting edgeDeployment I'm thinking this may go into a device or flow tool
 export const WRITABLE_RESOURCE_TYPES = [
@@ -58,7 +66,9 @@ export const WRITABLE_RESOURCE_TYPES = [
   'experienceVersion',
   'experienceView',
   'application',
-  'applicationReadme'
+  'applicationReadme',
+  'applicationCertificate',
+  'applicationCertificateAuthority'
   // 'applicationDashboard', will be added in another branch
   // 'flow', will be added in another branch
   // 'flowVersion', will be added in another branch
@@ -78,7 +88,7 @@ export const SCHEMAS_PATH = path.join(losantRestPath, 'lib/schemas');
 
 const DOC_FILES = readdirSync(DOCS_PATH);
 export const MD_FILES = DOC_FILES.filter((f) => {
-  const singleFileName = f.replace('.md', '').replace(/s$/, '');
+  const singleFileName = pluralToSingluarResourceName(f.replace('.md', ''));
   return f.endsWith('.md') && f !== '_schemas.md' && (RESOURCE_TYPE_SET.has(singleFileName) || singleFileName === 'data');
 });
 
@@ -120,7 +130,8 @@ export const ALLOWS_ADVANCED_QUERIES_SET = new Set([
   'experienceGroup',
   'dataTableRow',
   'experienceUser',
-  'applicationJobLog'
+  'applicationJobLog',
+  'applicationCertificate'
 ]);
 
 // Maps every valid schema name to its filename on disk (canonical + aliases)
