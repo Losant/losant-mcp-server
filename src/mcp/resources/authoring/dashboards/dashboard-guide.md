@@ -10,10 +10,11 @@ This guide covers **application-owned dashboards** — created via `POST /applic
 The **envelope, layout grid, and shared block shape** are described here in full. The **per-block detail** — what goes in a block's `config` — lives in `losant://dashboard/blocks/{blockType}`, indexed by the catalog table below. Cross-cutting concepts that several block docs reference live in `reference/`.
 
 **Reading order for a new authoring task:**
-1. Read the envelope, layout, and block-shape sections of this file (you're already here).
-2. For each block type you intend to use, locate it in the catalog and read its Spec file.
-3. If the user wants the dashboard to be parameterized (one layout, different devices/attributes/users), read `losant://references/dashboard/context-configuration`.
-4. If the dashboard will be served inside a Losant Experience (as part of a web portal for experience users), read `losant://authoring/experience-view` — dashboards can be embedded via a dedicated Dashboard Page view type or inline in an HTML page using the `{{element 'dashboard' ...}}` Handlebars helper, with context variable values driven directly from the experience request context.
+1. **Discover device attributes before choosing blocks** — call `losant_query operation=get resourceType=device` on the target device(s) and inspect the `attributes` array. Attribute names in block configs must match exactly.
+2. Read the envelope, layout, and block-shape sections of this file (you're already here).
+3. For each block type you intend to use, locate it in the catalog and read its Spec file.
+4. If the user wants the dashboard to be parameterized (one layout, different devices/attributes/users), read `losant://references/dashboard/context-configuration`.
+5. If the dashboard will be served inside a Losant Experience (as part of a web portal for experience users), read `losant://guides/experiences` — dashboards can be embedded via the `{{element 'dashboard' ...}}` Handlebars helper in any experience page, with context variable values driven directly from the experience request context.
 
 ---
 
@@ -229,4 +230,4 @@ Use this to pick the right block before looking up its spec.
 - [losant://references/dashboard/templates](losant://references/dashboard/templates) — Losant's Handlebars dialect, the helpers available in block templates and conditions (`format`, expressions, etc.), and the full dashboard render context (`{{ctx.x}}`, `{{dashboard.duration}}`, `{{value-i}}`, `{{time-i}}`).
 - [losant://references/dashboard/device-queries](losant://references/dashboard/device-queries) — the device-query shape (`deviceIds`, `deviceTags`, `query`) used in most blocks, including context-variable substitution and the `fromCtx` pattern.
 - [losant://references/dashboard/aggregations](losant://references/dashboard/aggregations) — the aggregation enum (`MEAN`, `MAX`, `MIN`, `COUNT`, `SUM`, `MEDIAN`, `STD_DEV`, `FIRST`, `LAST`, `NONE`) used by time-series and gauge-style blocks.
-- [losant://authoring/experience-view](losant://authoring/experience-view) — how to embed this dashboard in a Losant Experience view, and how to wire experience request context (user, path params, pageData) into dashboard context variables.
+- [losant://guides/experiences](losant://guides/experiences) — how to embed this dashboard in a Losant Experience view, and how to wire experience request context (user, path params, pageData) into dashboard context variables.

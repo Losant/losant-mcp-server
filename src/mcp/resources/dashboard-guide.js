@@ -53,19 +53,36 @@ The \`config\` object is block-type-specific — read the per-block guide file b
 ## Common LLM Workflows
 
 ### Create an empty dashboard, then add blocks
-1. Call \`losant_write\` \`operation=createOne\` \`resourceType=applicationDashboard\` with just \`name\`
-2. Read \`losant://authoring/dashboard\` for the full block catalog and layout rules
-3. For each block type you want to add, read \`losant://dashboard/blocks/{blockType}\`
-4. Assemble the full \`blocks\` array
-5. Call \`losant_write\` \`operation=updateOne\` with the blocks array
+1. **Discover device attributes first** — call \`losant_query\` \`operation=get\` \`resourceType=device\` on the target device and inspect its \`attributes\` array. Block config fields like \`attribute\` must match device attribute names exactly.
+2. Call \`losant_write\` \`operation=createOne\` \`resourceType=applicationDashboard\` with just \`name\`. If the dashboard should work for multiple devices or data sources, add \`contextConfiguration\` now — read \`losant://references/dashboard/context-configuration\` first.
+3. Read \`losant://authoring/dashboard\` for the full block catalog and layout rules
+4. For each block type you want to add, read \`losant://dashboard/blocks/{blockType}\`
+5. Assemble the full \`blocks\` array
+6. Call \`losant_write\` \`operation=updateOne\` with the blocks array
 
 ### Add a block to an existing dashboard
 1. Use \`losant_query\` \`operation=get\` \`resourceType=applicationDashboard\` to retrieve the current \`blocks\` array
 2. Append the new block object (ensure no \`startX\`/\`startY\` overlap with existing blocks)
 3. Call \`losant_write\` \`operation=updateOne\` with the full updated \`blocks\` array
 
-### Use context variables
-Read \`losant://references/dashboard/context-configuration\` before adding \`contextConfiguration\` — context variables let one dashboard serve many devices or data sources.
+### Make a dashboard reusable (fleet / multi-device pattern)
+Read \`losant://references/dashboard/context-configuration\` before adding \`contextConfiguration\` — context variables let one dashboard serve many devices or data sources without duplicating blocks. The most common pattern is a single \`deviceId\` context variable so every block drives from \`deviceIds: ["{{ctx.deviceId}}"]\`.
+
+### Embed a dashboard in an Experience
+Dashboard pages in Losant Experiences are standard \`experienceView\` resources (\`viewType: "page"\`) whose \`body\` contains the \`{{element 'dashboard' ...}}\` helper — the same helper used to inline a dashboard in any HTML page:
+\`\`\`handlebars
+{{element
+  'dashboard'
+  dashboardId='<dashboardId>'
+  theme='light'
+  hideHeader=false
+  ctx=(obj
+    deviceId=(template '{{request.params.deviceId}}')
+    userId=(template '{{experience.user.id}}')
+  )
+}}
+\`\`\`
+Read \`losant://guides/experiences\` for the full argument reference and context-wiring patterns.
 
 ${buildReferenceSection(['applicationDashboard'])}
 `;
