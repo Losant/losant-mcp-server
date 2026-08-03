@@ -294,6 +294,33 @@ describe('MCP Resources', () => {
         result.contents[0].text.should.containEql('Context Configuration');
       });
 
+      it('should return reference content for losant://references/dashboard/templates', async () => {
+        const result = await client.readResource({ uri: 'losant://references/dashboard/templates' });
+
+        result.should.have.property('contents');
+        result.contents[0].should.have.property('uri', 'losant://references/dashboard/templates');
+        result.contents[0].should.have.property('mimeType', 'text/markdown');
+        result.contents[0].text.should.containEql('dashboard');
+      });
+
+      it('should return reference content for losant://references/dashboard/device-queries', async () => {
+        const result = await client.readResource({ uri: 'losant://references/dashboard/device-queries' });
+
+        result.should.have.property('contents');
+        result.contents[0].should.have.property('uri', 'losant://references/dashboard/device-queries');
+        result.contents[0].should.have.property('mimeType', 'text/markdown');
+        result.contents[0].text.should.containEql('deviceIds');
+      });
+
+      it('should return reference content for losant://references/dashboard/aggregations', async () => {
+        const result = await client.readResource({ uri: 'losant://references/dashboard/aggregations' });
+
+        result.should.have.property('contents');
+        result.contents[0].should.have.property('uri', 'losant://references/dashboard/aggregations');
+        result.contents[0].should.have.property('mimeType', 'text/markdown');
+        result.contents[0].text.should.containEql('MEAN');
+      });
+
       it('should throw for an unknown reference', async () => {
         await client.readResource({ uri: 'losant://references/dashboard/nonexistent' })
           .should.be.rejectedWith(/nonexistent/);

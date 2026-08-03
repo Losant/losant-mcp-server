@@ -6,7 +6,7 @@ Application dashboards display device data, events, and other Losant resources i
 ## Key Concepts
 
 - **Blocks**: the unit of content on a dashboard — each has a \`blockType\`, a position/size on a 4-column grid, and a type-specific \`config\` object
-- **Layout grid**: 4 columns wide; \`startX\` (0–3), \`width\` (1–4), \`startY\` and \`height\` in grid units; blocks must not overlap
+- **Layout grid**: 4 columns wide; \`startX\` (0–3.5), \`width\` (0.5–4), \`startY\` and \`height\` in 0.5-unit increments; blocks must not overlap
 - **Context variables**: parameterize a dashboard (e.g., show different devices without duplicating the dashboard) — see \`losant://references/dashboard/context-configuration\`
 
 ## Creating a Dashboard
@@ -28,8 +28,6 @@ Minimal body:
 
 ## Building Blocks
 
-The \`applicationDashboardPost\` schema is 227KB. Read \`losant://schemas/applicationDashboardPost\` for the complete block type reference.
-
 For the layout model, per-block config details, and worked examples read:
 - \`losant://authoring/dashboard\` — full authoring guide (block catalog, layout rules, context variable usage)
 - \`losant://dashboard/blocks/{blockType}\` — per-block config detail
@@ -47,7 +45,6 @@ Every block requires:
   "startY": 0,
   "width": 2,
   "height": 2,
-  "applicationId": "<applicationId>",
   "config": { }
 }
 \`\`\`

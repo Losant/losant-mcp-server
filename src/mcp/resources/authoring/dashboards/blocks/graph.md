@@ -67,7 +67,7 @@ See [losant://references/dashboard/device-queries](losant://references/dashboard
 
 ### Y axes
 
-`yAxes` is an array (max 10) of Y axis definitions. **At least one is required** if you have segments. Each segment references one axis via `yAxisId`.
+`yAxes` is an array (max 10) of Y axis definitions. At least one is strongly recommended — segments without a matching axis have nowhere to plot and render no data. Each segment references one axis via `yAxisId`.
 
 ```json
 {

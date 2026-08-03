@@ -1,6 +1,6 @@
 # Application List Block (`blockType: "application-list"`)
 
-Lists applications the dashboard's owner can see. Useful as a navigation aid on multi-application organization or sandbox dashboards.
+Lists applications the dashboard's owner can see. On application-owned dashboards this lists all applications the owner has access to — it is most useful in admin or developer-oriented dashboards rather than device telemetry dashboards. Its primary use case (cross-application navigation) applies to organization and sandbox dashboards, which are outside the current scope of these guides.
 
 ## Block object shape
 

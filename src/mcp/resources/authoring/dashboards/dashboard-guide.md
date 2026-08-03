@@ -220,7 +220,7 @@ Use this to pick the right block before looking up its spec.
 
 - Forgetting that the layout grid is **4 wide**, in 0.5-unit increments, with no row limit. A block taking the full width has `startX: 0, width: 4`.
 - Using the human-facing block name (`"time-series-graph"`, `"external-website"`) as `blockType` instead of the API enum (`"graph"`, `"iframe"`). The catalog above is the source of truth.
-- - Setting `password` on a dashboard with `public: false` — password protection is silently discarded on non-public dashboards; `password` only applies when `public: true`.
+- Setting `password` on a dashboard with `public: false` — password protection is silently discarded on non-public dashboards; `password` only applies when `public: true`.
 - Trying to "publish a version" — there are no versions. PATCH is live for all viewers on next refresh.
 
 ## Cross-cutting reference

@@ -92,8 +92,8 @@ Buttons are what actually send commands or trigger workflows when clicked. A blo
 | `action` | `"command"` \| `"workflow"` | What the button does when clicked. |
 | `id` / `templateId` / `label` / `color` / `grid` | — | Standard. |
 | `payload` | string | JSON template for the payload. Reference control values via `{{templateId}}`. |
-| `buttonId` | string | Identifier for this button (used in workflow triggers). Max 255 chars. |
 | `workflowId` | string \| null | ID of the workflow to trigger (when `action: "workflow"`). |
+| `buttonId` | string | The UI ID of the Virtual Button trigger node inside the workflow (`meta.uiId`). Not an arbitrary string — you must read the workflow's trigger nodes to find the correct value. Max 255 chars. |
 | `deviceIds` | string[] | Device IDs to send the command to (when `action: "command"`). |
 | `deviceTags` | object[] | Tag-based device selection for commands. |
 | `query` | string | Advanced device query for commands. |
