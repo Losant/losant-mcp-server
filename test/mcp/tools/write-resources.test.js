@@ -208,6 +208,132 @@ describe('write-resources tool', () => {
     });
   });
 
+  describe('applicationKey operations', () => {
+    const keyId = '5f1b6285032b36000627aaaa';
+
+    it('should create an applicationKey', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .post(`/applications/${APP_ID}/keys`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .reply(201, { id: keyId, applicationKeyId: keyId, key: 'abc123', secret: 'supersecret', status: 'active' });
+
+      const result = await writeTool({
+        operation: 'createOne',
+        resourceType: 'applicationKey',
+        applicationId: APP_ID,
+        body: { deviceIds: [APP_ID] }
+      });
+
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('key', 'abc123');
+      response.should.have.property('secret', 'supersecret');
+    });
+
+    it('should update an applicationKey', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .patch(`/applications/${APP_ID}/keys/${keyId}`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .reply(200, { id: keyId, applicationKeyId: keyId, status: 'inactive' });
+
+      const result = await writeTool({
+        operation: 'updateOne',
+        resourceType: 'applicationKey',
+        applicationId: APP_ID,
+        resourceId: keyId,
+        body: { status: 'inactive' }
+      });
+
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('status', 'inactive');
+    });
+  });
+
+  describe('applicationCertificateAuthority operations', () => {
+    const caId = '5f1b6285032b36000627bbbb';
+
+    it('should create an applicationCertificateAuthority', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .post(`/applications/${APP_ID}/certificate-authorities`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .reply(201, { id: caId, applicationCertificateAuthorityId: caId, name: 'My CA', status: 'active' });
+
+      const result = await writeTool({
+        operation: 'createOne',
+        resourceType: 'applicationCertificateAuthority',
+        applicationId: APP_ID,
+        body: { name: 'My CA', caBundle: '-----BEGIN CERTIFICATE-----\nfake\n-----END CERTIFICATE-----' }
+      });
+
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('name', 'My CA');
+      response.should.have.property('applicationCertificateAuthorityId', caId);
+    });
+
+    it('should update an applicationCertificateAuthority', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .patch(`/applications/${APP_ID}/certificate-authorities/${caId}`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .reply(200, { id: caId, applicationCertificateAuthorityId: caId, name: 'My CA', status: 'inactive' });
+
+      const result = await writeTool({
+        operation: 'updateOne',
+        resourceType: 'applicationCertificateAuthority',
+        applicationId: APP_ID,
+        resourceId: caId,
+        body: { status: 'inactive' }
+      });
+
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('status', 'inactive');
+    });
+  });
+
+  describe('applicationCertificate operations', () => {
+    const certId = '5f1b6285032b36000627cccc';
+
+    it('should create an applicationCertificate', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .post(`/applications/${APP_ID}/certificates`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .reply(201, { id: certId, applicationCertificateId: certId, name: 'My Cert', status: 'active', filterType: 'none' });
+
+      const result = await writeTool({
+        operation: 'createOne',
+        resourceType: 'applicationCertificate',
+        applicationId: APP_ID,
+        body: { name: 'My Cert', certificate: '-----BEGIN CERTIFICATE-----\nfake\n-----END CERTIFICATE-----' }
+      });
+
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('name', 'My Cert');
+      response.should.have.property('applicationCertificateId', certId);
+    });
+
+    it('should update an applicationCertificate', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .patch(`/applications/${APP_ID}/certificates/${certId}`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .reply(200, { id: certId, applicationCertificateId: certId, name: 'My Cert', status: 'inactive' });
+
+      const result = await writeTool({
+        operation: 'updateOne',
+        resourceType: 'applicationCertificate',
+        applicationId: APP_ID,
+        resourceId: certId,
+        body: { status: 'inactive' }
+      });
+
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('status', 'inactive');
+    });
+  });
+
   describe('applicationDashboard operations', () => {
     const dashboardId = '5f1b6285032b36000627dddd';
 

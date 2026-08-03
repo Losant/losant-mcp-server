@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { WRITABLE_RESOURCE_TYPES, NO_CREATE_TYPES, NESTED_RESOURCES } from '../../constants.js';
 import debug from 'debug';
 import { restToMCPError, invalidRequestError } from '../../helpers/errors.js';
-import { getResourceFieldId } from './helpers.js';
+import { getResourceFieldId, getPluralResourceName } from './helpers.js';
 
 // SDK body field names that differ from the resourceType name
 const SDK_BODY_KEY = {
@@ -86,7 +86,7 @@ export default {
       try {
         let response;
         if (operation === 'createOne') {
-          response = await losantClient[`${resourceType}s`].post({
+          response = await losantClient[getPluralResourceName(resourceType)].post({
             ...requestParams,
             [sdkBodyKey]: body
           });

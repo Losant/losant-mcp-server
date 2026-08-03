@@ -86,9 +86,9 @@ describe('MCP Resources', () => {
     it('should generate API index with all docs and schemas', async () => {
       registerResourceLoader(mockServer);
 
-      const apiIndex = registeredResources.find((r) => r.uri === 'losant://index');
+      const apiIndex = registeredResources.find((r) => r.uri === 'losant://info');
       should.exist(apiIndex);
-      apiIndex.config.should.have.property('title', 'Losant MCP Application Index Guide');
+      apiIndex.config.should.have.property('title', 'Losant MCP Server Info');
       apiIndex.config.should.have.property('mimeType', 'text/markdown');
     });
 
@@ -159,6 +159,38 @@ describe('MCP Resources', () => {
       parsed.should.have.property('type', 'object');
     });
 
+    describe('applicationCertificateAuthority resources', () => {
+      it('should load schema for applicationCertificateAuthorityPost', async () => {
+        const result = await client.readResource({ uri: 'losant://schemas/applicationCertificateAuthorityPost' });
+        result.contents[0].should.have.property('uri', 'losant://schemas/applicationCertificateAuthorityPost');
+        result.contents[0].should.have.property('mimeType', 'application/json');
+        const parsed = JSON.parse(result.contents[0].text);
+        parsed.should.have.property('type', 'object');
+      });
+
+      it('should load schema for applicationCertificateAuthorityPatch', async () => {
+        const result = await client.readResource({ uri: 'losant://schemas/applicationCertificateAuthorityPatch' });
+        result.contents[0].should.have.property('uri', 'losant://schemas/applicationCertificateAuthorityPatch');
+        result.contents[0].should.have.property('mimeType', 'application/json');
+        const parsed = JSON.parse(result.contents[0].text);
+        parsed.should.have.property('type', 'object');
+      });
+
+      it('should load doc for applicationCertificateAuthority (singular)', async () => {
+        const result = await client.readResource({ uri: 'losant://docs/applicationCertificateAuthority' });
+        result.contents[0].should.have.property('uri', 'losant://docs/applicationCertificateAuthority');
+        result.contents[0].should.have.property('mimeType', 'text/markdown');
+        result.contents[0].text.should.containEql('Application Certificate Authority Actions');
+      });
+
+      it('should load doc for applicationCertificateAuthorities (plural)', async () => {
+        const result = await client.readResource({ uri: 'losant://docs/applicationCertificateAuthorities' });
+        result.contents[0].should.have.property('uri', 'losant://docs/applicationCertificateAuthorities');
+        result.contents[0].should.have.property('mimeType', 'text/markdown');
+        result.contents[0].text.should.containEql('Application Certificate Authorities Actions');
+      });
+    });
+
     it('should provide handler for losant query tool guide', async () => {
       const result = await client.readResource({ uri: 'losant://guides/losant-query-tool' });
 
@@ -183,8 +215,20 @@ describe('MCP Resources', () => {
       result.contents[0].text.should.match(/MongoDB|query|operator/i);
     });
 
+    it('should provide handler for device auth guide', async () => {
+      const result = await client.readResource({ uri: 'losant://guides/device-auth' });
+
+      result.should.have.property('contents');
+      result.contents[0].should.have.property('uri', 'losant://guides/device-auth');
+      result.contents[0].should.have.property('mimeType', 'text/markdown');
+      result.contents[0].text.should.match(/applicationCertificate/);
+      result.contents[0].text.should.match(/Device Certificate/);
+      result.contents[0].text.should.match(/Access Key/i);
+      result.contents[0].text.should.match(/mutual TLS/i);
+    });
+
     it('should provide handler for API index with links', async () => {
-      const result = await client.readResource({ uri: 'losant://index' });
+      const result = await client.readResource({ uri: 'losant://info' });
 
       result.should.have.property('contents');
       result.contents[0].should.have.property('text');

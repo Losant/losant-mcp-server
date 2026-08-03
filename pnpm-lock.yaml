@@ -30,8 +30,8 @@ importers:
         specifier: ^9.0.3
         version: 9.0.3
       losant-rest:
-        specifier: Losant/losant-rest-js#upgrade-and-release
-        version: https://codeload.github.com/Losant/losant-rest-js/tar.gz/41d450bd2e9f604318d2d3784d3c9179ba5d9a6e(debug@4.4.3(supports-color@5.5.0))(supports-color@5.5.0)
+        specifier: ^4.2.1
+        version: 4.2.1(debug@4.4.3(supports-color@5.5.0))(supports-color@5.5.0)
       memoizee:
         specifier: ^0.4.17
         version: 0.4.17
@@ -1447,9 +1447,8 @@ packages:
     resolution: {integrity: sha512-9ie8ItPR6tjY5uYJh8K/Zrv/RMZ5VOlOWvtZdEHYSTFKZfIBPQa9tOAEeAWhd+AnIneLJ22w5fjOYtoutpWq5w==}
     engines: {node: '>=18'}
 
-  losant-rest@https://codeload.github.com/Losant/losant-rest-js/tar.gz/41d450bd2e9f604318d2d3784d3c9179ba5d9a6e:
-    resolution: {gitHosted: true, integrity: sha512-BYQepgi2+9NlRcsj3Dz6jRUBmkz/xxK4/B5fMEKaoY+lbVBA0hDppl0MDgUZm/z7vFz23zAJjhwVFiR2vzLtjw==, tarball: https://codeload.github.com/Losant/losant-rest-js/tar.gz/41d450bd2e9f604318d2d3784d3c9179ba5d9a6e}
-    version: 4.2.1
+  losant-rest@4.2.1:
+    resolution: {integrity: sha512-QjAKwjq30zSpoN2ybfLBKzX3p/gZSwKiRnPErgPrLF2nY2XT02rNXfTF06ggWacSXS1so540zp7XmjTtgrdYsw==}
 
   lru-cache@10.4.3:
     resolution: {integrity: sha512-JNAzZcXrCt42VGLuYz0zfAzDfAvJWW6AfYlDBQyDV5DClI2m5sAmK+OIO7s59XfsRsWHp02jAJrRadPRGTt6SQ==}
@@ -3854,7 +3853,7 @@ snapshots:
       strip-ansi: 7.2.0
       wrap-ansi: 9.0.2
 
-  losant-rest@https://codeload.github.com/Losant/losant-rest-js/tar.gz/41d450bd2e9f604318d2d3784d3c9179ba5d9a6e(debug@4.4.3(supports-color@5.5.0))(supports-color@5.5.0):
+  losant-rest@4.2.1(debug@4.4.3(supports-color@5.5.0))(supports-color@5.5.0):
     dependencies:
       axios: 1.18.1(debug@4.4.3(supports-color@5.5.0))(supports-color@5.5.0)
       eventsource: 4.1.0
