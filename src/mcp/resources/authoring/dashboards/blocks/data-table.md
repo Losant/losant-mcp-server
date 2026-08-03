@@ -1,6 +1,6 @@
 # Data Table Block (`blockType: "data-table"`)
 
-Displays rows from a Losant application data table with optional filtering, sorting, and pagination. Use to show structured tabular data stored in a Losant data table.
+Displays rows from a Losant application data table with optional filtering, sorting, and pagination. Common uses: (1) a maintenance log sorted by date showing the last service performed on each device, (2) a device inventory table with custom columns for serial number, location, and firmware version, (3) an alert history archive filtered by severity level for compliance reporting.
 
 See the parent `dashboard-guide.md` for the block object shape, layout grid.
 

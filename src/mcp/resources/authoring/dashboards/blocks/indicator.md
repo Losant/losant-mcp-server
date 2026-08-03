@@ -23,8 +23,8 @@ See the parent `dashboard-guide.md` for the block object shape, layout grid.
 | `realTime` | boolean | `false` | When `true`, live-streams device readings. When `false`, queries historical data over `duration`. |
 | `duration` | integer (ms) \| `"{{dashboard.duration}}"` | — | Historical only. Time window. Use the string template to inherit the dashboard's global duration control. |
 | `segments` | object[] | — | **Required.** Array of data query segments. Each returns `{{value-i}}` and `{{time-i}}` variables (0-indexed). |
-| `conditions` | object[] | — | **Required.** Ordered list of conditions. First truthy condition wins. |
-| `defaultCondition` | object | — | The display to use when no condition matches. |
+| `conditions` | object[] | — | Ordered list of conditions. First truthy condition wins. If omitted, `defaultCondition` always applies. |
+| `defaultCondition` | object | — | The display to use when no condition matches. If both `conditions` and `defaultCondition` are absent, the block renders blank. |
 
 ### Segments
 

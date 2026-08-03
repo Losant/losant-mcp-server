@@ -54,6 +54,7 @@ Array of condition objects, evaluated top-to-bottom. The first truthy condition'
 | `condition` | string | Handlebars expression (truthy = this condition applies). Available: `{{value}}`, `{{time}}`, `{{ctx.<name>}}`. |
 | `color` | string | CSS color to apply when this condition is truthy. |
 | `label` | string | Optional label override. |
+| `imageUrl` | string | URL of a custom image to use as the indicator icon. When set, overrides `color`. |
 | `id` | string | Optional identifier. |
 
 ```json

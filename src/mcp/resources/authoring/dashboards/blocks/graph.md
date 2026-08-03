@@ -25,7 +25,7 @@ See [losant://references/dashboard/device-queries](losant://references/dashboard
 |---|---|---|---|
 | `realTime` | boolean | `false` | When `true`, the graph live-streams new points as devices report state. Live-stream graphs **cannot use aggregation** and cannot show past dashboard states. When `realTime: true`, `resolution`, `disallowUserSelectedDuration`, and any segment `aggregation` are ignored. |
 | `duration` | integer (ms) \| `"{{dashboard.duration}}"` | — | Time window on the X axis. Use the templated string to inherit the dashboard's global duration (the idiomatic default). Max effective range: 5 minutes – 180 days. |
-| `resolution` | integer (ms) \| `"{{dashboard.resolution}}"` | — | Aggregation bucket size. Use the templated string to inherit the dashboard's global resolution. Lower resolution = more points = more detail. Ignored when `realTime: true` or for segments with `aggregation: "NONE"`. |
+| `resolution` | integer (ms) \| `"{{dashboard.resolution}}"` \| `null` | — | Aggregation bucket size. Use the templated string to inherit the dashboard's global resolution. `null` disables bucketing (all raw points returned). Lower resolution = more points = more detail. Ignored when `realTime: true` or for segments with `aggregation: "NONE"`. |
 | `disallowUserSelectedDuration` | boolean | `false` | When `true`, hides the block's time-range dropdown and disables mouse-drag zooming. Use for blocks whose duration/resolution should not be viewer-changeable. |
 | `hideLegend` | boolean | `false` | When `true`, the legend at the bottom is hidden. |
 | `displayType` | `"stick"` \| `"line"` | — | Rarely set — segment-level `graphType` is the usual control. |

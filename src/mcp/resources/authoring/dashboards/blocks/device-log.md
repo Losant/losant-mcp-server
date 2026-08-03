@@ -1,6 +1,6 @@
 # Device Connection Log Block (`blockType: "device-log"`)
 
-Shows a chronological list of connect and disconnect events for one or more devices. Useful for monitoring device connectivity health.
+Shows a chronological list of connect and disconnect events for one or more devices. Common uses: (1) confirming a device stayed connected through a firmware update, (2) diagnosing intermittent connectivity by reviewing the timing pattern of disconnects, (3) a compliance view showing per-device uptime history over a rolling window.
 
 ## Block object shape
 

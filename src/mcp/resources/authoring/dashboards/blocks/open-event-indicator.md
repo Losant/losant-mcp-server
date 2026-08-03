@@ -1,6 +1,6 @@
 # Open Event Indicator Block (`blockType: "open-event-indicator"`)
 
-Shows the most severe open event in the application as a color-coded banner. Severity color mapping: critical/error = red, warning = orange, info = blue, no open events = green.
+Shows the most severe open event in the application as a color-coded banner. Severity color mapping: critical/error = red, warning = orange, info = blue, no open events = green. Common uses: (1) a full-width health strip at the top of a fleet dashboard that immediately signals whether any device has an active alert, (2) a department-specific alert banner filtered by event subject glob to show only events from a particular sensor category, (3) an operator panel with `allowUpdates: true` so field staff can acknowledge or resolve alerts without leaving the dashboard.
 
 ## Block object shape
 

@@ -1,6 +1,6 @@
 # Workflow List Block (`blockType: "workflow-list"`)
 
-Lists workflows in the application with their enabled/disabled status and 24-hour run and error counts. Useful for operational monitoring dashboards.
+Lists workflows in the application with their enabled/disabled status and 24-hour run and error counts. Common uses: (1) an ops team view showing which alert and notification workflows are enabled and how many times they fired in the last 24 hours, (2) a developer panel listing all edge workflows with per-workflow error counts to spot degraded automations at a glance, (3) a filtered view using `filter: "Alert*"` to monitor only the alerting subsystem's health.
 
 ## Block object shape
 

@@ -1,6 +1,6 @@
 # GPS Heatmap Block (`blockType: "heatmap"`)
 
-Shows the distribution of GPS data points from one or more devices as a color-intensity heatmap on a real-world map. Hotter colors (red/orange) indicate more time spent in an area; cooler colors (blue/purple) indicate less.
+Shows the distribution of GPS data points from one or more devices as a color-intensity heatmap on a real-world map. Hotter colors (red/orange) indicate more time spent in an area; cooler colors (blue/purple) indicate less. Common uses: (1) mapping delivery hotspots for a logistics fleet to identify where trucks spend the most time, (2) visualizing environmental sensor coverage density across a geographic region, (3) showing where field service technicians have concentrated their activity over a reporting period.
 
 See the parent `dashboard-guide.md` for the block object shape, layout grid.
 

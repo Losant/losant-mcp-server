@@ -1,6 +1,6 @@
 # External Website Block (`blockType: "iframe"`)
 
-Embeds an external web page in an `<iframe>`. The URL must be HTTPS and the remote site must permit embedding (no `X-Frame-Options: DENY` or `Content-Security-Policy: frame-ancestors 'none'`).
+Embeds an external web page in an `<iframe>`. The URL must be HTTPS and the remote site must permit embedding (no `X-Frame-Options: DENY` or `Content-Security-Policy: frame-ancestors 'none'`). Common uses: (1) embedding a weather forecast widget for site-aware operations dashboards, (2) showing a third-party status page or external monitoring panel alongside device data, (3) displaying a live camera or video stream from a facility.
 
 ## Block object shape
 

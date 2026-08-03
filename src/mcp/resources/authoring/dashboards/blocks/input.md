@@ -1,6 +1,6 @@
 # Input Controls Block (`blockType: "input"`)
 
-Lets users send device commands or trigger workflow virtual buttons directly from the dashboard. Supports sliders, toggles, text inputs, dropdowns, buttons, and static help text. Controls can also reflect the current device state when locked.
+Lets users send device commands or trigger workflow virtual buttons directly from the dashboard. Supports sliders, toggles, text inputs, dropdowns, buttons, and static help text. Controls can also reflect the current device state when locked. Common uses: (1) a lighting control panel with a brightness slider and an on/off toggle that sends a device command on Apply, (2) a thermostat setpoint form where an operator enters a target temperature and submits it directly to the device, (3) a mode selector dropdown paired with a Trigger button that fires a workflow to change an industrial process state.
 
 See the parent `dashboard-guide.md` for the block object shape, layout grid.
 
@@ -109,6 +109,7 @@ Each non-button control can pre-fill its value from a device attribute query. Th
 |---|---|---|
 | `deviceIds` | string[] | Device(s) to query. |
 | `deviceTags` | object[] | Tag-based device selection. |
+| `query` | string | Advanced device query as a JSON-encoded string. |
 | `attribute` | string | Attribute whose last reported value populates the control. |
 | `aggregation` | enum | How to reduce multi-device results. |
 

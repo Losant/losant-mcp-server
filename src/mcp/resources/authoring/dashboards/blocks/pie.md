@@ -1,6 +1,6 @@
 # Pie Chart Block (`blockType: "pie"`)
 
-Displays proportional data from one or more device attributes as pie slices. Use to show relative distribution (e.g., device counts by state, power contribution by source).
+Displays proportional data from one or more device attributes as pie slices. Common uses: (1) a power generation mix showing solar vs. wind vs. grid contributions as percentages, (2) a fleet status breakdown showing the proportion of devices that are connected, disconnected, or inactive, (3) an event severity distribution for a time window showing the ratio of critical to warning to informational alerts.
 
 See the parent `dashboard-guide.md` for block object shape, layout grid.
 

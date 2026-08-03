@@ -5,6 +5,8 @@ Two `blockType` values share the same schema: `custom-chart` and `custom-html`.
 - **`custom-chart`** — Renders a [Vega or Vega-Lite](https://vega.github.io/) specification. Suitable for scatter plots, bubble charts, layered charts, and any visualization Vega supports.
 - **`custom-html`** — Renders arbitrary HTML, CSS, and JavaScript injected directly into the block's DOM. Full control over layout and third-party library use.
 
+Common uses: (1) a Vega-Lite scatter plot correlating two device attributes (e.g., temperature vs. pressure) across a fleet, (2) a custom-html panel displaying a live KPI with branded fonts, colors, and layout not possible with the standard gauge block, (3) a Vega stacked area chart showing energy generation contributions from multiple sources over time.
+
 Both blocks follow the **same config schema** but differ in how the `configuration` field is used and which extra fields apply.
 
 See the parent `dashboard-guide.md` for the block object shape, layout grid.
@@ -148,6 +150,7 @@ Returns an array of event objects.
 
 ```json
 {
+  "id": "temp-chart",
   "blockType": "custom-chart",
   "title": "Temperature over time",
   "startX": 0, "startY": 0, "width": 4, "height": 3,
@@ -175,6 +178,7 @@ Returns an array of event objects.
 
 ```json
 {
+  "id": "temp-display",
   "blockType": "custom-html",
   "title": "Current Temp",
   "startX": 0, "startY": 0, "width": 2, "height": 1,

@@ -1,6 +1,6 @@
 # Dashboard List Block (`blockType: "dashboard-list"`)
 
-Lists dashboards the dashboard's owner can see.
+Lists dashboards the dashboard's owner can see. Common uses: (1) a navigation sidebar linking operators to per-site dashboards by name, (2) a landing page filtered to `"Fleet*"` dashboards so dispatchers can find their region's view, (3) a reporting hub listing all report dashboards for periodic review.
 
 ## Block object shape
 

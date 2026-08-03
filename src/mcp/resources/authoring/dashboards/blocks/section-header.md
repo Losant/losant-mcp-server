@@ -1,6 +1,6 @@
 # Section Header Block (`blockType: "section-header"`)
 
-A horizontal banner with a title and Markdown-supporting body. Pure presentation — no data queries, no device selection.
+A horizontal banner with a title and Markdown-supporting body. Pure presentation — no data queries, no device selection. Common uses: (1) a full-width title strip that displays the selected device's name (`{{ctx.deviceId.name}}`) above a group of sensor blocks, (2) a visual divider with a label separating a "Real-time" section from a "Historical trends" section, (3) a branded header with a Markdown link to supporting documentation or a runbook.
 
 ## Block object shape
 

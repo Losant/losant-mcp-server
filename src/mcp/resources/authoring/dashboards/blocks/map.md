@@ -33,7 +33,7 @@ See the parent `dashboard-guide.md` for the block object shape, layout grid.
 | `attribute` | string | — | GPS attribute name on the device(s). Use this or `locationTagKey`. |
 | `locationTagKey` | string | — | Device tag key whose value is a GPS string. Use for statically-located devices. Must match `^[0-9a-zA-Z_-]{1,255}$`. |
 | `duration` | integer (ms) \| `"{{dashboard.duration}}"` | last received | Time window to query. Omit to show only the most recent position. Use the string form to inherit the dashboard's global duration control. |
-| `resolution` | integer (ms) \| `"{{dashboard.resolution}}"` | — | Limit data density by returning only the last point per resolution bucket. Use the string template to inherit the dashboard's resolution control (this is the default for new attribute-mode map blocks). |
+| `resolution` | integer (ms) \| `"{{dashboard.resolution}}"` \| `null` | — | Limit data density by returning only the last point per resolution bucket. Use `null` for no bucketing. Use the string template to inherit the dashboard's resolution control (this is the default for new attribute-mode map blocks). |
 | `compositeResult` | boolean | `false` | When true, returns the last known attribute values at the time of each GPS point. |
 
 ### Map viewport
