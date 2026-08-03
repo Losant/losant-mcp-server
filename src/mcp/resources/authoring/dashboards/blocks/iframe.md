@@ -19,8 +19,6 @@ Embeds an external web page in an `<iframe>`. The URL must be HTTPS and the remo
 }
 ```
 
-- `iframe` is one of three block types that carry **no `applicationId`** — omit it regardless of dashboard scope.
-
 ## Config
 
 | Field | Type | Default | Notes |
@@ -49,4 +47,3 @@ Embeds an external web page in an `<iframe>`. The URL must be HTTPS and the remo
 - Size to whatever real-estate the embedded page's content needs — there is no minimum beyond the `0.5 × 0.5` grid unit floor.
 - Many popular sites block iframe embedding. Test before committing to the layout.
 - `url` is templatable: use `{{ctx.stationId}}` to let the context variable drive which station is shown.
-- Do not supply `applicationId` — the server ignores it but consistency with the three no-app blocks matters for clarity.

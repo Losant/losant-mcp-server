@@ -2,7 +2,7 @@
 
 Displays a filterable, sortable table of devices with configurable columns. Use to build device management views, fleet overviews, or device selection UIs.
 
-See the parent `dashboard-guide.md` for the block object shape, layout grid, and `applicationId` rules.
+See the parent `dashboard-guide.md` for the block object shape, layout grid.
 
 ## Block object shape
 
@@ -31,7 +31,7 @@ See the parent `dashboard-guide.md` for the block object shape, layout grid, and
 | `deviceLinkType` | `"default"` \| `"custom"` | `"default"` | Whether device-name links use the default Losant link or a custom URL. |
 | `deviceLinkUrl` | string | — | Custom URL for device-name links (when `deviceLinkType: "custom"`). Supports templates: `{{deviceId}}`, `{{deviceName}}`, etc. Max 2048 chars. |
 | `deviceLinkNewWindow` | boolean | `false` | When true, device-name links open in a new tab. |
-| `columns` | object[] | — | **Required. At least one.** Column definitions. Max 100 columns — exceeding this fails schema validation. |
+| `columns` | object[] | — | Column definitions. |
 
 ### Column types
 

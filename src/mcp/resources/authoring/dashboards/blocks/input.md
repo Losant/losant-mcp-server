@@ -2,7 +2,7 @@
 
 Lets users send device commands or trigger workflow virtual buttons directly from the dashboard. Supports sliders, toggles, text inputs, dropdowns, buttons, and static help text. Controls can also reflect the current device state when locked.
 
-See the parent `dashboard-guide.md` for the block object shape, layout grid, and `applicationId` rules.
+See the parent `dashboard-guide.md` for the block object shape, layout grid.
 
 ## Block object shape
 

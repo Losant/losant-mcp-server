@@ -2,7 +2,7 @@
 
 Shows the distribution of GPS data points from one or more devices as a color-intensity heatmap on a real-world map. Hotter colors (red/orange) indicate more time spent in an area; cooler colors (blue/purple) indicate less.
 
-See the parent `dashboard-guide.md` for the block object shape, layout grid, and `applicationId` rules.
+See the parent `dashboard-guide.md` for the block object shape, layout grid.
 
 ## Block object shape
 
@@ -33,8 +33,8 @@ Use one of the three device-query approaches:
 | Field | Type | Default | Notes |
 |---|---|---|---|
 | `attribute` | string | — | GPS attribute name on the selected device(s). Required when using attribute-based location data. |
-| `duration` | integer (ms) | — | Time window to query. Omit or set to last-received-point mode to show current positions. |
-| `locationTagKey` | string | — | Device tag key whose value is a GPS string. Use instead of `attribute` when location is stored as a tag. |
+| `duration` | integer (ms) \| `"{{dashboard.duration}}"` | — | Time window to query. Omit to show current positions (last received point). Use the string template to inherit the dashboard's global duration control. |
+| `locationTagKey` | string | — | Device tag key whose value is a GPS string. Use instead of `attribute` when location is stored as a tag. Must match `^[0-9a-zA-Z_-]{1,255}$`. |
 
 Exactly one of `attribute` or `locationTagKey` should be set.
 

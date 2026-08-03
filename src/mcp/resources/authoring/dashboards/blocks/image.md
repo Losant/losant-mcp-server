@@ -13,7 +13,6 @@ Renders an image from a static URL, an application file URL, or a device attribu
   "startY": 0,
   "width": 2,
   "height": 1,
-  "applicationId": "<applicationId>",
   "config": {
     "imageSource": "static",
     "imageUrl": "https://example.com/logo.png"
@@ -44,7 +43,6 @@ Renders an image from a static URL, an application file URL, or a device attribu
   "startY": 0,
   "width": 1,
   "height": 0.5,
-  "applicationId": "<applicationId>",
   "config": {
     "imageSource": "static",
     "imageUrl": "https://example.com/logo.png",

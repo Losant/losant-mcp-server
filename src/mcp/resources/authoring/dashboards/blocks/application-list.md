@@ -19,8 +19,6 @@ Lists applications the dashboard's owner can see. Useful as a navigation aid on 
 }
 ```
 
-- `application-list` is one of three block types that carry **no `applicationId`** — omit it regardless of dashboard scope.
-
 ## Config
 
 | Field | Type | Default | Notes |
@@ -47,4 +45,3 @@ Lists applications the dashboard's owner can see. Useful as a navigation aid on 
 - Typical placement is as a tall, narrow sidebar (`width: 1`).
 - Omit `filter` (or pass an empty object for `config`) to list all applications the owner can access.
 - The list is read-only; clicking an application name navigates to it within the Losant platform.
-- Do not supply `applicationId` on this block.

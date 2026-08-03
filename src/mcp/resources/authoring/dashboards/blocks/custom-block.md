@@ -7,7 +7,7 @@ Two `blockType` values share the same schema: `custom-chart` and `custom-html`.
 
 Both blocks follow the **same config schema** but differ in how the `configuration` field is used and which extra fields apply.
 
-See the parent `dashboard-guide.md` for the block object shape, layout grid, and `applicationId` rules.
+See the parent `dashboard-guide.md` for the block object shape, layout grid.
 
 ---
 
@@ -50,11 +50,11 @@ Query data in `custom-html` is accessed as `input.queries.<segmentId>` inside th
 
 | Value | Notes |
 |---|---|
-| `"vegaLite6"` | Default. Vega-Lite v6. |
+| `"vegaLite6"` | Vega-Lite v6. |
 | `"vegaLite5"` | |
 | `"vegaLite4"` | |
 | `"vegaLite3"` | |
-| `"vegaLite2"` | |
+| `"vegaLite2"` | **Default.** Vega-Lite v2. |
 | `"vega6"` | Full Vega v6. |
 | `"vega5"` | |
 | `"vega4"` | |
@@ -82,8 +82,8 @@ Returns an array of `{ time, value }` objects aggregated over a duration/resolut
 | `query` | string | Advanced device query JSON string. |
 | `attribute` | string | Attribute name to aggregate. Max 255 chars. |
 | `aggregation` | enum | `MEAN`, `MAX`, `MIN`, `SUM`, `COUNT`, `FIRST`, `LAST`, `MEDIAN`, `STD_DEV`. |
-| `duration` | integer (ms) | Time window. |
-| `resolution` | integer (ms) | Bucket size (≤ duration). |
+| `duration` | integer (ms) \| `"{{dashboard.duration}}"` | Time window. Use the string template to inherit the dashboard's global duration control. |
+| `resolution` | integer (ms) \| `"{{dashboard.resolution}}"` \| absent | Bucket size (≤ duration). Use the string template to inherit the dashboard's resolution control. Omit or set to `null` when `duration` is a template. |
 
 ### `gauge`
 

@@ -121,6 +121,33 @@ describe('MCP Resources', () => {
       should.exist(schemaTemplate);
       schemaTemplate.name.should.equal('schema');
     });
+
+    it('should register authoring-hub template with pattern losant://authoring/{resourceType}', async () => {
+      registerResourceLoader(mockServer);
+
+      const authoringTemplate = registeredTemplates.find((t) => t.name === 'authoring-hub');
+      should.exist(authoringTemplate);
+      authoringTemplate.template.uriTemplate.toString().should.equal('losant://authoring/{resourceType}');
+      authoringTemplate.config.should.have.property('mimeType', 'text/markdown');
+    });
+
+    it('should register dashboard-block template with pattern losant://dashboard/blocks/{blockType}', async () => {
+      registerResourceLoader(mockServer);
+
+      const blockTemplate = registeredTemplates.find((t) => t.name === 'dashboard-block');
+      should.exist(blockTemplate);
+      blockTemplate.template.uriTemplate.toString().should.equal('losant://dashboard/blocks/{blockType}');
+      blockTemplate.config.should.have.property('mimeType', 'text/markdown');
+    });
+
+    it('should register reference template with pattern losant://references/{resourceType}/{referenceName}', async () => {
+      registerResourceLoader(mockServer);
+
+      const referenceTemplate = registeredTemplates.find((t) => t.name === 'reference');
+      should.exist(referenceTemplate);
+      referenceTemplate.template.uriTemplate.toString().should.equal('losant://references/{resourceType}/{referenceName}');
+      referenceTemplate.config.should.have.property('mimeType', 'text/markdown');
+    });
   });
 
   describe('Resource Content Retrieval', () => {
@@ -225,6 +252,52 @@ describe('MCP Resources', () => {
       result.contents[0].text.should.match(/Device Certificate/);
       result.contents[0].text.should.match(/Access Key/i);
       result.contents[0].text.should.match(/mutual TLS/i);
+    });
+
+    describe('authoring/dashboard resources', () => {
+      it('should return dashboard authoring hub guide for losant://authoring/dashboard', async () => {
+        const result = await client.readResource({ uri: 'losant://authoring/dashboard' });
+
+        result.should.have.property('contents');
+        result.contents.should.be.an.Array();
+        result.contents[0].should.have.property('uri', 'losant://authoring/dashboard');
+        result.contents[0].should.have.property('mimeType', 'text/markdown');
+        result.contents[0].text.should.containEql('Losant Dashboard Authoring');
+        result.contents[0].text.should.containEql('losant://dashboard/blocks/');
+      });
+
+      it('should throw for an unknown authoring resourceType', async () => {
+        await client.readResource({ uri: 'losant://authoring/applicationDashboard' })
+          .should.be.rejectedWith(/applicationDashboard/);
+      });
+
+      it('should return block content for losant://dashboard/blocks/gauge', async () => {
+        const result = await client.readResource({ uri: 'losant://dashboard/blocks/gauge' });
+
+        result.should.have.property('contents');
+        result.contents[0].should.have.property('uri', 'losant://dashboard/blocks/gauge');
+        result.contents[0].should.have.property('mimeType', 'text/markdown');
+        result.contents[0].text.should.containEql('gauge');
+      });
+
+      it('should throw for an unknown dashboard block type', async () => {
+        await client.readResource({ uri: 'losant://dashboard/blocks/nonexistent-block' })
+          .should.be.rejectedWith(/nonexistent-block/);
+      });
+
+      it('should return reference content for losant://references/dashboard/context-configuration', async () => {
+        const result = await client.readResource({ uri: 'losant://references/dashboard/context-configuration' });
+
+        result.should.have.property('contents');
+        result.contents[0].should.have.property('uri', 'losant://references/dashboard/context-configuration');
+        result.contents[0].should.have.property('mimeType', 'text/markdown');
+        result.contents[0].text.should.containEql('Context Configuration');
+      });
+
+      it('should throw for an unknown reference', async () => {
+        await client.readResource({ uri: 'losant://references/dashboard/nonexistent' })
+          .should.be.rejectedWith(/nonexistent/);
+      });
     });
 
     it('should provide handler for API index with links', async () => {

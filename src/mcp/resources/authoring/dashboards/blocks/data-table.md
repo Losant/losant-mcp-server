@@ -2,7 +2,7 @@
 
 Displays rows from a Losant application data table with optional filtering, sorting, and pagination. Use to show structured tabular data stored in a Losant data table.
 
-See the parent `dashboard-guide.md` for the block object shape, layout grid, and `applicationId` rules.
+See the parent `dashboard-guide.md` for the block object shape, layout grid.
 
 ## Block object shape
 

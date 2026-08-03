@@ -2,7 +2,7 @@
 
 Displays counts of devices matching one or more named queries, formatted with a Handlebars template. Use for fleet statistics like "online devices", "devices with low battery", or combined summaries.
 
-See the parent `dashboard-guide.md` for the block object shape, layout grid, and `applicationId` rules.
+See the parent `dashboard-guide.md` for the block object shape, layout grid.
 
 ## Block object shape
 

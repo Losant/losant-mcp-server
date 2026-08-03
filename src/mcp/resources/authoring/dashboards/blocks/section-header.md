@@ -20,7 +20,6 @@ A horizontal banner with a title and Markdown-supporting body. Pure presentation
 }
 ```
 
-- `applicationId` is set per the dashboard's data-source scope even though this block does not query application data.
 - `title` on the outer block object is the block header bar; `config.title` is the large heading rendered inside the block.
 
 ## Config

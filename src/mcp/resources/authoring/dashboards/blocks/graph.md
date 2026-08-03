@@ -2,7 +2,7 @@
 
 Displays historical or live-streaming numeric data from one or more device attributes over time. The canonical Losant dashboard block — you'll reach for it for almost any "show me this number over the last X" question.
 
-See `reference/device-queries.md` for the `deviceIds` / `deviceTags` / `query` selectors, `reference/aggregations.md` for the aggregation enum, and `reference/templates.md` for the templating dialect used in expressions.
+See [losant://references/dashboard/device-queries](losant://references/dashboard/device-queries) for the `deviceIds` / `deviceTags` / `query` selectors, [losant://references/dashboard/aggregations](losant://references/dashboard/aggregations) for the aggregation enum, and [losant://references/dashboard/templates](losant://references/dashboard/templates) for the templating dialect used in expressions.
 
 ## Block object shape
 
@@ -17,7 +17,6 @@ See `reference/device-queries.md` for the `deviceIds` / `deviceTags` / `query` s
 ```
 
 - `blockType` must be the literal `"graph"`. (The human-facing name is "Time Series Graph".)
-- `applicationId` is required on org / sandbox dashboards, omitted on application-owned dashboards. See `dashboard-guide.md`.
 - Standard layout fields apply — see `dashboard-guide.md`. A typical width is `4` (full row); typical height is `1.5`–`3` units.
 
 ## Config
@@ -50,8 +49,8 @@ See `reference/device-queries.md` for the `deviceIds` / `deviceTags` / `query` s
 | Segment field | Type | Notes |
 |---|---|---|
 | `attribute` | string | The single device attribute to graph. Must exist on the chosen device(s). |
-| `aggregation` | enum | How to combine raw readings inside each resolution bucket. See `reference/aggregations.md`. **For multi-device segments, must NOT be `"NONE"`** — `NONE` is only valid when exactly one device is selected. |
-| `deviceIds` | string[] | Up to 100 device IDs. Mutually used with `deviceTags` and `query` — see `reference/device-queries.md`. May contain `{{ctx.someDeviceIdVar}}` to bind to a context variable. |
+| `aggregation` | enum | How to combine raw readings inside each resolution bucket. See [losant://references/dashboard/aggregations](losant://references/dashboard/aggregations). **For multi-device segments, must NOT be `"NONE"`** — `NONE` is only valid when exactly one device is selected. |
+| `deviceIds` | string[] | Up to 100 device IDs. See [losant://references/dashboard/device-queries](losant://references/dashboard/device-queries). May contain `{{ctx.someDeviceIdVar}}` to bind to a context variable. |
 | `deviceTags` | object[] | Tag-based device selection. Same context-variable rule applies. |
 | `query` | string | Advanced query, as a JSON-encoded string. Build the JSON, then JSON.stringify it. |
 | `graphType` | `"line"` \| `"bar"` \| `"area"` | How the segment renders. `line` is the default; `area` requires line-related options below; `bar` disables them. |
@@ -168,7 +167,7 @@ If a Y axis has no `min` / `max` set, its auto-scaled domain expands to ensure d
 }
 ```
 
-This example uses the `{{ctx.deviceId}}` context variable for both segments — so the same block renders for any device passed in via `?ctx[deviceId]=...`. See `reference/context-configuration.md`.
+This example uses the `{{ctx.deviceId}}` context variable for both segments — so the same block renders for any device passed in via `?ctx[deviceId]=...`. See [losant://references/dashboard/context-configuration](losant://references/dashboard/context-configuration).
 
 ## Idiom notes
 

@@ -4,7 +4,7 @@ Displays a series of configurable overlays (indicators, value badges, bar gauges
 
 `config` is **required** on this block type (unlike most blocks where it is optional).
 
-See the parent `dashboard-guide.md` for the block object shape, layout grid, and `applicationId` rules.
+See the parent `dashboard-guide.md` for the block object shape, layout grid.
 
 ## Block object shape
 
@@ -42,7 +42,7 @@ Up to 300 gauge-type queries backing the overlays. Each segment has a `queryType
 | `query` | string | Advanced device query JSON string. |
 | `attribute` | string | Attribute to query. Max 255 chars. |
 | `aggregation` | enum | `MEAN`, `MAX`, `MIN`, `SUM`, `COUNT`, `FIRST`, `LAST`, `MEDIAN`, `STD_DEV`. |
-| `duration` | integer (ms) | Omit for last received value. |
+| `duration` | integer (ms) \| `"{{dashboard.duration}}"` | Omit for last received value. Use the string template to inherit the dashboard's global duration control. |
 
 ### `overlays` — items placed on the image
 
@@ -63,7 +63,7 @@ Up to 100 overlays. Each overlay has:
 
 #### `"indicator"` — colored icon
 
-Conditional properties: `shape` (`"circle"` | `"square"` | `"triangle"` | `"octagon"`), `color` (CSS color string). **`shape` is required on every condition object and on `defaultCondition` — the API does not default it and the UI will error if it is absent. Always set it explicitly; use `"circle"` when no specific shape is needed.**
+Conditional properties: `shape` (`"circle"` | `"square"` | `"triangle-down"` | `"triangle-up"` | `"octagon"`), `color` (CSS color string). **`shape` is required on every condition object and on `defaultCondition` — the API does not default it and the UI will error if it is absent. Always set it explicitly; use `"circle"` when no specific shape is needed.**
 
 ```json
 {

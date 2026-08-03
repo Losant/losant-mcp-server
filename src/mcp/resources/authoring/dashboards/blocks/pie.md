@@ -2,7 +2,7 @@
 
 Displays proportional data from one or more device attributes as pie slices. Use to show relative distribution (e.g., device counts by state, power contribution by source).
 
-See the parent `dashboard-guide.md` for block object shape, layout grid, and `applicationId` rules.
+See the parent `dashboard-guide.md` for block object shape, layout grid.
 
 ## Block object shape
 

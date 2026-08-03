@@ -2,7 +2,7 @@
 
 Displays a single aggregated value from a device attribute — either as a plain number or as a visual gauge (dial, battery, thermometer, tank, needle). The canonical block for "show me the current value of this sensor."
 
-See the parent `dashboard-guide.md` for the block object shape, layout grid, and `applicationId` rules.
+See the parent `dashboard-guide.md` for the block object shape, layout grid.
 
 ## Block object shape
 
@@ -21,7 +21,7 @@ See the parent `dashboard-guide.md` for the block object shape, layout grid, and
 | Field | Type | Default | Notes |
 |---|---|---|---|
 | `realTime` | boolean | `false` | When `true`, streams live device readings. When `false`, queries historical data over `duration`. |
-| `duration` | integer (ms) | — | Historical only. Time window to aggregate over. |
+| `duration` | integer (ms) \| `"{{dashboard.duration}}"` | — | Historical only. Time window to aggregate over. Use the string template to inherit the dashboard's global duration control. |
 | `gaugeType` | `"number"` \| `"dial"` \| `"battery"` \| `"thermometer"` \| `"tank"` \| `"needle"` | `"number"` | Visual style. |
 | `gaugeMin` | number \| string | — | Minimum of the visual scale. Required for `dial`, `thermometer`, `tank`, `needle`. |
 | `gaugeMax` | number \| string | — | Maximum of the visual scale. Required for the same gauge types. |
@@ -97,5 +97,5 @@ Array of condition objects, evaluated top-to-bottom. The first truthy condition'
 - The platform defaults to `precisionType: "significant"` and `precision: 4` — include them explicitly when you need a different format, omit otherwise.
 - Use `aggregation: "LAST"` to show the most recent value (equivalent to "current state").
 - Use `realTime: true` only when you need real-time streaming — it consumes more resources.
-- For `thermometer`, `tank`, and `needle` styles, `gaugeMin` and `gaugeMax` are required — the block won't render correctly without them.
+- For `dial`, `thermometer`, `tank`, and `needle` styles, `gaugeMin` and `gaugeMax` are required — the block won't render correctly without them. (`dial` silently defaults to 0–100 without them, but always set them explicitly.)
 - The `segment` field is a single object, not an array — unlike most other data blocks.

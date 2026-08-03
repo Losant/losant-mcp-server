@@ -2,7 +2,7 @@
 
 Displays application events in a configurable table. Supports filtering, sorting, and optional viewer-controlled event state updates. Use for alert/event management panels.
 
-See the parent `dashboard-guide.md` for the block object shape, layout grid, and `applicationId` rules.
+See the parent `dashboard-guide.md` for the block object shape, layout grid.
 
 ## Block object shape
 

@@ -2,7 +2,7 @@
 
 Displays a color and optional message based on one or more gauge queries. Conditions are evaluated top-to-bottom; the first truthy one determines the display. If none match, a configurable default is shown. Use for "traffic light" status indicators.
 
-See the parent `dashboard-guide.md` for the block object shape, layout grid, and `applicationId` rules.
+See the parent `dashboard-guide.md` for the block object shape, layout grid.
 
 ## Block object shape
 
@@ -21,7 +21,7 @@ See the parent `dashboard-guide.md` for the block object shape, layout grid, and
 | Field | Type | Default | Notes |
 |---|---|---|---|
 | `realTime` | boolean | `false` | When `true`, live-streams device readings. When `false`, queries historical data over `duration`. |
-| `duration` | integer (ms) | — | Historical only. Time window. |
+| `duration` | integer (ms) \| `"{{dashboard.duration}}"` | — | Historical only. Time window. Use the string template to inherit the dashboard's global duration control. |
 | `segments` | object[] | — | **Required.** Array of data query segments. Each returns `{{value-i}}` and `{{time-i}}` variables (0-indexed). |
 | `conditions` | object[] | — | **Required.** Ordered list of conditions. First truthy condition wins. |
 | `defaultCondition` | object | — | The display to use when no condition matches. |
@@ -60,13 +60,13 @@ The `i`-th segment result is accessible in conditions as `{{value-i}}` and `{{ti
 | `condition` | Handlebars expression — truthy = this condition applies. Available: all `{{value-i}}` and `{{time-i}}`, plus `{{ctx.<name>}}`. |
 | `label` | Shown below the color block. Supports Markdown. |
 | `color` | CSS color of the indicator. |
-| `shape` | `"circle"` \| `"square"` \| `"triangle"` \| `"octagon"` — shape of the indicator icon. **Required — the API does not default this; the UI will error if omitted. Always set explicitly; use `"circle"` when in doubt.** |
+| `shape` | `"circle"` \| `"square"` \| `"triangle-down"` \| `"triangle-up"` \| `"octagon"` — accepted by the schema but **not read by render code on condition objects**. Set `shape` on `defaultCondition` to control the indicator icon; this field on regular conditions has no effect. |
 | `imageUrl` | string — URL of a custom image to use as the indicator icon. When set, overrides `color` and `shape`. |
 | `id` | Optional identifier. |
 
 ### `defaultCondition`
 
-Same shape as a condition object, but without `condition` — it is the fallback when no condition matches. Supports `label`, `color`, `shape`, and `imageUrl`. **`shape` is required here too — always set it explicitly.**
+Same shape as a condition object, but without `condition` — it is the fallback when no condition matches. Supports `label`, `color`, `shape`, and `imageUrl`. Set `shape` here to control the indicator icon shape.
 
 ```json
 { "label": "Unknown", "color": "#808080", "shape": "circle" }
@@ -102,4 +102,4 @@ Same shape as a condition object, but without `condition` — it is the fallback
 - Conditions are evaluated in order. Put the most critical conditions first.
 - Use `aggregation: "LAST"` to reflect current device state.
 - `defaultCondition` catches the "no devices matched" or "all queries returned null" case — always set a meaningful `label`.
-- **Always set `shape` explicitly on every condition object and on `defaultCondition`.** The API does not provide a default and the UI will error if `shape` is absent. Use `"circle"` when no specific shape is required.
+- `shape` on regular condition objects is not read by render code — it has no effect. Set `shape` on `defaultCondition` to control the indicator icon; use `"circle"` when no specific shape is needed.

@@ -2,7 +2,7 @@
 
 Displays one or more device attributes as proportional bars. Use for comparing values across devices or attributes at a point in time.
 
-See the parent `dashboard-guide.md` for block object shape, layout grid, and `applicationId` rules.
+See the parent `dashboard-guide.md` for block object shape, layout grid.
 
 ## Block object shape
 
