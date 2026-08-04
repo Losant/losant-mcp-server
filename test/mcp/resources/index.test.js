@@ -271,6 +271,16 @@ describe('MCP Resources', () => {
           .should.be.rejectedWith(/applicationDashboard/);
       });
 
+      it('should return content for losant://authoring/experience-endpoint', async () => {
+        const result = await client.readResource({ uri: 'losant://authoring/experience-endpoint' });
+
+        result.should.have.property('contents');
+        result.contents[0].should.have.property('uri', 'losant://authoring/experience-endpoint');
+        result.contents[0].should.have.property('mimeType', 'text/markdown');
+        result.contents[0].text.should.containEql('deviceIdTemplate');
+        result.contents[0].text.should.containEql('staticReply');
+      });
+
       it('should return content for losant://authoring/experience-view', async () => {
         const result = await client.readResource({ uri: 'losant://authoring/experience-view' });
 

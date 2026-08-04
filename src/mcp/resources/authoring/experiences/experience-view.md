@@ -192,7 +192,30 @@ New views **automatically land in `develop`**. The `versions` field does not exi
 
 ## Handlebars helpers
 
-For experience-specific helpers (`{{page}}`, `{{#section}}`, `{{#fillSection}}`, `{{component}}`, `{{element}}`, `{{file}}`, `{{obj}}`) and the full shared helper catalog, see [losant://references/experience/context-configuration](losant://references/experience/context-configuration).
+The full shared helper catalog (format helpers, block helpers, expressions, JSON templates) is at [losant://references/shared/handlebars](losant://references/shared/handlebars). The experience-specific helpers below only work inside experience views — full documentation for each is at [losant://references/experience/context-configuration](losant://references/experience/context-configuration).
+
+| Helper | Available in | Purpose |
+|---|---|---|
+| `{{page}}` | layouts only | Injects the page body at this location — required in every layout |
+| `{{#section "name"}}` / `{{#fillSection "name"}}` | layouts + pages | Named content slots — layout defines slots, pages fill them |
+| `{{component "name" [context] [args]}}` | all view types | Renders another component view by name |
+| `{{element 'dashboard' ...}}` | pages + layouts | Embeds a Losant dashboard inline with `ctx` wiring |
+| `{{file "path"}}` | all view types | Returns the URL for a Losant application file |
+| `{{obj key=val ...}}` | all view types | Builds an inline object (subexpression, used in `ctx=(obj ...)`) |
+
+---
+
+## Updating a view
+
+Views support sparse PATCH — send only the fields you want to change.
+
+- `body`, `name`, `description`, `headers`, `layoutId`, `viewTags` — all patchable
+- `viewType` — **immutable after creation**; delete and recreate if the type is wrong
+- Changes to views in `develop` take effect immediately for any request served by `develop`. Live named versions are unaffected until a new named version is published from develop.
+
+```
+losant_write operation=updateOne resourceType=experienceView resourceId=<viewId> body=<updatedBody>
+```
 
 ---
 

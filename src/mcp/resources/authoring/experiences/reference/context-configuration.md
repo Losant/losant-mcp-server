@@ -191,21 +191,11 @@ The experience workflow that handled the request.
 </ul>
 ```
 
-### Pass a request param into a dashboard context variable
-
-```handlebars
-{{element
-  'dashboard'
-  dashboardId=pageData.dashboardId
-  ctx=(obj deviceId=request.params.deviceId)
-}}
-```
-
 ### Read a user tag
 
 ```handlebars
-{{! userTags is an array of { key, value } — access by key using dot notation }}
-{{experience.user.userTags.role.[0]}}
+{{! userTags is a plain object keyed by tag name — access by key directly }}
+{{experience.user.userTags.role}}
 ```
 
 ### Pass request context into a component
@@ -216,9 +206,11 @@ The experience workflow that handled the request.
 
 ---
 
-## Experience-specific Handlebars helpers
+## Handlebars
 
-These helpers are only available inside experience views (layouts, pages, components). They are not available in dashboard templates or workflow nodes.
+Experience views have access to the full shared Handlebars dialect — see [losant://references/shared/handlebars](losant://references/shared/handlebars) for format helpers, block helpers, expression syntax, JSON templates, and HTML escaping.
+
+The following helpers are **only available inside experience views** (layouts, pages, components) and are not available in dashboard templates or workflow nodes.
 
 ### `{{page}}` — layouts only
 
@@ -309,8 +301,3 @@ Builds an inline object. Used primarily for constructing `ctx` in `{{element}}`.
 ctx=(obj deviceId=request.params.deviceId tag=(obj key="fleet" value="trucks"))
 ```
 
----
-
-## Handlebars language reference
-
-For the full shared helper catalog — format helpers, block helpers, expression syntax, JSON template rules, HTML escaping, and the `{{{toHtml}}}` pattern — see [losant://references/shared/handlebars](losant://references/shared/handlebars).

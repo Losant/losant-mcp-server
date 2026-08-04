@@ -152,7 +152,8 @@ export const AUTHORING_PATH = path.join(__dirname, 'mcp/resources/authoring');
 
 export const AUTHORING_HUB_TO_FILE = {
   'dashboard': path.join(AUTHORING_PATH, 'dashboards/dashboard-guide.md'),
-  'experience-view': path.join(AUTHORING_PATH, 'experiences/experience-view.md')
+  'experience-view': path.join(AUTHORING_PATH, 'experiences/experience-view.md'),
+  'experience-endpoint': path.join(AUTHORING_PATH, 'experiences/experience-endpoint.md')
 };
 
 const dashboardBlocksDir = path.join(AUTHORING_PATH, 'dashboards/blocks');

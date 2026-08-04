@@ -48,8 +48,8 @@ Values are referenced using dot-separated paths into the context object:
 
 **Array indexing** — use `.[N]`:
 ```handlebars
-{{experience.user.userTags.firmware.[0]}}
 {{pageData.devices.[2].name}}
+{{pageData.readings.[0].value}}
 ```
 
 **Escaping special characters in keys:**
