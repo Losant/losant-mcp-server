@@ -1,6 +1,6 @@
 # Application List Block (`blockType: "application-list"`)
 
-Lists applications the dashboard's owner can see. Useful as a navigation aid on multi-application organization or sandbox dashboards.
+Lists applications the dashboard's owner can see. On application-owned dashboards this lists all applications the owner has access to — it is most useful in admin or developer-oriented contexts rather than device telemetry dashboards, and its primary use case (cross-application navigation) applies to organization and sandbox dashboards which are outside the current scope of these guides. Common uses: (1) a developer home page in a sandbox dashboard listing all projects in one place, (2) an admin support portal where operators navigate between customer applications, (3) an operations hub sidebar providing quick access to application-specific dashboards.
 
 ## Block object shape
 
@@ -18,8 +18,6 @@ Lists applications the dashboard's owner can see. Useful as a navigation aid on 
   }
 }
 ```
-
-- `application-list` is one of three block types that carry **no `applicationId`** — omit it regardless of dashboard scope.
 
 ## Config
 
@@ -47,4 +45,3 @@ Lists applications the dashboard's owner can see. Useful as a navigation aid on 
 - Typical placement is as a tall, narrow sidebar (`width: 1`).
 - Omit `filter` (or pass an empty object for `config`) to list all applications the owner can access.
 - The list is read-only; clicking an application name navigates to it within the Losant platform.
-- Do not supply `applicationId` on this block.

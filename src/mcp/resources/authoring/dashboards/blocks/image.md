@@ -1,6 +1,6 @@
 # Image Block (`blockType: "image"`)
 
-Renders an image from a static URL, an application file URL, or a device attribute (blob or string). No interactivity beyond an optional click-through link.
+Renders an image from a static URL, an application file URL, or a device attribute (blob or string). No interactivity beyond an optional click-through link. Common uses: (1) a company logo or product image in the dashboard header, (2) a camera snapshot stored as a blob attribute that updates each time the device reports state, (3) an equipment schematic whose URL is driven by a context variable so the diagram changes when the selected device changes.
 
 ## Block object shape
 
@@ -13,7 +13,6 @@ Renders an image from a static URL, an application file URL, or a device attribu
   "startY": 0,
   "width": 2,
   "height": 1,
-  "applicationId": "<applicationId>",
   "config": {
     "imageSource": "static",
     "imageUrl": "https://example.com/logo.png"
@@ -44,7 +43,6 @@ Renders an image from a static URL, an application file URL, or a device attribu
   "startY": 0,
   "width": 1,
   "height": 0.5,
-  "applicationId": "<applicationId>",
   "config": {
     "imageSource": "static",
     "imageUrl": "https://example.com/logo.png",

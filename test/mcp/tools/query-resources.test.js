@@ -809,6 +809,87 @@ describe('query-resources tool', () => {
     });
   });
 
+  describe('applicationKey, applicationCertificate, applicationCertificateAuthority', () => {
+    const keyId = '5f1b6285032b36000627aaaa';
+    const certId = '5f1b6285032b36000627cccc';
+    const caId = '5f1b6285032b36000627bbbb';
+
+    it('should list applicationKeys', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .get(`/applications/${APP_ID}/keys`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false', perPage: 100 })
+        .reply(200, { count: 1, items: [{ id: keyId, applicationKeyId: keyId, key: 'abc123', status: 'active' }] });
+
+      const result = await queryTool({ operation: 'list', resourceType: 'applicationKey', applicationId: APP_ID });
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('count', 1);
+      response.items[0].should.have.property('key', 'abc123');
+    });
+
+    it('should get a single applicationKey by ID', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .get(`/applications/${APP_ID}/keys/${keyId}`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .reply(200, { id: keyId, applicationKeyId: keyId, key: 'abc123', status: 'active' });
+
+      const result = await queryTool({ operation: 'get', resourceType: 'applicationKey', applicationId: APP_ID, resourceId: keyId });
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('applicationKeyId', keyId);
+    });
+
+    it('should list applicationCertificateAuthorities', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .get(`/applications/${APP_ID}/certificate-authorities`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false', perPage: 100 })
+        .reply(200, { count: 1, items: [{ id: caId, applicationCertificateAuthorityId: caId, name: 'My CA', status: 'active' }] });
+
+      const result = await queryTool({ operation: 'list', resourceType: 'applicationCertificateAuthority', applicationId: APP_ID });
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('count', 1);
+      response.items[0].should.have.property('name', 'My CA');
+    });
+
+    it('should get a single applicationCertificateAuthority by ID', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .get(`/applications/${APP_ID}/certificate-authorities/${caId}`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .reply(200, { id: caId, applicationCertificateAuthorityId: caId, name: 'My CA', status: 'active' });
+
+      const result = await queryTool({ operation: 'get', resourceType: 'applicationCertificateAuthority', applicationId: APP_ID, resourceId: caId });
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('applicationCertificateAuthorityId', caId);
+    });
+
+    it('should list applicationCertificates', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .get(`/applications/${APP_ID}/certificates`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false', perPage: 100 })
+        .reply(200, { count: 1, items: [{ id: certId, applicationCertificateId: certId, name: 'My Cert', status: 'active', filterType: 'none' }] });
+
+      const result = await queryTool({ operation: 'list', resourceType: 'applicationCertificate', applicationId: APP_ID });
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('count', 1);
+      response.items[0].should.have.property('name', 'My Cert');
+    });
+
+    it('should get a single applicationCertificate by ID', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .get(`/applications/${APP_ID}/certificates/${certId}`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .reply(200, { id: certId, applicationCertificateId: certId, name: 'My Cert', status: 'active', filterType: 'none' });
+
+      const result = await queryTool({ operation: 'get', resourceType: 'applicationCertificate', applicationId: APP_ID, resourceId: certId });
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('applicationCertificateId', certId);
+    });
+  });
+
   describe('Tool Metadata', () => {
     it('should have correct tool name', () => {
       queryResourcesTool.should.have.property('name', 'losant_query');

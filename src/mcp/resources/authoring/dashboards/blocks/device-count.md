@@ -2,7 +2,7 @@
 
 Displays counts of devices matching one or more named queries, formatted with a Handlebars template. Use for fleet statistics like "online devices", "devices with low battery", or combined summaries.
 
-See the parent `dashboard-guide.md` for the block object shape, layout grid, and `applicationId` rules.
+See the parent `dashboard-guide.md` for the block object shape, layout grid.
 
 ## Block object shape
 
@@ -38,7 +38,7 @@ Array of named count queries. Each segment's count is available in conditions an
 | Field | Type | Required | Notes |
 |---|---|---|---|
 | `id` | string | yes | Name used to reference this count (e.g., `total`). Max 48 chars. |
-| `query` | string | yes | Advanced device query as a **JSON-encoded string**. Use `"{}"` to count all devices. |
+| `query` | string | yes | Advanced **device** query as a JSON-encoded string — same format as the `query` selector in [losant://references/dashboard/device-queries](losant://references/dashboard/device-queries). Use `"{}"` to count all devices. This is a device filter, not a row filter. |
 
 ### `conditions`
 

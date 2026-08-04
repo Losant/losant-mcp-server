@@ -1,8 +1,8 @@
 # Pie Chart Block (`blockType: "pie"`)
 
-Displays proportional data from one or more device attributes as pie slices. Use to show relative distribution (e.g., device counts by state, power contribution by source).
+Displays proportional data from one or more device attributes as pie slices. Common uses: (1) a power generation mix showing solar vs. wind vs. grid contributions as percentages, (2) a fleet status breakdown showing the proportion of devices that are connected, disconnected, or inactive, (3) an event severity distribution for a time window showing the ratio of critical to warning to informational alerts.
 
-See the parent `dashboard-guide.md` for block object shape, layout grid, and `applicationId` rules.
+See the parent `dashboard-guide.md` for block object shape, layout grid.
 
 ## Block object shape
 
@@ -21,7 +21,7 @@ See the parent `dashboard-guide.md` for block object shape, layout grid, and `ap
 | Field | Type | Default | Notes |
 |---|---|---|---|
 | `realTime` | boolean | `false` | When `true`, live-streams device readings. When `false`, queries historical data. |
-| `duration` | integer (ms) \| `"{{dashboard.duration}}"` | — | Historical only. Time window. Use the string form to inherit the dashboard's global duration control. |
+| `duration` | integer (ms) \| `"{{dashboard.duration}}"` | — | Historical only. Time window. Use `0` to query only the single most recent data point per device. Use the string form to inherit the dashboard's global duration control. |
 | `valueFormat` | string | — | D3 format string for the absolute value (e.g. `".1f"`, `",.0f"`). |
 | `percentFormat` | string | — | D3 format string for the percentage (e.g. `".1%"`). |
 | `segments` | object[] | — | **Required. At least one.** Each segment is one slice. |

@@ -2,7 +2,7 @@
 
 Displays one or more device attributes as proportional bars. Use for comparing values across devices or attributes at a point in time.
 
-See the parent `dashboard-guide.md` for block object shape, layout grid, and `applicationId` rules.
+See the parent `dashboard-guide.md` for block object shape, layout grid.
 
 ## Block object shape
 
@@ -21,7 +21,7 @@ See the parent `dashboard-guide.md` for block object shape, layout grid, and `ap
 | Field | Type | Default | Notes |
 |---|---|---|---|
 | `realTime` | boolean | `false` | When `true`, live-streams device readings. When `false`, queries historical data. |
-| `duration` | integer (ms) \| `"{{dashboard.duration}}"` | — | Time window for historical queries. Use the string form to inherit the dashboard's global duration control. |
+| `duration` | integer (ms) \| `"{{dashboard.duration}}"` | — | Time window for historical queries. Use `0` to query only the single most recent data point per device. Use the string form to inherit the dashboard's global duration control. |
 | `xAxisLabel` | string | — | Label displayed along the X axis. Max 255 chars. |
 | `xAxisFormat` | string | — | D3 format string for X axis ticks. Max 255 chars. |
 | `xAxisMin` | number \| string | — | Manual lower bound for the X axis. |
@@ -50,7 +50,7 @@ Each `segments` entry is a `commonSegment` object:
 | `label` | Bar label. Defaults to the attribute name. |
 | `color` | CSS color. |
 | `expression` | Optional Handlebars transform: `{{value}}`, `{{time}}`, `{{ctx.<name>}}` available. |
-| `graphType` | `"bar"` \| `"line"` \| `"area"` — controls segment rendering style. Primarily significant in graph blocks; bar blocks render as bars regardless. |
+| `graphType` | `"bar"` \| `"line"` \| `"area"` — part of the shared segment schema; bar blocks always render as bars regardless of this value. |
 | `detectDataGaps` | boolean — when `true`, breaks line/area rendering where no data was reported. |
 | `lineWeight` | integer 0–5 — line thickness. Applies to line/area rendering modes. |
 | `yAxisLabel` | string — legacy segment-level Y-axis label override. |

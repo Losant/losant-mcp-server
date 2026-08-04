@@ -1,6 +1,6 @@
 # Dashboard List Block (`blockType: "dashboard-list"`)
 
-Lists dashboards the dashboard's owner can see. Useful as a navigation tool on organization or sandbox dashboards.
+Lists dashboards the dashboard's owner can see. Common uses: (1) a navigation sidebar linking operators to per-site dashboards by name, (2) a landing page filtered to `"Fleet*"` dashboards so dispatchers can find their region's view, (3) a reporting hub listing all report dashboards for periodic review.
 
 ## Block object shape
 
@@ -18,8 +18,6 @@ Lists dashboards the dashboard's owner can see. Useful as a navigation tool on o
   }
 }
 ```
-
-- `dashboard-list` is one of three block types that carry **no `applicationId`** — omit it regardless of dashboard scope.
 
 ## Config
 
@@ -49,4 +47,3 @@ Lists dashboards the dashboard's owner can see. Useful as a navigation tool on o
 - Typical placement is as a tall, narrow sidebar (`width: 1`).
 - Omit `filter` to show all dashboards the owner can see — useful for a top-level navigation landing page.
 - The list is read-only; clicking a dashboard name navigates to it.
-- Do not supply `applicationId` on this block.

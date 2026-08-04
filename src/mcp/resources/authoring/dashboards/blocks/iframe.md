@@ -1,6 +1,6 @@
 # External Website Block (`blockType: "iframe"`)
 
-Embeds an external web page in an `<iframe>`. The URL must be HTTPS and the remote site must permit embedding (no `X-Frame-Options: DENY` or `Content-Security-Policy: frame-ancestors 'none'`).
+Embeds an external web page in an `<iframe>`. The URL must be HTTPS and the remote site must permit embedding (no `X-Frame-Options: DENY` or `Content-Security-Policy: frame-ancestors 'none'`). Common uses: (1) embedding a weather forecast widget for site-aware operations dashboards, (2) showing a third-party status page or external monitoring panel alongside device data, (3) displaying a live camera or video stream from a facility.
 
 ## Block object shape
 
@@ -18,8 +18,6 @@ Embeds an external web page in an `<iframe>`. The URL must be HTTPS and the remo
   }
 }
 ```
-
-- `iframe` is one of three block types that carry **no `applicationId`** — omit it regardless of dashboard scope.
 
 ## Config
 
@@ -49,4 +47,3 @@ Embeds an external web page in an `<iframe>`. The URL must be HTTPS and the remo
 - Size to whatever real-estate the embedded page's content needs — there is no minimum beyond the `0.5 × 0.5` grid unit floor.
 - Many popular sites block iframe embedding. Test before committing to the layout.
 - `url` is templatable: use `{{ctx.stationId}}` to let the context variable drive which station is shown.
-- Do not supply `applicationId` — the server ignores it but consistency with the three no-app blocks matters for clarity.

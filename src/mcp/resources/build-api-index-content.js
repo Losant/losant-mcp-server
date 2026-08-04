@@ -13,7 +13,15 @@ let indexContent = `# Losant API Documentation
 - [Dashboards Guide](losant://guides/dashboards) - Block model, layout grid, context variables — full authoring at losant://authoring/dashboard
 - [Files & Private Files Guide](losant://guides/files) - Two-step create-then-upload pattern, public vs. private
 - [Notebooks Guide](losant://guides/notebooks) - Two-step upload pattern, input/output types, imageVersion
+- [Dashboards Guide](losant://guides/dashboards) - Blocks, layout grid, context variables, and common workflows for application dashboards
 - [Experiences Guide](losant://guides/experiences) - Versioning model, views, endpoints, users, groups, domains, and slugs
+- [Device Authentication Guide](losant://guides/device-auth) - Access keys and device certificates for MQTT broker authentication; API vs. UI naming for certificate resources
+
+> **API naming note**: Some resource types have names in the API that differ from their display names in the Losant UI:
+> - API: \`applicationCertificate\` → UI: **Device Certificate**
+> - API: \`applicationCertificateAuthority\` → UI: **Device Certificate Authority**
+> - API: \`applicationKey\` → UI: **Access Key**
+> Use the API names (\`applicationCertificate\`, \`applicationCertificateAuthority\`, \`applicationKey\`) with \`losant_query\` and \`losant_write\`.
 
 ## Supported Resources
 The following resources can be queried with the losant_query tool:

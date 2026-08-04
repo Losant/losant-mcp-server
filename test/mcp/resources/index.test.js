@@ -86,9 +86,9 @@ describe('MCP Resources', () => {
     it('should generate API index with all docs and schemas', async () => {
       registerResourceLoader(mockServer);
 
-      const apiIndex = registeredResources.find((r) => r.uri === 'losant://index');
+      const apiIndex = registeredResources.find((r) => r.uri === 'losant://info');
       should.exist(apiIndex);
-      apiIndex.config.should.have.property('title', 'Losant MCP Application Index Guide');
+      apiIndex.config.should.have.property('title', 'Losant MCP Server Info');
       apiIndex.config.should.have.property('mimeType', 'text/markdown');
     });
 
@@ -120,6 +120,33 @@ describe('MCP Resources', () => {
       const schemaTemplate = registeredTemplates.find((t) => t.name === 'schema');
       should.exist(schemaTemplate);
       schemaTemplate.name.should.equal('schema');
+    });
+
+    it('should register authoring-hub template with pattern losant://authoring/{resourceType}', async () => {
+      registerResourceLoader(mockServer);
+
+      const authoringTemplate = registeredTemplates.find((t) => t.name === 'authoring-hub');
+      should.exist(authoringTemplate);
+      authoringTemplate.template.uriTemplate.toString().should.equal('losant://authoring/{resourceType}');
+      authoringTemplate.config.should.have.property('mimeType', 'text/markdown');
+    });
+
+    it('should register dashboard-block template with pattern losant://dashboard/blocks/{blockType}', async () => {
+      registerResourceLoader(mockServer);
+
+      const blockTemplate = registeredTemplates.find((t) => t.name === 'dashboard-block');
+      should.exist(blockTemplate);
+      blockTemplate.template.uriTemplate.toString().should.equal('losant://dashboard/blocks/{blockType}');
+      blockTemplate.config.should.have.property('mimeType', 'text/markdown');
+    });
+
+    it('should register reference template with pattern losant://references/{resourceType}/{referenceName}', async () => {
+      registerResourceLoader(mockServer);
+
+      const referenceTemplate = registeredTemplates.find((t) => t.name === 'reference');
+      should.exist(referenceTemplate);
+      referenceTemplate.template.uriTemplate.toString().should.equal('losant://references/{resourceType}/{referenceName}');
+      referenceTemplate.config.should.have.property('mimeType', 'text/markdown');
     });
   });
 
@@ -159,6 +186,46 @@ describe('MCP Resources', () => {
       parsed.should.have.property('type', 'object');
     });
 
+    it('should load schema for applicationDashboardPatch alias', async () => {
+      const result = await client.readResource({ uri: 'losant://schemas/applicationDashboardPatch' });
+      result.contents[0].should.have.property('uri', 'losant://schemas/applicationDashboardPatch');
+      result.contents[0].should.have.property('mimeType', 'application/json');
+      const parsed = JSON.parse(result.contents[0].text);
+      parsed.should.have.property('type', 'object');
+    });
+
+    describe('applicationCertificateAuthority resources', () => {
+      it('should load schema for applicationCertificateAuthorityPost', async () => {
+        const result = await client.readResource({ uri: 'losant://schemas/applicationCertificateAuthorityPost' });
+        result.contents[0].should.have.property('uri', 'losant://schemas/applicationCertificateAuthorityPost');
+        result.contents[0].should.have.property('mimeType', 'application/json');
+        const parsed = JSON.parse(result.contents[0].text);
+        parsed.should.have.property('type', 'object');
+      });
+
+      it('should load schema for applicationCertificateAuthorityPatch', async () => {
+        const result = await client.readResource({ uri: 'losant://schemas/applicationCertificateAuthorityPatch' });
+        result.contents[0].should.have.property('uri', 'losant://schemas/applicationCertificateAuthorityPatch');
+        result.contents[0].should.have.property('mimeType', 'application/json');
+        const parsed = JSON.parse(result.contents[0].text);
+        parsed.should.have.property('type', 'object');
+      });
+
+      it('should load doc for applicationCertificateAuthority (singular)', async () => {
+        const result = await client.readResource({ uri: 'losant://docs/applicationCertificateAuthority' });
+        result.contents[0].should.have.property('uri', 'losant://docs/applicationCertificateAuthority');
+        result.contents[0].should.have.property('mimeType', 'text/markdown');
+        result.contents[0].text.should.containEql('Application Certificate Authority Actions');
+      });
+
+      it('should load doc for applicationCertificateAuthorities (plural)', async () => {
+        const result = await client.readResource({ uri: 'losant://docs/applicationCertificateAuthorities' });
+        result.contents[0].should.have.property('uri', 'losant://docs/applicationCertificateAuthorities');
+        result.contents[0].should.have.property('mimeType', 'text/markdown');
+        result.contents[0].text.should.containEql('Application Certificate Authorities Actions');
+      });
+    });
+
     it('should provide handler for losant query tool guide', async () => {
       const result = await client.readResource({ uri: 'losant://guides/losant-query-tool' });
 
@@ -183,8 +250,133 @@ describe('MCP Resources', () => {
       result.contents[0].text.should.match(/MongoDB|query|operator/i);
     });
 
+    it('should provide handler for device auth guide', async () => {
+      const result = await client.readResource({ uri: 'losant://guides/device-auth' });
+
+      result.should.have.property('contents');
+      result.contents[0].should.have.property('uri', 'losant://guides/device-auth');
+      result.contents[0].should.have.property('mimeType', 'text/markdown');
+      result.contents[0].text.should.match(/applicationCertificate/);
+      result.contents[0].text.should.match(/Device Certificate/);
+      result.contents[0].text.should.match(/Access Key/i);
+      result.contents[0].text.should.match(/mutual TLS/i);
+    });
+
+    describe('authoring/dashboard resources', () => {
+      it('should return dashboard authoring hub guide for losant://authoring/dashboard', async () => {
+        const result = await client.readResource({ uri: 'losant://authoring/dashboard' });
+
+        result.should.have.property('contents');
+        result.contents.should.be.an.Array();
+        result.contents[0].should.have.property('uri', 'losant://authoring/dashboard');
+        result.contents[0].should.have.property('mimeType', 'text/markdown');
+        result.contents[0].text.should.containEql('Losant Dashboard Authoring');
+        result.contents[0].text.should.containEql('losant://dashboard/blocks/');
+      });
+
+      it('should throw for an unknown authoring resourceType', async () => {
+        await client.readResource({ uri: 'losant://authoring/applicationDashboard' })
+          .should.be.rejectedWith(/applicationDashboard/);
+      });
+
+      it('should return content for losant://authoring/experience-endpoint', async () => {
+        const result = await client.readResource({ uri: 'losant://authoring/experience-endpoint' });
+
+        result.should.have.property('contents');
+        result.contents[0].should.have.property('uri', 'losant://authoring/experience-endpoint');
+        result.contents[0].should.have.property('mimeType', 'text/markdown');
+        result.contents[0].text.should.containEql('deviceIdTemplate');
+        result.contents[0].text.should.containEql('staticReply');
+      });
+
+      it('should return content for losant://authoring/experience-view', async () => {
+        const result = await client.readResource({ uri: 'losant://authoring/experience-view' });
+
+        result.should.have.property('contents');
+        result.contents[0].should.have.property('uri', 'losant://authoring/experience-view');
+        result.contents[0].should.have.property('mimeType', 'text/markdown');
+        result.contents[0].text.should.containEql('layout');
+        result.contents[0].text.should.containEql('component');
+      });
+
+      it('should return reference content for losant://references/experience/context-configuration', async () => {
+        const result = await client.readResource({ uri: 'losant://references/experience/context-configuration' });
+
+        result.should.have.property('contents');
+        result.contents[0].should.have.property('uri', 'losant://references/experience/context-configuration');
+        result.contents[0].should.have.property('mimeType', 'text/markdown');
+        result.contents[0].text.should.containEql('pageData');
+        result.contents[0].text.should.containEql('experience.user');
+      });
+
+      it('should return block content for losant://dashboard/blocks/gauge', async () => {
+        const result = await client.readResource({ uri: 'losant://dashboard/blocks/gauge' });
+
+        result.should.have.property('contents');
+        result.contents[0].should.have.property('uri', 'losant://dashboard/blocks/gauge');
+        result.contents[0].should.have.property('mimeType', 'text/markdown');
+        result.contents[0].text.should.containEql('gauge');
+      });
+
+      it('should throw for an unknown dashboard block type', async () => {
+        await client.readResource({ uri: 'losant://dashboard/blocks/nonexistent-block' })
+          .should.be.rejectedWith(/nonexistent-block/);
+      });
+
+      it('should return reference content for losant://references/shared/handlebars', async () => {
+        const result = await client.readResource({ uri: 'losant://references/shared/handlebars' });
+
+        result.should.have.property('contents');
+        result.contents[0].should.have.property('uri', 'losant://references/shared/handlebars');
+        result.contents[0].should.have.property('mimeType', 'text/markdown');
+        result.contents[0].text.should.containEql('format');
+        result.contents[0].text.should.containEql('expression');
+      });
+
+      it('should return reference content for losant://references/dashboard/context-configuration', async () => {
+        const result = await client.readResource({ uri: 'losant://references/dashboard/context-configuration' });
+
+        result.should.have.property('contents');
+        result.contents[0].should.have.property('uri', 'losant://references/dashboard/context-configuration');
+        result.contents[0].should.have.property('mimeType', 'text/markdown');
+        result.contents[0].text.should.containEql('Context Configuration');
+      });
+
+      it('should return reference content for losant://references/dashboard/templates', async () => {
+        const result = await client.readResource({ uri: 'losant://references/dashboard/templates' });
+
+        result.should.have.property('contents');
+        result.contents[0].should.have.property('uri', 'losant://references/dashboard/templates');
+        result.contents[0].should.have.property('mimeType', 'text/markdown');
+        result.contents[0].text.should.containEql('dashboard');
+      });
+
+      it('should return reference content for losant://references/dashboard/device-queries', async () => {
+        const result = await client.readResource({ uri: 'losant://references/dashboard/device-queries' });
+
+        result.should.have.property('contents');
+        result.contents[0].should.have.property('uri', 'losant://references/dashboard/device-queries');
+        result.contents[0].should.have.property('mimeType', 'text/markdown');
+        result.contents[0].text.should.containEql('deviceIds');
+      });
+
+      it('should return reference content for losant://references/dashboard/aggregations', async () => {
+        const result = await client.readResource({ uri: 'losant://references/dashboard/aggregations' });
+
+        result.should.have.property('contents');
+        result.contents[0].should.have.property('uri', 'losant://references/dashboard/aggregations');
+        result.contents[0].should.have.property('mimeType', 'text/markdown');
+        result.contents[0].text.should.containEql('MEAN');
+      });
+
+      it('should throw for an unknown reference', async () => {
+        await client.readResource({ uri: 'losant://references/dashboard/nonexistent' })
+          .should.be.rejectedWith(/nonexistent/);
+      });
+    });
+
     it('should provide handler for API index with links', async () => {
-      const result = await client.readResource({ uri: 'losant://index' });
+      const result = await client.readResource({ uri: 'losant://info' });
 
       result.should.have.property('contents');
       result.contents[0].should.have.property('text');

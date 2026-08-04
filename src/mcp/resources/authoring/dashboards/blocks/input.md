@@ -1,8 +1,8 @@
 # Input Controls Block (`blockType: "input"`)
 
-Lets users send device commands or trigger workflow virtual buttons directly from the dashboard. Supports sliders, toggles, text inputs, dropdowns, buttons, and static help text. Controls can also reflect the current device state when locked.
+Lets users send device commands or trigger workflow virtual buttons directly from the dashboard. Supports sliders, toggles, text inputs, dropdowns, buttons, and static help text. Controls can also reflect the current device state when locked. Common uses: (1) a lighting control panel with a brightness slider and an on/off toggle that sends a device command on Apply, (2) a thermostat setpoint form where an operator enters a target temperature and submits it directly to the device, (3) a mode selector dropdown paired with a Trigger button that fires a workflow to change an industrial process state.
 
-See the parent `dashboard-guide.md` for the block object shape, layout grid, and `applicationId` rules.
+See the parent `dashboard-guide.md` for the block object shape, layout grid.
 
 ## Block object shape
 
@@ -92,8 +92,8 @@ Buttons are what actually send commands or trigger workflows when clicked. A blo
 | `action` | `"command"` \| `"workflow"` | What the button does when clicked. |
 | `id` / `templateId` / `label` / `color` / `grid` | — | Standard. |
 | `payload` | string | JSON template for the payload. Reference control values via `{{templateId}}`. |
-| `buttonId` | string | Identifier for this button (used in workflow triggers). Max 255 chars. |
 | `workflowId` | string \| null | ID of the workflow to trigger (when `action: "workflow"`). |
+| `buttonId` | string | The UI ID of the Virtual Button trigger node inside the workflow (`meta.uiId`). Not an arbitrary string — you must read the workflow's trigger nodes to find the correct value. Max 255 chars. |
 | `deviceIds` | string[] | Device IDs to send the command to (when `action: "command"`). |
 | `deviceTags` | object[] | Tag-based device selection for commands. |
 | `query` | string | Advanced device query for commands. |
@@ -109,6 +109,7 @@ Each non-button control can pre-fill its value from a device attribute query. Th
 |---|---|---|
 | `deviceIds` | string[] | Device(s) to query. |
 | `deviceTags` | object[] | Tag-based device selection. |
+| `query` | string | Advanced device query as a JSON-encoded string. |
 | `attribute` | string | Attribute whose last reported value populates the control. |
 | `aggregation` | enum | How to reduce multi-device results. |
 
@@ -116,14 +117,14 @@ Each non-button control can pre-fill its value from a device attribute query. Th
 
 ## Control grid
 
-Each control's `grid` defines its position and size within the block's internal layout:
+Each control's `grid` defines its position and size within the block's internal layout. The internal grid is **4 columns wide** — `x + w` must not exceed 4. Grid units are integers; the UI snaps to whole units.
 
 | Field | Type | Notes |
 |---|---|---|
-| `x` | number | Starting column position (0-based). |
-| `y` | number | Starting row position. |
-| `w` | number | Width in grid units. |
-| `h` | number | Height in grid units (help blocks can be taller). |
+| `x` | integer | Starting column (0-based). Range: 0–3. |
+| `y` | integer | Starting row (0-based). No upper limit — the block scrolls if controls extend past the visible height. |
+| `w` | integer | Width in columns. Range: 1–4. `x + w` must not exceed 4. |
+| `h` | integer | Height in rows. Most controls: always `1`. Help blocks: 1–4. |
 
 ---
 

@@ -1,8 +1,8 @@
 # Data Table Block (`blockType: "data-table"`)
 
-Displays rows from a Losant application data table with optional filtering, sorting, and pagination. Use to show structured tabular data stored in a Losant data table.
+Displays rows from a Losant application data table with optional filtering, sorting, and pagination. Common uses: (1) a maintenance log sorted by date showing the last service performed on each device, (2) a device inventory table with custom columns for serial number, location, and firmware version, (3) an alert history archive filtered by severity level for compliance reporting.
 
-See the parent `dashboard-guide.md` for the block object shape, layout grid, and `applicationId` rules.
+See the parent `dashboard-guide.md` for the block object shape, layout grid.
 
 ## Block object shape
 
@@ -20,7 +20,7 @@ See the parent `dashboard-guide.md` for the block object shape, layout grid, and
 
 | Field | Type | Default | Notes |
 |---|---|---|---|
-| `dataTableId` | string | — | **Required.** The 24-char hex ID of the data table to display. |
+| `dataTableId` | string | — | The 24-char hex ID of the data table to display. Without this the block saves but renders an empty table with no data source — always set it. |
 | `query` | string | — | Row filter query as a JSON-encoded string. Same format as the Table: Get Rows node. |
 | `queryMode` | `"$or"` \| `"$and"` \| `"advanced"` | — | How filter conditions in `query` are combined. |
 | `defaultSortColumn` | string | — | Column to sort by. Max 255 chars. |
