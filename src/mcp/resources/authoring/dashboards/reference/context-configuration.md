@@ -80,6 +80,7 @@ Resolves to a single device-tag key/value pair. Useful for "show this dashboard 
 
 | Field | Required | Notes |
 |---|---|---|
+| `name` | yes | Reference as `{{ctx.<name>}}` — resolves to a `{ key, value }` object. |
 | `type` | yes | `"deviceTag"`. |
 | `defaultValue` | yes | Object: `{ "key": "...", "value": "..." }`. To match any value for a key, omit the `value` field entirely (`{ "key": "fleet" }`) — empty string causes a 400 (both fields have minLength: 1). |
 | `validationConfig.deviceTags` | optional | Whitelist of allowed tags. To wildcard the value, omit the `value` field; to wildcard the key, omit the `key` field — blank strings cause a 400. |

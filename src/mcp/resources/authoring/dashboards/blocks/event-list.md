@@ -24,8 +24,8 @@ See the parent `dashboard-guide.md` for the block object shape, layout grid.
 | `filter` | string | — | Glob filter on event subject. Max 255 chars. |
 | `eventState` | `"new"` \| `"acknowledged"` \| `"resolved"` \| `null` | — | Filter by event state. Pass `null` to clear a previously set filter and show all states. |
 | `allowUpdates` | boolean | `false` | When `true`, viewers can update event state (acknowledge/resolve). |
-| `sortField` | string | — | Column to sort by. |
-| `sortDirection` | `"asc"` \| `"desc"` | `"desc"` | Sort direction. |
+| `sortField` | string | `"creationDate"` | Column to sort by. The platform injects `"creationDate"` when absent. |
+| `sortDirection` | `"asc"` \| `"desc"` | `"desc"` | Sort direction. The platform injects `"desc"` when absent. |
 | `columns` | object[] | — | Column definitions. |
 
 ### Column shapes

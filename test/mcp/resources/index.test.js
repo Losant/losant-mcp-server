@@ -186,6 +186,14 @@ describe('MCP Resources', () => {
       parsed.should.have.property('type', 'object');
     });
 
+    it('should load schema for applicationDashboardPatch alias', async () => {
+      const result = await client.readResource({ uri: 'losant://schemas/applicationDashboardPatch' });
+      result.contents[0].should.have.property('uri', 'losant://schemas/applicationDashboardPatch');
+      result.contents[0].should.have.property('mimeType', 'application/json');
+      const parsed = JSON.parse(result.contents[0].text);
+      parsed.should.have.property('type', 'object');
+    });
+
     describe('applicationCertificateAuthority resources', () => {
       it('should load schema for applicationCertificateAuthorityPost', async () => {
         const result = await client.readResource({ uri: 'losant://schemas/applicationCertificateAuthorityPost' });

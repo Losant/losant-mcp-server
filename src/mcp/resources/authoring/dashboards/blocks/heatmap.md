@@ -46,7 +46,7 @@ Exactly one of `attribute` or `locationTagKey` should be set.
 | `defaultZoom` | number \| string | auto | Initial zoom level. Can be a number or a template string. |
 | `defaultBearing` | number | `0` | Map rotation in degrees (−180 to 180; 0 = north up). |
 | `defaultPitch` | number | `0` | Map tilt in degrees (0 = overhead, 60 = max). |
-| `centerOnDataPoints` | boolean | `false` | When true, automatically centers and zooms to fit all data points on load. |
+| `centerOnDataPoints` | boolean | `true` when `defaultCenter` is absent; `false` when `defaultCenter` is set | When true, automatically centers and zooms to fit all data points on load. |
 
 ### Appearance
 
