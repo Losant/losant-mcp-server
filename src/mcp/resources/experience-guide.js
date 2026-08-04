@@ -14,13 +14,13 @@ Versions are snapshots of your experience configuration that can be published to
 **NOT versioned** (shared across all versions): users, groups, application globals, application flow storage.
 
 Key fields for \`experienceVersion\`:
-- \`name\`: required, unique within application
+- \`version\`: required — the version name/identifier (e.g. \`"v1.0"\`)
 - \`description\`: optional
-- \`corsRestricted\`: boolean — if true, only origins in \`corsWhitelist\` are allowed
-- \`corsWhitelist\`: array of allowed origin URLs (only used when \`corsRestricted\` is true)
-- \`unauthorizedReply\`: what to return when a user hits an access-protected endpoint without auth — \`redirect\` (to a URL), \`render\` (a view), or \`json\` (fallback JSON response)
-- \`notFoundReply\`: same options for unmatched routes
-- \`globals\`: array of \`{ "key": "...", "value": "..." }\` pairs, max 100 — available in all views and flows for that version
+- \`endpointDefaultCors\`: boolean — when \`true\`, CORS headers are sent on all endpoint responses
+- \`allowedCorsOrigins\`: array of allowed origin URLs for CORS (only used when \`endpointDefaultCors\` is true)
+- \`unauthorizedReply\`: what to return when a user hits an access-protected endpoint without auth — \`{ "type": "redirect", "value": "/login", "statusCode": 302 }\` or \`{ "type": "page", "value": "<viewId>", "statusCode": 401 }\`
+- \`notFoundReply\`: same shape as \`unauthorizedReply\` — returned when no endpoint matches the request route
+- \`globals\`: array of \`{ "key": "...", "json": "..." }\` pairs, max 100 — the \`json\` field is a JSON-encoded string value; available as \`{{globals.KEY}}\` in all views and flows for that version
 
 ### Common Procedure: Develop → Publish
 
@@ -75,7 +75,7 @@ The page body has access to the standard render context (\`request\`, \`experien
 
 An endpoint is an HTTP method + route combination. When a request matches, it can reply immediately via a **static reply** configured on the endpoint itself, or hand off to an **experience flow** to build the reply dynamically — or both (static reply takes priority).
 
-**Method**: \`GET\`, \`POST\`, \`PUT\`, \`PATCH\`, \`DELETE\`, or \`OPTIONS\`
+**Method**: \`get\`, \`post\`, \`put\`, \`patch\`, \`delete\`, or \`options\` (lowercase — the schema enum uses lowercase values)
 
 **Route** syntax:
 - Static segment: \`/devices/list\`
@@ -117,7 +117,7 @@ Key fields for \`experienceEndpoint\`:
 - \`description\`: optional
 - \`endpointTags\`: key/value object for metadata
 
-Rate limit: 50 requests/sec sustained, 500 burst per endpoint.
+Rate limit: 50 requests/sec sustained, 500 burst — applied **per slug or domain** (effectively per experience version), not per individual endpoint.
 
 For deep authoring detail — route syntax, \`deviceIdTemplate\`, reply type shapes, the endpoint → workflow → view loop, and common procedures — read \`losant://authoring/experience-endpoint\`.
 
@@ -140,8 +140,8 @@ Required fields:
 
 Optional fields:
 - \`firstName\`, \`lastName\`: strings
-- \`userTags\`: array of \`{ "key": "...", "value": "..." }\` pairs for arbitrary metadata (alphanumeric keys + hyphens/underscores). **Note:** The API accepts and returns \`userTags\` as an array, but inside experience view templates they are available as a plain object keyed by tag name (e.g. \`{{experience.user.userTags.role}}\`).
-- \`groups\`: array of experience group IDs to assign membership at creation
+- \`userTags\`: plain object mapping tag keys to string values (e.g. \`{ "role": "admin", "region": "west" }\`). Keys must match \`^[0-9a-zA-Z_-]{1,255}$\`. Available in view templates as \`{{experience.user.userTags.role}}\`.
+- \`experienceGroupIds\`: array of experience group IDs to assign membership at creation
 
 Users support advanced queries — see \`losant://guides/advanced-queries\` for query syntax.
 
@@ -149,7 +149,7 @@ Users support advanced queries — see \`losant://guides/advanced-queries\` for 
 
 1. Confirm email and password
 2. Query for the group IDs if assigning at creation time: \`losant_query\` \`operation=list\` \`resourceType=experienceGroup\`
-3. Call \`losant_write\` \`operation=createOne\` \`resourceType=experienceUser\` with \`groups\` array
+3. Call \`losant_write\` \`operation=createOne\` \`resourceType=experienceUser\` with \`experienceGroupIds\` array
 4. Check \`losant://schemas/experienceUserPost\` for the full body schema
 
 ## Experience Groups
@@ -160,7 +160,7 @@ Key fields for \`experienceGroup\`:
 - \`name\`: required
 - \`description\`: optional
 - \`parentId\`: ID of a parent group — creates a hierarchy where members of a parent group are automatically considered members of all child groups, inheriting their device associations
-- \`experienceTags\`: object — key/value metadata (e.g. \`{ "region": "west" }\`)
+- \`groupTags\`: object — key/value metadata (e.g. \`{ "region": "west" }\`)
 
 Groups support advanced queries — see \`losant://guides/advanced-queries\`.
 

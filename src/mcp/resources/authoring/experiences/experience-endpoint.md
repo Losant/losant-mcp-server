@@ -17,7 +17,7 @@ Before creating an endpoint, answer two questions:
 - Anyone on the internet → `access: "public"`
 - Any logged-in experience user → `access: "authenticated"`
 - Only members of specific groups → `access: "group"`
-- Only devices with a valid device token → `access: "device"`
+- Only experience users associated with a specific device via group membership → `access: "device"`
 
 **2. What should it return?**
 - A static page or redirect (no workflow needed) → set `staticReply`
@@ -45,27 +45,27 @@ Path parameters are available in views and workflow payloads as `request.params.
 
 ## Access control
 
-The `access` field is **required**. Additional fields depend on the chosen level:
+The `access` field defaults to `"public"` if omitted. Additional fields depend on the chosen level:
 
 | `access` | Who can reach it | Additional required fields |
 |---|---|---|
 | `public` | Anyone — no authentication | None |
 | `authenticated` | Any logged-in experience user | None |
 | `group` | Members of specific groups (or their ancestors) | `experienceGroupIds`: array of group IDs |
-| `device` | Requests authenticated with a valid device access token | `deviceIdTemplate`: string resolving to the expected device ID |
+| `device` | Experience users who are associated with a specific device via group membership | `deviceIdTemplate`: Handlebars template resolving to the expected device ID |
 
 ### `deviceIdTemplate`
 
-For `access: "device"` endpoints, `deviceIdTemplate` is a Handlebars path that resolves to the device ID the request must authenticate as. The platform compares this resolved value against the device token in the request.
+`access: "device"` does **not** use device access tokens. The request must carry an **experience user token**, and the platform checks that the authenticated experience user is a member of an Experience Group that is associated with the device identified by `deviceIdTemplate`.
 
-Common patterns:
+`deviceIdTemplate` is a Handlebars template that resolves to the device ID to check against:
 ```
-{{request.params.deviceId}}          ← device ID in the URL path
-{{request.headers.x-device-id}}     ← device ID in a custom header
-{{request.query.deviceId}}           ← device ID in query string
+{{request.params.deviceId}}          ← device ID from the URL path
+{{request.headers.x-device-id}}     ← device ID from a custom header
+{{request.query.deviceId}}           ← device ID from query string
 ```
 
-If the resolved ID doesn't match the authenticating device, the request is treated as unauthorized and hits `unauthorizedReply` instead of the workflow.
+If the authenticated user is not in a group associated with the resolved device ID, the request hits `unauthorizedReply`.
 
 ---
 
@@ -95,7 +95,7 @@ Renders the specified view. `pageData` will be empty — no workflow ran to popu
 
 ### `unauthorizedReply` — unauthenticated/unauthorized requests
 
-How to respond when a user is not logged in (or not in the required group, or the device token is invalid). No workflows fire for unauthorized requests.
+How to respond when a user is not logged in, not in the required group, or not associated with the required device. No workflows fire for unauthorized requests.
 
 ```json
 "unauthorizedReply": { "type": "redirect", "value": "/login", "statusCode": 302 }
@@ -157,7 +157,7 @@ See `losant://references/experience/context-configuration` for the full render c
 
 ## Other constraints
 
-- **Rate limit**: 50 requests/sec sustained, 500 burst per endpoint
+- **Rate limit**: 50 requests/sec sustained, 500 burst — applied per slug or domain (effectively per experience version), not per individual endpoint
 - **`enabled`**: boolean — set `false` to disable an endpoint without deleting it (disabled endpoints return 404)
 - **`endpointTags`**: plain object `{ "key": "value" }` for arbitrary metadata
 - **`description`**: optional, for documentation purposes
@@ -172,7 +172,7 @@ See `losant://references/experience/context-configuration` for the full render c
 2. Create the endpoint:
 ```json
 {
-  "method": "GET",
+  "method": "get",
   "route": "/home",
   "access": "authenticated",
   "staticReply": { "type": "page", "value": "<viewId>", "statusCode": 200 },
@@ -186,7 +186,7 @@ See `losant://references/experience/context-configuration` for the full render c
 2. Create the endpoint with `staticReply: null` (or omit it):
 ```json
 {
-  "method": "GET",
+  "method": "get",
   "route": "/devices/{deviceId}",
   "access": "authenticated",
   "unauthorizedReply": { "type": "redirect", "value": "/login", "statusCode": 302 }
@@ -199,7 +199,7 @@ See `losant://references/experience/context-configuration` for the full render c
 For IoT devices calling the Experience API directly with a device access token:
 ```json
 {
-  "method": "POST",
+  "method": "post",
   "route": "/data/{deviceId}",
   "access": "device",
   "deviceIdTemplate": "{{request.params.deviceId}}",
@@ -213,7 +213,7 @@ The device token in the `Authorization` header is validated against `request.par
 Only users in specific groups can reach this endpoint:
 ```json
 {
-  "method": "GET",
+  "method": "get",
   "route": "/admin",
   "access": "group",
   "experienceGroupIds": ["<adminGroupId>"],

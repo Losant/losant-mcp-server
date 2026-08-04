@@ -178,7 +178,7 @@ Only `content-type` is accepted — the schema has `additionalProperties: false`
 "viewTags": { "env": "production", "team": "platform" }
 ```
 
-Tags are searchable and can be used to organize views across an experience. Not rendered to end users.
+Used to organize and categorize views within an experience. Not rendered to end users.
 
 ---
 
