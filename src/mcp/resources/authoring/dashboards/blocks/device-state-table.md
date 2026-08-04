@@ -2,7 +2,7 @@
 
 Displays current (or historical) attribute values from one or more devices in a configurable table. Use when you want a grid of devices × attributes, or want to compare attribute values across a fleet.
 
-See the parent `dashboard-guide.md` for the block object shape, layout grid, and `applicationId` rules.
+See the parent `dashboard-guide.md` for the block object shape, layout grid.
 
 ## Block object shape
 
@@ -24,8 +24,8 @@ See the parent `dashboard-guide.md` for the block object shape, layout grid, and
 | `deviceTags` | object[] | — | Tag-based device selection. |
 | `query` | string | — | Advanced device query as a JSON-encoded string. |
 | `duration` | integer (ms) \| `"{{dashboard.duration}}"` | — | Time window. Use `0` to show only the most recent data point per device. |
-| `sortIndex` | integer (0–100) | `0` | Index of the column to sort by (0-based, matching `columns` array order). |
-| `sortDirection` | integer (-1, 0, 1) | `1` | Sort direction: `1` = ascending, `-1` = descending, `0` = unsorted. |
+| `sortIndex` | integer (0–100) | — | 0-based index of the column to sort by (matching `columns` array order). **Absent = unsorted** — the UI removes this field rather than defaulting to 0. |
+| `sortDirection` | integer (-1, 0, 1) | `−1` | Sort direction: `1` = ascending, `-1` = descending, `0` = unsorted. Runtime fallback is `-1` (descending). |
 | `columns` | object[] | — | **Required. At least one attribute column.** See column types below. |
 | `attributes` | string[] | — | **Required when using `attribute`-type columns.** List every attribute name referenced by your columns (e.g. `["tempC", "humidity"]`). Must match the `attribute` field on each attribute column exactly. |
 

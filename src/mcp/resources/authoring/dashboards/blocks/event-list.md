@@ -2,7 +2,7 @@
 
 Displays application events in a configurable table. Supports filtering, sorting, and optional viewer-controlled event state updates. Use for alert/event management panels.
 
-See the parent `dashboard-guide.md` for the block object shape, layout grid, and `applicationId` rules.
+See the parent `dashboard-guide.md` for the block object shape, layout grid.
 
 ## Block object shape
 
@@ -22,7 +22,7 @@ See the parent `dashboard-guide.md` for the block object shape, layout grid, and
 |---|---|---|---|
 | `query` | string | — | Events query as a JSON-encoded string. If omitted, shows all events. |
 | `filter` | string | — | Glob filter on event subject. Max 255 chars. |
-| `eventState` | string | — | Filter by event state: `"new"`, `"acknowledged"`, or `"resolved"`. |
+| `eventState` | `"new"` \| `"acknowledged"` \| `"resolved"` \| `null` | — | Filter by event state. Pass `null` to clear a previously set filter and show all states. |
 | `allowUpdates` | boolean | `false` | When `true`, viewers can update event state (acknowledge/resolve). |
 | `sortField` | string | — | Column to sort by. |
 | `sortDirection` | `"asc"` \| `"desc"` | `"desc"` | Sort direction. |

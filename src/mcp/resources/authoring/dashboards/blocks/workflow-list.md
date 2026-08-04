@@ -1,6 +1,6 @@
 # Workflow List Block (`blockType: "workflow-list"`)
 
-Lists workflows in the application with their enabled/disabled status and 24-hour run and error counts. Useful for operational monitoring dashboards.
+Lists workflows in the application with their enabled/disabled status and 24-hour run and error counts. Common uses: (1) an ops team view showing which alert and notification workflows are enabled and how many times they fired in the last 24 hours, (2) a developer panel listing all edge workflows with per-workflow error counts to spot degraded automations at a glance, (3) a filtered view using `filter: "Alert*"` to monitor only the alerting subsystem's health.
 
 ## Block object shape
 
@@ -13,7 +13,6 @@ Lists workflows in the application with their enabled/disabled status and 24-hou
   "startY": 0,
   "width": 2,
   "height": 3,
-  "applicationId": "<applicationId>",
   "config": {
     "includeCloud": true,
     "includeEdge": true,
@@ -45,7 +44,6 @@ Lists workflows in the application with their enabled/disabled status and 24-hou
   "startY": 0,
   "width": 2,
   "height": 3,
-  "applicationId": "<applicationId>",
   "config": {
     "filter": "Alert*",
     "includeCloud": true,
@@ -59,6 +57,6 @@ Lists workflows in the application with their enabled/disabled status and 24-hou
 ## Idiom notes
 
 - `includeCloud`, `includeEdge`, and `includeEmbedded` default to `true`. `includeExperience` defaults to `false` — set it explicitly to `true` if you want experience workflows shown.
-- The list is read-only; it shows status and counts but does not allow enabling/disabling workflows from the dashboard.
-- `experienceVersion` only applies to experience workflows; it is ignored when `includeExperience` is `false`.
+- Users with collaborate permissions see an enable/disable toggle on each workflow row. The block is display-only for viewers without that permission, and also when the experience is locked to a non-develop version.
+- `experienceVersion` only applies when `includeExperience: true` and no other types are mixed in (cloud, edge, and embedded all `false`). It is ignored when `includeExperience` is `false` or when experience workflows are shown alongside other types.
 - Moderately tall blocks (`height: 3+`) work best; the list needs vertical space to show several workflows without scrolling.

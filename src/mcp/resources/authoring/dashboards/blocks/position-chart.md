@@ -1,8 +1,8 @@
 # Position Chart Block (`blockType: "position-chart"`)
 
-Displays device positions over a custom background image — floorplans, warehouse layouts, factory diagrams, or any 2D plane. Behaves like the GPS History block but uses image pixel coordinates instead of real-world GPS coordinates.
+Displays device positions over a custom background image — floorplans, warehouse layouts, factory diagrams, or any 2D plane. Behaves like the GPS History block but uses image pixel coordinates instead of real-world GPS coordinates. Common uses: (1) tracking forklift positions on a warehouse floor plan in real time, (2) showing robot arm positions on a production line schematic over a work shift, (3) plotting automated guided vehicle (AGV) paths through a facility layout to identify routing bottlenecks.
 
-See the parent `dashboard-guide.md` for the block object shape, layout grid, and `applicationId` rules.
+See the parent `dashboard-guide.md` for the block object shape, layout grid.
 
 ## Block object shape
 
@@ -32,8 +32,8 @@ See the parent `dashboard-guide.md` for the block object shape, layout grid, and
 |---|---|---|---|
 | `xAttribute` | string | — | Device attribute representing the X position on the image. Must be a Number attribute. |
 | `yAttribute` | string | — | Device attribute representing the Y position on the image. Must be a Number attribute. |
-| `duration` | integer (ms) | last received | Time window to query. Omit for last known position only. |
-| `resolution` | integer (ms) | — | Return only the last point per resolution bucket; reduces data density. |
+| `duration` | integer (ms) \| `"{{dashboard.duration}}"` | last received | Time window to query. Omit for last known position only. Use the string template to inherit the dashboard's global duration control. |
+| `resolution` | integer (ms) \| `"{{dashboard.resolution}}"` \| `null` | — | Return only the last point per resolution bucket; reduces data density. Use `null` for no bucketing. Use the string template to inherit the dashboard's resolution control. |
 | `compositeResult` | boolean | `false` | Include last known values for other attributes at each position point. |
 
 ### Background image

@@ -2,7 +2,7 @@
 
 Displays historical or live-streaming numeric data from one or more device attributes over time. The canonical Losant dashboard block — you'll reach for it for almost any "show me this number over the last X" question.
 
-See `reference/device-queries.md` for the `deviceIds` / `deviceTags` / `query` selectors, `reference/aggregations.md` for the aggregation enum, and `reference/templates.md` for the templating dialect used in expressions.
+See [losant://references/dashboard/device-queries](losant://references/dashboard/device-queries) for the `deviceIds` / `deviceTags` / `query` selectors, [losant://references/dashboard/aggregations](losant://references/dashboard/aggregations) for the aggregation enum, and [losant://references/dashboard/templates](losant://references/dashboard/templates) for the templating dialect used in expressions.
 
 ## Block object shape
 
@@ -17,16 +17,15 @@ See `reference/device-queries.md` for the `deviceIds` / `deviceTags` / `query` s
 ```
 
 - `blockType` must be the literal `"graph"`. (The human-facing name is "Time Series Graph".)
-- `applicationId` is required on org / sandbox dashboards, omitted on application-owned dashboards. See `dashboard-guide.md`.
 - Standard layout fields apply — see `dashboard-guide.md`. A typical width is `4` (full row); typical height is `1.5`–`3` units.
 
 ## Config
 
 | Field | Type | Default | Notes |
 |---|---|---|---|
-| `realTime` | boolean | `false` | When `true`, the graph live-streams new points as devices report state. Live-stream graphs **cannot use aggregation** and cannot show past dashboard states. When `realTime: true`, `resolution`, `disallowUserSelectedDuration`, and any segment `aggregation` are ignored. |
+| `realTime` | boolean | `false` | When `true`, the graph live-streams new points as devices report state. Live-stream graphs **cannot use aggregation** and cannot show past dashboard states. When `realTime: true`, `resolution`, `disallowUserSelectedDuration`, and any segment `aggregation` are ignored. **`duration` is still active** — it controls the rolling time window of the live stream (e.g. `300000` keeps the last 5 minutes on screen). |
 | `duration` | integer (ms) \| `"{{dashboard.duration}}"` | — | Time window on the X axis. Use the templated string to inherit the dashboard's global duration (the idiomatic default). Max effective range: 5 minutes – 180 days. |
-| `resolution` | integer (ms) \| `"{{dashboard.resolution}}"` | — | Aggregation bucket size. Use the templated string to inherit the dashboard's global resolution. Lower resolution = more points = more detail. Ignored when `realTime: true` or for segments with `aggregation: "NONE"`. |
+| `resolution` | integer (ms) \| `"{{dashboard.resolution}}"` \| `null` | — | Aggregation bucket size. Use the templated string to inherit the dashboard's global resolution. `null` disables bucketing (all raw points returned). Lower resolution = more points = more detail. Ignored when `realTime: true` or for segments with `aggregation: "NONE"`. |
 | `disallowUserSelectedDuration` | boolean | `false` | When `true`, hides the block's time-range dropdown and disables mouse-drag zooming. Use for blocks whose duration/resolution should not be viewer-changeable. |
 | `hideLegend` | boolean | `false` | When `true`, the legend at the bottom is hidden. |
 | `displayType` | `"stick"` \| `"line"` | — | Rarely set — segment-level `graphType` is the usual control. |
@@ -50,14 +49,14 @@ See `reference/device-queries.md` for the `deviceIds` / `deviceTags` / `query` s
 | Segment field | Type | Notes |
 |---|---|---|
 | `attribute` | string | The single device attribute to graph. Must exist on the chosen device(s). |
-| `aggregation` | enum | How to combine raw readings inside each resolution bucket. See `reference/aggregations.md`. **For multi-device segments, must NOT be `"NONE"`** — `NONE` is only valid when exactly one device is selected. |
-| `deviceIds` | string[] | Up to 100 device IDs. Mutually used with `deviceTags` and `query` — see `reference/device-queries.md`. May contain `{{ctx.someDeviceIdVar}}` to bind to a context variable. |
+| `aggregation` | enum | How to combine raw readings inside each resolution bucket. See [losant://references/dashboard/aggregations](losant://references/dashboard/aggregations). **For multi-device segments, must NOT be `"NONE"`** — `NONE` is only valid when exactly one device is selected. |
+| `deviceIds` | string[] | Up to 100 device IDs. See [losant://references/dashboard/device-queries](losant://references/dashboard/device-queries). May contain `{{ctx.someDeviceIdVar}}` to bind to a context variable. |
 | `deviceTags` | object[] | Tag-based device selection. Same context-variable rule applies. |
 | `query` | string | Advanced query, as a JSON-encoded string. Build the JSON, then JSON.stringify it. |
 | `graphType` | `"line"` \| `"bar"` \| `"area"` | How the segment renders. `line` is the default; `area` requires line-related options below; `bar` disables them. |
 | `label` | string | Label shown in the legend and tooltip. Defaults to the attribute name. |
 | `color` | string | CSS color (e.g. `"#2E86DE"`). Auto-assigned per-segment if omitted. |
-| `yAxisId` | string | Which Y axis (from the block's `yAxes` array) this segment is plotted against. **Required if `yAxes` has more than one entry.** |
+| `yAxisId` | string | Which Y axis (from the block's `yAxes` array) this segment is plotted against. Can be omitted when `yAxes` has exactly one entry — the segment is automatically assigned to it. **Required when `yAxes` has two or more entries; omitting it causes the segment to render no data.** |
 | `cumulative` | boolean | When `true`, each plotted point is the sum of all previous visible points. Default `false`. |
 | `detectDataGaps` | boolean | When `true`, the line breaks where no data was reported in a resolution bucket. Disabled for bar segments. Default `false`. |
 | `expression` | string | Optional Handlebars expression evaluated per point. Variables: `{{value}}`, `{{time}}`, `{{ctx.<name>}}`. Lets you transform raw readings (unit conversion, scaling, etc.). |
@@ -68,7 +67,7 @@ See `reference/device-queries.md` for the `deviceIds` / `deviceTags` / `query` s
 
 ### Y axes
 
-`yAxes` is an array (max 10) of Y axis definitions. **At least one is required** if you have segments. Each segment references one axis via `yAxisId`.
+`yAxes` is an array (max 10) of Y axis definitions. At least one is strongly recommended — segments without a matching axis have nowhere to plot and render no data. Each segment references one axis via `yAxisId`.
 
 ```json
 {
@@ -168,7 +167,7 @@ If a Y axis has no `min` / `max` set, its auto-scaled domain expands to ensure d
 }
 ```
 
-This example uses the `{{ctx.deviceId}}` context variable for both segments — so the same block renders for any device passed in via `?ctx[deviceId]=...`. See `reference/context-configuration.md`.
+This example uses the `{{ctx.deviceId}}` context variable for both segments — so the same block renders for any device passed in via `?ctx[deviceId]=...`. See [losant://references/dashboard/context-configuration](losant://references/dashboard/context-configuration).
 
 ## Idiom notes
 

@@ -2,7 +2,7 @@
 
 Displays a single aggregated value from a device attribute — either as a plain number or as a visual gauge (dial, battery, thermometer, tank, needle). The canonical block for "show me the current value of this sensor."
 
-See the parent `dashboard-guide.md` for the block object shape, layout grid, and `applicationId` rules.
+See the parent `dashboard-guide.md` for the block object shape, layout grid. See [losant://references/dashboard/aggregations](losant://references/dashboard/aggregations) for the aggregation enum and [losant://references/dashboard/templates](losant://references/dashboard/templates) for expression syntax and helpers.
 
 ## Block object shape
 
@@ -21,7 +21,7 @@ See the parent `dashboard-guide.md` for the block object shape, layout grid, and
 | Field | Type | Default | Notes |
 |---|---|---|---|
 | `realTime` | boolean | `false` | When `true`, streams live device readings. When `false`, queries historical data over `duration`. |
-| `duration` | integer (ms) | — | Historical only. Time window to aggregate over. |
+| `duration` | integer (ms) \| `"{{dashboard.duration}}"` | — | Historical only. Time window to aggregate over. Use the string template to inherit the dashboard's global duration control. |
 | `gaugeType` | `"number"` \| `"dial"` \| `"battery"` \| `"thermometer"` \| `"tank"` \| `"needle"` | `"number"` | Visual style. |
 | `gaugeMin` | number \| string | — | Minimum of the visual scale. Required for `dial`, `thermometer`, `tank`, `needle`. |
 | `gaugeMax` | number \| string | — | Maximum of the visual scale. Required for the same gauge types. |
@@ -43,7 +43,7 @@ The gauge block uses a single `segment` object (not an array):
 | `attribute` | string | Device attribute to display. |
 | `aggregation` | enum | `MEAN`, `MAX`, `MIN`, `SUM`, `COUNT`, `FIRST`, `LAST`, `MEDIAN`, `STD_DEV`. Use `LAST` for current state. |
 | `label` | string | Optional display label. |
-| `expression` | string | Optional Handlebars transform applied to the value before display. Available: `{{value}}`, `{{time}}`, `{{ctx.<name>}}`. |
+| `expression` | string | Optional Handlebars transform applied to the raw value before display. Available: `{{value}}`, `{{time}}`, `{{ctx.<name>}}`. Example: `"{{multiply value 1.8 \| add 32}}"` converts °C to °F. See `losant://references/dashboard/templates` for available helpers. |
 
 ### Conditions
 
@@ -54,6 +54,7 @@ Array of condition objects, evaluated top-to-bottom. The first truthy condition'
 | `condition` | string | Handlebars expression (truthy = this condition applies). Available: `{{value}}`, `{{time}}`, `{{ctx.<name>}}`. |
 | `color` | string | CSS color to apply when this condition is truthy. |
 | `label` | string | Optional label override. |
+| `imageUrl` | string | URL of a custom image to use as the indicator icon. When set, overrides `color`. |
 | `id` | string | Optional identifier. |
 
 ```json
@@ -97,5 +98,5 @@ Array of condition objects, evaluated top-to-bottom. The first truthy condition'
 - The platform defaults to `precisionType: "significant"` and `precision: 4` — include them explicitly when you need a different format, omit otherwise.
 - Use `aggregation: "LAST"` to show the most recent value (equivalent to "current state").
 - Use `realTime: true` only when you need real-time streaming — it consumes more resources.
-- For `thermometer`, `tank`, and `needle` styles, `gaugeMin` and `gaugeMax` are required — the block won't render correctly without them.
+- For `dial`, `thermometer`, `tank`, and `needle` styles, `gaugeMin` and `gaugeMax` are required — the block won't render correctly without them. (`dial` silently defaults to 0–100 without them, but always set them explicitly.)
 - The `segment` field is a single object, not an array — unlike most other data blocks.

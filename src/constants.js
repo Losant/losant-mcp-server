@@ -3,6 +3,12 @@ import { readdirSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+const pluralToSingluarResourceName = (pluralResourceName) => {
+  if (pluralResourceName === 'applicationCertificateAuthorities') { return 'applicationCertificateAuthority'; }
+  // Default to removing the trailing 's', e.g. devices -> device, flows -> flow, etc.
+  return pluralResourceName.endsWith('s') ? pluralResourceName.slice(0, -1) : pluralResourceName;
+};
+
 export const RESOURCE_TYPES = [
   'application',         // Top-level resource for application lookup
   'event',
@@ -30,7 +36,9 @@ export const RESOURCE_TYPES = [
   'experienceView',
   'applicationJobLog',
   'edgeDeployment',
-  'embeddedDeployment'
+  'embeddedDeployment',
+  'applicationCertificate',
+  'applicationCertificateAuthority'
 ];
 
 export const RESOURCE_TYPE_SET = new Set(RESOURCE_TYPES);
@@ -60,6 +68,8 @@ export const WRITABLE_RESOURCE_TYPES = [
   'experienceView',
   'application',
   'applicationReadme',
+  'applicationCertificate',
+  'applicationCertificateAuthority',
   'applicationDashboard'
   // 'flow', will be added in another branch
   // 'flowVersion', will be added in another branch
@@ -79,7 +89,7 @@ export const SCHEMAS_PATH = path.join(losantRestPath, 'lib/schemas');
 
 const DOC_FILES = readdirSync(DOCS_PATH);
 export const MD_FILES = DOC_FILES.filter((f) => {
-  const singleFileName = f.replace('.md', '').replace(/s$/, '');
+  const singleFileName = pluralToSingluarResourceName(f.replace('.md', ''));
   return f.endsWith('.md') && f !== '_schemas.md' && (RESOURCE_TYPE_SET.has(singleFileName) || singleFileName === 'data');
 });
 
@@ -89,10 +99,8 @@ const WRITE_SCHEMA_SUFFIXES = new Set(
 WRITE_SCHEMA_SUFFIXES.add('deviceRecipeBulkCreatePost'); // special case for bulk create schema that doesn't follow the usual naming pattern
 
 // Schemas whose canonical MCP name differs from the losant-rest filename.
-// Keys are the exposed name (e.g. dataTableRowPost); values are the actual filename.
+// Keys are the exposed name; values are the actual filename.
 export const SCHEMA_FILE_ALIASES = {
-  dataTableRowPost: 'dataTableRowInsert.json',
-  dataTableRowPatch: 'dataTableRowInsertUpdate.json',
   // privateFile shares schemas with file
   privateFilePost: 'filePost.json',
   privateFilePatch: 'filePatch.json',
@@ -123,7 +131,8 @@ export const ALLOWS_ADVANCED_QUERIES_SET = new Set([
   'experienceGroup',
   'dataTableRow',
   'experienceUser',
-  'applicationJobLog'
+  'applicationJobLog',
+  'applicationCertificate'
 ]);
 
 // Maps every valid schema name to its filename on disk (canonical + aliases)
@@ -154,5 +163,8 @@ export const DASHBOARD_BLOCK_TO_FILE = Object.fromEntries(
 
 export const REFERENCES_TO_FILE = {
   'experience/context': path.join(AUTHORING_PATH, 'experiences/reference/context.md'),
-  'dashboard/context-configuration': path.join(AUTHORING_PATH, 'dashboards/reference/context-configuration.md')
+  'dashboard/context-configuration': path.join(AUTHORING_PATH, 'dashboards/reference/context-configuration.md'),
+  'dashboard/templates': path.join(AUTHORING_PATH, 'dashboards/reference/templates.md'),
+  'dashboard/device-queries': path.join(AUTHORING_PATH, 'dashboards/reference/device-queries.md'),
+  'dashboard/aggregations': path.join(AUTHORING_PATH, 'dashboards/reference/aggregations.md')
 };

@@ -1,6 +1,6 @@
 # Device Connection Log Block (`blockType: "device-log"`)
 
-Shows a chronological list of connect and disconnect events for one or more devices. Useful for monitoring device connectivity health.
+Shows a chronological list of connect and disconnect events for one or more devices. Common uses: (1) confirming a device stayed connected through a firmware update, (2) diagnosing intermittent connectivity by reviewing the timing pattern of disconnects, (3) a compliance view showing per-device uptime history over a rolling window.
 
 ## Block object shape
 
@@ -13,7 +13,6 @@ Shows a chronological list of connect and disconnect events for one or more devi
   "startY": 0,
   "width": 4,
   "height": 2,
-  "applicationId": "<applicationId>",
   "config": {
     "deviceIds": ["<deviceId>"],
     "includeDeviceInfo": true,
@@ -29,8 +28,8 @@ Shows a chronological list of connect and disconnect events for one or more devi
 | `deviceIds` | string[] | — | Explicit device IDs to include. Supports Losant templates and context variables. |
 | `deviceTags` | object[] | — | Tag-based device selection (`[{ "key": "type", "value": "sensor" }]`). |
 | `query` | string | — | Advanced device query as a JSON-encoded string. Use when `deviceIds`/`deviceTags` are insufficient. |
-| `includeDeviceInfo` | boolean | `false` | When `true`, adds device name and ID columns alongside the connection log data. |
-| `maxResultsPerDevice` | string | `"10"` | Maximum log entries to show per device. Templatable string (e.g. `"{{ctx.limit}}"`). |
+| `includeDeviceInfo` | boolean | `false` | Controls the device identification column: `false` shows Device ID; `true` shows Device Name instead. |
+| `maxResultsPerDevice` | string | `"10"` | Maximum log entries to show per device. Max 100. Templatable string (e.g. `"{{ctx.limit}}"`). |
 
 ## Worked example — connectivity log with device info for a single device
 
@@ -43,7 +42,6 @@ Shows a chronological list of connect and disconnect events for one or more devi
   "startY": 2,
   "width": 4,
   "height": 2,
-  "applicationId": "<applicationId>",
   "config": {
     "deviceIds": ["{{ctx.deviceId}}"],
     "includeDeviceInfo": true,
