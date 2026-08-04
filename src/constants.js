@@ -162,7 +162,8 @@ export const DASHBOARD_BLOCK_TO_FILE = Object.fromEntries(
 );
 
 export const REFERENCES_TO_FILE = {
-  'experience/context': path.join(AUTHORING_PATH, 'experiences/reference/context.md'),
+  'shared/handlebars': path.join(AUTHORING_PATH, 'reference/handlebars.md'),
+  'experience/context-configuration': path.join(AUTHORING_PATH, 'experiences/reference/context-configuration.md'),
   'dashboard/context-configuration': path.join(AUTHORING_PATH, 'dashboards/reference/context-configuration.md'),
   'dashboard/templates': path.join(AUTHORING_PATH, 'dashboards/reference/templates.md'),
   'dashboard/device-queries': path.join(AUTHORING_PATH, 'dashboards/reference/device-queries.md'),

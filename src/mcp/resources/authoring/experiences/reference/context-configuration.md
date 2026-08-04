@@ -216,21 +216,101 @@ The experience workflow that handled the request.
 
 ---
 
-## Handlebars string helpers (selection)
+## Experience-specific Handlebars helpers
 
-Losant's templating layer extends standard Handlebars. Commonly used helpers:
+These helpers are only available inside experience views (layouts, pages, components). They are not available in dashboard templates or workflow nodes.
 
-| Helper | Example | Notes |
-|---|---|---|
-| `{{format value "format-string"}}` | `{{format time "date-time-local"}}` | Losant's format helper — date, number, GPS, etc. |
-| `{{#eq a b}} ... {{/eq}}` | `{{#eq request.method "POST"}}` | Block equality check |
-| `{{#ne a b}} ... {{/ne}}` | equality negation | |
-| `{{upper value}}` | `{{upper experience.user.firstName}}` | Uppercase string |
-| `{{lower value}}` | lowercase | |
-| `{{encodeURIComponent value}}` | URL-encode a value | |
-| `{{obj key=val}}` | `ctx=(obj x=request.params.x)` | Build an inline object |
-| `{{json value}}` | `{{json pageData}}` | Serialize to JSON string |
-| `{{#each array}} ... {{/each}}` | iterate | `{{this}}`, `{{@index}}`, `{{@key}}` available |
-| `{{#with object}} ... {{/with}}` | set context | |
+### `{{page}}` — layouts only
 
-Full templating reference: `losant://references/flow/templating` covers the shared Handlebars dialect used across flows and experience views.
+Required in every layout. The page body renders at this location.
+
+```handlebars
+<body>
+  <nav>{{ component "mainNav" }}</nav>
+  {{ page }}
+  {{ component "footer" }}
+</body>
+```
+
+### `{{#section}}` / `{{#fillSection}}` — layout ↔ page
+
+Define named slots in a layout; fill them from the page. The section renders default content if no page fills it.
+
+**Layout:**
+```handlebars
+<title>{{#section "pageTitle"}}My App{{/section}}</title>
+{{section "pageStyles"}}
+```
+
+**Page:**
+```handlebars
+{{#fillSection "pageTitle"}}Device Detail{{/fillSection}}
+{{#fillSection "pageStyles"}}
+  <style>.device-card { border: 1px solid #ccc; }</style>
+{{/fillSection}}
+```
+
+- `{{#fillSection}}` can appear anywhere in the page — its position in the page source doesn't affect where it renders in the layout.
+- If two fillSections target the same slot, the last one encountered wins.
+
+### `{{component "name" [context] [args]}}` — all view types
+
+Renders another component view by name. Optionally passes a custom context object or named arguments.
+
+```handlebars
+{{! Pass a sub-object as the component's root context }}
+{{component "deviceCard" pageData.device}}
+
+{{! Pass named arguments — available as @args.isAdmin in the component }}
+{{component "nav" isAdmin=experience.user.userTags.admin}}
+
+{{! Both together }}
+{{component "deviceCard" pageData.device highlight=true}}
+```
+
+When a custom context is passed, the component's root is that object. Use `{{@root}}` inside the component to access the full page context.
+
+### `{{element 'dashboard' ...}}` — pages and layouts
+
+Embeds a Losant dashboard inline. Context values reference request, user, or pageData properties directly.
+
+```handlebars
+{{element
+  'dashboard'
+  dashboardId=pageData.dashboardId
+  theme="dark"
+  hideHeader=true
+  ctx=(obj
+    deviceId=request.params.deviceId
+    experienceUserId=experience.user.id
+    range=request.query.range
+  )
+}}
+```
+
+`ctx` values are the dashboard's context variables. See `losant://references/dashboard/context-configuration` for the dashboard context variable model.
+
+### `{{file "path"}}` / `{{file "path" private=true ttl=seconds}}`
+
+Returns the URL for a Losant application file.
+
+```handlebars
+<img src="{{file '/images/logo.png'}}"/>
+<a href="{{file '/reports/latest.pdf' private=true ttl=3600}}">Download</a>
+```
+
+`ttl` is optional; defaults to 900 seconds for private files.
+
+### `{{obj key=value ...}}`
+
+Builds an inline object. Used primarily for constructing `ctx` in `{{element}}`.
+
+```handlebars
+ctx=(obj deviceId=request.params.deviceId tag=(obj key="fleet" value="trucks"))
+```
+
+---
+
+## Handlebars language reference
+
+For the full shared helper catalog — format helpers, block helpers, expression syntax, JSON template rules, HTML escaping, and the `{{{toHtml}}}` pattern — see [losant://references/shared/handlebars](losant://references/shared/handlebars).

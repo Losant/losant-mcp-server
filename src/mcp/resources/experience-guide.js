@@ -45,7 +45,7 @@ Key fields for \`experienceView\`:
 - \`layoutId\`: optional for pages, omit for layouts and components
 - \`body\`: string — the Handlebars/HTML template content for the view (max 131,072 chars)
 - \`headers\`: object — response headers; set \`content-type\` here for CSS, JS, or JSON pages (e.g. \`{ "content-type": "text/css" }\`)
-- \`viewTags\`: array of \`{ "key": "...", "value": "..." }\` metadata pairs
+- \`viewTags\`: object — key/value metadata tags (e.g. \`{ "env": "production" }\`)
 
 **Handlebars helpers available in all views:**
 - \`{{page}}\` — required in layouts; injects the page content
@@ -97,14 +97,14 @@ ctx=(obj
 See \`losant://references/dashboard/context-configuration\` for the complete context variable type reference and injection patterns.
 
 **Context always available**: \`time\`, \`application\`, \`experience.user\`, \`experience.endpoint\`, \`experience.page\`, \`experience.version\`, \`request\`, \`pageData\` (set by the flow via the "Experience Page" node).
->>>>>>> dashboard-blocks
 
 ### Common Procedure: Create a view
 
-1. Confirm \`viewType\` and \`pageType\` (for pages)
-2. For pages with a layout: query \`resourceType=experienceView\` to find the layout ID, confirm it is in \`versions: ["develop"]\`
-3. Call \`losant_write\` \`operation=createOne\` \`resourceType=experienceView\`
-4. Check \`losant://schemas/experienceViewPost\` for the full body schema
+1. Confirm \`viewType\` — layout, page, or component
+2. For pages, decide the content type and set \`headers: { "content-type": "..." }\` accordingly — see \`losant://authoring/experience-view\` for the full pattern reference
+3. For pages with a layout: query \`resourceType=experienceView\` to find the layout ID and confirm it exists in \`develop\`
+4. Call \`losant_write\` \`operation=createOne\` \`resourceType=experienceView\` — do **not** include a \`versions\` field (views land in develop automatically)
+5. Check \`losant://schemas/experienceViewPost\` for the full body schema
 
 ## Experience Endpoints
 

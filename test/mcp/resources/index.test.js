@@ -285,6 +285,16 @@ describe('MCP Resources', () => {
           .should.be.rejectedWith(/nonexistent-block/);
       });
 
+      it('should return reference content for losant://references/shared/handlebars', async () => {
+        const result = await client.readResource({ uri: 'losant://references/shared/handlebars' });
+
+        result.should.have.property('contents');
+        result.contents[0].should.have.property('uri', 'losant://references/shared/handlebars');
+        result.contents[0].should.have.property('mimeType', 'text/markdown');
+        result.contents[0].text.should.containEql('format');
+        result.contents[0].text.should.containEql('expression');
+      });
+
       it('should return reference content for losant://references/dashboard/context-configuration', async () => {
         const result = await client.readResource({ uri: 'losant://references/dashboard/context-configuration' });
 
