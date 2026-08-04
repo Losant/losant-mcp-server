@@ -68,8 +68,8 @@ The logged-in experience user. `null` for unauthenticated requests to `access: "
 {{experience.user.firstName}}
 {{experience.user.lastName}}
 
-{{! User tags — array of { key, value } objects }}
-{{experience.user.userTags.firmwareVersion.[0]}}
+{{! User tags are exposed as a plain object — access by key directly }}
+{{experience.user.userTags.firmwareVersion}}
 
 {{! Check group membership }}
 {{#each experience.user.groups}}

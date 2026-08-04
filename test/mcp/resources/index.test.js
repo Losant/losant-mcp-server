@@ -271,6 +271,26 @@ describe('MCP Resources', () => {
           .should.be.rejectedWith(/applicationDashboard/);
       });
 
+      it('should return content for losant://authoring/experience-view', async () => {
+        const result = await client.readResource({ uri: 'losant://authoring/experience-view' });
+
+        result.should.have.property('contents');
+        result.contents[0].should.have.property('uri', 'losant://authoring/experience-view');
+        result.contents[0].should.have.property('mimeType', 'text/markdown');
+        result.contents[0].text.should.containEql('layout');
+        result.contents[0].text.should.containEql('component');
+      });
+
+      it('should return reference content for losant://references/experience/context-configuration', async () => {
+        const result = await client.readResource({ uri: 'losant://references/experience/context-configuration' });
+
+        result.should.have.property('contents');
+        result.contents[0].should.have.property('uri', 'losant://references/experience/context-configuration');
+        result.contents[0].should.have.property('mimeType', 'text/markdown');
+        result.contents[0].text.should.containEql('pageData');
+        result.contents[0].text.should.containEql('experience.user');
+      });
+
       it('should return block content for losant://dashboard/blocks/gauge', async () => {
         const result = await client.readResource({ uri: 'losant://dashboard/blocks/gauge' });
 

@@ -30,7 +30,7 @@ Key fields for \`experienceVersion\`:
 
 ## Experience Views
 
-**For full view authoring detail** — body constraints, page types, headers, versions, all Handlebars helpers, and worked examples — read \`losant://authoring/experience-view\`.
+**For full view authoring detail** — body constraints, content type via headers, Handlebars helpers, and worked examples — read \`losant://authoring/experience-view\`.
 Views render HTML, CSS, JavaScript, JSON, or dashboard content to the user. Three view types: \`layout\` (wrapper), \`page\` (primary content), \`component\` (reusable snippet). \`viewType\` cannot be changed after creation.
 
 | viewType | Purpose | Key constraint |

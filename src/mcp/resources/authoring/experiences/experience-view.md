@@ -170,6 +170,18 @@ Only `content-type` is accepted — the schema has `additionalProperties: false`
 
 ---
 
+## The `viewTags` field
+
+`viewTags` is a plain **object** for storing arbitrary metadata on a view:
+
+```json
+"viewTags": { "env": "production", "team": "platform" }
+```
+
+Tags are searchable and can be used to organize views across an experience. Not rendered to end users.
+
+---
+
 ## Versions and `layoutId`
 
 New views **automatically land in `develop`**. The `versions` field does not exist in `experienceViewPost` or `experienceViewPatch` — both have `additionalProperties: false`. Do not include it in tool calls.
