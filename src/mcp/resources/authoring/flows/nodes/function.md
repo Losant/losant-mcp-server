@@ -30,7 +30,7 @@ Executes arbitrary JavaScript against the workflow payload. Use when built-in no
 
 | Field | Default | Notes |
 |---|---|---|
-| `script` | `""` | **Required.** JavaScript code to execute. Whatever you return or add to the payload object will be added to the payload. |
+| `script` | `""` | **Required.** JavaScript code to execute. Mutate the `payload` object directly (`payload.working.x = 42`). If your script returns a non-undefined value, that return value **replaces** the entire payload object. **Never call `callback()` — it is not available in the RawFunctionNode and will throw a runtime error.** |
 | `scopePath` | `""` | Optional payload path. When set, `payload` inside the function refers to that sub-object rather than the full payload. |
 
 ### Script environment

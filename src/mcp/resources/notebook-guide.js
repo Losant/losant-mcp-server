@@ -99,7 +99,7 @@ Use \`operation=updateOne\` to change the notebook's name, imageVersion, inputs,
 4. Check \`losant://schemas/notebookPost\` for the full input/output schema
 
 ### Trigger a notebook
-Notebooks are executed by a **Notebook Execute** flow node, not directly via the write tool. After creating the notebook, wire it to a flow trigger.
+Notebooks are executed by a **Notebook Execute** flow node, not directly via the write tool. After creating the notebook, wire it to a flow trigger. To react to notebook completion (e.g. process outputs or download result files), create a flow with a \`losant://flow/triggers/notebook\` trigger keyed to this notebook's ID.
 
 ${buildReferenceSection(['notebook'])}
 `;

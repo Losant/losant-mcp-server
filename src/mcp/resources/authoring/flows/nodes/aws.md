@@ -22,9 +22,9 @@ Two methods. Credential (recommended — secret stays out of the workflow body) 
 **Direct method:**
 ```json
 {
-  "accessKeyIdTemplate": "{{globals.awsKeyId}}",
-  "secretAccessKeyTemplate": "{{globals.awsSecret}}",
-  "regionTemplate": "us-east-1"
+  "awsAccessKeyId": "{{globals.awsKeyId}}",
+  "awsSecretAccessKey": "{{globals.awsSecret}}",
+  "awsRegion": "us-east-1"
 }
 ```
 
@@ -59,9 +59,9 @@ Invokes an AWS Lambda function and optionally writes the response to the payload
 | Config field | Default | Notes |
 |---|---|---|
 | `credentialNameTemplate` | `""` | **Required** (credential method). AWS credential name. |
-| `accessKeyIdTemplate` | `""` | **Required** (direct method). AWS access key ID. |
-| `secretAccessKeyTemplate` | `""` | **Required** (direct method). AWS secret access key. |
-| `regionTemplate` | `""` | **Required** (direct method). AWS region (e.g. `"us-east-1"`). |
+| `awsAccessKeyId` | `""` | **Required** (direct method). AWS access key ID. |
+| `awsSecretAccessKey` | `""` | **Required** (direct method). AWS secret access key. |
+| `awsRegion` | `""` | **Required** (direct method). AWS region (e.g. `"us-east-1"`). |
 | `functionName` | `""` | **Required.** Lambda function name or ARN. |
 | `sourceMethod` | `"workflowPayload"` | What to send as the Lambda invocation payload. `"workflowPayload"` — send the full workflow payload. `"payloadPath"` — send the value at `sourceData` path. `"jsonTemplate"` — send `sourceData` rendered as a JSON template. |
 | `sourceData` | `""` | **Required** when `sourceMethod` is `"payloadPath"` or `"jsonTemplate"`. |

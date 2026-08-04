@@ -99,6 +99,6 @@ Same as Cloud, with the following additional options available on **GEA 2.1.0+**
 | `bodyType: "diskPath"` | Stream a local file on the agent as the request body. `bodyTemplate` is the file path. Falls back to `"string"` on cloud. |
 | `diskPathTemplate` | Stream the response body to a local file instead of storing it on the payload. Bypasses the 5 MB response size cap. |
 | `shouldAppend` | When writing to disk, append instead of overwrite. Default `false`. |
-| `errorIfFileExists` | Error if the disk target already exists. Default `false`. |
+| `errorIfFileExists` | Error if the disk target already exists. Default `true`. |
 
 `authType: "credential"` is not supported in edge workflows — use `authType: "none"` with a header template, `"basic"`, or `"clientCert"` instead.

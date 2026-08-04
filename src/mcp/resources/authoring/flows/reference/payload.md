@@ -53,13 +53,14 @@ Experience workflows (backed by Experience Endpoints) receive additional fields 
 
 | Field | Description |
 |---|---|
-| `request.path` | URL path of the request (e.g. `/api/devices/abc123`) |
-| `request.method` | HTTP method, lowercase (`get`, `post`, `put`, `patch`, `delete`) |
-| `request.headers` | Object of request headers |
-| `request.query` | Object of query string parameters |
-| `request.params` | Object of route path parameters (from `{param}` segments in the endpoint route) |
-| `request.body` | Parsed request body (object for JSON, string for plain text) |
-| `request.cookies` | Object of cookie names to values |
+| `data.path` | URL path of the request (e.g. `/api/devices/abc123`) |
+| `data.method` | HTTP method, lowercase (`get`, `post`, `put`, `patch`, `delete`) |
+| `data.headers` | Object of request headers |
+| `data.query` | Object of query string parameters |
+| `data.params` | Object of route path parameters (from `{param}` segments in the endpoint route) |
+| `data.body` | Parsed request body (object for JSON, string for plain text) |
+| `data.cookies` | Object of cookie names to values |
+| `data.replyId` | Opaque reply ID — must be passed to the Endpoint Reply node to send the HTTP response |
 | `experience.user` | Authenticated experience user object, or `null` if the endpoint is public |
 | `experience.endpoint` | The endpoint configuration object |
 | `experience.version` | The experience version name serving this request |
@@ -90,6 +91,6 @@ Two distinct syntaxes exist for referencing payload data — they are not interc
 
 **String templates** (used in `*Template` fields):
 - Handlebars: `{{data.temp}}`, `{{globals.apiBase}}`, `"Alert: {{data.level}} exceeded"`
-- See `losant://references/flow/templates` for the full dialect including block helpers, format helpers, and LJSON syntax for HTTP nodes.
+- See `losant://references/flow/templating` for the full dialect including block helpers, format helpers, and LJSON syntax for HTTP nodes.
 
 The key gotcha: putting `{{}}` in a payload path field, or putting a bare dot-path in a template field, are both silent errors that produce wrong results. Check which syntax the node field expects before populating it.

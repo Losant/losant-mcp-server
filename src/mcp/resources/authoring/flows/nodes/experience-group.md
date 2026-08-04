@@ -130,7 +130,7 @@ Returns a summary of all Experience Groups the current user belongs to, or all g
 
 ### Group: Verify Node (`type: "VerifyExperienceGroupNode"`)
 
-Verifies that an Experience User is a member of a specific group. Branches — `outputIds[0]` = member, `outputIds[1]` = not a member.
+Verifies that an Experience User is a member of a specific group. Branches — `outputIds[0]` = not a member (false/left path), `outputIds[1]` = member (true/right path).
 
 ```json
 {

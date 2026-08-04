@@ -167,7 +167,7 @@ Not available.
 
 ## Idiom notes
 
-- **Filter by `config.operation` to handle only the events you care about.** A workflow handling inserts and one handling deletes are cleaner than a single workflow with a switch on `data.changeType`.
+- **Filter by enabling only `config.insert`, `config.update`, or `config.delete`** to handle only the events you care about. A workflow handling inserts and one handling deletes are cleaner than a single workflow with a switch on `data.action`.
 - **Bulk deletes ("Delete all rows" or the Truncate API) do not fire this trigger.** If you need to react to bulk operations, use a separate workflow with a Virtual Button or Timer that periodically checks row counts.
-- **`data.row` contains the full row after the operation.** For updates and deletes, `data.previousRow` has the state before the change — use it to compute diffs.
+- **`data.newRow` contains the full row after an insert or update.** For updates and deletes, `data.oldRow` has the state before the change — use it to compute diffs.
 - **The trigger fires once per row, not once per batch.** A `bulkInsert` fires as a single `bulkInsert` event, not N individual `insert` events.

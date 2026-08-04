@@ -25,7 +25,7 @@ Not recommended — use `flowClass: "experience"` for endpoint-handling workflow
     "statusCodeTemplate": "200",
     "bodyTemplate": "{\"success\":true}",
     "headerInfo": [{ "key": "Content-Type", "valueTemplate": "application/json" }],
-    "replyIdPath": "data.request.replyId"
+    "replyIdPath": "data.replyId"
   },
   "meta": { "category": "output", "name": "endpoint-reply", "label": "Endpoint: Reply", "x": 200, "y": 200 },
   "outputIds": [[]]
@@ -34,7 +34,7 @@ Not recommended — use `flowClass: "experience"` for endpoint-handling workflow
 
 | Config field | Notes |
 |---|---|
-| `replyIdPath` | **Required.** Payload path where the reply ID is stored — always `"data.request.replyId"` for endpoint triggers. |
+| `replyIdPath` | **Required.** Payload path where the reply ID is stored — always `"data.replyId"` for endpoint triggers. |
 | `statusCodeTemplate` | HTTP status code as a template string. Typically `"200"`, `"201"`, `"400"`, `"404"`, `"500"`. |
 | `bodyTemplate` | Response body as a template. For JSON, use a JSON template and set `Content-Type: application/json`. |
 | `headerInfo` | Array of `{ "key": "...", "valueTemplate": "..." }` response headers. |

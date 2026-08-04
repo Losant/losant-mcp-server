@@ -80,7 +80,7 @@ A JSON string that is passed as context to each flow iteration. Use this to pass
 3. Confirm concurrency preference (default to \`1\` unless user asks for parallel)
 4. Call \`losant_write\` with \`operation=createOne\`, \`resourceType=resourceJob\`
 5. Check \`losant://schemas/resourceJobPost\` for the full body schema
-6. Remind the user: they need to pair the job with a flow "Resource Job Trigger" node before it will do anything
+6. Remind the user: they need to pair the job with a flow "Resource Job Trigger" node before it will do anything. See \`losant://flow/triggers/resource-job\` for the three trigger subtypes (\`resourceJobIteration\`, \`resourceJobComplete\`, \`resourceJobIterationTimeout\`), their payload shapes, and the acknowledge-each-iteration pattern.
 
 ### Iterate all rows in a data table
 \`\`\`json

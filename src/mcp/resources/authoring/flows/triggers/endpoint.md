@@ -166,6 +166,6 @@ Not available.
 
 - **Always use `flowClass: "experience"` for endpoint-handling workflows.** Cloud workflows bypass Experience Version routing, making behavior unpredictable across versions.
 - **Every request must be replied to.** Wire both success and error branches to an Endpoint Reply node — a hanging request will time out at the client.
-- **`replyId` must be passed to the Endpoint Reply node.** It comes from `data.request.replyId` in the payload. Always read it from the payload rather than hardcoding it.
+- **`replyId` must be passed to the Endpoint Reply node.** It comes from `data.replyId` in the payload. Always read it from the payload rather than hardcoding it.
 - **Avoid "any endpoint" triggers for reply workflows.** Multiple "any endpoint" triggers racing to reply the same request leads to undefined behavior. Use them only for logging or analytics.
 - **Static replies on the endpoint itself take precedence over flow replies.** If `staticReply` is set on the endpoint resource, the flow's Endpoint Reply output is ignored.

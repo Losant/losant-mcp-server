@@ -32,7 +32,7 @@ Branches the workflow based on a Handlebars expression. The most common branchin
 
 | Field | Type | Notes |
 |---|---|---|
-| `expression` | string | **Required.** Handlebars expression evaluated against the current payload. Falsy → index 0; fruthy → index 1. |
+| `expression` | string | **Required.** Handlebars expression evaluated against the current payload. Falsy → index 0; truthy → index 1. |
 
 ### Expression semantics
 

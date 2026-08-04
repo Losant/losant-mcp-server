@@ -128,7 +128,7 @@ For deep authoring detail — route syntax, \`deviceIdTemplate\`, reply type sha
 3. For static page reply: get the experience view ID first (\`losant_query\` \`resourceType=experienceView\`)
 4. Call \`losant_write\` \`operation=createOne\` \`resourceType=experienceEndpoint\`
 5. Check \`losant://schemas/experienceEndpointPost\` for the full body schema
-6. If using flow-driven reply: create or update an experience-type flow with an Endpoint Trigger matching this endpoint's method and route
+6. If using flow-driven reply: create or update an experience-type flow with an Endpoint Trigger matching this endpoint's method and route. See \`losant://flow/triggers/endpoint\` for the trigger configuration, the \`data.replyId\` path, and the Endpoint Reply node pattern.
 
 ## Experience Users
 

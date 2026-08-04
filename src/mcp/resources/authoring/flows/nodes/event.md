@@ -11,7 +11,7 @@ Four nodes for managing Losant application events within a workflow.
 | `UpdateEventNode` | `data` | `update-event` | `"Event: Update"` |
 | `DeleteEventNode` | `data` | `delete-event` | `"Event: Delete"` |
 
-See `losant://references/flow/error-handling` for the `errorBehavior`/`errorPath` pattern.
+**Note:** None of the four event nodes support `errorBehavior`/`errorPath`. API-level failures write an error to `resultPath` (as `{ error: { type, message } }`); all other errors throw.
 
 ## Cloud (Application) workflows
 
@@ -28,8 +28,7 @@ Events are the primary alerting mechanism in Losant.
     "subjectTemplate": "High temperature on {{data.deviceId}}",
     "messageTemplate": "Temperature {{data.attributes.tempC}}°C exceeded threshold",
     "deviceIdTemplate": "{{data.deviceId}}",
-    "resultPath": "working.event",
-    "errorBehavior": "throw"
+    "resultPath": "working.event"
   },
   "meta": { "category": "data", "name": "create-event", "label": "Event: Create", "x": 200, "y": 200 },
   "outputIds": [["next"]]
@@ -42,10 +41,14 @@ Events are the primary alerting mechanism in Losant.
 | `subjectTemplate` | **Required.** Short subject line (max 255 chars). Template. |
 | `messageTemplate` | Optional long description. Template. |
 | `deviceIdTemplate` | Optional — links the event to a device. Template. |
-| `dataTemplate` | Optional arbitrary JSON data as JSON-encoded string template. |
-| `eventTagsTemplate` | Optional event tags as JSON-encoded string template. |
+| `stateTemplate` | Optional initial state. `"new"` (default), `"acknowledged"`, or `"resolved"`. Template. |
+| `dataMethod` | How to provide additional event data. `"jsonTemplate"` (default) — use `dataJsonTemplate`. `"payloadPath"` — use `dataPayloadPath`. |
+| `dataJsonTemplate` | Optional additional structured data as a JSON template string. Used when `dataMethod: "jsonTemplate"`. |
+| `dataPayloadPath` | Payload path to the additional data object. Used when `dataMethod: "payloadPath"`. |
+| `eventTags` | Optional array of `{ "keyTemplate": "...", "valueTemplate": "..." }` objects for event tags. |
+| `timeSourceType` | `"flowTime"` (default) or `"payloadPath"`. Override the event timestamp. |
+| `timeSourcePath` | Payload path to a timestamp. Used when `timeSourceType: "payloadPath"`. |
 | `resultPath` | Payload path for the created event object. Shape: `{ id, applicationId, level, subject, message, deviceId, data, eventTags, state, creationDate, lastUpdated }`. The `id` field is needed to Get/Update/Delete the event downstream. |
-| `errorBehavior` / `errorPath` | Standard error handling. |
 
 ---
 
@@ -61,8 +64,7 @@ Retrieves one or more events. The retrieval mode is stored in **`meta.mode`** (n
   "type": "GetEventNode",
   "config": {
     "eventIdTemplate": "{{working.event.id}}",
-    "resultPath": "working.fetchedEvent",
-    "errorBehavior": "throw"
+    "resultPath": "working.fetchedEvent"
   },
   "meta": { "category": "data", "name": "get-event", "label": "Event: Get", "mode": "eventIdTemplate", "x": 200, "y": 200 },
   "outputIds": [["next"]]
@@ -73,7 +75,6 @@ Retrieves one or more events. The retrieval mode is stored in **`meta.mode`** (n
 |---|---|
 | `eventIdTemplate` | **Required.** Event ID. Template. |
 | `resultPath` | **Required.** Payload path for the event object (or `null` if not found). |
-| `errorBehavior` / `errorPath` | Standard error handling. |
 
 #### Mode: get one by query (`meta.mode: "queryTemplateSingle"`)
 
@@ -85,8 +86,7 @@ Retrieves one or more events. The retrieval mode is stored in **`meta.mode`** (n
     "queryTemplate": "{\"state\": {\"$eq\": \"new\"}}",
     "sortField": "creationDate",
     "sortDirection": "desc",
-    "resultPath": "working.event",
-    "errorBehavior": "throw"
+    "resultPath": "working.event"
   },
   "meta": { "category": "data", "name": "get-event", "label": "Event: Get", "mode": "queryTemplateSingle", "x": 200, "y": 200 },
   "outputIds": [["next"]]
@@ -114,8 +114,7 @@ Retrieves one or more events. The retrieval mode is stored in **`meta.mode`** (n
     "resultsPerPage": "25",
     "findMultiple": true,
     "findMetadata": false,
-    "resultPath": "working.events",
-    "errorBehavior": "throw"
+    "resultPath": "working.events"
   },
   "meta": { "category": "data", "name": "get-event", "label": "Event: Get", "mode": "queryTemplateMultiple", "x": 200, "y": 200 },
   "outputIds": [["next"]]
@@ -158,8 +157,7 @@ Updates one or many events. Mode is stored in **`meta.mode`**. The data to apply
     "eventTags": [],
     "dataSourceType": "payloadPath",
     "dataSourcePath": "",
-    "resultPath": "working.updatedEvent",
-    "errorBehavior": "throw"
+    "resultPath": "working.updatedEvent"
   },
   "meta": { "category": "data", "name": "update-event", "label": "Event: Update", "mode": "eventIdTemplate", "x": 200, "y": 200 },
   "outputIds": [["next"]]
@@ -185,8 +183,7 @@ Updates one or many events. Mode is stored in **`meta.mode`**. The data to apply
     "eventTags": [],
     "dataSourceType": "payloadPath",
     "dataSourcePath": "",
-    "resultPath": "working.updatedEvent",
-    "errorBehavior": "throw"
+    "resultPath": "working.updatedEvent"
   },
   "meta": { "category": "data", "name": "update-event", "label": "Event: Update", "mode": "queryTemplateSingle", "x": 200, "y": 200 },
   "outputIds": [["next"]]
@@ -217,8 +214,7 @@ Updates one or many events. Mode is stored in **`meta.mode`**. The data to apply
     "eventTags": [],
     "dataSourceType": "payloadPath",
     "dataSourcePath": "",
-    "resultPath": "working.bulkResult",
-    "errorBehavior": "throw"
+    "resultPath": "working.bulkResult"
   },
   "meta": { "category": "data", "name": "update-event", "label": "Event: Update", "mode": "queryTemplateMultiple", "x": 200, "y": 200 },
   "outputIds": [["next"]]
@@ -273,8 +269,7 @@ Deletes an event by ID.
   "id": "delete-event",
   "type": "DeleteEventNode",
   "config": {
-    "eventIdTemplate": "{{working.event.id}}",
-    "errorBehavior": "throw"
+    "eventIdTemplate": "{{working.event.id}}"
   },
   "meta": { "category": "data", "name": "delete-event", "label": "Event: Delete", "x": 200, "y": 200 },
   "outputIds": [["next"]]
@@ -284,7 +279,6 @@ Deletes an event by ID.
 | Config field | Notes |
 |---|---|
 | `eventIdTemplate` | **Required.** Event ID. Template. |
-| `errorBehavior` / `errorPath` | Standard error handling. |
 
 ### Idiom notes
 

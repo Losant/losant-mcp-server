@@ -242,7 +242,7 @@ Available: cloud, experience, customNode, edge, embedded.
     {
       "id": "process-item",
       "type": "MutateNode",
-      "config": { "rules": [{ "type": "set", "value": "{{working.sensor.value}}", "destination": "working.currentTemp" }] },
+      "config": { "rules": [{ "type": "set", "valueTemplate": "{{working.sensor.value}}", "destination": "working.currentTemp" }] },
       "meta": { "category": "logic", "name": "mutate", "label": "Mutate", "groupId": "my-loop", "x": 60, "y": 160 },
       "outputIds": [["cap"]]
     },

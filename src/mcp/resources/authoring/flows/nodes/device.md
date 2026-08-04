@@ -11,7 +11,7 @@ Four nodes for managing device records via the Losant API within a workflow.
 | `UpdateDeviceNode` | `data` | `update-device` | `"Device: Update"` |
 | `DeviceDeleteWorkflowNode` | `data` | `delete-device` | `"Device: Delete"` |
 
-See `losant://references/flow/error-handling` for the `errorBehavior`/`errorPath` pattern. Note: `errorBehavior` is **not supported** on `CreateDeviceNode` or `UpdateDeviceNode` — omit it from both.
+See `losant://references/flow/error-handling` for the `errorBehavior`/`errorPath` pattern. Note: `errorBehavior` is **not supported** on `CreateDeviceNode`, `UpdateDeviceNode`, or `GetDeviceNode` — omit it from all three.
 
 ## Cloud (Application) workflows
 
@@ -38,7 +38,7 @@ Creates a new device in the application. Three configuration modes are available
 | Config field | Notes |
 |---|---|
 | `dataMethod` | **Required.** `"individualFields"`, `"jsonTemplate"`, or `"payloadPath"`. |
-| `deviceRecipeId` | Optional recipe ID to use as defaults for the new device. Can be used with any dataMethod. |
+| `recipeIdTemplate` | Optional recipe ID (template) to use as defaults for the new device. Can be used with any dataMethod. |
 | `nameTemplate` | **Required** when `dataMethod: "individualFields"`. Device name. Template. |
 | `descriptionTemplate` | Optional when `dataMethod: "individualFields"`. Device description. Template. |
 | `deviceClassTemplate` | Device class: `"standalone"`, `"gateway"`, `"peripheral"`, `"floating"`, `"edgeCompute"`, `"system"`. Default `"standalone"`. |
@@ -71,8 +71,7 @@ Retrieves one or more devices using one of eight query methods. The default find
     "findMethod": "id",
     "idTemplate": "{{data.deviceId}}",
     "resultPath": "working.device",
-    "includeConnectionStatus": true,
-    "errorBehavior": "throw"
+    "includeConnectionStatus": true
   },
   "meta": { "category": "data", "name": "get-device", "label": "Device: Get", "x": 200, "y": 200 },
   "outputIds": [["next"]]
@@ -104,7 +103,6 @@ All methods except `"id"` and `"name"` support returning multiple devices (see `
 | `parentIdTemplate` | — | System parent device ID. Template. Used by `findByParentId`. |
 | `queryTemplate` | — | JSON template resolving to an advanced device query object. Used by `"query"` findMethod. |
 | `resultPath` | — | **Required.** Payload path to write the result. |
-| `errorBehavior` / `errorPath` | — | Standard error handling. |
 
 #### Multiple-device options (ignored for `findMethod: "id"`)
 
@@ -174,8 +172,7 @@ Find all devices with a specific tag, return as array with tag object map:
     "tags": [{ "keyTemplate": "type", "valueTemplate": "pump" }],
     "findMultiple": true,
     "tagsAsObject": true,
-    "resultPath": "working.pumps",
-    "errorBehavior": "throw"
+    "resultPath": "working.pumps"
   },
   "meta": { "category": "data", "name": "get-device", "label": "Device: Get", "x": 200, "y": 200 },
   "outputIds": [["next"]]
@@ -193,8 +190,7 @@ Find devices for an experience user with composite state:
     "findMultiple": true,
     "includeState": true,
     "attributes": ["temp", "humidity"],
-    "resultPath": "working.devices",
-    "errorBehavior": "throw"
+    "resultPath": "working.devices"
   },
   "meta": { "category": "data", "name": "get-device", "label": "Device: Get", "x": 200, "y": 200 },
   "outputIds": [["next"]]
@@ -272,8 +268,7 @@ Removes one or more devices from the application. Two delete modes are available
   "config": {
     "deleteMode": "one",
     "deviceIdTemplate": "{{data.deviceId}}",
-    "resultPath": "working.deleteResult",
-    "errorBehavior": "throw"
+    "resultPath": "working.deleteResult"
   },
   "meta": { "category": "data", "name": "delete-device", "label": "Device: Delete", "x": 200, "y": 200 },
   "outputIds": [["next"]]
@@ -291,8 +286,7 @@ Removes one or more devices from the application. Two delete modes are available
   "config": {
     "deleteMode": "many",
     "queryTemplate": "{\"tags\":{\"$elemMatch\":{\"key\":\"status\",\"value\":\"retired\"}}}",
-    "resultPath": "working.deleteResult",
-    "errorBehavior": "throw"
+    "resultPath": "working.deleteResult"
   },
   "meta": { "category": "data", "name": "delete-device", "label": "Device: Delete", "x": 200, "y": 200 },
   "outputIds": [["next"]]
@@ -307,7 +301,6 @@ Removes one or more devices from the application. Two delete modes are available
 | `deviceIdTemplate` | Required when `deleteMode: "one"`. |
 | `queryTemplate` | Required when `deleteMode: "many"`. JSON-encoded advanced query. The default query matches no devices — must be changed to take effect. |
 | `resultPath` | Optional. Payload path for the result. |
-| `errorBehavior` / `errorPath` | Standard error handling. |
 
 **Worked example — add a tag without losing existing tags:**
 ```json

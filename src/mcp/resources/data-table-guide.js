@@ -129,6 +129,12 @@ Only include columns you want to change — omitted columns are left as-is. Use 
 
 Check \`losant://schemas/dataTableRowPatch\` for the full body schema.
 
+## Reacting to data table changes with flows
+
+Data table row operations can fire workflows automatically:
+
+- **Row changes** → \`losant://flow/triggers/data-table\` — fires on \`insert\`, \`bulkInsert\`, \`update\`, and \`delete\`. \`data.action\` identifies the operation; \`data.newRow\` has the row after an insert or update; \`data.oldRow\` has the previous state for updates and deletes.
+
 ${buildReferenceSection(['dataTable', 'dataTableRow'])}
 `;
 

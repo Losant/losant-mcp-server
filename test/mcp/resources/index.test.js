@@ -408,6 +408,33 @@ describe('MCP Resources', () => {
       result.contents[0].text.should.match(/trigger|node|workflow/i);
     });
 
+    it('should provide handler for flow trigger device-state', async () => {
+      const result = await client.readResource({ uri: 'losant://flow/triggers/device-state' });
+
+      result.should.have.property('contents');
+      result.contents[0].should.have.property('uri', 'losant://flow/triggers/device-state');
+      result.contents[0].should.have.property('mimeType', 'text/markdown');
+      result.contents[0].text.should.match(/DeviceState|triggerId/i);
+    });
+
+    it('should provide handler for flow reference payload', async () => {
+      const result = await client.readResource({ uri: 'losant://references/flow/payload' });
+
+      result.should.have.property('contents');
+      result.contents[0].should.have.property('uri', 'losant://references/flow/payload');
+      result.contents[0].should.have.property('mimeType', 'text/markdown');
+      result.contents[0].text.should.containEql('payload');
+    });
+
+    it('should provide handler for flow reference templating', async () => {
+      const result = await client.readResource({ uri: 'losant://references/flow/templating' });
+
+      result.should.have.property('contents');
+      result.contents[0].should.have.property('uri', 'losant://references/flow/templating');
+      result.contents[0].should.have.property('mimeType', 'text/markdown');
+      result.contents[0].text.should.containEql('template');
+    });
+
     it('should provide handler for flow node access-key', async () => {
       const result = await client.readResource({ uri: 'losant://flow/nodes/access-key' });
 
