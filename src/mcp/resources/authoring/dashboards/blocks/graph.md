@@ -28,7 +28,7 @@ See [losant://references/dashboard/device-queries](losant://references/dashboard
 | `resolution` | integer (ms) \| `"{{dashboard.resolution}}"` \| `null` | — | Aggregation bucket size. Use the templated string to inherit the dashboard's global resolution. `null` disables bucketing (all raw points returned). Lower resolution = more points = more detail. Ignored when `realTime: true` or for segments with `aggregation: "NONE"`. |
 | `disallowUserSelectedDuration` | boolean | `false` | When `true`, hides the block's time-range dropdown and disables mouse-drag zooming. Use for blocks whose duration/resolution should not be viewer-changeable. |
 | `hideLegend` | boolean | `false` | When `true`, the legend at the bottom is hidden. |
-| `displayType` | `"stick"` \| `"line"` | — | Rarely set — segment-level `graphType` is the usual control. |
+| `displayType` | `"stick"` \| `"line"` | — | **Stripped by the platform reducer on every save** — any value set here is silently deleted. Use segment-level `graphType` instead. |
 
 ### Segments
 
@@ -60,7 +60,7 @@ See [losant://references/dashboard/device-queries](losant://references/dashboard
 | `cumulative` | boolean | When `true`, each plotted point is the sum of all previous visible points. Default `false`. |
 | `detectDataGaps` | boolean | When `true`, the line breaks where no data was reported in a resolution bucket. Disabled for bar segments. Default `false`. |
 | `expression` | string | Optional Handlebars expression evaluated per point. Variables: `{{value}}`, `{{time}}`, `{{ctx.<name>}}`. Lets you transform raw readings (unit conversion, scaling, etc.). |
-| `lineType` | `"linear"` \| `"monotone"` \| `"step"` \| `"stepBefore"` \| `"stepAfter"` | Curve style. Default `"linear"`. Disabled for bar segments. |
+| `lineType` | `"linear"` \| `"monotone"` \| `"step"` \| `"stepBefore"` \| `"stepAfter"` | Curve style. Default `"monotone"` (smooth curves — labeled "Smooth" in the UI). Disabled for bar segments. |
 | `lineWeight` | integer 0–5 | Line thickness. Disabled for bar segments. |
 | `dotWeight` | integer 0–5 | Data-point dot thickness. Disabled for bar segments. |
 | `yAxisLabel`, `yAxisFormat`, `yAxisMax`, `yAxisMin` | various | Legacy segment-level Y-axis overrides; prefer configuring on the matching entry in `yAxes` instead. |

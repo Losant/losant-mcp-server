@@ -14,7 +14,7 @@ Most time-series and gauge-type queries require an `aggregation` to specify how 
 | `"FIRST"` | Chronologically first reading in the bucket. |
 | `"LAST"` | Most recent reading in the bucket. The idiomatic choice for "current value" queries. |
 | `"MEDIAN"` | Median (50th percentile) of all readings. |
-| `"STD_DEV"` | Population standard deviation of all readings. |
+| `"STD_DEV"` | Sample standard deviation of all readings. |
 | `"NONE"` | No aggregation — every raw reading is returned as its own point. |
 
 ## `NONE` — raw data

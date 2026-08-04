@@ -21,7 +21,7 @@ See the parent `dashboard-guide.md` for the block object shape, layout grid. See
 | Field | Type | Default | Notes |
 |---|---|---|---|
 | `realTime` | boolean | `false` | When `true`, streams live device readings. When `false`, queries historical data over `duration`. |
-| `duration` | integer (ms) \| `"{{dashboard.duration}}"` | — | Historical only. Time window to aggregate over. Use the string template to inherit the dashboard's global duration control. |
+| `duration` | integer (ms) \| `"{{dashboard.duration}}"` | — | Historical only. Time window to aggregate over. Use `0` to query only the single most recent data point (last received state). Use the string template to inherit the dashboard's global duration control. |
 | `gaugeType` | `"number"` \| `"dial"` \| `"battery"` \| `"thermometer"` \| `"tank"` \| `"needle"` | `"number"` | Visual style. |
 | `gaugeMin` | number \| string | — | Minimum of the visual scale. Required for `dial`, `thermometer`, `tank`, `needle`. |
 | `gaugeMax` | number \| string | — | Maximum of the visual scale. Required for the same gauge types. |

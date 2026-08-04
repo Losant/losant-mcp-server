@@ -58,7 +58,7 @@ Two reference pins map pixel coordinates on the image to your device data coordi
 | Field | Type | Default | Notes |
 |---|---|---|---|
 | `defaultCenter` | string | — | Default `"x,y"` center of the view (in image coordinates). |
-| `defaultZoom` | number \| string | `0` (natural size) | Initial zoom level. |
+| `defaultZoom` | number \| string | `"auto"` | Initial zoom level. Note: sending `0` is treated as falsy by the reducer and replaced with `"auto"` — there is no way to force a 1:1 pixel zoom via this field. |
 | `disableZoom` | boolean | `false` | When true, hides zoom controls. |
 | `centerOnDataPoints` | boolean | `false` | Auto-fit the viewport to all data on load. |
 

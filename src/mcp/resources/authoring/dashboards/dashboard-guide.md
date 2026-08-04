@@ -23,8 +23,8 @@ The **envelope, layout grid, and shared block shape** are described here in full
 Unlike workflows, a dashboard has **no version model**. There is one mutable document per dashboard. PATCH edits go live immediately for everyone viewing the dashboard on next refresh.
 
 - `POST /applications/{appId}/dashboards` to create.
-- `PATCH /dashboards/{dashboardId}` to update name, blocks, context, refresh rate, access, etc.
-- `DELETE /dashboards/{dashboardId}` to remove.
+- `PATCH /applications/{appId}/dashboards/{dashboardId}` to update name, blocks, context, refresh rate, access, etc.
+- `DELETE /applications/{appId}/dashboards/{dashboardId}` to remove.
 
 The choice of POST endpoint determines the **data-source scope** (see next section). It cannot be changed after creation.
 
@@ -65,11 +65,11 @@ Required: `name`. POST to `/applications/{appId}/dashboards`.
 | `resolution` | integer (ms) | — | Dashboard-level aggregation bucket size. Must be **≤ `duration`** or the save will fail. |
 | `public` | boolean | `false` | When `true`, the dashboard is reachable without a Losant session. **Any data shown in a public dashboard is public.** |
 | `password` | string \| `null` | `null` | When set, the dashboard requires this password in addition to the URL. Not compatible with `public: false`. |
-| `reportConfigs` | object[] | `[]` | Up to 10 recurring email reports. Each entry: `{ "emailAddresses": string[], "time": "HH:MM", "timezone": "America/Chicago", "days": [0–6], "subject": string, "message": string, "context": object }`. `days` is 0 = Sunday through 6 = Saturday. `context` overrides context variable defaults for the report render. Reports are PDF snapshots of the dashboard at the scheduled time. |
+| `reportConfigs` | object[] | `[]` | Up to 10 recurring email reports. Each entry: `{ "toEmail": string[], "cron": string, "timezone": "America/Chicago", "subject": string, "message": string, "theme": "light"\|"dark", "ctx": object }`. `cron` is a standard 5-field cron expression (e.g. `"0 10 * * 1"` for every Monday at 10am). `ctx` overrides dashboard context variable defaults for the report render. Reports are PDF snapshots of the dashboard rendered at the scheduled time. |
 
 ## Layout grid
 
-Blocks are positioned on a **4-column grid** (columns indexed 0 through 3, in 0.5-unit increments) with **no row limit** (the dashboard scrolls vertically).
+Blocks are positioned on a **4-column grid** (columns indexed 0 through 3, in 0.5-unit increments) with **no row limit** (the dashboard scrolls vertically). Maximum **100 blocks per dashboard** — exceeding this limit causes a validation error.
 
 - `startX` / `startY`: top-left corner of the block (in grid units).
 - `width` / `height`: block size (in grid units).
