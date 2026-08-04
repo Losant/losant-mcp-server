@@ -70,7 +70,7 @@ For `event-list` custom columns, the full `event` object is available:
 Fields labelled `expression` (e.g. on graph segments, gauge segments) accept a Handlebars template that transforms the raw value before display:
 
 ```handlebars
-{{multiply value 1.8 | add 32}}
+{{add (multiply value 1.8) 32}}
 ```
 
 Available helpers: arithmetic (`add`, `subtract`, `multiply`, `divide`), comparison (`gt`, `lt`, `eq`), string (`upper`, `lower`, `concat`). An invalid expression reverts to the raw value — no error is surfaced to the viewer.
