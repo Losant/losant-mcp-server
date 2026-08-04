@@ -20,7 +20,7 @@ See the parent `dashboard-guide.md` for the block object shape, layout grid.
 
 | Field | Type | Default | Notes |
 |---|---|---|---|
-| `dataTableId` | string | — | **Required.** The 24-char hex ID of the data table to display. |
+| `dataTableId` | string | — | The 24-char hex ID of the data table to display. Without this the block saves but renders an empty table with no data source — always set it. |
 | `query` | string | — | Row filter query as a JSON-encoded string. Same format as the Table: Get Rows node. |
 | `queryMode` | `"$or"` \| `"$and"` \| `"advanced"` | — | How filter conditions in `query` are combined. |
 | `defaultSortColumn` | string | — | Column to sort by. Max 255 chars. |

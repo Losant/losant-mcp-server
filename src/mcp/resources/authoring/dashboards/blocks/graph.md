@@ -23,7 +23,7 @@ See [losant://references/dashboard/device-queries](losant://references/dashboard
 
 | Field | Type | Default | Notes |
 |---|---|---|---|
-| `realTime` | boolean | `false` | When `true`, the graph live-streams new points as devices report state. Live-stream graphs **cannot use aggregation** and cannot show past dashboard states. When `realTime: true`, `resolution`, `disallowUserSelectedDuration`, and any segment `aggregation` are ignored. |
+| `realTime` | boolean | `false` | When `true`, the graph live-streams new points as devices report state. Live-stream graphs **cannot use aggregation** and cannot show past dashboard states. When `realTime: true`, `resolution`, `disallowUserSelectedDuration`, and any segment `aggregation` are ignored. **`duration` is still active** — it controls the rolling time window of the live stream (e.g. `300000` keeps the last 5 minutes on screen). |
 | `duration` | integer (ms) \| `"{{dashboard.duration}}"` | — | Time window on the X axis. Use the templated string to inherit the dashboard's global duration (the idiomatic default). Max effective range: 5 minutes – 180 days. |
 | `resolution` | integer (ms) \| `"{{dashboard.resolution}}"` \| `null` | — | Aggregation bucket size. Use the templated string to inherit the dashboard's global resolution. `null` disables bucketing (all raw points returned). Lower resolution = more points = more detail. Ignored when `realTime: true` or for segments with `aggregation: "NONE"`. |
 | `disallowUserSelectedDuration` | boolean | `false` | When `true`, hides the block's time-range dropdown and disables mouse-drag zooming. Use for blocks whose duration/resolution should not be viewer-changeable. |
@@ -56,7 +56,7 @@ See [losant://references/dashboard/device-queries](losant://references/dashboard
 | `graphType` | `"line"` \| `"bar"` \| `"area"` | How the segment renders. `line` is the default; `area` requires line-related options below; `bar` disables them. |
 | `label` | string | Label shown in the legend and tooltip. Defaults to the attribute name. |
 | `color` | string | CSS color (e.g. `"#2E86DE"`). Auto-assigned per-segment if omitted. |
-| `yAxisId` | string | Which Y axis (from the block's `yAxes` array) this segment is plotted against. **Required if `yAxes` has more than one entry.** |
+| `yAxisId` | string | Which Y axis (from the block's `yAxes` array) this segment is plotted against. Can be omitted when `yAxes` has exactly one entry — the segment is automatically assigned to it. **Required when `yAxes` has two or more entries; omitting it causes the segment to render no data.** |
 | `cumulative` | boolean | When `true`, each plotted point is the sum of all previous visible points. Default `false`. |
 | `detectDataGaps` | boolean | When `true`, the line breaks where no data was reported in a resolution bucket. Disabled for bar segments. Default `false`. |
 | `expression` | string | Optional Handlebars expression evaluated per point. Variables: `{{value}}`, `{{time}}`, `{{ctx.<name>}}`. Lets you transform raw readings (unit conversion, scaling, etc.). |

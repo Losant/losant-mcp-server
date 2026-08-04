@@ -66,10 +66,15 @@ The `i`-th segment result is accessible in conditions as `{{value-i}}` and `{{ti
 
 ### `defaultCondition`
 
-Same shape as a condition object, but without `condition` — it is the fallback when no condition matches. Supports `label`, `color`, `shape`, and `imageUrl`. Set `shape` here to control the indicator icon shape.
+Same shape as a condition object, but without `condition` — it is the fallback when no condition matches. Supports `label`, `color`, `shape`, and `imageUrl`. Set `shape` here to control the indicator icon shape. Use `imageUrl` instead of `color`+`shape` to display a custom icon image.
 
 ```json
 { "label": "Unknown", "color": "#808080", "shape": "circle" }
+```
+
+Or with a custom image:
+```json
+{ "label": "Unknown", "imageUrl": "https://example.com/icons/grey-dot.png" }
 ```
 
 ## Worked example — two-query status indicator

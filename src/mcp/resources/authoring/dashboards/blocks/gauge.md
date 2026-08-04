@@ -2,7 +2,7 @@
 
 Displays a single aggregated value from a device attribute — either as a plain number or as a visual gauge (dial, battery, thermometer, tank, needle). The canonical block for "show me the current value of this sensor."
 
-See the parent `dashboard-guide.md` for the block object shape, layout grid.
+See the parent `dashboard-guide.md` for the block object shape, layout grid. See [losant://references/dashboard/aggregations](losant://references/dashboard/aggregations) for the aggregation enum and [losant://references/dashboard/templates](losant://references/dashboard/templates) for expression syntax and helpers.
 
 ## Block object shape
 
@@ -43,7 +43,7 @@ The gauge block uses a single `segment` object (not an array):
 | `attribute` | string | Device attribute to display. |
 | `aggregation` | enum | `MEAN`, `MAX`, `MIN`, `SUM`, `COUNT`, `FIRST`, `LAST`, `MEDIAN`, `STD_DEV`. Use `LAST` for current state. |
 | `label` | string | Optional display label. |
-| `expression` | string | Optional Handlebars transform applied to the value before display. Available: `{{value}}`, `{{time}}`, `{{ctx.<name>}}`. |
+| `expression` | string | Optional Handlebars transform applied to the raw value before display. Available: `{{value}}`, `{{time}}`, `{{ctx.<name>}}`. Example: `"{{multiply value 1.8 \| add 32}}"` converts °C to °F. See `losant://references/dashboard/templates` for available helpers. |
 
 ### Conditions
 

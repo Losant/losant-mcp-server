@@ -35,10 +35,9 @@ For the layout model, per-block config details, and worked examples read:
 
 ## Block Object Shape
 
-Every block requires:
+Every block requires at minimum \`blockType\`, \`startX\`, \`startY\`, \`width\`, and \`height\`. \`id\`, \`title\`, and \`description\` are optional — the server assigns an \`id\` if omitted.
 \`\`\`json
 {
-  "id": "unique-string-id",
   "blockType": "gauge",
   "title": "Temperature",
   "startX": 0,
@@ -53,7 +52,7 @@ The \`config\` object is block-type-specific — read the per-block guide file b
 ## Common LLM Workflows
 
 ### Create an empty dashboard, then add blocks
-1. **Discover device attributes first** — call \`losant_query\` \`operation=get\` \`resourceType=device\` on the target device and inspect its \`attributes\` array. Block config fields like \`attribute\` must match device attribute names exactly.
+1. **Discover device attributes first** — call \`losant_query\` \`operation=get\` \`resourceType=device\` on the target device and inspect its \`attributes\` array. Each entry has a \`name\` (use this as the \`attribute\` field in block configs — it must match exactly) and a \`dataType\` (\`number\`, \`string\`, \`boolean\`, \`gps\`, \`blob\`). Only \`number\` attributes work in time-series blocks; \`gps\` for map blocks; \`blob\` or \`string\` for the image block's attribute source.
 2. Call \`losant_write\` \`operation=createOne\` \`resourceType=applicationDashboard\` with just \`name\`. If the dashboard should work for multiple devices or data sources, add \`contextConfiguration\` now — read \`losant://references/dashboard/context-configuration\` first.
 3. Read \`losant://authoring/dashboard\` for the full block catalog and layout rules
 4. For each block type you want to add, read \`losant://dashboard/blocks/{blockType}\`
@@ -62,11 +61,15 @@ The \`config\` object is block-type-specific — read the per-block guide file b
 
 ### Add a block to an existing dashboard
 1. Use \`losant_query\` \`operation=get\` \`resourceType=applicationDashboard\` to retrieve the current \`blocks\` array
-2. Append the new block object (ensure no \`startX\`/\`startY\` overlap with existing blocks)
+2. Compute the next safe \`startY\`: find \`max(block.startY + block.height)\` across all existing blocks — that is the first empty row. Place the new block at that \`startY\`. For a full-width block use \`startX: 0, width: 4\`. For a two-column layout use \`startX: 0, width: 2\` and \`startX: 2, width: 2\` at the same \`startY\`.
 3. Call \`losant_write\` \`operation=updateOne\` with the full updated \`blocks\` array
 
 ### Make a dashboard reusable (fleet / multi-device pattern)
-Read \`losant://references/dashboard/context-configuration\` before adding \`contextConfiguration\` — context variables let one dashboard serve many devices or data sources without duplicating blocks. The most common pattern is a single \`deviceId\` context variable so every block drives from \`deviceIds: ["{{ctx.deviceId}}"]\`.
+Read \`losant://references/dashboard/context-configuration\` before adding \`contextConfiguration\`. Two common patterns:
+- **One device at a time** (per-device drill-down): use a \`deviceId\` context variable. Every block uses \`deviceIds: ["{{ctx.deviceId}}"]\`. The viewer switches between devices via the toolbar or URL.
+- **All devices in a group** (fleet aggregate): use a \`deviceTag\` context variable. Blocks use \`deviceTags: [{ "key": "fleet", "fromCtx": "myTagVar" }]\` to show data across all devices that share a tag. The viewer changes which group they see.
+
+Use \`deviceId\` when the goal is "show everything about one specific device." Use \`deviceTag\` when the goal is "show aggregated data across a set of devices."
 
 ### Embed a dashboard in an Experience
 Dashboard pages in Losant Experiences are standard \`experienceView\` resources (\`viewType: "page"\`) whose \`body\` contains the \`{{element 'dashboard' ...}}\` helper — the same helper used to inline a dashboard in any HTML page:

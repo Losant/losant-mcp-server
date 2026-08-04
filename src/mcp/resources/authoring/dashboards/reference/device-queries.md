@@ -100,3 +100,15 @@ This requires that devices be associated with Experience Groups in your applicat
 | Devices scoped to the logged-in experience user | `query` with `experienceUserId` |
 
 Use only one selector per block or segment. Mixing `deviceIds` and `deviceTags` on the same segment is unsupported and may produce unexpected results.
+
+## Testing a device query before using it in a block
+
+Before embedding a device query in a block config, verify it selects the expected devices by calling `losant_query` on the `device` resource type directly:
+
+```
+losant_query operation=list resourceType=device query=<your query object>
+```
+
+This lets you confirm the device set before the dashboard is deployed. For `experienceUserId` queries, you need an actual Experience User ID to test with — use `losant_query operation=list resourceType=experienceUser` to find one, then substitute it in place of the `{{ctx.userId}}` template when testing.
+
+For `fromCtx` tag patterns, test by substituting a concrete tag value in place of the context variable to verify the tag filter returns the right devices.

@@ -33,7 +33,9 @@ Each entry requires `name`, `type`, and `defaultValue`.
 
 `name` must be unique within the dashboard. Valid characters: letters, digits, hyphens, underscores (`^[0-9a-zA-Z_-]{1,255}$`). The name appears in URLs (`?ctx[<name>]=...`) so avoid spaces and slashes.
 
-`validationEnabled` (boolean) toggles validation on and off without removing the `validationConfig`. When `false`, any value is accepted. When `true`, the value is checked against `validationConfig` before the dashboard renders.
+`validationEnabled` (boolean) toggles validation on and off without removing the `validationConfig`. When `false`, any value is accepted. When `true`, the value is checked against `validationConfig` before the dashboard renders. **The failure behavior differs by context:**
+- On the Losant platform: invalid values silently revert to the `defaultValue` with a warning banner shown to the viewer.
+- Inside an Experience Page: invalid values cause the dashboard to fail to load entirely, showing an "invalid context" error — there is no silent fallback. Always set `validationEnabled: true` for Experience-embedded dashboards and ensure `defaultValue` is always valid.
 
 ---
 
@@ -292,11 +294,16 @@ In addition to context variables, there are several built-in dashboard propertie
 
 ---
 
+## Verifying context variable wiring
+
+To confirm `contextConfiguration` and block configs are saved correctly, call `losant_query operation=get resourceType=applicationDashboard` and inspect the returned `contextConfiguration` and `blocks` arrays. Then test the URL mechanism by appending `?ctx[variableName]=<testValue>` to the dashboard URL and opening it in a browser — blocks should render with data from the test value. For Experience-embedded dashboards, verify the `{{element 'dashboard' ctx=(obj ...) }}` mapping in the experience view body matches your context variable names exactly.
+
+---
+
 ## Common mistakes
 
 - **Referencing a context variable without defining it in `contextConfiguration`.** Blocks render with the literal `{{ctx.foo}}` string and queries fail silently.
 - **Using `includeFullDevice: true` and then referencing `{{ctx.deviceId}}` as a plain ID in a URL or non-device-selector field.** Use `{{ctx.deviceId.id}}` explicitly in those contexts.
 - **Setting `deviceTag.defaultValue` or `validationConfig.deviceTags` with empty strings.** Both the `key` and `value` fields have minLength: 1 — omit the field entirely to express a wildcard.
 - **Naming variables with characters outside `^[0-9a-zA-Z_-]{1,255}$`.** Letters, digits, hyphens, and underscores are valid; spaces and slashes are not.
-- **Validation failure behavior on Experience Pages.** On the platform, a bad value silently reverts to the default. Inside an Experience Page, validation failure shows an error to the user and the dashboard does not load — make sure your default values are always valid.
 - **Forgetting that variable order determines toolbar order.** If a variable isn't visible in the toolbar, it may be off-screen due to its position in the array.

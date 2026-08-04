@@ -197,7 +197,7 @@ Conditional properties: `label` (string template), `color` (CSS text color).
 ## Idiom notes
 
 - `config` is required (the schema explicitly requires it). A block with an empty `config: {}` is valid but will render a blank image area.
-- Overlay `position` is in image-pixel coordinates from the top-left — drag overlays interactively in the UI to set positions, then read them back via the API.
+- Overlay `position` is in **absolute image-pixel coordinates** from the top-left corner. You need to know the background image's natural pixel dimensions to place overlays accurately. Percentage-based positioning is not supported. If dimensions are unknown, use placeholder positions (e.g. `"100,100"`) and adjust after viewing the result.
 - Conditions are evaluated top-to-bottom; the first truthy expression wins. The `defaultCondition` is the fallback when no condition matches.
 - Query values are referenced in templates as `{{QUERY_ID.value}}` and `{{QUERY_ID.time}}`, matching the `id` field on the segment.
 - **For `"indicator"` overlays: always set `shape` explicitly on every condition object and on `defaultCondition`.** The API does not default `shape` and the UI will error if it is missing. Use `"circle"` when no specific shape is needed.

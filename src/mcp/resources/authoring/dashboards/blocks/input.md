@@ -117,14 +117,14 @@ Each non-button control can pre-fill its value from a device attribute query. Th
 
 ## Control grid
 
-Each control's `grid` defines its position and size within the block's internal layout:
+Each control's `grid` defines its position and size within the block's internal layout. The internal grid is **4 columns wide** — `x + w` must not exceed 4. Grid units are integers; the UI snaps to whole units.
 
 | Field | Type | Notes |
 |---|---|---|
-| `x` | number | Starting column position (0-based). |
-| `y` | number | Starting row position. |
-| `w` | number | Width in grid units. |
-| `h` | number | Height in grid units (help blocks can be taller). |
+| `x` | integer | Starting column (0-based). Range: 0–3. |
+| `y` | integer | Starting row (0-based). No upper limit — the block scrolls if controls extend past the visible height. |
+| `w` | integer | Width in columns. Range: 1–4. `x + w` must not exceed 4. |
+| `h` | integer | Height in rows. Most controls: always `1`. Help blocks: 1–4. |
 
 ---
 
