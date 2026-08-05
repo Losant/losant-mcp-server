@@ -64,7 +64,23 @@ Reads current symbol values from a Beckhoff TwinCAT PLC.
 | `timeoutTemplate` | `"30000"` | Request timeout in milliseconds. Template. |
 | `readInstructionsType` | `"array"` | `"array"` or `"payloadPath"`. |
 | `readInstructions` | `[]` | **Required.** Array of `{ nameTemplate, key }` objects. `key` is optional — defaults to the symbol name if omitted. |
-| `destinationPath` | `""` | **Required.** Payload path to write symbol values. |
+| `destinationPath` | `""` | **Required.** Payload path to write symbol values. The `destinationPath` can point to an existing payload path to overwrite it. |
+
+### Read output shape
+
+```json
+{
+  "working": {
+    "plcData": {
+      "temperature": 72.4,
+      "setPoint": 75.0,
+      "errors": []
+    }
+  }
+}
+```
+
+Each key corresponds to the `key` field from `readInstructions`. `errors` captures per-symbol failures.
 
 ---
 
@@ -99,3 +115,15 @@ Writes values to Beckhoff TwinCAT PLC symbols.
 ```
 
 Write instructions require `nameTemplate` (symbol name), `dataMethod` (`"stringTemplate"`, `"jsonTemplate"`, or `"payloadPath"`), and the corresponding data field. `autoFill: true` auto-populates missing struct properties (GEA 1.51.0+).
+
+### Write output shape
+
+`destinationPath` receives a write result object:
+
+```json
+{ "working": { "writeResult": { "errors": [] } } }
+```
+
+`errors` is an array of per-symbol error strings for any symbols that failed to write.
+
+

@@ -50,6 +50,14 @@ Three connection methods: integration, service credential, or direct connection 
 | `propFields` | `[]` | Array of `{ keyTemplate, valueTemplate }` property pairs. |
 | `resultPath` | `""` | Payload path to write the send result. |
 
+## Output
+
+`resultPath` receives a confirmation object:
+
+```json
+{ "working": { "ehResult": { "success": true } } }
+```
+
 ## Experience workflows
 
 Same as Cloud.

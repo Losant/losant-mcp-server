@@ -79,6 +79,10 @@ Three device selection modes controlled by `meta.deviceSelectionType`:
 | `payloadTemplate` | Command payload. Interpretation depends on `payloadTemplateType`. |
 | `payloadTemplateType` | `"json"` (default) — JSON template. `"string"` — string template. `"path"` — payload path to read payload from. |
 
+## Output
+
+The Device: Command node is fire-and-forget — it publishes the command to the MQTT broker and does not wait for acknowledgement. There is no `resultPath` field. The workflow always continues on `outputIds[0]` after publishing.
+
 ## Experience workflows
 
 Same as Cloud.

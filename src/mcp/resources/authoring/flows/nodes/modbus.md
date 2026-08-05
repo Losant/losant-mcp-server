@@ -104,7 +104,23 @@ Reads values from Modbus registers or coils.
 | `areUnsignedInts` | `false` | When `true`, treat integer register values as unsigned. |
 | `readInstructionsType` | `"array"` | `"array"` or `"payloadPath"`. |
 | `readInstructions` | `[]` | **Required.** Array of read instruction objects (see below). |
-| `destinationPath` | `""` | **Required.** Payload path to write results. |
+| `destinationPath` | `""` | **Required.** Payload path to write results. The `destinationPath` can point to an existing payload path to overwrite it. |
+
+### Read output shape
+
+Each entry in the result is keyed by the `key` field from `readInstructions`. An `errors` array captures per-register failures:
+
+```json
+{
+  "working": {
+    "modbusData": {
+      "temperature": 72.4,
+      "pressure": 14.7,
+      "errors": []
+    }
+  }
+}
+```
 
 #### Read instruction types
 
@@ -174,6 +190,16 @@ Writes values to Modbus registers or coils.
 | `writeInstructionsType` | `"array"` | `"array"` or `"payloadPath"`. |
 | `writeInstructions` | `[]` | **Required.** Array of write instruction objects (see below). |
 | `destinationPath` | `""` | Payload path to write per-register results. |
+
+### Write output shape
+
+If `destinationPath` is set, the result contains a per-register entry for each write instruction, keyed by register address:
+
+```json
+{ "working": { "writeResult": { "errors": [] } } }
+```
+
+`errors` is an array of error strings for any registers that failed to write.
 
 #### Write instruction types
 

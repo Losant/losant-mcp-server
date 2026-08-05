@@ -25,9 +25,10 @@ Writes a generated identifier to a payload path. Available in all flow classes.
 
 | Config field | Default | Notes |
 |---|---|---|
-| `idTypeTemplate` | `"uuidv4"` | `uuidv1`, `uuidv3`, `uuidv4`, `uuidv5`, `objectId`, `nanoid`. |
+| `idTypeTemplate` | `"uuidv4"` | `uuidv1`, `uuidv3`, `uuidv4`, `uuidv5`, `objectId`, `nanoid`. Template — rendered value is trimmed and lowercased before use. |
 | `namespaceTemplate` | — | Required when `idTypeTemplate` is `"uuidv3"` or `"uuidv5"`. A UUID string used as the namespace for hashing (e.g. `"6ba7b810-9dad-11d1-80b4-00c04fd430c8"` for DNS). Supports Handlebars templates. |
 | `valueTemplate` | — | Required when `idTypeTemplate` is `"uuidv3"` or `"uuidv5"`. The name string to hash against the namespace. Supports Handlebars templates. |
+| `numCharactersTemplate` | — | Optional when `idTypeTemplate` is `"nanoid"`. Length of the generated ID (1–256). Defaults to 21 when omitted. Template. |
 | `destinationPath` | — | **Required.** Payload path where the generated ID is written. |
 
 ## Experience workflows

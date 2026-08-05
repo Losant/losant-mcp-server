@@ -61,6 +61,14 @@ Available: cloud, experience, customNode, edge, embedded (select ops).
 | `padEnd` | `[length, fillChar]` | Pad to `length` characters by appending `fillChar` on the right. `fillChar` defaults to a space. `length` must be 0–1000. |
 | `truncate` | `[length]` or `[length, omission]` | Truncate to `length` characters. Optional `omission` string (e.g. `"..."`) is appended when truncated — its length counts against `length`. `length` must be 0–1000; if `0` or negative, defaults to 30. |
 
+## Output
+
+`resultPath` receives the result of the string operation as a string (or array for split operations). You can set `resultPath` to an existing payload path to overwrite it in place.
+
+```json
+{ "working": { "parts": ["hello", "world"] } }
+```
+
 ## Experience workflows
 
 Same as Cloud.

@@ -42,11 +42,11 @@ Events are the primary alerting mechanism in Losant.
 | `messageTemplate` | Optional long description. Template. |
 | `deviceIdTemplate` | Optional — links the event to a device. Template. |
 | `stateTemplate` | Optional initial state. `"new"` (default), `"acknowledged"`, or `"resolved"`. Template. |
-| `dataMethod` | How to provide additional event data. `"jsonTemplate"` (default) — use `dataJsonTemplate`. `"payloadPath"` — use `dataPayloadPath`. |
-| `dataJsonTemplate` | Optional additional structured data as a JSON template string. Used when `dataMethod: "jsonTemplate"`. |
-| `dataPayloadPath` | Payload path to the additional data object. Used when `dataMethod: "payloadPath"`. |
+| `dataSourceType` | How to provide additional structured event data. `"jsonTemplate"` — use `dataSourceJson`. `"payloadPath"` — use `dataSourcePath`. Omit to not include extra data. |
+| `dataSourceJson` | Optional additional structured data as a JSON template string. Used when `dataSourceType: "jsonTemplate"`. |
+| `dataSourcePath` | Payload path to the additional data object. Used when `dataSourceType: "payloadPath"`. |
 | `eventTags` | Optional array of `{ "keyTemplate": "...", "valueTemplate": "..." }` objects for event tags. |
-| `timeSourceType` | `"flowTime"` (default) or `"payloadPath"`. Override the event timestamp. |
+| `timeSourceType` | `"now"` (default), `"payloadTime"`, or `"payloadPath"`. Override the event timestamp. |
 | `timeSourcePath` | Payload path to a timestamp. Used when `timeSourceType: "payloadPath"`. |
 | `resultPath` | Payload path for the created event object. Shape: `{ id, applicationId, level, subject, message, deviceId, data, eventTags, state, creationDate, lastUpdated }`. The `id` field is needed to Get/Update/Delete the event downstream. |
 
@@ -242,9 +242,9 @@ All three modes use the same `dataMethod` to control what gets updated:
 | `commentTemplate` | Comment to append to the event's history. |
 | `deviceIdTemplate` | Update linked device. Set to `null` (JSON null, not empty string) to remove the device association. |
 | `eventTags` | Array of `{ keyTemplate, valueTemplate }` objects. Merged into existing tags. Omit `valueTemplate` to delete a tag key. |
-| `dataSourceType` | `"payloadPath"` (read from `dataSourcePath`) or `"JSON_OBJECT"` (read from `dataSourceJson`). |
+| `dataSourceType` | `"payloadPath"` (read from `dataSourcePath`) or `"jsonTemplate"` (read from `dataSourceJson`). |
 | `dataSourcePath` | Payload path to structured event data. Used when `dataSourceType: "payloadPath"`. |
-| `dataSourceJson` | JSON template for structured event data. Used when `dataSourceType: "JSON_OBJECT"`. |
+| `dataSourceJson` | JSON template for structured event data. Used when `dataSourceType: "jsonTemplate"`. |
 
 #### `"payloadPath"` — read the full event update from payload
 

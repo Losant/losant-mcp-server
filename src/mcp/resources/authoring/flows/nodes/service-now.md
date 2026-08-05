@@ -54,7 +54,23 @@ Two ways to specify the ServiceNow instance — by instance name or by full URL.
 | `action` | `"tableGet"` | **Required.** Operation to perform (see table below). |
 | `tableNameTemplate` | `"incident"` | **Required.** ServiceNow table name. Template. |
 | `idTemplate` | `""` | **Required** for `tableRowGet`, `tableRowPut`, `tableRowDelete`. Record sys_id. Template. |
-| `resultPath` | `""` | Payload path to write the response. |
+| `resultPath` | `""` | Payload path to write the response. The `resultPath` can point to an existing payload path to overwrite it. |
+
+### Output shape
+
+`resultPath` receives the ServiceNow REST API response object. The shape varies by operation — list operations return an object with a `result` array; create/update/get operations return an object with a `result` record:
+
+```json
+{
+  "working": {
+    "incidents": {
+      "result": [
+        { "sys_id": "abc123", "number": "INC0012345", "short_description": "Network down" }
+      ]
+    }
+  }
+}
+```
 | `params` | `[]` | Array of `{ name, value }` query parameter objects (e.g. `sysparmQuery`, `sysparmLimit`). |
 | `bodyTemplateType` | `"individualFields"` | How the request body is provided. See below. |
 | `bodyTemplate` | `[]` | Body content — shape depends on `bodyTemplateType`. |

@@ -54,6 +54,14 @@ Three connection methods: integration, service credential, or direct AWS credent
 | `messageDeduplicationIdTemplate` | `""` | Optional deduplication ID for FIFO queues. Template. |
 | `resultPath` | `""` | Payload path to write the send result. |
 
+## Output
+
+`resultPath` receives a confirmation object with the SQS message ID:
+
+```json
+{ "working": { "sqsResult": { "success": true, "messageId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" } } }
+```
+
 ## Experience workflows
 
 Same as Cloud.

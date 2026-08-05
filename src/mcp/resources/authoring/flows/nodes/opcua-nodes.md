@@ -106,7 +106,23 @@ Reads values from one or more OPC UA nodes. Result is an object keyed by each in
 |---|---|---|
 | `readInstructionsType` | `"array"` | `"array"` or `"payloadPath"` (GEA 1.18.0+). |
 | `readInstructions` | `[]` | **Required.** When `"array"`: array of read instruction objects. When `"payloadPath"`: payload path string resolving to an array of objects with `nameSpace`, `identifier`, and `key` keys. |
-| `destinationPath` | `""` | **Required.** Payload path to write read results. |
+| `destinationPath` | `""` | **Required.** Payload path to write read results. The `destinationPath` can point to an existing payload path to overwrite it. |
+
+### Read output shape
+
+```json
+{
+  "working": {
+    "opcData": {
+      "temperature": 72.4,
+      "pressure": 14.7,
+      "errors": []
+    }
+  }
+}
+```
+
+Each key corresponds to the `key` field from `readInstructions`. `errors` captures per-node failures.
 
 **Read instruction fields** (when `readInstructionsType: "array"`):
 
@@ -151,6 +167,14 @@ Writes values to one or more OPC UA nodes. Values are automatically converted to
 | `writeInstructionsType` | `"array"` | `"array"` or `"payloadPath"` (GEA 1.18.0+). |
 | `writeInstructions` | `[]` | **Required.** When `"array"`: array of write instruction objects. When `"payloadPath"`: payload path string resolving to an array of objects with `nameSpace`, `identifier`, and `value` keys. |
 | `destinationPath` | `""` | Payload path to write result metadata. |
+
+### Write output shape
+
+```json
+{ "working": { "writeResult": { "write": [{ "nodeId": "ns=1;s=MyTag", "success": true }], "errors": [] } } }
+```
+
+Each entry in `write` corresponds to a write instruction. `errors` contains any per-node error strings.
 
 **Write instruction fields** (when `writeInstructionsType: "array"`):
 

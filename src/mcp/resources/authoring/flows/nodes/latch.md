@@ -41,6 +41,18 @@ Branches based on a boolean condition that only transitions when the condition c
 | `isLatchedPath` | `""` | Payload path for the latch state after this execution. |
 | `branchPath` | `""` | Payload path for which branch was taken (`0` or `1`). |
 
+## Output
+
+The Latch node is a branching node — it does not write a result itself, but the optional path fields let you inspect the latch state at any point:
+
+- `latchResultPath` — boolean result of `latchExpression` this execution
+- `resetResultPath` — boolean result of `resetExpression` this execution
+- `wasLatchedPath` — latch state *before* this execution
+- `isLatchedPath` — latch state *after* this execution
+- `branchPath` — which output index was taken (`0` or `1`)
+
+All five are optional and can each be set to any payload path, including an existing path to overwrite it.
+
 ## Experience workflows
 
 Same as Cloud.

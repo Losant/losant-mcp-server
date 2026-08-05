@@ -35,6 +35,16 @@ Sends an email using Losant's built-in email delivery. No credential required. *
 | `bodyTemplate` | **Required.** Email body as an HTML template. Always rendered as HTML. |
 | `resultPath` | Optional. Payload path to write the send result object. |
 
+## Output
+
+`resultPath` receives a confirmation object:
+
+```json
+{ "working": { "emailResult": { "success": true } } }
+```
+
+On error (when `errorBehavior` is configured), `resultPath` receives `{ "error": { "type": "...", "message": "..." } }` on the error branch.
+
 ## Experience workflows
 
 Same as Cloud.

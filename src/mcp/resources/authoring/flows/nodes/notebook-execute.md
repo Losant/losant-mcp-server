@@ -41,7 +41,22 @@ The Notebook: Execute Node requests execution of a Losant Notebook. It does not 
 
 ### Response at `resultPath`
 
-When set, `resultPath` receives the notebook execution object returned by Losant when the execution is queued. Use the execution ID to check status via a subsequent Losant API Node call if needed.
+When set, `resultPath` receives the notebook execution object:
+
+```json
+{
+  "working": {
+    "notebookExecution": {
+      "id": "xxxxxxxxxxxxxxxxxxxxxxxx",
+      "notebookId": "xxxxxxxxxxxxxxxxxxxxxxxx",
+      "status": "queued",
+      "creationDate": "2024-01-01T00:00:00.000Z"
+    }
+  }
+}
+```
+
+The `status` is `"queued"` or `"running"` immediately after triggering. Use the `id` with a Losant API Node to poll for completion if needed.
 
 On error (e.g. notebook not found, execution limit exceeded), an error object is placed at `resultPath` or the workflow halts depending on error handling.
 

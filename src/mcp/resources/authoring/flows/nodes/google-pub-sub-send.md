@@ -49,6 +49,14 @@ Four auth methods: integration, service credential, JSON template, or payload pa
 | `attrFields` | `[]` | Array of `{ keyTemplate, valueTemplate }` attribute pairs. |
 | `resultPath` | `""` | Payload path to write the publish result. |
 
+## Output
+
+`resultPath` receives a confirmation object with the Pub/Sub message ID:
+
+```json
+{ "working": { "pubsubResult": { "success": true, "messageId": "1234567890" } } }
+```
+
 ## Experience workflows
 
 Same as Cloud.

@@ -42,8 +42,8 @@ Creates a new Experience User. Two configuration modes: individual fields or a J
 | `passwordTemplate` | `""` | **Required** (individualFields). Password. Template. |
 | `firstNameTemplate` | `""` | Optional first name. Template. |
 | `lastNameTemplate` | `""` | Optional last name. Template. |
-| `dataTemplate` | `""` | **Required** when `dataMethod: "jsonTemplate"`. User object as JSON template. |
-| `dataPath` | `""` | **Required** when `dataMethod: "payloadPath"`. Payload path to user object. |
+| `userJsonTemplate` | `""` | **Required** when `dataMethod: "jsonTemplate"`. User object as JSON template. |
+| `userPayloadPath` | `""` | **Required** when `dataMethod: "payloadPath"`. Payload path to user object. |
 | `resultPath` | `""` | **Required.** Payload path to write the created user object. |
 
 ---

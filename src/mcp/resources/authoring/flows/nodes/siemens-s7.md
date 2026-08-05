@@ -62,7 +62,23 @@ Reads values from Siemens S7 data blocks.
 | `timeoutTemplate` | `"30000"` | Timeout in milliseconds. Template. |
 | `readInstructionsType` | `"array"` | `"array"` or `"payloadPath"`. |
 | `readInstructions` | `[]` | **Required.** Array of read instruction objects. |
-| `destinationPath` | `""` | **Required.** Payload path to write results. |
+| `destinationPath` | `""` | **Required.** Payload path to write results. The `destinationPath` can point to an existing payload path to overwrite it. |
+
+### Read output shape
+
+```json
+{
+  "working": {
+    "s7Data": {
+      "temperature": 72.4,
+      "valve": true,
+      "errors": []
+    }
+  }
+}
+```
+
+Each key corresponds to the `key` field from `readInstructions`. `errors` captures per-tag failures.
 
 Read instruction fields: `dbTemplate` (data block 0–65535), `offsetTemplate` (byte offset 0–2147483646), `dataTypeTemplate` (e.g. `"INT"`, `"DINT"`, `"REAL"`, `"BOOL"`, `"STRING"`, `"BYTE"`), `key` (cannot start with `"errors"`).
 
@@ -99,3 +115,14 @@ Writes values to Siemens S7 data blocks.
 ```
 
 Write instructions require the same connection fields plus `valueTypeTemplate` (`"singleValue"` or `"arrayOfValues"`), `valueTemplate`, and all block/offset/dataType fields.
+
+
+### Write output shape
+
+`destinationPath` receives a write result object:
+
+```json
+{ "working": { "writeResult": { "errors": [] } } }
+```
+
+`errors` is an array of per-tag error strings. An empty array means all writes succeeded.

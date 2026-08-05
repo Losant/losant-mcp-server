@@ -97,6 +97,18 @@ All GPS values (`gpsCheck`, `gpsCenter`, and the coordinates in `polygonCoords`/
 `outputIds[0]` — fires when the coordinate is **outside** the geofence, or when the input is invalid (bad GPS format, missing polygon).
 `outputIds[1]` — fires when the coordinate is **inside** the geofence.
 
+## Output
+
+**Point-in-polygon and multi-polygon modes** — the node branches (`outputIds[0]` = inside, `outputIds[1]` = outside). `resultPath` receives `true` (inside) or `false` (outside).
+
+**Radius mode** — the node branches on inside/outside. `resultPath` receives the distance in meters from the center point to the input coordinate (a number).
+
+```json
+{ "working": { "geoResult": 142.7 } }
+```
+
+The `resultPath` can point to an existing payload path to overwrite it.
+
 ## Experience workflows
 
 Same as Cloud.

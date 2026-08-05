@@ -42,6 +42,14 @@ Two auth methods: service credential or direct API token.
 | `writePayloadPath` | `""` | **Required** (payloadPath). Payload path to log entries. |
 | `resultPath` | `""` | Payload path to write the send result. |
 
+## Output
+
+`resultPath` receives a confirmation object:
+
+```json
+{ "working": { "logglyResult": { "success": true } } }
+```
+
 ## Experience workflows
 
 Same as Cloud.

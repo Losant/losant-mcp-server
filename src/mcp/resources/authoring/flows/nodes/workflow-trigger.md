@@ -77,6 +77,13 @@ The Workflow Trigger Node triggers another workflow's Virtual Button — immedia
 | `runIdTemplate` | `""` | **Required** when `behavior: "cancel"`. The run ID from when the execution was scheduled. Template. |
 | `resultPath` | `""` | Payload path to write the result. |
 
+### Output
+
+`resultPath` receives a result object. For `behavior: "trigger"` and `behavior: "schedule"`, the result includes the execution `runId`. For `behavior: "cancel"`, it confirms the scheduled execution was cancelled.
+
+```json
+{ "working": { "triggerResult": { "runId": "xxxxxxxxxxxxxxxxxxxxxxxx" } } }
+```
 ### Getting `triggerVirtualButtonId` — two-step pattern
 
 The `key` of a Virtual Button trigger is server-generated and not known until after the target workflow is created. To wire a WorkflowTriggerNode correctly:

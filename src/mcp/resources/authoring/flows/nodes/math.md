@@ -46,6 +46,19 @@ sqrt({{working.x}}^2 + {{working.y}}^2)    → Euclidean distance
 floor({{data.value}} / 10) * 10            → Round down to nearest 10
 ```
 
+## Output
+
+Each statement writes its expression result to the specified `resultPath`. The result is a number (integer or float depending on the expression). You can set `resultPath` to an existing payload path to overwrite it in place — for example, `data.attributes.tempC` to transform a sensor reading before further processing.
+
+```json
+{
+  "working": {
+    "tempF": 98.6,
+    "tempFRounded": 98.6
+  }
+}
+```
+
 ## Experience workflows
 
 Same as Cloud.

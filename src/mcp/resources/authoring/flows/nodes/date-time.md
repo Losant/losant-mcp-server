@@ -41,7 +41,7 @@ Parses, manipulates, and formats date/time values using Moment.js operations —
 | `resultFormatString` | `""` | Moment.js format string for the output (e.g. `"YYYY-MM-DD"`). Used by `format` operation. |
 | `timezone` | `""` | IANA timezone (e.g. `"America/Chicago"`). Applied to the operation. |
 | `numberValue` | `""` | Amount for add/subtract/set operations. Template. |
-| `unit` | `"year"` | Time unit for add/subtract/set/start-of: `"year"`, `"month"`, `"day"`, `"hour"`, `"minute"`, `"second"`, `"millisecond"`. |
+| `unit` | `"year"` | Time unit for add/subtract/set/start-of: `"year"`, `"quarter"`, `"month"`, `"week"`, `"dayOfYear"`, `"day"`, `"dayOfWeek"`, `"hour"`, `"minute"`, `"second"`, `"millisecond"`. |
 | `diffDataPath` | `""` | Payload path of the second date for `diff` operation. |
 | `diffDataFormatString` | `""` | Format string for the diff comparison date. |
 
@@ -56,10 +56,11 @@ Parses, manipulates, and formats date/time values using Moment.js operations —
 | `setDatePart` | Date | Set a specific `unit` component to `numberValue`. |
 | `diff` | Number | Difference between source and `diffDataPath` date in `unit`s. |
 | `daysInMonth` | Number | Number of days in the source date's month. |
-| `startOf` | Date | Round down to the start of the specified `unit`. |
+| `startOfTime` | Date | Round down to the start of the specified `unit`. |
 | `toArray` | Array | Convert to `[year, month, day, hour, minute, second, ms]`. |
 | `toObject` | Object | Convert to `{ years, months, date, hours, minutes, seconds, milliseconds }`. |
-| `unixTimestamp` | Number | Convert to Unix timestamp (seconds). |
+| `unixTimestampSeconds` | Number | Convert to Unix timestamp in seconds. |
+| `unixTimestampMilliseconds` | Number | Convert to Unix timestamp in milliseconds. |
 
 ## Experience workflows
 

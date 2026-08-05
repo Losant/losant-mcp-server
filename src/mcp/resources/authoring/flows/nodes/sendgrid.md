@@ -49,6 +49,14 @@ Two auth methods: service credential or direct API key (must start with `"SG."`)
 | `attachments` | `[]` | Array of attachment objects (max 10). Edge requires GEA 1.43.3+. |
 | `resultPath` | `""` | Payload path to write the send result. |
 
+## Output
+
+`resultPath` receives a confirmation object:
+
+```json
+{ "working": { "sendResult": { "success": true } } }
+```
+
 ## Experience workflows
 
 Same as Cloud.

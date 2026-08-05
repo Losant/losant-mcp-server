@@ -37,38 +37,19 @@ Three configuration modes via `dataMethod`.
 }
 ```
 
-**Base fields:**
-
 | Config field | Default | Notes |
 |---|---|---|
 | `dataMethod` | `"individualFields"` | **Required.** `"individualFields"`, `"jsonTemplate"`, or `"payloadPath"`. |
 | `nameTemplate` | `""` | Key name. Template. |
 | `descriptionTemplate` | `""` | Key description. Template. |
-| `resultPath` | `""` | **Required.** Payload path to write `{ key, secret }`. Store the `secret` immediately — it cannot be retrieved again. |
-
-**Address restriction fields:**
-
-| Config field | Default | Notes |
-|---|---|---|
-| `addressFilterTypeTemplate` | `"all"` | `"all"` — allow connections from any IP. `"whitelist"` — allow only listed IPs/CIDRs. `"blacklist"` — block listed IPs/CIDRs. Template. |
+| `resultPath` | `""` | **Required.** Payload path to write the created key object. |
+| `addressFilterTypeTemplate` | `"all"` | IP restriction mode. `"all"` — allow any IP. `"whitelist"` — allow only listed IPs/CIDRs. `"blacklist"` — block listed IPs/CIDRs. Template. |
 | `addressesTemplate` | `[]` | **Required** when `addressFilterTypeTemplate` is `"whitelist"` or `"blacklist"`. Array of IP address or CIDR strings. |
-
-**Topic restriction fields:**
-
-| Config field | Default | Notes |
-|---|---|---|
-| `filterTypeTemplate` | `"none"` | `"none"` — no additional topic restrictions. `"all"` — allow all topics beyond device state. `"whitelist"` — allow only listed topics. `"blacklist"` — block listed topics. Template. |
-| `pubTopicsTemplate` | `[]` | **Required** when `filterTypeTemplate` is `"whitelist"` or `"blacklist"`. Array of MQTT topic strings the key may publish to. |
-| `subTopicsTemplate` | `[]` | **Required** when `filterTypeTemplate` is `"whitelist"` or `"blacklist"`. Array of MQTT topic strings the key may subscribe to. |
-
-**Device restriction fields** (only include when restricting to specific devices):
-
-| Config field | Notes |
-|---|---|
-| `deviceIdsTemplate` | Array of device ID strings (or templates) the key can authenticate as. |
-| `deviceTagsTemplate` | Array of `{ keyTemplate, valueTemplate }` device tag objects for tag-based device matching. |
-
-When neither `deviceIdsTemplate` nor `deviceTagsTemplate` is present, the key is unrestricted and can authenticate as any device.
+| `filterTypeTemplate` | `"none"` | MQTT topic restriction mode. `"none"` — no topic restrictions. `"all"` — allow all topics. `"whitelist"` — allow only listed topics. `"blacklist"` — block listed topics. Template. |
+| `pubTopicsTemplate` | `[]` | **Required** when `filterTypeTemplate` is `"whitelist"` or `"blacklist"`. MQTT topics the key may publish to. |
+| `subTopicsTemplate` | `[]` | **Required** when `filterTypeTemplate` is `"whitelist"` or `"blacklist"`. MQTT topics the key may subscribe to. |
+| `deviceIdsTemplate` | — | Array of device ID strings the key can authenticate as. Omit for unrestricted device access. |
+| `deviceTagsTemplate` | — | Array of `{ keyTemplate, valueTemplate }` objects for tag-based device restriction. Omit for unrestricted device access. |
 
 ### JSON Template mode (`dataMethod: "jsonTemplate"`)
 
@@ -101,6 +82,23 @@ When neither `deviceIdsTemplate` nor `deviceTagsTemplate` is present, the key is
 | Config field | Notes |
 |---|---|
 | `payloadPath` | **Required.** Payload path to an object containing the access key configuration. |
+
+## Output
+
+`resultPath` receives the created access key object:
+
+```json
+{
+  "working": {
+    "accessKey": {
+      "key": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      "secret": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    }
+  }
+}
+```
+
+**The `secret` is only returned at creation time and cannot be retrieved again.** Store it immediately — write it to a secure location (e.g. device tags, an external secret store, or send it directly to the device) before the workflow ends.
 
 ## Experience workflows
 

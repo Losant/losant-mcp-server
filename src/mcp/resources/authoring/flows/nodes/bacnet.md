@@ -61,7 +61,23 @@ Reads property values from BACnet device objects.
 | `apduTimeout` | `""` | APDU request timeout in milliseconds. Template. |
 | `readInstructionsType` | `"array"` | `"array"` or `"payloadPath"`. |
 | `readInstructions` | `[]` | **Required.** Array of read instruction objects. |
-| `destinationPath` | `""` | **Required.** Payload path to write results. |
+| `destinationPath` | `""` | **Required.** Payload path to write results. The `destinationPath` can point to an existing payload path to overwrite it. |
+
+### Read output shape
+
+```json
+{
+  "working": {
+    "bacnetData": {
+      "temperature": 72.4,
+      "occupancy": true,
+      "errors": []
+    }
+  }
+}
+```
+
+Each key corresponds to the `key` field from `readInstructions`. `errors` captures per-property failures.
 
 Read instruction fields — all are **Required**:
 
@@ -155,6 +171,14 @@ Writes property values to BACnet device objects.
 | `writeInstructionsType` | `"array"` | `"array"` or `"payloadPath"`. |
 | `writeInstructions` | `[]` | **Required.** Array of write instruction objects. |
 | `destinationPath` | `""` | Optional. Payload path to write result metadata. |
+
+### Write output shape
+
+```json
+{ "working": { "writeResult": { "errors": [] } } }
+```
+
+`errors` is an array of per-property error strings. An empty array means all writes succeeded.
 
 Write instruction fields:
 

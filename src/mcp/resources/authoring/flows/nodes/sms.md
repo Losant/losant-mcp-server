@@ -33,6 +33,14 @@ The SMS Node sends SMS messages via Losant's built-in SMS delivery service. **Ra
 | `bodyTemplate` | `""` | **Required.** SMS message body. Template. |
 | `resultPath` | `""` | Payload path to write the send result. |
 
+## Output
+
+`resultPath` receives a confirmation object:
+
+```json
+{ "working": { "smsResult": { "success": true } } }
+```
+
 ## Experience workflows
 
 Same as Cloud.

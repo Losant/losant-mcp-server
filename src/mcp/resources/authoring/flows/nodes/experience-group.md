@@ -38,8 +38,8 @@ Creates a new Experience Group.
 | `dataMethod` | `"individualFields"` | `"individualFields"`, `"jsonTemplate"`, or `"payloadPath"`. |
 | `nameTemplate` | `""` | **Required** (individualFields). Group name. Template. |
 | `descriptionTemplate` | `""` | Optional description. Template. |
-| `dataTemplate` | `""` | **Required** when `dataMethod: "jsonTemplate"`. Group object as JSON template. |
-| `dataPath` | `""` | **Required** when `dataMethod: "payloadPath"`. Payload path to group object. |
+| `groupJsonTemplate` | `""` | **Required** when `dataMethod: "jsonTemplate"`. Group object as JSON template. |
+| `groupPayloadPath` | `""` | **Required** when `dataMethod: "payloadPath"`. Payload path to group object. |
 | `resultPath` | `""` | **Required.** Payload path to write the created group object. |
 
 ---
@@ -141,7 +141,7 @@ Verifies that an Experience User is a member of a specific group. Branches — `
     "groupIdTemplate": "{{data.requiredGroupId}}"
   },
   "meta": { "category": "experience", "name": "verify-experience-group", "label": "Group: Verify", "x": 200, "y": 200 },
-  "outputIds": [["is-member"], ["not-member"]]
+  "outputIds": [["not-member"], ["is-member"]]
 }
 ```
 

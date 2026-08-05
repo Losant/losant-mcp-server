@@ -51,6 +51,14 @@ Two auth methods: service credential or direct API key.
 | `attachments` | `[]` | Array of attachment objects (max 10). |
 | `resultPath` | `""` | Payload path to write the send result. |
 
+## Output
+
+`resultPath` receives a confirmation object with the Mailgun message ID:
+
+```json
+{ "working": { "sendResult": { "success": true, "id": "<messageId@mailgun.org>" } } }
+```
+
 ## Experience workflows
 
 Same as Cloud.
