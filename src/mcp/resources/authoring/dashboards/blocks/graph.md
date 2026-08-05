@@ -28,7 +28,7 @@ See [losant://references/dashboard/device-queries](losant://references/dashboard
 | `resolution` | integer (ms) \| `"{{dashboard.resolution}}"` \| `null` | — | Aggregation bucket size. Use the templated string to inherit the dashboard's global resolution. `null` disables bucketing (all raw points returned). Lower resolution = more points = more detail. Ignored when `realTime: true` or for segments with `aggregation: "NONE"`. |
 | `disallowUserSelectedDuration` | boolean | `false` | When `true`, hides the block's time-range dropdown and disables mouse-drag zooming. Use for blocks whose duration/resolution should not be viewer-changeable. |
 | `hideLegend` | boolean | `false` | When `true`, the legend at the bottom is hidden. |
-| `displayType` | `"stick"` \| `"line"` | — | **Stripped by the platform reducer on every save** — any value set here is silently deleted. Use segment-level `graphType` instead. |
+| `displayType` | `"stick"` \| `"line"` | — | **Deprecated; should not be set** — any value set here is silently deleted. Use segment-level `graphType` instead. |
 
 ### Segments
 

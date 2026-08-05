@@ -36,7 +36,7 @@ Every experience view — layout, page, and component — receives the same root
 The experience version handling this request.
 
 ```handlebars
-{{experience.version.name}}   {{! e.g. "develop", "v1.2" }}
+{{experience.version}}   {{! e.g. "develop", "v1.2" }}
 ```
 
 ### `experience.endpoint`
@@ -45,7 +45,7 @@ The matched endpoint configuration.
 
 ```handlebars
 {{experience.endpoint.route}}    {{! e.g. "/devices/{deviceId}" }}
-{{experience.endpoint.method}}   {{! e.g. "GET" }}
+{{experience.endpoint.method}}   {{! e.g. "get" }}
 ```
 
 ### `experience.page` / `experience.layout`
@@ -72,7 +72,7 @@ The logged-in experience user. `null` for unauthenticated requests to `access: "
 {{experience.user.userTags.firmwareVersion}}
 
 {{! Check group membership }}
-{{#each experience.user.groups}}
+{{#each experience.user.experienceGroups}}
   {{this.id}} — {{this.name}}
 {{/each}}
 ```
@@ -83,7 +83,7 @@ Authentication metadata for the request. Rarely needed in templates.
 
 ### `experience.device`
 
-**Only present** when the endpoint's `access` is `"device"` and the request carries a valid device token. Contains the full device object for the authenticating device.
+**Only present** when the endpoint's `access` is `"device"` and the authenticated experience user is in a group associated with the resolved device. Contains the full device object for that device.
 
 ```handlebars
 {{#if experience.device}}
@@ -102,7 +102,7 @@ Key/value pairs configured on the experience version under "version globals." Av
 {{globals.apiBaseUrl}}
 ```
 
-Globals are set via `losant_write` `operation=updateOne` `resourceType=experienceVersion` — the `globals` field is an array of `{ "key": "...", "value": "..." }` objects.
+Globals are set via `losant_write` `operation=updateOne` `resourceType=experienceVersion` — the `globals` field is an array of `{ "key": "...", "json": "..." }` objects.
 
 ---
 
@@ -131,7 +131,7 @@ The incoming HTTP request.
 
 ```handlebars
 {{request.path}}                        {{! "/devices/abc123" }}
-{{request.method}}                      {{! "GET" }}
+{{request.method}}                      {{! "get" }}
 {{request.params.deviceId}}             {{! Path param from route "/devices/{deviceId}" }}
 {{request.query.page}}                  {{! ?page=2 }}
 {{request.query.filter}}                {{! ?filter=active }}
