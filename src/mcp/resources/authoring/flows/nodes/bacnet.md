@@ -39,9 +39,9 @@ Reads property values from BACnet device objects.
     "readInstructionsType": "array",
     "readInstructions": [
       {
-        "typeTemplate": "analogInput",
+        "typeTemplate": "0",
         "instanceTemplate": "1",
-        "propertyIdTemplate": "presentValue",
+        "propertyIdTemplate": "85",
         "key": "temperature"
       }
     ],
@@ -56,7 +56,7 @@ Reads property values from BACnet device objects.
 |---|---|---|
 | `hostTemplate` | `""` | **Required.** Device IP address. Template. |
 | `hostPortTemplate` | `""` | Device BACnet port. Default 47808. Template. |
-| `portTemplate` | `""` | Local source port. Template. |
+| `portTemplate` | `""` | Legacy alias for `incomingPortTemplate` — the editor writes to `incomingPortTemplate`. Prefer `incomingPortTemplate`. |
 | `incomingPortTemplate` | `""` | Local incoming port. Template. |
 | `apduTimeout` | `""` | APDU request timeout in milliseconds. Template. |
 | `readInstructionsType` | `"array"` | `"array"` or `"payloadPath"`. |
@@ -83,7 +83,7 @@ Read instruction fields — all are **Required**:
 
 | Field | Notes |
 |---|---|
-| `typeTemplate` | BACnet object type as an **integer string**. Common values: `"0"` (Analog Input), `"1"` (Analog Output), `"2"` (Analog Value), `"3"` (Binary Input), `"4"` (Binary Output), `"5"` (Binary Value), `"8"` (Device), `"13"` (Multi-State Input), `"14"` (Multi-State Output), `"19"` (Multi-State Value). Full list: all 60 BACnet object types from the BACnet specification. |
+| `typeTemplate` | BACnet object type as an **integer string** (or a template resolving to one). Common values: `"0"` (Analog Input), `"1"` (Analog Output), `"2"` (Analog Value), `"3"` (Binary Input), `"4"` (Binary Output), `"5"` (Binary Value), `"8"` (Device), `"13"` (Multi-State Input), `"14"` (Multi-State Output), `"19"` (Multi-State Value). Named strings like `"analogInput"` are UI labels only — always pass the integer string. |
 | `instanceTemplate` | Object instance number (0–4194302) as a string template. |
 | `propertyIdTemplate` | BACnet property ID as an **integer string**. Common values: `"85"` (Present Value), `"77"` (Object Name), `"79"` (Object Type), `"28"` (Description), `"111"` (Status Flags), `"103"` (Reliability), `"117"` (Units), `"87"` (Priority Array), `"104"` (Relinquish Default). Full list: 455 BACnet property identifiers. |
 | `key` | Result key in the destination object. Cannot be `"errors"`. |
@@ -118,11 +118,30 @@ Broadcasts a Who-Is request to discover BACnet devices on the network. Returns a
 | Config field | Default | Notes |
 |---|---|---|
 | `broadcastAddressTemplate` | `"255.255.255.255"` | Broadcast address. Template. |
+| `hostPortTemplate` | `""` | Device BACnet port. Default 47808. Template. |
+| `incomingPortTemplate` | `""` | Local incoming port for the BACnet response. Default 47808. Template. |
 | `scanTimeMsTemplate` | `"30000"` | Scan duration in milliseconds. Template. |
 | `scanCountTemplate` | `""` | Max devices to discover. Template. |
 | `lowLimitTemplate` | `""` | Min device ID in range. Template. |
 | `highLimitTemplate` | `""` | Max device ID in range. Must be > `lowLimitTemplate`. Template. |
-| `destinationPath` | `""` | **Required.** Payload path to write array of discovered devices. |
+| `destinationPath` | `""` | **Required.** Payload path to write the discovered devices object. |
+
+### Who-Is output shape
+
+`destinationPath` receives an object keyed by device instance ID. Each value contains the device's network information:
+
+```json
+{
+  "working": {
+    "devices": {
+      "6": { "address": "192.168.2.56", "port": 47808, "vendorId": 7, "forwardedFrom": null },
+      "7": { "address": "192.168.2.57", "port": 47808, "vendorId": 7, "forwardedFrom": null }
+    }
+  }
+}
+```
+
+On error (e.g. client initialization failure): `{ "error": { "type": "BACNET_DISCOVER_ERROR", "message": "..." } }`.
 
 ---
 
@@ -145,11 +164,11 @@ Writes property values to BACnet device objects.
     "writeInstructionsType": "array",
     "writeInstructions": [
       {
-        "typeTemplate": "analogOutput",
+        "typeTemplate": "1",
         "instanceTemplate": "1",
-        "propertyIdTemplate": "presentValue",
+        "propertyIdTemplate": "85",
         "propertyIndexTemplate": "-1",
-        "writeValueTypeTemplate": "Real",
+        "writeValueTypeTemplate": "4",
         "writeValueTemplate": "{{working.setpoint}}",
         "writePriorityTemplate": "16"
       }
@@ -165,7 +184,7 @@ Writes property values to BACnet device objects.
 |---|---|---|
 | `hostTemplate` | `""` | **Required.** Device IP address. Template. |
 | `hostPortTemplate` | `""` | Device BACnet port. Default 47808. Template. |
-| `portTemplate` | `""` | Local source port. Template. |
+| `portTemplate` | `""` | Legacy alias for `incomingPortTemplate` — the editor writes to `incomingPortTemplate`. Prefer `incomingPortTemplate`. |
 | `incomingPortTemplate` | `""` | Local incoming port. Template. |
 | `apduTimeout` | `""` | APDU request timeout in milliseconds. Template. |
 | `writeInstructionsType` | `"array"` | `"array"` or `"payloadPath"`. |

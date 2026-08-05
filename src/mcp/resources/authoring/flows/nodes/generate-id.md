@@ -37,4 +37,4 @@ Same as Cloud.
 
 ## Edge workflows
 
-Same as Cloud.
+Minimum GEA version: **1.1.0**.

@@ -1,6 +1,6 @@
 # Workflow Storage Nodes
 
-Two nodes for reading and writing workflow-scoped persistent storage. Values persist across workflow executions and are shared across all instances of the same workflow.
+Two nodes for reading and writing workflow-scoped persistent storage. Values persist across workflow executions and are shared across all instances of the same workflow. Available in cloud, experience, customNode, and embedded workflows.
 
 ## Required Fields
 

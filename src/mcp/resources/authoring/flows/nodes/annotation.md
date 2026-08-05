@@ -25,8 +25,8 @@ A visual-only node that displays a text label on the workflow canvas. Has no run
     "x": 60,
     "y": 60,
     "annotationText": "This section handles error recovery",
-    "width": 200,
-    "height": 100
+    "width": 260,
+    "height": 220
   },
   "outputIds": []
 }
@@ -37,8 +37,8 @@ A visual-only node that displays a text label on the workflow canvas. Has no run
 | `meta` field | Default | Notes |
 |---|---|---|
 | `annotationText` | `""` | Text displayed inside the annotation box. Markdown is supported. |
-| `width` | `200` | Width in pixels. Must be a multiple of 20. UI range: 100–600. |
-| `height` | `100` | Height in pixels. Must be a multiple of 20. UI range: 100–600. |
+| `width` | `260` | Width in pixels. Must be a multiple of 20. UI range: 100–600. |
+| `height` | `220` | Height in pixels. Must be a multiple of 20. UI range: 100–600. |
 
 ## Experience workflows
 

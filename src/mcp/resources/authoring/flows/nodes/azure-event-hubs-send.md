@@ -47,6 +47,8 @@ Three connection methods: integration, service credential, or direct connection 
 | `dataTemplate` | `""` | **Required** when `dataMethod: "stringTemplate"`. Message body. Template. |
 | `dataPayloadPath` | `""` | **Required** when `dataMethod: "payloadPath"`. |
 | `propMethod` | `"individualFields"` | `"individualFields"`, `"jsonTemplate"`, or `"payloadPath"` for user properties. |
+| `propTemplate` | `""` | **Required** when `propMethod: "jsonTemplate"`. JSON template of the user properties object. |
+| `propPayloadPath` | `""` | **Required** when `propMethod: "payloadPath"`. Payload path to the user properties object. |
 | `propFields` | `[]` | Array of `{ keyTemplate, valueTemplate }` property pairs. |
 | `resultPath` | `""` | Payload path to write the send result. |
 
@@ -56,6 +58,8 @@ Three connection methods: integration, service credential, or direct connection 
 
 ```json
 { "working": { "ehResult": { "success": true } } }
+
+On error: `{ "working": { "ehResult": { "success": false, "error": { "message": "..." } } } }`
 ```
 
 ## Experience workflows

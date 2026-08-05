@@ -39,4 +39,4 @@ Same as Cloud.
 
 ## Edge workflows
 
-Not available.
+Same as Cloud (no minimum GEA version).

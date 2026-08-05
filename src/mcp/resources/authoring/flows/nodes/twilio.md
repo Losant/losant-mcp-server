@@ -1,6 +1,6 @@
 # Twilio Node (`type: "TwilioSmsNode"`)
 
-The Twilio Node sends SMS messages via a configured Twilio account. Returns a result per recipient with success or error information.
+The Twilio Node sends SMS messages via a configured Twilio account. Returns a result per recipient with success or error information. Available in cloud, experience, and customNode workflows.
 
 ## Required Fields
 
@@ -13,16 +13,15 @@ The Twilio Node sends SMS messages via a configured Twilio account. Returns a re
 
 ## Cloud (Application) workflows
 
-Three auth methods controlled by `credentialMethod`:
+Three auth methods. The direct-key methods are controlled by **`meta.authMethod`**: `"apiKey"` or `"token"`. Credential mode is detected by the presence of `credentialNameTemplate` in `config` — `meta.authMethod` is not set for credential mode (`"credential"` is not a valid schema value). On edge, only `"apiKey"` and `"token"` are available.
 
-### Credential method (`credentialMethod: "credential"`)
+### Credential method (set `credentialNameTemplate` in config; no `meta.authMethod`)
 
 ```json
 {
   "id": "send-sms",
   "type": "TwilioSmsNode",
   "config": {
-    "credentialMethod": "credential",
     "credentialNameTemplate": "my-twilio-credential",
     "fromNumber": "+15550001234",
     "bodyTemplate": "Alert: {{working.alertMsg}}",
@@ -34,44 +33,43 @@ Three auth methods controlled by `credentialMethod`:
 }
 ```
 
-### API Key method (`credentialMethod: "apiKey"`)
+### API Key method (`meta.authMethod: "apiKey"`)
 
 ```json
 {
   "config": {
-    "credentialMethod": "apiKey",
     "accountSid": "ACxxxxxxxx",
     "username": "SKxxxxxxxx",
     "authToken": "myApiKeySecret",
     "fromNumber": "+15550001234",
     "bodyTemplate": "Alert: {{working.alertMsg}}",
     "toNumbers": ["+15559876543"]
-  }
+  },
+  "meta": { "authMethod": "apiKey", ... }
 }
 ```
 
-### Auth Token method (`credentialMethod: "token"`)
+### Auth Token method (`meta.authMethod: "token"`)
 
 ```json
 {
   "config": {
-    "credentialMethod": "token",
     "accountSid": "ACxxxxxxxx",
     "authToken": "myAuthToken",
     "fromNumber": "+15550001234",
     "bodyTemplate": "Alert: {{working.alertMsg}}",
     "toNumbers": ["+15559876543"]
-  }
+  },
+  "meta": { "authMethod": "token", ... }
 }
 ```
 
 | Config field | Default | Notes |
 |---|---|---|
-| `credentialMethod` | `"credential"` | **Required.** `"credential"`, `"apiKey"`, or `"token"`. On edge, only `"apiKey"` and `"token"` are available. |
-| `credentialNameTemplate` | `""` | **Required** when `credentialMethod: "credential"`. Twilio service credential name. Template. |
-| `accountSid` | `""` | **Required** when `credentialMethod: "apiKey"` or `"token"`. Twilio Account SID (starts with `"AC"`). Template. |
-| `username` | `""` | **Required** when `credentialMethod: "apiKey"`. Twilio API Key SID (starts with `"SK"`). Template. |
-| `authToken` | `""` | **Required** when `credentialMethod: "apiKey"` (API Key Secret) or `"token"` (Auth Token). Template. |
+| `credentialNameTemplate` | `""` | Twilio service credential name. When present, signals credential mode — do not set `meta.authMethod`. Template. |
+| `accountSid` | `""` | **Required** when `meta.authMethod: "apiKey"` or `"token"`. Twilio Account SID (starts with `"AC"`). Template. |
+| `username` | `""` | **Required** when `meta.authMethod: "apiKey"`. Twilio API Key SID (starts with `"SK"`). Template. |
+| `authToken` | `""` | **Required** when `meta.authMethod: "apiKey"` (API Key Secret) or `"token"` (Auth Token). Template. |
 | `fromNumber` | `""` | Sender phone number or SID. Required unless `messagingServiceSid` is set. Template. |
 | `messagingServiceSid` | `""` | Messaging Service SID. Alternative to `fromNumber`. Template. |
 | `bodyTemplate` | `""` | SMS message body. Required unless `mediaUrl` is set. Template. |
@@ -85,4 +83,4 @@ Same as Cloud.
 
 ## Edge workflows
 
-Same as Cloud. `credentialMethod: "credential"` is not available on edge — use `"apiKey"` or `"token"` instead.
+Same as Cloud. The credential method (`credentialNameTemplate`) is not available on edge — use `meta.authMethod: "apiKey"` or `"token"` with direct credentials instead.

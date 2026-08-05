@@ -33,7 +33,7 @@ The HTML/XML Parser Node parses an HTML or XML document string and optionally ap
 | `documentPath` | `""` | **Required.** Payload path containing the HTML or XML string to parse. |
 | `selectorTemplate` | `""` | Optional CSS selector to apply after parsing. When empty, the entire document is returned. Template. |
 | `resultFormatTemplate` | `"text"` | **Required.** Output format: `"text"` (visible text concatenated), `"xml"` (XML string), or `"json"` (structured JSON via xml-js). Template. |
-| `resultPath` | `""` | **Required.** Payload path to write the parsed result. |
+| `resultPath` | `""` | **Required.** Payload path to write the parsed result. **Always an array** — one element per matched element. Even without a selector the result is a one-element array containing the whole document. |
 
 ## Experience workflows
 

@@ -1,6 +1,6 @@
 # Workflow Trigger Node (`type: "WorkflowTriggerNode"`)
 
-The Workflow Trigger Node triggers another workflow's Virtual Button — immediately, on a schedule, or cancels a previously scheduled run.
+The Workflow Trigger Node triggers another workflow's Virtual Button — immediately, on a schedule, or cancels a previously scheduled run. Available in cloud, experience, and customNode workflows.
 
 ## Required Fields
 
@@ -79,7 +79,7 @@ The Workflow Trigger Node triggers another workflow's Virtual Button — immedia
 
 ### Output
 
-`resultPath` receives a result object. For `behavior: "trigger"` and `behavior: "schedule"`, the result includes the execution `runId`. For `behavior: "cancel"`, it confirms the scheduled execution was cancelled.
+`resultPath` receives a result object. For `behavior: "immediate"` and `behavior: "schedule"`, the result includes the execution `runId`. For `behavior: "cancel"`, it confirms the scheduled execution was cancelled.
 
 ```json
 { "working": { "triggerResult": { "runId": "xxxxxxxxxxxxxxxxxxxxxxxx" } } }

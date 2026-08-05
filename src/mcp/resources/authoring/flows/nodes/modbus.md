@@ -42,9 +42,9 @@ Both nodes support TCP, RTU serial, and ASCII serial connection types.
 | `connectionTypeTemplate` | `"serial"` | Connection type. |
 | `pathTemplate` | `""` | **Required.** Serial port path (e.g. `"/dev/ttyS0"`). Template. |
 | `baudRateTemplate` | `"9600"` | Baud rate. Template. |
-| `parityTemplate` | `"none"` | `"none"`, `"even"`, or `"odd"`. Template. |
-| `dataBitsTemplate` | `"8"` | Data bits (`7` or `8`). Template. |
-| `stopBitsTemplate` | `"1"` | Stop bits (`1` or `2`). Template. |
+| `parityTemplate` | `"none"` | `"none"`, `"even"`, `"odd"`, `"mark"`, or `"space"`. Template. Requires GEA **1.11.0+** on edge. |
+| `dataBitsTemplate` | *(GEA 1.11.0+ on edge)* | `"8"` | Data bits (`7` or `8`). Template. |
+| `stopBitsTemplate` | *(GEA 1.11.0+ on edge)* | `"1"` | Stop bits (`1` or `2`). Template. |
 
 #### ASCII Serial (`connectionTypeTemplate: "asciiSerial"`)
 
@@ -102,6 +102,7 @@ Reads values from Modbus registers or coils.
 | Connection fields | — | See connection tables above. |
 | `endiannessTemplate` | `"big"` | Byte order for multi-byte values: `"big"` or `"little"`. Template. |
 | `areUnsignedInts` | `false` | When `true`, treat integer register values as unsigned. |
+| `unitIdAllowZeros` | `false` | When `true`, allows unit IDs of 0 (disabled by default for protocol safety). |
 | `readInstructionsType` | `"array"` | `"array"` or `"payloadPath"`. |
 | `readInstructions` | `[]` | **Required.** Array of read instruction objects (see below). |
 | `destinationPath` | `""` | **Required.** Payload path to write results. The `destinationPath` can point to an existing payload path to overwrite it. |
@@ -189,6 +190,8 @@ Writes values to Modbus registers or coils.
 | Connection fields | — | See connection tables above. |
 | `writeInstructionsType` | `"array"` | `"array"` or `"payloadPath"`. |
 | `writeInstructions` | `[]` | **Required.** Array of write instruction objects (see below). |
+| `areUnsignedInts` | `false` | When `true`, treat integer register values as unsigned. |
+| `unitIdAllowZeros` | `false` | When `true`, allows unit IDs of 0. |
 | `destinationPath` | `""` | Payload path to write per-register results. |
 
 ### Write output shape

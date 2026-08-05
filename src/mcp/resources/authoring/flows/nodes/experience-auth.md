@@ -50,6 +50,10 @@ Authenticates an Experience User and issues an auth token. Four authentication m
 | `passwordTemplate` | `""` | **Required** when `meta.authMode: "emailPassword"` or `"tokenEmailPassword"`. |
 | `tokenTemplate` | `""` | **Required** when `meta.authMode: "token"`, `"tokenEmail"`, or `"tokenEmailPassword"`. |
 | `invalidateExistingTokens` | `false` | When `true`, all previous tokens for this user are invalidated on successful auth. |
+| `userResultPath` | `""` | Optional. Payload path to write the authenticated user object. |
+| `tokenResultPath` | `""` | Optional. Payload path to write the generated auth token string. |
+| `ttlTemplate` | `""` | Token time-to-live in seconds. Leave empty for the experience default. Template. |
+| `extraDataJsonTemplate` | `""` | Optional JSON data to embed in the generated token. JSON template. |
 
 **`meta.authMode`** (required on `meta`, not `config`):
 

@@ -36,7 +36,7 @@ Parses a CSV string into an array of row objects. The first row is treated as co
 | Config field | Default | Notes |
 |---|---|---|
 | `source` | `""` | **Required.** Payload path of the CSV string to parse. |
-| `destination` | `""` | **Required.** Payload path to write the resulting array of row objects. |
+| `destination` | `""` | **Required.** Payload path to write the resulting array of row objects on success, or `{ error: { message } }` on parse failure. |
 | `delimiterTemplate` | `""` | Column delimiter. Default (empty) = comma. |
 | `recordDelimiterTemplate` | `"\n"` | Row delimiter. Default = line feed. |
 | `quoteCharTemplate` | `""` | Quote character. Default (empty) = double quote. |
@@ -70,7 +70,7 @@ Converts an array of row objects into a CSV string.
 | Config field | Default | Notes |
 |---|---|---|
 | `source` | `""` | **Required.** Payload path of the array of row objects to encode. |
-| `destination` | `""` | **Required.** Payload path to write the resulting CSV string. |
+| `destination` | `""` | **Required.** Payload path to write the resulting CSV string on success, or `{ error: { message } }` on failure. |
 | `delimiterTemplate` | `""` | Column delimiter. Default (empty) = comma. |
 | `recordDelimiterTemplate` | `"\n"` | Row delimiter. Default = line feed. |
 | `quoteCharTemplate` | `""` | Quote character. Default (empty) = double quote. |

@@ -37,7 +37,7 @@ Creates a cryptographic hash (or HMAC with a secret) of a value.
 | Config field | Default | Notes |
 |---|---|---|
 | `dataTemplate` | `""` | **Required.** Template resolving to the data to hash. |
-| `algorithmTemplate` | `"SHA256"` | **Required.** Hash algorithm: `"MD5"`, `"SHA1"`, `"SHA256"`, `"SHA512"`, `"RIPEMD160"`, `"Whirlpool"`. Template. |
+| `algorithmTemplate` | `"SHA256"` | **Required.** Hash algorithm: `"MD5"`, `"SHA1"`, `"SHA256"`, `"SHA512"`, `"RIPEMD"`, `"Whirlpool"`. Template. |
 | `secretTemplate` | `""` | Optional HMAC secret. When set, produces an HMAC instead of a plain hash. |
 | `encodingTemplate` | `"hex"` | **Required.** Output encoding: `"hex"`, `"base64"`, `"latin1"`. |
 | `dataEncodingTemplate` | `"utf8"` | **Required.** Input data encoding. GEA 1.32.0+ on edge. |
@@ -80,7 +80,7 @@ Generates a cryptographic signature using a private key. Used for verifying data
 | `paddingTemplate` | `"RSA_PKCS1_PADDING"` | **Required.** RSA padding: `"RSA_PKCS1_PADDING"` or `"RSA_PKCS1_PSS_PADDING"`. |
 | `dsaEncodingTemplate` | `"der"` | **Required.** DSA encoding: `"der"` or `"ieee-p1363"`. |
 | `signatureEncodingTemplate` | `"base64"` | **Required.** Output signature encoding: `"base64"`, `"hex"`, `"latin1"`. |
-| `resultPath` | `""` | **Required.** Payload path to write the signature. |
+| `resultPath` | `""` | Optional. Payload path to write `{ signature: "<string>" }` on success or `{ error: { message } }` on failure. |
 
 ---
 
@@ -120,7 +120,7 @@ Verifies a cryptographic signature against a key/certificate. Branches — `outp
 | `paddingTemplate` | `"RSA_PKCS1_PADDING"` | **Required.** |
 | `dsaEncodingTemplate` | `"der"` | **Required.** |
 | `signatureEncodingTemplate` | `"base64"` | **Required.** Must match the encoding used when signing. |
-| `resultPath` | `""` | Payload path to write error details on the invalid branch. |
+| `resultPath` | `""` | Optional. Payload path to write `{ error: { message } }` when the node throws an execution error (e.g. bad key). A clean `false` result (signature mismatch) routes to `outputIds[0]` without writing to `resultPath`. |
 
 ## Experience workflows
 

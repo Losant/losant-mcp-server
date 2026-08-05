@@ -38,3 +38,7 @@ Same as Cloud.
 ## Edge workflows
 
 Same as Cloud.
+
+## Embedded workflows
+
+Same as Cloud.

@@ -15,6 +15,16 @@ The TensorFlow: Predict Node makes predictions against a pre-trained TensorFlow 
 
 Not available.
 
+## Output
+
+`resultPath` receives the prediction result:
+
+```json
+{ "working": { "prediction": { "success": true, "result": [0.92, 0.05, 0.03] } } }
+```
+
+`result` is an array of prediction values. On error: `{ "success": false, "error": { "type": "TENSOR_FLOW_NODE_ERROR", "message": "..." } }`
+
 ## Experience workflows
 
 Not available.
@@ -22,6 +32,8 @@ Not available.
 ## Edge workflows
 
 > **Minimum GEA version:** 1.10.0
+>
+> **Architecture note:** This node does not work on the Alpine GEA variant. Only the `amd64` and `arm32` (GEA &lt;2.0.0) architectures include the TensorFlow.js native bindings required by this node.
 
 ```json
 {

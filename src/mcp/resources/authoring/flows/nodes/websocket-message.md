@@ -1,6 +1,6 @@
 # WebSocket Message Node (`type: "WebsocketMessageNode"`)
 
-The WebSocket Message Node publishes a message to a WebSocket integration. The integration must be connected — messages are not queued if the connection is down.
+The WebSocket Message Node publishes a message to a WebSocket integration. The integration must be connected — messages are not queued if the connection is down. Available in cloud, experience, and customNode workflows.
 
 ## Required Fields
 

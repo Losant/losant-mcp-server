@@ -11,7 +11,7 @@ Manipulates a string value on the payload using one of several operations — sp
 | `meta.name` | `"string"` |
 | `meta.label` | `"String"` (default) |
 
-Available: cloud, experience, customNode, edge, embedded (select ops).
+Available: cloud, experience, customNode, edge.
 
 ## Cloud (Application) workflows
 

@@ -1,6 +1,6 @@
 # ServiceNow Node (`type: "ServiceNowNode"`)
 
-The ServiceNow Node allows a workflow to interact with ServiceNow table records — listing, creating, retrieving, updating, and deleting rows in any ServiceNow table.
+The ServiceNow Node allows a workflow to interact with ServiceNow table records — listing, creating, retrieving, updating, and deleting rows in any ServiceNow table. Available in cloud, experience, and customNode workflows.
 
 ## Required Fields
 
@@ -53,7 +53,7 @@ Two ways to specify the ServiceNow instance — by instance name or by full URL.
 | `urlTemplate` | `""` | **Required** when `meta.uriType: "url"`. Full ServiceNow instance URL. Template. |
 | `action` | `"tableGet"` | **Required.** Operation to perform (see table below). |
 | `tableNameTemplate` | `"incident"` | **Required.** ServiceNow table name. Template. |
-| `idTemplate` | `""` | **Required** for `tableRowGet`, `tableRowPut`, `tableRowDelete`. Record sys_id. Template. |
+| `idTemplate` | `""` | **Required** for `tableRowGet` and `tableRowPut`. Record sys_id. Template. |
 | `resultPath` | `""` | Payload path to write the response. The `resultPath` can point to an existing payload path to overwrite it. |
 
 ### Output shape
@@ -71,7 +71,7 @@ Two ways to specify the ServiceNow instance — by instance name or by full URL.
   }
 }
 ```
-| `params` | `[]` | Array of `{ name, value }` query parameter objects (e.g. `sysparmQuery`, `sysparmLimit`). |
+| `params` | `[]` | Array of `{ type, name, value }` query parameter objects. `type` is **Required** and must be `"string"` or `"path"`. `name` is the parameter name; `value` is the value or payload path. |
 | `bodyTemplateType` | `"individualFields"` | How the request body is provided. See below. |
 | `bodyTemplate` | `[]` | Body content — shape depends on `bodyTemplateType`. |
 
@@ -85,7 +85,6 @@ Two ways to specify the ServiceNow instance — by instance name or by full URL.
 | `tablePost` | Create a new record. | No |
 | `tableRowGet` | Get a specific record by sys_id. | Yes |
 | `tableRowPut` | Update a specific record. | Yes |
-| `tableRowDelete` | Delete a specific record. | Yes |
 
 ### Body template types (for `tablePost` and `tableRowPut`)
 

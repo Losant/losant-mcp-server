@@ -1,6 +1,6 @@
 # SQL Node (`type: "SqlNode"`)
 
-The SQL Node allows a workflow to query or update values in a SQL database. Supports MSSQL, MySQL, PostgreSQL, and SQLite 3 (edge only for SQLite).
+The SQL Node allows a workflow to query or update values in a SQL database. Supports MSSQL, MySQL, PostgreSQL, and SQLite 3 (edge only for SQLite). Available in cloud, experience, and customNode workflows.
 
 ## Required Fields
 
@@ -60,9 +60,9 @@ Two connection methods: service credential or direct configuration. Cloud and ex
 | `userTemplate` | `""` | **Required** (direct, non-SQLite). Username. Template. |
 | `passwordTemplate` | `""` | Password. Template. |
 | `databaseTemplate` | `""` | **Required** (non-SQLite). Database name. Template. |
-| `instanceNameTemplate` | `""` | MSSQL only. Named instance. Template. |
+| `instanceNameTemplate` | `""` | MSSQL only. Requires GEA **1.58.0+** on edge. Named instance. Template. |
 | `query` | `""` | **Required.** SQL query string. Supports string templates. |
-| `resultPath` | `""` | Payload path to write the query result (array of rows). |
+| `resultPath` | `""` | Payload path to write the query result. SELECT queries return an array of row objects. Non-SELECT queries (INSERT, UPDATE, DELETE) return an array containing `"success"` strings. On error: `{ errors: "<message>" }`. |
 | `sslOn` | `false` | Enable SSL/TLS encryption. Not available for SQLite. |
 | `sslDataMethod` | `"payloadPath"` | When `sslOn: true`: `"jsonTemplate"` or `"payloadPath"`. |
 | `sslDataTemplate` | `""` | SSL configuration. **Required** when `sslOn: true`. |

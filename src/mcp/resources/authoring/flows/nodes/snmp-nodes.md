@@ -43,12 +43,12 @@ All three nodes share the same SNMP connection config. See `triggers/snmp-trap.m
 | `portTemplate` | `"161"` | SNMP port. Template. |
 | `snmpVersionTemplate` | `""` | **Required.** `"Version1"`, `"Version2c"`, or `"Version3"`. Template. |
 | `communityTemplate` | `"public"` | **Required** (V1/V2c). Community string. Template. |
-| `usernameTemplate` | `""` | **Required** (V3). Username. Template. |
+| `nameTemplate` | `""` | **Required** (V3). Username. Template. |
 | `securityLevelTemplate` | `""` | **Required** (V3). `"NoAuthNoPriv"`, `"AuthNoPriv"`, or `"AuthPriv"`. |
 | `authMethodTemplate` | `"SHA"` | V3 auth: `"SHA"` or `"MD5"`. |
 | `authKeyTemplate` | `""` | **Required** (V3 auth). Auth key. Template. |
-| `privMethodTemplate` | `"DES"` | V3 encryption: `"DES"` or `"AES"`. |
-| `privKeyTemplate` | `""` | **Required** (V3 AuthPriv). Private key. Template. |
+| `encryptionMethodTemplate` | `"DES"` | V3 encryption: `"DES"` or `"AES"`. |
+| `encryptionKeyTemplate` | `""` | **Required** (V3 AuthPriv). Private key. Template. |
 
 ---
 

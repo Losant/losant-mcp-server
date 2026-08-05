@@ -1,6 +1,6 @@
 # WhatsApp Node (`type: "WhatsAppNode"`)
 
-The WhatsApp Node sends WhatsApp messages via a WhatsApp Business account. Supports free-form text messages and WhatsApp message templates.
+The WhatsApp Node sends WhatsApp messages via a WhatsApp Business account. Supports free-form text messages and WhatsApp message templates. Available in cloud, experience, and customNode workflows.
 
 ## Required Fields
 
@@ -42,6 +42,17 @@ Two auth methods: service credential or direct (From Number ID + Access Token).
 | `templateNameTemplate` | `""` | WhatsApp message template name. When set, sends a template message instead of free-form text. Template. |
 | `templateLanguageTemplate` | `""` | **Required** when using a message template. Language code (e.g. `"en_US"`). Template. |
 | `resultsPath` | `""` | Payload path to write the array of per-recipient results. |
+
+## Output
+
+`resultsPath` receives an array of per-recipient results:
+
+```json
+{ "working": { "results": [
+  { "success": true, "number": "+15551234567", "messageId": "wamid.xxx" },
+  { "error": true, "number": "+15559876543", "message": "Invalid phone number" }
+] } }
+```
 
 ## Experience workflows
 

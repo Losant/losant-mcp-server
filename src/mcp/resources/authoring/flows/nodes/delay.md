@@ -1,6 +1,6 @@
 # Delay Node (`type: "DelayNode"`)
 
-Pauses execution for a specified duration. Available in cloud, experience, edge, and customNode flow classes. Not available in embedded workflows.
+Pauses execution for a specified duration. Available in cloud, experience, edge, customNode, and embedded flow classes.
 
 ## Required Fields
 
@@ -37,4 +37,4 @@ Same as Cloud. No maximum duration restriction on edge.
 
 ## Embedded workflows
 
-Not available.
+Same as Cloud.

@@ -37,7 +37,7 @@ Two auth methods: service credential or direct API token.
 | `credentialNameTemplate` | `""` | **Required** (credential method). Loggly credential name. |
 | `apiTokenTemplate` | `""` | **Required** (direct method). Loggly customer token. Template. |
 | `writeMethod` | `"individualFields"` | **Required.** `"individualFields"`, `"jsonTemplate"`, or `"payloadPath"`. |
-| `writeFields` | `[]` | **Required** (individualFields). Array of `{ messageTemplate, jsonTemplate }` log entries. |
+| `writeFields` | `[]` | **Required** (individualFields). Array of log entry objects. Each entry supports: `messageTemplate` (required), `tagsTemplate` (comma-separated tag string). |
 | `writeJsonTemplate` | `""` | **Required** (jsonTemplate). Log entries as a JSON template. |
 | `writePayloadPath` | `""` | **Required** (payloadPath). Payload path to log entries. |
 | `resultPath` | `""` | Payload path to write the send result. |
@@ -47,7 +47,9 @@ Two auth methods: service credential or direct API token.
 `resultPath` receives a confirmation object:
 
 ```json
-{ "working": { "logglyResult": { "success": true } } }
+{ "working": { "logglyResult": { "success": true, "results": [ { "success": true } ] } } }
+
+`results` is an array with one entry per log entry sent. On error: `{ "success": false, "error": "..." }` (no `results` key).
 ```
 
 ## Experience workflows
@@ -58,4 +60,4 @@ Same as Cloud.
 
 > **Minimum GEA version:** 1.38.0
 
-Same as Cloud.
+Same as Cloud. The credential method (`credentialNameTemplate`) is **not available on edge** — use `apiTokenTemplate` directly.

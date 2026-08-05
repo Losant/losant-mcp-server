@@ -40,7 +40,6 @@ Reads current symbol values from a Beckhoff TwinCAT PLC.
     "targetAdsPortTemplate": "851",
     "routerHostTemplate": "127.0.0.1",
     "routerTcpPortTemplate": "48898",
-    "cycleTimeMsTemplate": "",
     "timeoutTemplate": "30000",
     "readInstructionsType": "array",
     "readInstructions": [

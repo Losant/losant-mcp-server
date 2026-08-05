@@ -41,8 +41,20 @@ Signs a Certificate Signing Request (CSR) with a CA key and certificate, issuing
 | `expiresInDaysTemplate` | `"365"` | Certificate validity in days. Template. |
 | `notBeforeTemplate` | `""` | Certificate validity start date. Template. |
 | `serialNumberTemplate` | `""` | Certificate serial number. Template. |
+> **Note:** The fields `commonNameTemplate`, `countryTemplate`, `stateTemplate`, `localityTemplate`, `organizationTemplate`, `organizationalUnitTemplate`, `emailTemplate`, `serialNumberTemplate`, `notBeforeTemplate`, `subjectAltNames`, `keyUsages`, `extendedKeyUsages`, and the `SHA512` algorithm are available on cloud always, but require GEA **2.4.0+** on edge.
+
+| `caKeyTemplateType` | `"credential"` | How the CA private key is provided. `"credential"` — use `credentialNameTemplate`. `"jsonTemplate"` or `"payloadPath"` — use `caKeyTemplate`. |
+| `caKeyTemplate` | `""` | CA private key PEM (for `caKeyTemplateType: "jsonTemplate"/"payloadPath"`). |
+| `caCrtTemplateType` | `"credential"` | How the CA certificate is provided. Same options as `caKeyTemplateType`. |
+| `caCrtTemplate` | `""` | CA certificate PEM (for `caCrtTemplateType: "jsonTemplate"/"payloadPath"`). |
+| `countryTemplate` | `""` | Subject country (C). Template. |
+| `stateTemplate` | `""` | Subject state/province (ST). Template. |
+| `localityTemplate` | `""` | Subject locality/city (L). Template. |
+| `organizationTemplate` | `""` | Subject organization (O). Template. |
+| `organizationalUnitTemplate` | `""` | Subject organizational unit (OU). Template. |
+| `emailTemplate` | `""` | Subject email address. Template. |
 | `commonNameTemplate` | `""` | Override CSR Common Name. Template. |
-| `subjectAltNames` | `[]` | Array of Subject Alternative Names `{ type, value }`. |
+| `subjectAltNames` | `[]` | Array of Subject Alternative Names `{ type, valueTemplate }`. `type` is the SAN type (e.g. `"dns"`, `"ip"`); `valueTemplate` is the value as a Handlebars template.. |
 | `keyUsages` | `[]` | Array of key usage strings. |
 | `extendedKeyUsages` | `[]` | Array of extended key usage strings. |
 | `resultPath` | `""` | **Required.** Payload path to write the result object: `{ certificate: "<PEM string>", publicKey: "<PEM string>", info: { subject, issuer, validity, ... } }`. Access the cert PEM at `resultPath + ".certificate"`. |

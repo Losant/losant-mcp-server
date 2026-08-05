@@ -21,7 +21,15 @@ Three methods. Credential (recommended) or inline key JSON.
 { "credentialNameTemplate": "my-gcp-credential" }
 ```
 
-**JSON template method:**
+**Direct JWT (GCS Get/Put and GCP Function only):**
+```json
+{
+  "jwtDataMethod": "jsonTemplate",
+  "jwtData": "{{globals.gcpKeyJson}}"
+}
+```
+
+**Split JWT fields (BigQuery and ML only):**
 ```json
 {
   "jwtDataMethod": "jsonTemplate",
@@ -29,13 +37,7 @@ Three methods. Credential (recommended) or inline key JSON.
 }
 ```
 
-**Payload path method:**
-```json
-{
-  "jwtDataMethod": "payloadPath",
-  "jwtPayloadPath": "working.gcpKey"
-}
-```
+The field name for the JWT credential data differs by node type — GCS and Function use `jwtData`; BigQuery and ML use `jwtJsonTemplate`/`jwtPayloadPath`.
 
 ---
 
@@ -105,7 +107,8 @@ Downloads a file from a Google Cloud Storage bucket — either its contents or a
 | Config field | Default | Notes |
 |---|---|---|
 | `credentialNameTemplate` | `""` | **Required** (credential method). |
-| `jwtDataMethod` / `jwtJsonTemplate` / `jwtPayloadPath` | — | Required for JSON/path auth methods. |
+| `jwtDataMethod` | — | **Required** (direct JWT method). `"jsonTemplate"` — `jwtData` is a JSON template of the key object. `"payloadPath"` — `jwtData` is a payload path to the key object. |
+| `jwtData` | `""` | **Required** when using `jwtDataMethod`. The key object as a JSON template or the payload path, depending on `jwtDataMethod`. |
 | `projectIdTemplate` | `""` | GCP project ID. Template. Available on GEA 1.42.0+ for edge. |
 | `bucketNameTemplate` | `""` | **Required.** GCS bucket name. Template. |
 | `fileNameTemplate` | `""` | **Required.** File path within the bucket. Template. |
@@ -146,7 +149,8 @@ Uploads content to a Google Cloud Storage bucket. Three content modes — set vi
 | Config field | Default | Notes |
 |---|---|---|
 | `credentialNameTemplate` | `""` | **Required** (credential method). |
-| `jwtDataMethod` / `jwtJsonTemplate` / `jwtPayloadPath` | — | Required for JSON/path auth methods. |
+| `jwtDataMethod` | — | **Required** (direct JWT method). `"jsonTemplate"` — `jwtData` is a JSON template. `"payloadPath"` — `jwtData` is a payload path. |
+| `jwtData` | `""` | **Required** when using `jwtDataMethod`. The key object as a JSON template or the payload path, depending on `jwtDataMethod`. |
 | `projectIdTemplate` | `""` | GCP project ID. Template. |
 | `bucketNameTemplate` | `""` | **Required.** Bucket name. Template. |
 | `fileNameTemplate` | `""` | **Required.** File path within the bucket. Template. |
@@ -211,7 +215,8 @@ Executes a Google Cloud Function. Two invocation methods — API trigger (authen
 |---|---|---|
 | `invocationMethod` | `"api"` | **Required.** `"api"` — authenticated API trigger. `"http"` — HTTP trigger. |
 | `credentialNameTemplate` | `""` | **Required** for API trigger and authenticated HTTP. |
-| `jwtDataMethod` / `jwtJsonTemplate` / `jwtPayloadPath` | — | Alternative auth for JSON/path methods. |
+| `jwtDataMethod` | — | Optional. `"jsonTemplate"` — `jwtDataTemplate` is a JSON template of the key. `"payloadPath"` — `jwtDataTemplate` is a payload path to the key. |
+| `jwtDataTemplate` | `""` | The service account key as a JSON template or payload path, depending on `jwtDataMethod`. |
 | `projectIdTemplate` | `""` | GCP project ID. Template. GEA 1.42.0+ for edge API trigger. |
 | `functionNameTemplate` | `""` | **Required** for API trigger. Function name. Template. |
 | `regionTemplate` | `""` | **Required** for API trigger. GCP region (e.g. `"us-central1"`). Template. |

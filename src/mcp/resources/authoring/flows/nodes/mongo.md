@@ -71,4 +71,7 @@ Same as Cloud.
 
 ## Edge workflows
 
-Same as Cloud. On edge, service credentials are not available — use `mongoUriTemplate` (direct connection) only.
+Same as Cloud. Note:
+- `aggregate` and `replaceOne` operations require GEA **1.15.0+**.
+- `errorBehavior`/`errorPath` require GEA **1.15.0+** on edge.
+- Service credentials (`credentialNameTemplate`) are not available on edge — use direct `mongoUriTemplate`. On edge, service credentials are not available — use `mongoUriTemplate` (direct connection) only.

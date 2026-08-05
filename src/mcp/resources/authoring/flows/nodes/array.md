@@ -1,6 +1,6 @@
 # Array Node (`type: "ArrayNode"`)
 
-Applies one of 23 operations to an array on the workflow payload — filter, sort, search, slice, push/pop, group, and more. Up to 15 operations can be chained in a single node's `rules` array.
+Applies one of 23 operations to an array on the workflow payload — filter, sort, search, slice, push/pop, group, and more. The schema accepts up to 15 rules per node, but the UI editor manages a single rule — generate one ArrayNode per operation when authoring via the MCP.
 
 ## Required Fields
 
@@ -140,6 +140,30 @@ Group by status property, write result to a path:
   "type": "groupBy",
   "inputTemplate": "status",
   "outputPath": "working.grouped"
+}
+```
+
+## Output
+
+Results land in two places depending on the operation:
+
+**`destArrayPath`** — the modified array after all rules run. Used by operations that mutate the array (`push`, `pop`, `filter` via destArrayPath, `sort`, etc.). If `destArrayPath` is omitted the modified array overwrites `sourceArrayPath`. Can be set to any existing payload path to overwrite it.
+
+**`rules[n].outputPath`** — a per-rule secondary result written for operations that produce a non-array value or a separate result: the filtered array (`filter`), sorted array (`sort`, `sortBy`), found index (`indexOf`), element at index (`lookupAt`), removed item (`pop`, `shift`, `removeAt`), grouped object (`groupBy`), keyed object (`keyBy`), deduplicated array (`deduplicateBy`), or sum (`sum`). Multiple rules in a single node can each write to their own `outputPath`.
+
+```json
+{
+  "working": {
+    "activeDevices": [
+      { "id": "abc", "active": true },
+      { "id": "def", "active": true }
+    ],
+    "count": 2,
+    "grouped": {
+      "online": [...],
+      "offline": [...]
+    }
+  }
 }
 ```
 

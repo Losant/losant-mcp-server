@@ -53,4 +53,4 @@ Same as Cloud.
 
 > **Minimum GEA version:** 1.39.0
 
-Same as Cloud.
+Same as Cloud. The integration method (`integrationId`) is **not available on edge** — use direct credentials (`accessToken` + `deviceTemplate`) only.

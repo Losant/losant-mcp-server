@@ -69,6 +69,24 @@ Invokes an AWS Lambda function and optionally writes the response to the payload
 | `errorBehavior` | `"throw"` | `"throw"` — halt on error. `"payloadPath"` — write error to `errorPath`. |
 | `errorPath` | `""` | **Required** when `errorBehavior` is `"payloadPath"`. |
 
+### Lambda output shape
+
+`resultPath` receives the raw Lambda response envelope:
+
+```json
+{
+  "working": {
+    "lambdaResult": {
+      "StatusCode": 200,
+      "LogResult": "...",
+      "Payload": { "result": "value returned by your function" }
+    }
+  }
+}
+```
+
+`Payload` contains whatever your Lambda function returned. On error (when `errorBehavior: "payloadPath"`), `errorPath` receives `{ "message": "...", "type": "AWSLambda" }`.
+
 ---
 
 ### AWS S3: Get Node (`type: "AwsS3GetNode"`)
@@ -103,6 +121,22 @@ Retrieves an object from an S3 bucket — either its contents or a pre-signed do
 | `destination` | `""` | **Required.** Payload path to write the result. |
 | `isDownloadURL` | `false` | When `false`, writes file contents to `destination`. When `true`, writes a pre-signed download URL. |
 | `encodingTemplate` | `"utf8"` | Encoding for returned file contents. Only used when `isDownloadURL: false`. Template. |
+
+### S3 Get output shape
+
+`destination` always receives `{ value, metadata }` on success. The shape of `value` depends on the mode:
+
+**File contents** (`isDownloadURL: false`):
+```json
+{ "working": { "s3Result": { "value": "file contents here...", "metadata": { ... } } } }
+```
+
+**Pre-signed URL** (`isDownloadURL: true`):
+```json
+{ "working": { "s3Result": { "value": "https://<region>.amazonaws.com/<bucket>/<key>?...", "metadata": { ... } } } }
+```
+
+On error, `destination` receives `{ "error": "Access Denied" }` (no `value` or `metadata` keys).
 
 ---
 
@@ -157,14 +191,26 @@ The content mode is stored in **`meta.mode`**, not `config`.
 | `"url"` | Fetch from `fileUrlTemplate` and stream to S3. |
 | `"disk"` | Stream from local file at `diskPathTemplate` (edge only). |
 
+### S3 Put output shape
+
+On success, `destination` receives:
+```json
+{ "working": { "s3Result": { "success": true } } }
+```
+
+On error:
+```json
+{ "working": { "s3Result": { "success": false, "error": "Access Denied" } } }
+```
+
 ## Experience workflows
 
 Same as Cloud for all three nodes.
 
 ## Edge workflows
 
-**AWS Lambda** — available on all GEA versions. `timeoutTemplate` (per-invocation timeout in seconds) is available on GEA 1.47.0+.
+**AWS Lambda** — available on all GEA versions. `timeoutTemplate` (per-invocation timeout in **milliseconds**, not seconds) requires GEA 1.47.0+. `errorBehavior`/`errorPath` require GEA **1.18.1+** on edge. The **credential method** (`credentialNameTemplate`) is not available on edge — use `awsAccessKeyId`/`awsSecretAccessKey`/`awsRegion` directly.
 
 **AWS S3: Get** and **AWS S3: Put** — minimum GEA 1.8.0.
 
-For S3: Get on edge, an additional `diskPathTemplate` mode streams the S3 object directly to a local file (bypassing the payload size limit). For S3: Put on edge, `meta.mode: "disk"` streams a local file directly to S3.
+For S3: Get on edge (GEA **2.0.0+**), `diskPathTemplate` mode streams the S3 object directly to a local file (bypassing the payload size limit). For S3: Put on edge (GEA **2.0.0+**), `meta.mode: "disk"` streams a local file directly to S3.

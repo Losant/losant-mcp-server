@@ -32,6 +32,7 @@ The MQTT Node publishes a message to the Losant MQTT Broker, the Gateway Edge Ag
 | `integrationId` | `"losant"` | **Required.** `"losant"` — Losant cloud broker. Cloud also supports MQTT integration IDs. |
 | `topicTemplate` | `""` | **Required.** MQTT topic. Template. Must not be a Losant system or device state topic. |
 | `messageTemplate` | `""` | Message payload as a string template. |
+| `resultPath` | `""` | Optional. **Embedded workflows only** — stores the `eea_send_message()` return code. Has no effect on cloud or edge workflows. |
 
 ## Experience workflows
 

@@ -40,10 +40,10 @@ Sends an email using Losant's built-in email delivery. No credential required. *
 `resultPath` receives a confirmation object:
 
 ```json
-{ "working": { "emailResult": { "success": true } } }
+{ "working": { "emailResult": { "message": "success" } } }
 ```
 
-On error (when `errorBehavior` is configured), `resultPath` receives `{ "error": { "type": "...", "message": "..." } }` on the error branch.
+On error (throttled or send failure), `resultPath` receives `{ "error": { "type": "...", "message": "..." } }`.
 
 ## Experience workflows
 

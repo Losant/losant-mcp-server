@@ -1,6 +1,6 @@
 # Switch Node (`type: "SwitchNode"`)
 
-Branches the workflow across multiple paths by evaluating a template against a set of configured case values. More expressive than a chain of Conditional nodes when there are three or more distinct branches.
+Branches the workflow across multiple paths by evaluating a template against a set of configured case values. More expressive than a chain of Conditional nodes when there are three or more distinct branches. Available in cloud, experience, customNode, and embedded workflows.
 
 ## Required Fields
 
@@ -43,6 +43,7 @@ Branches the workflow across multiple paths by evaluating a template against a s
 | `cases` | **Required.** Array of `{ caseTemplate, caseLabel }` objects, one per branch. |
 | `cases[i].caseTemplate` | The value to compare against `switchTemplate`. Strict string match. |
 | `cases[i].caseLabel` | Human-readable label displayed on the canvas for that branch. |
+| `cases[i].dontBreak` | boolean — when `true`, execution falls through to the next matching case rather than stopping. Default `false`. |
 
 ### Wiring
 

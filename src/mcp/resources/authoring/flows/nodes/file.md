@@ -72,7 +72,7 @@ Creates a file in the application's file storage. Supports two content modes: in
 | `shouldOverwrite` | `false` | When `true`, overwrites an existing file at the same path. When `false`, returns an error if the file already exists. |
 | `private` | `false` | When `true`, creates a private file accessible only via signed URL. |
 | `urlTTLTemplate` | `""` | Signed URL time-to-live in seconds. Only used when `private: true` and a `resultPath` is set. Template. |
-| `resultPath` | `""` | Payload path to write the created file's metadata object (includes `id`, `name`, `url`, `type`, `parentDirectory`, `contentType`, `fileSize`). |
+| `resultPath` | `""` | Payload path to write the created file's metadata object. Includes: `id`, `name`, `url`, `type`, `parentDirectory`, `contentType`, `fileSize`, `status`, `creationDate`, `lastUpdated`, `authorType`, `authorId`, `applicationId`, `_type`, `s3etag`. On error: `{ error: { type: "FILE_CREATE_ERROR", message } }`. |
 
 ---
 
@@ -118,6 +118,12 @@ Retrieves a file from the application's file storage — either its contents as 
     "parentDirectory": "/uploads/",
     "contentType": "text/csv",
     "fileSize": 12345,
+      "status": "...",
+      "creationDate": "...",
+      "lastUpdated": "...",
+      "authorType": "...",
+      "authorId": "...",
+      "applicationId": "...",
     "url": "https://files.on.losant.com/..."
   }
 }

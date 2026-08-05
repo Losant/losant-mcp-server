@@ -30,7 +30,7 @@ All four nodes share the same connection and security config fields.
 | `uriTemplate` | `""` | **Required.** OPC UA server URI (e.g. `"opc.tcp://192.168.1.100:4840"`). Template. |
 | `usernameTemplate` | `""` | Optional username. Template. |
 | `passwordTemplate` | `""` | Optional password. Template. |
-| `securityPolicyTemplate` | `"None"` | `"None"`, `"Basic128"`, `"Basic192"`, `"Basic192Rsa15"`, `"Basic256"`, `"Basic256Rsa15"`, `"Basic256Sha256"`. Template. |
+| `securityPolicyTemplate` | `"None"` | `"None"`, `"Basic128"`, `"Basic192"`, `"Basic192Rsa15"`, `"Basic256"`, `"Basic256Rsa15"`, `"Basic256Sha256"`. Note: `"Basic128Rsa15"` is deprecated and will throw a validation error if used. Template. |
 | `securityModeTemplate` | `"NONE"` | `"NONE"` (only valid when policy is `"None"`), `"SIGN"`, `"SIGNANDENCRYPT"`. Template. |
 | `certTemplate` | `""` | PEM client certificate. Required when security policy is not `"None"`. Template. |
 | `privateKeyTemplate` | `""` | PEM private key. Required when security policy is not `"None"`. Template. |
@@ -39,7 +39,7 @@ All four nodes share the same connection and security config fields.
 
 ### OPC UA: Browse Node (`type: "OpcUaBrowseNode"`)
 
-Browses the OPC UA server's node hierarchy starting from a given node ID or browse name. Returns an object with a `browse` key and an `errors` array.
+Browses the OPC UA server's node hierarchy starting from a given node ID or browse name. Returns an object keyed by the browsed node name (e.g. `"RootFolder"`) containing an array of child node descriptors.
 
 ```json
 {
@@ -122,7 +122,7 @@ Reads values from one or more OPC UA nodes. Result is an object keyed by each in
 }
 ```
 
-Each key corresponds to the `key` field from `readInstructions`. `errors` captures per-node failures.
+Each key corresponds to the `key` field from `readInstructions`. `errors` is only present when one or more reads fail — it is not included in the result on full success.
 
 **Read instruction fields** (when `readInstructionsType: "array"`):
 
@@ -171,7 +171,7 @@ Writes values to one or more OPC UA nodes. Values are automatically converted to
 ### Write output shape
 
 ```json
-{ "working": { "writeResult": { "write": [{ "nodeId": "ns=1;s=MyTag", "success": true }], "errors": [] } } }
+{ "working": { "writeResult": { "write": "success", "errors": [] } } }
 ```
 
 Each entry in `write` corresponds to a write instruction. `errors` contains any per-node error strings.

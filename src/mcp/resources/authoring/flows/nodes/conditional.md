@@ -1,6 +1,6 @@
 # Conditional Node (`type: "ConditionalNode"`)
 
-Branches the workflow based on a Handlebars expression. The most common branching node — use whenever you need an if/else split.
+Branches the workflow based on a Losant expression. The most common branching node — use whenever you need an if/else split. Available in all flow classes: cloud, experience, customNode, edge, and embedded.
 
 ## Required Fields
 
@@ -32,11 +32,11 @@ Branches the workflow based on a Handlebars expression. The most common branchin
 
 | Field | Type | Notes |
 |---|---|---|
-| `expression` | string | **Required.** Handlebars expression evaluated against the current payload. Falsy → index 0; truthy → index 1. |
+| `expression` | string | **Required.** Losant expression evaluated against the current payload. Falsy → index 0; truthy → index 1. |
 
 ### Expression semantics
 
-The result is truthy if the rendered string is a non-empty string that isn't `"false"`, `"0"`, `"null"`, or `"undefined"`. Falsy otherwise.
+The result is evaluated using standard JavaScript truthiness/falsiness: `false`, `0`, `null`, `undefined`, `""`, and `NaN` are falsy; everything else is truthy. The expression evaluator handles the full expression — comparison operators (`===`, `!==`, `>`, `<`, `>=`, `<=`) return actual booleans, not strings.
 
 ```
 {{data.temp}} > 80            → true if temp > 80
@@ -65,10 +65,6 @@ Supports `&&`, `||`, `!`, and parentheses. Numbers are compared numerically in c
 - Missing paths render as `""` which is falsy, not an error.
 - `outputIds` must have exactly two outer arrays — a missing second array causes a validation error.
 
-## Experience workflows
-
-Same as Cloud.
-
-## Edge workflows
+## Experience workflows, Edge workflows, Embedded workflows, Custom Node workflows
 
 Same as Cloud.

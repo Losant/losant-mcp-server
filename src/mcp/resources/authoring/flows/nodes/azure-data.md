@@ -65,8 +65,30 @@ Downloads a blob from Azure Blob Storage — either its contents or a pre-signed
 | `destination` | `""` | **Required.** Payload path to write the result. |
 | `isDownloadURL` | `false` | When `false`, writes blob contents (max 5 MB) to `destination`. When `true`, writes a pre-signed download URL (valid 7 days). |
 | `encodingTemplate` | `"utf8"` | Encoding for returned blob contents. Only used when `isDownloadURL: false`. Template. |
+| `diskPathTemplate` | `""` | Edge only (GEA 2.1.0+). Local file path to save the blob to instead of writing contents to `destination`. |
+| `errorIfFileExists` | `false` | Edge disk mode only. When `true`, errors if a file already exists at `diskPathTemplate`. |
+| `shouldAppend` | `false` | Edge disk mode only. When `true`, appends fetched content to an existing file rather than overwriting. |
 
-Result shape at `destination`: `{ value: <contents or URL>, metadata: { fileSize, contentType, etag } }`. On error: `{ error: "..." }`.
+### Blob Get output shape
+
+On success, `destination` receives `{ value, metadata }`. The shape of `value` depends on mode:
+
+**Blob contents** (`isDownloadURL: false`):
+```json
+{ "working": { "blobResult": { "value": "file contents here...", "metadata": { "fileSize": 1890, "contentType": "text/plain", "etag": "\"0x8DA4A2A98327BB1\"" } } } }
+```
+
+**Download URL** (`isDownloadURL: true`):
+```json
+{ "working": { "blobResult": { "value": "https://<account>.blob.core.windows.net/<container>/<blob>", "metadata": { "fileSize": 12720, "contentType": "application/json", "etag": "\"0x8DA4A2A98327BA1\"" } } } }
+```
+
+**Disk path** (edge `diskPathTemplate` mode):
+```json
+{ "working": { "blobResult": { "value": "/path/to/saved/file.ext", "metadata": { ... } } } }
+```
+
+On error: `{ "error": "Access Denied" }` (no `value` or `metadata` keys).
 
 ---
 
@@ -107,7 +129,13 @@ Uploads content to Azure Blob Storage. Three content modes — set via **`meta.m
 | `blobContentTemplate` | `""` | Blob content as string. Used when `meta.mode: "text"`. |
 | `blobUrlTemplate` | `""` | URL to fetch content from. **Required** when `meta.mode: "url"`. Template. |
 | `encodingTemplate` | `"utf8"` | Content encoding. Used when `meta.mode` is `"text"`. Template. |
-| `destination` | `""` | Payload path to write `{ success: true }` or `{ success: false, error: "..." }`. |
+| `destination` | `""` | Payload path to write the upload result. |
+
+### Blob Put output shape
+
+On success: `{ "working": { "blobResult": { "success": true } } }`
+
+On error: `{ "working": { "blobResult": { "success": false, "error": "Access Denied" } } }`
 
 **`meta.mode`** (required on `meta`, not `config`):
 
@@ -151,9 +179,39 @@ Executes an Azure Function and optionally stores the response on the payload.
 | `apiKeyTemplate` | `""` | API key for the function. Optional. Template. |
 | `sourceMethodTemplate` | `"workflowPayload"` | Data to send as the function input. `"workflowPayload"` — full payload. `"payloadPath"` — value at `sourceData`. `"jsonTemplate"` — `sourceData` as JSON template. |
 | `sourceData` | `""` | **Required** when `sourceMethodTemplate` is `"payloadPath"` or `"jsonTemplate"`. |
-| `resultPath` | `""` | Payload path to write `{ data: { azureHeaders, statusCode, azureResult } }`. |
+| `resultPath` | `""` | Payload path to write the function response object. |
 
 Three auth options: service credential (`credentialNameTemplate`), API key (`apiKeyTemplate`), or no auth (omit both).
+
+### Azure Function output shape
+
+`resultPath` receives `{ body, statusCode, azureHeaders }` on success. The workflow always continues regardless of outcome — errors are written to `resultPath` rather than halting the workflow.
+
+**Success:**
+```json
+{
+  "working": {
+    "fnResult": {
+      "body": "Hello World!",
+      "statusCode": 200,
+      "azureHeaders": { "request-context": "..." }
+    }
+  }
+}
+```
+
+**Error** (timeout, connection failure, response too large, etc.):
+```json
+{
+  "working": {
+    "fnResult": {
+      "error": { "type": "NodeTimeout", "message": "..." }
+    }
+  }
+}
+```
+
+Check for the presence of `error` in the result downstream to detect failures.
 
 ---
 
@@ -195,10 +253,35 @@ Performs entity operations on an Azure Table Storage table — get, query, inser
 | `topTemplate` | `""` | Max entities to return for `query`. Template. |
 | `continuationTokenTemplate` | `""` | Continuation token for paginating `query` results. Template. |
 
-**Query result shape at `destination`:** `{ entities: [...], continuationToken, filter, select, top }`.
-**Get/Insert/Replace/Merge result:** The entity object.
-**Delete result:** `{ success: true }`.
-**Error:** `{ error: { "odata.error": { code, message } } }`.
+### Table Storage output shape
+
+The shape at `destination` varies by operation:
+
+**`get`, `insert`, `replace`, `merge`** — the entity object:
+```json
+{ "working": { "entity": { "partitionKey": "firstPartition", "rowKey": "5630", "temperature": 72.4 } } }
+```
+
+**`query`** — array of entities plus pagination metadata:
+```json
+{
+  "working": {
+    "entity": {
+      "entities": [ { "partitionKey": "...", "rowKey": "..." } ],
+      "continuationToken": "eyJuZXh0UGFydGl...",
+      "filter": "age lt 25",
+      "select": "name, age",
+      "top": 5
+    }
+  }
+}
+```
+
+`continuationToken` is `null` when there are no more pages.
+
+**`delete`** — `{ "success": true }`
+
+**On error** — `{ "error": { "odata.error": { "code": "ResourceNotFound", "message": { "lang": "en-US", "value": "The specified resource does not exist." } } } }`
 
 ## Experience workflows
 

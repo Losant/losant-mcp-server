@@ -1,6 +1,6 @@
 # Throttle Node (`type: "ThrottleNode"`)
 
-Rate-limits workflow execution. When the configured rate is exceeded, the throttled branch fires instead of the main branch. Useful for preventing alert spam or limiting downstream API calls. Branches — `outputIds[0]` = throttled (suppressed), `outputIds[1]` = not throttled (passes through).
+Rate-limits workflow execution. When the configured rate is exceeded, the throttled branch fires instead of the main branch. Useful for preventing alert spam or limiting downstream API calls. Branches — `outputIds[0]` = throttled (suppressed), `outputIds[1]` = not throttled (passes through). Available in cloud, experience, and customNode workflows.
 
 ## Required Fields
 

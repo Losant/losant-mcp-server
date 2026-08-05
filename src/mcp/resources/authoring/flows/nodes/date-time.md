@@ -54,7 +54,7 @@ Parses, manipulates, and formats date/time values using Moment.js operations —
 | `format` | String | Format the date using `resultFormatString`. |
 | `getDatePart` | Number | Extract a specific `unit` component from the date. |
 | `setDatePart` | Date | Set a specific `unit` component to `numberValue`. |
-| `diff` | Number | Difference between source and `diffDataPath` date in `unit`s. |
+| `diff` | Number | Difference between source and `diffDataPath` date in **milliseconds**. `unit` is not used for this operation. |
 | `daysInMonth` | Number | Number of days in the source date's month. |
 | `startOfTime` | Date | Round down to the start of the specified `unit`. |
 | `toArray` | Array | Convert to `[year, month, day, hour, minute, second, ms]`. |
@@ -69,5 +69,7 @@ Same as Cloud.
 ## Edge workflows
 
 > **Minimum GEA version:** 1.11.0
+>
+> **GEA 1.13.0+:** Output Timezone, Result Format Template, and the `"dayOfYear"` / `"dayOfWeek"` unit values are only available from GEA 1.13.0 onwards.
 
 Same as Cloud.

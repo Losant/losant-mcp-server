@@ -1,6 +1,6 @@
 # Data Query Nodes — Time Series, Gauge
 
-Two nodes for querying device state data from the Losant platform.
+Two nodes for querying device state data from the Losant platform. Available in cloud, experience, and customNode workflows.
 
 ## Required Fields
 
@@ -20,7 +20,7 @@ Retrieves device state data across a time range, aggregated to a configurable re
   "id": "time-series-query",
   "type": "TimeSeriesNode",
   "config": {
-    "findMethod": "deviceIds",
+    "findMethod": "tagsIds",
     "deviceIds": ["5f1c2d3e4f5a6b7c8d9e0f1a"],
     "deviceTags": [],
     "attribute": ["tempC"],
@@ -45,6 +45,7 @@ Retrieves device state data across a time range, aggregated to a configurable re
 | `findMethod` | — | **Required.** Device selection method (see Device selection below). |
 | `attribute` | `[]` | **Required.** Array of attribute names to query. Single attribute returns simpler result shape. |
 | `duration` | — | **Required.** Query time range in milliseconds (e.g. `86400000` = last 24 hours). `null` for custom end time. |
+| `end` | — | Optional. Custom end time as a Unix timestamp in milliseconds. Defaults to now. Used with non-null `duration` to query a historical window ending at a specific time. |
 | `resolution` | — | **Required.** Aggregation time bucket in milliseconds (e.g. `3600000` = 1-hour buckets). `null` for custom. Must be ≤ `duration`. |
 | `aggregation` | — | **Required.** Aggregation method: `"MEAN"`, `"MIN"`, `"MAX"`, `"SUM"`, `"COUNT"`, `"FIRST"`, `"LAST"`, `"NONE"`, and others. |
 | `aggregationOptions` | `[]` | Array of `{ key, valueTemplate }` for aggregation methods that require additional options. |
@@ -64,7 +65,7 @@ Retrieves the most recent (or recent period's aggregated) state value for one or
   "id": "gauge-query",
   "type": "GaugeNode",
   "config": {
-    "findMethod": "deviceIds",
+    "findMethod": "tagsIds",
     "deviceIds": ["5f1c2d3e4f5a6b7c8d9e0f1a"],
     "deviceTags": [],
     "attribute": ["tempC"],
@@ -91,9 +92,9 @@ Same config fields as Time Series except:
 
 | `findMethod` value | Required config field | Notes |
 |---|---|---|
-| `"deviceIds"` | `deviceIds` (string[]) | Specific device IDs. |
+| `"tagsIds"` | `deviceIds` (string[]) | Specific device IDs. |
 | `"tags"` | `deviceTags` (array of `{ key, value }`) | Devices matching tag key/value pairs. |
-| `"idsPath"` | `deviceIdsPath` (string) | Payload path to an array of device IDs. |
+| `"payloadPath"` | `deviceIdsPath` (string) | Payload path to an array of device IDs. |
 | `"query"` | `queryTemplate` (string) | Advanced device query as a JSON template. |
 | `"expUser"` | `expUserTemplate` (string) | Experience user ID or email. Template. |
 | `"expGroup"` | `expGroupIdTemplate` (string) | Experience group ID. Template. |

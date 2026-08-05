@@ -63,7 +63,7 @@ The node targets a specific API resource and action, then passes parameters for 
 |---|---|---|
 | `resource` | — | **Required.** The Losant API resource identifier (e.g. `"devices"`, `"events"`, `"dataTableRows"`, `"applicationDashboards"`). Maps to the resource name in the Losant REST API. Use the plural, camelCase form. |
 | `action` | — | **Required.** The action on the resource: `"get"` (list or retrieve), `"post"` (create), `"patch"` (update), `"delete"`. For resources that support both list and single-get, `"get"` with an `id` param fetches one; without an `id` param it lists. |
-| `params` | `[]` | Array of `{ name, type, value }` objects — one per API parameter required by the resource/action. `type` is `"string"` or `"json"`. `value` is a string template. |
+| `params` | `[]` | Array of `{ name, type, value }` objects — one per API parameter required by the resource/action. `type` is `"string"` (Handlebars template), `"json"` (JSON template), or `"path"` (payload path to the value). `value` is the template or path depending on `type`. |
 | `responsePath` | `""` | Payload path to write the API response. |
 | `apiTokenTemplate` | `""` | API token template. **Required** when querying a different application. |
 | `applicationIdTemplate` | `""` | Application ID template. **Required** when `apiTokenTemplate` is set. |

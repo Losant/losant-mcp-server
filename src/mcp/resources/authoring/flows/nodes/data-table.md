@@ -7,9 +7,9 @@ Four nodes for querying, inserting, updating, and deleting rows in Losant Data T
 | `type` | `meta.category` | `meta.name` | `meta.label` default |
 |---|---|---|---|
 | `DataTableQueryNode` | `data` | `get-table-rows` | `"Table: Get Rows"` |
-| `DataTableInsertRowNode` | `data` | `insert-table-row` | `"Table: Insert Row"` |
+| `DataTableInsertRowNode` | `data` | `insert-table-row` | `"Table: Insert Rows"` |
 | `DataTableUpdateRowNode` | `data` | `update-table-row` | `"Table: Update Row"` |
-| `DataTableDeleteRowNode` | `data` | `delete-table-row` | `"Table: Delete Row"` |
+| `DataTableDeleteRowNode` | `data` | `delete-table-row` | `"Table: Delete Rows"` |
 
 ## Cloud (Application) workflows
 
@@ -46,7 +46,7 @@ Four nodes for querying, inserting, updating, and deleting rows in Losant Data T
 
 ---
 
-### Table: Insert Row Node (`type: "DataTableInsertRowNode"`)
+### Table: Insert Rows Node (`type: "DataTableInsertRowNode"`)
 
 The row data source is controlled by `dataMethod`.
 
@@ -62,7 +62,7 @@ The row data source is controlled by `dataMethod`.
     "rowJsonTemplate": "{\"deviceId\":\"{{data.deviceId}}\",\"temp\":{{data.attributes.tempC}}}",
     "resultPath": "working.insertedRow"
   },
-  "meta": { "category": "data", "name": "insert-table-row", "label": "Table: Insert Row", "x": 200, "y": 200 },
+  "meta": { "category": "data", "name": "insert-table-row", "label": "Table: Insert Rows", "x": 200, "y": 200 },
   "outputIds": [["next"]]
 }
 ```
@@ -86,7 +86,7 @@ The row data source is controlled by `dataMethod`.
 | `dataMethod` | `"individualFields"` | `"jsonTemplate"`, `"payloadPath"`, or `"individualFields"`. |
 | `rowJsonTemplate` | — | **Required** when `dataMethod: "jsonTemplate"`. LJSON template resolving to `{ columnName: value, ... }`. Keys must match column names. |
 | `rowPayloadPath` | — | **Required** when `dataMethod: "payloadPath"`. Payload path to a row object. |
-| `rowFields` | — | Used when `dataMethod: "individualFields"`. Array of `{ key: "columnName", valueTemplate: "value" }` per column. |
+| `rowFields` | — | Used when `dataMethod: "individualFields"`. Array of `{ columnTemplate: "columnName", valueTemplate: "value" }` per column. |
 | `resultPath` | — | Payload path for the inserted row object (includes its assigned `id`). |
 
 ---
@@ -140,12 +140,12 @@ Selects the row(s) to update by **ID** or **query**, then applies the update via
 | `dataMethod` | `"individualFields"` | `"jsonTemplate"`, `"payloadPath"`, or `"individualFields"`. Same options as InsertRowNode. |
 | `rowJsonTemplate` | — | **Required** when `dataMethod: "jsonTemplate"`. LJSON patch — only listed columns are updated. |
 | `rowPayloadPath` | — | **Required** when `dataMethod: "payloadPath"`. Payload path to a patch object. |
-| `rowFields` | — | Used when `dataMethod: "individualFields"`. Array of `{ key: "columnName", valueTemplate: "value" }`. |
-| `resultPath` | — | Payload path for `{ updatedCount }`. |
+| `rowFields` | — | Used when `dataMethod: "individualFields"`. Array of `{ columnTemplate: "columnName", valueTemplate: "value" }`. |
+| `resultPath` | — | Payload path for the full updated (or inserted) row object: `{ id, createdAt, updatedAt, ...columnValues }`. On API error: `{ error: { type, message } }`. |
 
 ---
 
-### Table: Delete Row(s) Node (`type: "DataTableDeleteRowNode"`)
+### Table: Delete Rows Node (`type: "DataTableDeleteRowNode"`)
 
 ```json
 {
@@ -156,7 +156,7 @@ Selects the row(s) to update by **ID** or **query**, then applies the update via
     "queryTemplate": "{\"id\":{\"$eq\":\"{{working.rowId}}\"}}",
     "resultPath": "working.deleteResult"
   },
-  "meta": { "category": "data", "name": "delete-table-row", "label": "Table: Delete Row", "x": 200, "y": 200 },
+  "meta": { "category": "data", "name": "delete-table-row", "label": "Table: Delete Rows", "x": 200, "y": 200 },
   "outputIds": [["next"]]
 }
 ```
@@ -164,17 +164,17 @@ Selects the row(s) to update by **ID** or **query**, then applies the update via
 | Config field | Notes |
 |---|---|
 | `dataTableIdTemplate` | **Required.** Data table ID. |
-| `queryTemplate` | Optional. LJSON query to select rows to delete. Omit to use `rowIdTemplate` instead. |
-| `rowIdTemplate` | Optional. Delete a single row by its ID. Alternative to `queryTemplate`. |
+| `queryTemplate` | **Required** when not using `rowIdTemplate`. LJSON query to select rows to delete. |
+| `rowIdTemplate` | **Required** when not using `queryTemplate`. Delete a single row by its ID. |
 | `limitTemplate` | Optional. Max number of rows to delete when using `queryTemplate`. |
-| `resultPath` | Payload path for `{ deletedCount }`. |
+| `resultPath` | Payload path for `{ result: true, count: <n> }` on success. On API error: `{ error: { type, message } }`. |
 
 ### Idiom notes
 
 - All `*JsonTemplate` and `queryTemplate` fields are **LJSON templates** — the entire string is processed as a JSON template where string values can contain `{{}}` Handlebars references. See `losant://references/flow/templating`.
 - Use `queryTemplate: "{}"` to match all rows — be careful with delete/update.
 - `DataTableQueryNode` result: access rows as `{{working.rows.items.[0].columnName}}`.
-- None of these nodes have `errorBehavior` — errors halt the workflow and route to the Workflow Error trigger.
+- None of these nodes have `errorBehavior`. API-level errors (e.g. invalid query, row not found) write `{ error: { type, message } }` to `resultPath` and the workflow continues. System errors route to the Workflow Error trigger.
 
 ## Experience workflows
 

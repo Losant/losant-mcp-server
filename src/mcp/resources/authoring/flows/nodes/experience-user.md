@@ -43,6 +43,8 @@ Creates a new Experience User. Two configuration modes: individual fields or a J
 | `firstNameTemplate` | `""` | Optional first name. Template. |
 | `lastNameTemplate` | `""` | Optional last name. Template. |
 | `userJsonTemplate` | `""` | **Required** when `dataMethod: "jsonTemplate"`. User object as JSON template. |
+| `groupIdTemplates` | `[]` | Optional. Array of Experience Group ID strings (or templates) to assign membership at creation. |
+| `userTags` | `[]` | Optional. Array of `{ keyTemplate, valueTemplate }` metadata tag objects. |
 | `userPayloadPath` | `""` | **Required** when `dataMethod: "payloadPath"`. Payload path to user object. |
 | `resultPath` | `""` | **Required.** Payload path to write the created user object. |
 

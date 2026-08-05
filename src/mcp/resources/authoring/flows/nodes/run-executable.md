@@ -49,6 +49,6 @@ Not available.
 | `encodingTemplate` | `"utf8"` | Output encoding. Template. |
 | `envsTemplate` | `[]` | Array of `{ keyTemplate, valueTemplate }` environment variables to set. |
 | `detached` | `false` | When `true`, runs the process detached from the GEA (fire-and-forget). GEA 1.2.3+. |
-| `resultPath` | `""` | Payload path to write `{ stdout, stderr, exitCode, signal }`. On error: `{ error: { message } }`. |
+| `resultPath` | `""` | Payload path to write `{ stdout, stderr, exitCode, signal }`. On error: `{ stdout, stderr, exitCode, signal, error: { type: "EXECUTE_ERROR", message } }`. |
 
 Default timeout: 30 seconds. Long-running processes should use `detached: true`.

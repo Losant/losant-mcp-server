@@ -49,7 +49,7 @@ Reads content from a file on the GEA container file system.
 | `encodingTemplate` | `"utf8"` | **Required.** Content encoding: `"utf8"`, `"base64"`, `"binary"`, `"hex"`. Template. |
 | `startTemplate` | `""` | Byte offset to start reading. Negative values read from end of file. Template. |
 | `lengthTemplate` | `""` | Number of bytes to read. Leave empty to read to end of file. Template. |
-| `resultPath` | `""` | **Required.** Payload path to write `{ bytesRead, content }`. On error: `{ error: { type, message } }`. |
+| `resultPath` | `""` | **Required.** Payload path to write `{ bytesRead, value }`. On error: `{ error: { type, message } }`. |
 
 Max file size: 5 MB.
 

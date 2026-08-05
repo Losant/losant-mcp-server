@@ -46,6 +46,8 @@ Four auth methods: integration, service credential, JSON template, or payload pa
 | `dataTemplate` | `""` | **Required** when `dataMethod: "stringTemplate"`. Message body. Template. |
 | `dataPayloadPath` | `""` | **Required** when `dataMethod: "payloadPath"`. |
 | `attrMethod` | `"individualFields"` | `"individualFields"`, `"jsonTemplate"`, or `"payloadPath"` for message attributes. |
+| `attrTemplate` | `""` | **Required** when `attrMethod: "jsonTemplate"`. JSON template of the attributes object. |
+| `attrPayloadPath` | `""` | **Required** when `attrMethod: "payloadPath"`. Payload path to the attributes object. |
 | `attrFields` | `[]` | Array of `{ keyTemplate, valueTemplate }` attribute pairs. |
 | `resultPath` | `""` | Payload path to write the publish result. |
 
@@ -65,4 +67,4 @@ Same as Cloud.
 
 > **Minimum GEA version:** 1.39.0
 
-Same as Cloud.
+Same as Cloud. Integration method (`integrationId`) and credential method (`credentialNameTemplate`) are **not available on edge** — use direct JWT (`jwtDataMethod` + `jwtData`) only. `projectIdTemplate` requires GEA **1.42.0+**.

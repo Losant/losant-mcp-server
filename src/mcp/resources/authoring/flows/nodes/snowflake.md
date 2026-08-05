@@ -1,6 +1,6 @@
 # Snowflake Node (`type: "SnowflakeNode"`)
 
-The Snowflake Node allows a workflow to execute SQL queries against a Snowflake data warehouse and return the results on the payload.
+The Snowflake Node allows a workflow to execute SQL queries against a Snowflake data warehouse and return the results on the payload. Available in cloud, experience, and customNode workflows.
 
 ## Required Fields
 
@@ -46,6 +46,16 @@ Cloud workflows authenticate via a Snowflake service credential.
 | `sqlSourceValue` | `""` | **Required.** The SQL query (as a template string or payload path). |
 | `timeoutTemplate` | `""` | Query timeout in seconds. Template. |
 | `resultPath` | `""` | **Required.** Payload path to write the query result rows. |
+
+## Output
+
+`resultPath` receives the query result:
+
+```json
+{ "working": { "result": { "rows": [ { "col1": "val1", "col2": 42 } ] } } }
+```
+
+On error: `{ "working": { "result": { "error": { "message": "..." } } } }`
 
 ## Experience workflows
 

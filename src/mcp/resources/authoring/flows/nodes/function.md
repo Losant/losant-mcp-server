@@ -37,7 +37,7 @@ Executes arbitrary JavaScript against the workflow payload. Use when built-in no
 
 - **`payload`** — the full workflow payload object. Mutate it directly: `payload.working.x = 42`.
 - **`console.log()`** — output appears in the workflow debug panel.
-- ES5 and ES6+ syntax supported.
+- ES5 and ES6+ syntax supported. **Async/await and Promises are only supported on edge workflows running GEA 1.43.2+** — they are NOT available in cloud or experience workflows.
 
 ### Example
 
@@ -52,7 +52,7 @@ Same as Cloud.
 
 ## Edge workflows
 
-Same as Cloud. Additionally:
+Same as Cloud. `scopePath` requires GEA **1.30.0+**. Async/await requires GEA **1.43.2+**. Additionally:
 
 - **`require()`** gives access to Node.js built-in modules (`fs`, `path`, `crypto`, etc.) and any modules bundled with the GEA.
 - **Async/await and Promises** are supported from GEA 1.43.2+. Before 1.43.2, all logic must be synchronous.

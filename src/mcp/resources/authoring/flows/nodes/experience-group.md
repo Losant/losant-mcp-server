@@ -39,6 +39,9 @@ Creates a new Experience Group.
 | `nameTemplate` | `""` | **Required** (individualFields). Group name. Template. |
 | `descriptionTemplate` | `""` | Optional description. Template. |
 | `groupJsonTemplate` | `""` | **Required** when `dataMethod: "jsonTemplate"`. Group object as JSON template. |
+| `parentIdTemplate` | `""` | Optional. ID of a parent group for hierarchy. Template. |
+| `deviceQueryJsonTemplate` | `""` | Optional. JSON device query to associate devices with this group. Template. |
+| `groupTagTemplates` | `[]` | Optional. Array of `{ keyTemplate, valueTemplate }` tag objects for the group. |
 | `groupPayloadPath` | `""` | **Required** when `dataMethod: "payloadPath"`. Payload path to group object. |
 | `resultPath` | `""` | **Required.** Payload path to write the created group object. |
 

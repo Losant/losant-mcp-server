@@ -1,6 +1,6 @@
 # Time Range Node (`type: "TimeRangeNode"`)
 
-Branches the workflow based on whether the current time (or a specified time) falls within a configured HH:MM range, optionally filtered by day of week. `outputIds[0]` = **out of range**; `outputIds[1]` = **in range**.
+Branches the workflow based on whether the current time (or a specified time) falls within a configured HH:MM range, optionally filtered by day of week. `outputIds[0]` = **out of range**; `outputIds[1]` = **in range**. Available in cloud, experience, and customNode workflows.
 
 ## Required Fields
 

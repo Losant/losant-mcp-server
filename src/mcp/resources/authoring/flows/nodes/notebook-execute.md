@@ -33,10 +33,12 @@ The Notebook: Execute Node requests execution of a Losant Notebook. It does not 
 | Config field | Default | Notes |
 |---|---|---|
 | `notebookIdTemplate` | `""` | **Required.** Notebook ID or a template resolving to one. |
-| `contextTemplateType` | `"none"` | How to provide the notebook context. `"none"` — no context. `"jsonTemplate"` — context from `contextTemplate` as a JSON template. `"payloadPath"` — context from `contextTemplate` as a payload path. `"fullPayload"` — send the entire workflow payload as context. |
+| `contextTemplateType` | `"none"` | How to provide the notebook context. `"none"` — no context. `"jsonTemplate"` — context from `contextTemplate` as a JSON template. `"payloadPath"` — context from `contextTemplate` as a payload path. `"workflowPayload"` — send the entire workflow payload as context. |
 | `contextTemplate` | `""` | **Required** when `contextTemplateType` is `"jsonTemplate"` or `"payloadPath"`. The JSON template or payload path for the context. |
-| `relativeToSourceType` | `"payloadTime"` | The query time sent to the notebook. `"payloadTime"` — use `payload.time`. `"currentTime"` — use the current wall-clock time. `"payloadPath"` — use the timestamp at `relativeToPath`. |
+| `relativeToSourceType` | `"payloadTime"` | The query time sent to the notebook. `"payloadTime"` — use `payload.time`. `"now"` — use the current wall-clock time. `"payloadPath"` — use the timestamp at `relativeToPath`. |
 | `relativeToPath` | `""` | **Required** when `relativeToSourceType: "payloadPath"`. Payload path to the timestamp. |
+| `callbackUrlTemplate` | `""` | Optional. URL to POST results to when execution completes. Template. |
+| `emailTemplate` | `""` | Optional. Email address to notify when execution completes. Template. |
 | `resultPath` | `""` | Payload path to write the execution response (execution ID and initial status). |
 
 ### Response at `resultPath`
@@ -48,15 +50,14 @@ When set, `resultPath` receives the notebook execution object:
   "working": {
     "notebookExecution": {
       "id": "xxxxxxxxxxxxxxxxxxxxxxxx",
-      "notebookId": "xxxxxxxxxxxxxxxxxxxxxxxx",
-      "status": "queued",
-      "creationDate": "2024-01-01T00:00:00.000Z"
+      "executionId": "xxxxxxxxxxxxxxxxxxxxxxxx",
+      "success": true
     }
   }
 }
 ```
 
-The `status` is `"queued"` or `"running"` immediately after triggering. Use the `id` with a Losant API Node to poll for completion if needed.
+Use the `executionId` with a Losant API Node to poll for completion if needed.
 
 On error (e.g. notebook not found, execution limit exceeded), an error object is placed at `resultPath` or the workflow halts depending on error handling.
 

@@ -47,7 +47,8 @@ See `losant://references/flow/templating` for the Handlebars dialect and `losant
 | Field | Default | Notes |
 |---|---|---|
 | `method` | `"GET"` | `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD`. |
-| `bodyType` | `"string"` | `string`, `multipart`, `urlencoded`, `none`, `url`, `jsonTemplate`. Ignored for GET/HEAD. |
+| `bodyType` | `"string"` | `string`, `multipart`, `urlencoded`, `none`, `url`, `jsonTemplate`, `diskPath` (edge only, GEA 2.1.0+). Ignored for GET/HEAD. |
+| `requestEncodingTemplate` | `"utf8"` | Encoding for the request body when `bodyType` is `"string"` or `"diskPath"`. Template. |
 | `bodyTemplate` | — | Used by `string`, `url`, `jsonTemplate`. **`jsonTemplate` is the idiom for JSON APIs** — auto-adds `Content-Type: application/json`. |
 | `bodyFields` | `[]` | Used by `multipart` and `urlencoded`. Array of `{ keyTemplate, valueTemplate }`. |
 
@@ -99,6 +100,6 @@ Same as Cloud, with the following additional options available on **GEA 2.1.0+**
 | `bodyType: "diskPath"` | Stream a local file on the agent as the request body. `bodyTemplate` is the file path. Falls back to `"string"` on cloud. |
 | `diskPathTemplate` | Stream the response body to a local file instead of storing it on the payload. Bypasses the 5 MB response size cap. |
 | `shouldAppend` | When writing to disk, append instead of overwrite. Default `false`. |
-| `errorIfFileExists` | Error if the disk target already exists. Default `true`. |
+| `errorIfFileExists` | Error if the disk target already exists. Default `false`. |
 
 `authType: "credential"` is not supported in edge workflows — use `authType: "none"` with a header template, `"basic"`, or `"clientCert"` instead.

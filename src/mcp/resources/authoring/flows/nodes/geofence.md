@@ -99,7 +99,7 @@ All GPS values (`gpsCheck`, `gpsCenter`, and the coordinates in `polygonCoords`/
 
 ## Output
 
-**Point-in-polygon and multi-polygon modes** — the node branches (`outputIds[0]` = inside, `outputIds[1]` = outside). `resultPath` receives `true` (inside) or `false` (outside).
+**Point-in-polygon and multi-polygon modes** — the node branches (`outputIds[0]` = outside, `outputIds[1]` = inside). `resultPath` receives `true` when inside or `false` when outside.
 
 **Radius mode** — the node branches on inside/outside. `resultPath` receives the distance in meters from the center point to the input coordinate (a number).
 

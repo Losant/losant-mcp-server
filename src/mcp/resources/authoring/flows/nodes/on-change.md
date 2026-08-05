@@ -33,7 +33,7 @@ Branches based on whether a payload value has changed since the last execution. 
 | Config field | Default | Notes |
 |---|---|---|
 | `valuePath` | — | **Required.** Payload path of the value to compare. |
-| `changeType` | `"any"` | `"any"` (any kind of change), `"percent"`, `"percentInc"`, `"percentDec"`, `"value"`, `"valueInc"`, `"valueDec"`. |
+| `changeType` | `"any"` | **Required.** `"any"` (any kind of change), `"percent"`, `"percentInc"`, `"percentDec"`, `"value"`, `"valueInc"`, `"valueDec"`. |
 | `changeThreshold` | — | Amount of change required. Required when `changeType` is anything other than `"any"`. |
 | `prevValuePath` | — | Payload path to write the previously compared value. |
 | `onChangeIdTemplate` | `""` | Storage key used to persist the previous value across executions. Scope per-device with `{{data.deviceId}}`. |

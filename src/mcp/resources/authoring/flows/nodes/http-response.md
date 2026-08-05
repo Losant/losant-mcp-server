@@ -47,4 +47,4 @@ Not available.
 | `bodyTemplateType` | `"string"` | `"string"` — string template. `"path"` — payload path. `"payload"` — send the full workflow payload as body. |
 | `bodyTemplate` | `""` | Response body. Template or payload path per `bodyTemplateType`. Omit when `bodyTemplateType: "payload"`. |
 | `headerInfo` | `[]` | Array of `{ keyTemplate, valueTemplate }` response headers. |
-| `cookieInfo` | `[]` | Array of cookie configuration objects. |
+| `cookieInfo` | `[]` | Array of cookie objects. Each object: `nameTemplate` (**Required**), `valueTemplate`, `maxAgeTemplate`, `pathTemplate` (GEA **1.2.0+** on edge). |

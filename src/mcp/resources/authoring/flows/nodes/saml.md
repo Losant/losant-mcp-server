@@ -1,6 +1,6 @@
 # SAML Nodes — Login URL, Verify
 
-Two nodes for SAML-based single sign-on with Experience Users.
+Two nodes for SAML-based single sign-on with Experience Users. Available in cloud, experience, and customNode workflows.
 
 ## Required Fields
 
@@ -33,9 +33,9 @@ Generates a SAML login redirect URL that sends the user to the Identity Provider
 |---|---|---|
 | `spMetadataTemplate` | `""` | **Required.** Service Provider (SP) SAML metadata XML. Template. |
 | `idpMetadataTemplate` | `""` | **Required.** Identity Provider (IdP) SAML metadata XML. Template. |
-| `resultPath` | `""` | **Required.** Payload path to write the generated login redirect URL. |
+| `resultPath` | `""` | **Required.** Payload path to write `{ redirectUrl: "<IdP URL>" }`. Pass `resultPath.redirectUrl` to an Endpoint Reply redirect. |
 
-Pass the URL at `resultPath` to an Endpoint Reply node to redirect the user's browser to the IdP.
+Pass `resultPath.redirectUrl` to an Endpoint Reply node to redirect the user's browser to the IdP.
 
 ---
 

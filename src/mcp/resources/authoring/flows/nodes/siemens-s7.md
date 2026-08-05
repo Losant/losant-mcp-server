@@ -61,7 +61,7 @@ Reads values from Siemens S7 data blocks.
 | `slotTemplate` | `"0"` | **Required.** PLC slot (0–31). Template. |
 | `timeoutTemplate` | `"30000"` | Timeout in milliseconds. Template. |
 | `readInstructionsType` | `"array"` | `"array"` or `"payloadPath"`. |
-| `readInstructions` | `[]` | **Required.** Array of read instruction objects. |
+| `readInstructions` | `[]` | **Required.** Array of read instruction objects. Each object: `{ key (required), tagTemplate (required), arrayLengthTemplate (optional — number of array items to read for BOOL array tags) }`. |
 | `destinationPath` | `""` | **Required.** Payload path to write results. The `destinationPath` can point to an existing payload path to overwrite it. |
 
 ### Read output shape

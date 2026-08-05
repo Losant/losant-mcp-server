@@ -66,10 +66,20 @@ Authentication uses Salesforce username, password, and optional security token d
 
 **`count`** — `params` contains a `conditions` object; result is the count of matching records.
 
+## Output
+
+`resultPath` receives the Salesforce API response. Shape varies by action:
+
+- **`create`**: `{ id: "<recordId>", success: true, errors: [] }`
+- **`update`**: `{ success: true }` or `{ success: false, errors: [...] }`
+- **`find`**: `{ success: true, errors: [], items: [...] }`
+- **`count`**: `{ success: true, errors: [], count: <number> }`
+- **Error**: `{ success: false, errors: ["Error: <message>"] }`
+
 ## Experience workflows
 
 Same as Cloud.
 
 ## Edge workflows
 
-Not available.
+Same as Cloud (no minimum GEA version).

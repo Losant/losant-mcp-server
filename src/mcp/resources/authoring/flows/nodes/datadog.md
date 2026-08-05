@@ -23,7 +23,7 @@ Two auth methods: service credential (cloud/experience) or direct API key + site
     "credentialNameTemplate": "my-datadog-credential",
     "writeMethod": "individualFields",
     "writeFields": [
-      { "messageTemplate": "Device {{data.deviceId}} reported {{data.attributes.tempC}}°C", "jsonTemplate": "" }
+      { "messageTemplate": "Device {{data.deviceId}} reported {{data.attributes.tempC}}°C" }
     ],
     "resultPath": "working.datadogResult"
   },
@@ -38,7 +38,7 @@ Two auth methods: service credential (cloud/experience) or direct API key + site
 | `apiKeyTemplate` | `""` | **Required** (direct method, edge). Datadog API key. Template. |
 | `siteTemplate` | `""` | **Required** (direct method, edge). Datadog site hostname (e.g. `"datadoghq.com"`). Template. |
 | `writeMethod` | `"individualFields"` | **Required.** `"individualFields"`, `"jsonTemplate"`, or `"payloadPath"`. |
-| `writeFields` | `[]` | **Required** (individualFields). Array of `{ messageTemplate, jsonTemplate }` log entries. |
+| `writeFields` | `[]` | **Required** (individualFields). Array of log entry objects — each entry can include: `messageTemplate` (log message), `sourceTemplate`, `hostnameTemplate`, `serviceTemplate`, `tagsTemplate` (comma-separated tags), `attributesTemplate` (JSON template for structured attributes). All fields are optional except that at least `messageTemplate` is typically set. |
 | `writeJsonTemplate` | `""` | **Required** (jsonTemplate). Log entries as a JSON template. |
 | `writePayloadPath` | `""` | **Required** (payloadPath). Payload path to log entries. |
 | `resultPath` | `""` | Payload path to write the send result. |

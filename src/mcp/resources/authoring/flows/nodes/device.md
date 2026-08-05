@@ -266,7 +266,7 @@ Removes one or more devices from the application. Two delete modes are available
   "id": "delete-device",
   "type": "DeviceDeleteWorkflowNode",
   "config": {
-    "deleteMode": "one",
+    "dataMethod": "id",
     "deviceIdTemplate": "{{data.deviceId}}",
     "resultPath": "working.deleteResult"
   },
@@ -284,8 +284,8 @@ Removes one or more devices from the application. Two delete modes are available
   "id": "delete-devices",
   "type": "DeviceDeleteWorkflowNode",
   "config": {
-    "deleteMode": "many",
-    "queryTemplate": "{\"tags\":{\"$elemMatch\":{\"key\":\"status\",\"value\":\"retired\"}}}",
+    "dataMethod": "query",
+    "deviceQueryJsonTemplate": "{\"tags\":{\"$elemMatch\":{\"key\":\"status\",\"value\":\"retired\"}}}",
     "resultPath": "working.deleteResult"
   },
   "meta": { "category": "data", "name": "delete-device", "label": "Device: Delete", "x": 200, "y": 200 },
@@ -297,9 +297,9 @@ Removes one or more devices from the application. Two delete modes are available
 
 | Config field | Notes |
 |---|---|
-| `deleteMode` | **Required.** `"one"` — delete by ID. `"many"` — delete by query. |
-| `deviceIdTemplate` | Required when `deleteMode: "one"`. |
-| `queryTemplate` | Required when `deleteMode: "many"`. JSON-encoded advanced query. The default query matches no devices — must be changed to take effect. |
+| `dataMethod` | **Required.** `"id"` — delete by device ID. `"query"` — delete by advanced query. |
+| `deviceIdTemplate` | Required when `dataMethod: "id"`. |
+| `deviceQueryJsonTemplate` | Required when `dataMethod: "query"`. JSON-encoded advanced device query. The default query matches no devices — must be changed to take effect. |
 | `resultPath` | Optional. Payload path for the result. |
 
 **Worked example — add a tag without losing existing tags:**

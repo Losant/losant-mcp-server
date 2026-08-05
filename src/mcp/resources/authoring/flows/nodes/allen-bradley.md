@@ -48,7 +48,7 @@ Reads tag values from an Allen-Bradley PLC.
 |---|---|---|
 | `hostTemplate` | `""` | **Required.** PLC hostname or IP. Template. |
 | `slotTemplate` | `""` | **Required.** PLC slot number. Template. |
-| `keepAliveTemplate` | `""` | Keep-alive interval in milliseconds. Template. |
+| `keepRateTemplate` | `""` | Keep-alive interval in milliseconds. Template. |
 | `timeoutTemplate` | `"30000"` | Request timeout in milliseconds. Template. |
 | `readInstructionsType` | `"array"` | `"array"` or `"payloadPath"`. |
 | `readInstructions` | `[]` | **Required.** Array of `{ tagTemplate, programTemplate?, key }` objects. Key cannot be `"errors"` or `"plcProperties"`. |
@@ -109,7 +109,7 @@ Writes tag values to an Allen-Bradley PLC.
 |---|---|---|
 | `hostTemplate` | `""` | **Required.** PLC hostname or IP. Template. |
 | `slotTemplate` | `""` | **Required.** PLC slot number. Template. |
-| `keepAliveTemplate` | `""` | Keep-alive interval in milliseconds. Template. |
+| `keepRateTemplate` | `""` | Keep-alive interval in milliseconds. Template. |
 | `timeoutTemplate` | `"30000"` | Request timeout in milliseconds. Template. |
 | `writeInstructionsType` | `"array"` | `"array"` — use `writeInstructions` array. `"payloadPath"` — read instructions from a payload path. |
 | `writeInstructions` | `[]` | **Required.** Array of objects with `tagTemplate` (required), `valueTemplate` (required), and `programTemplate` (optional). `dataTypeTemplate` was removed in GEA 1.54.0. |

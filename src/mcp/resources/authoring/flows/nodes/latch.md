@@ -39,7 +39,7 @@ Branches based on a boolean condition that only transitions when the condition c
 | `resetResultPath` | `""` | Payload path to write the boolean result of `resetExpression`. |
 | `wasLatchedPath` | `""` | Payload path for the latch state before this execution. |
 | `isLatchedPath` | `""` | Payload path for the latch state after this execution. |
-| `branchPath` | `""` | Payload path for which branch was taken (`0` or `1`). |
+| `branchPath` | `""` | Payload path for which branch was taken (`true` = latched branch, `false` = already-latched-or-false branch). |
 
 ## Output
 
@@ -49,7 +49,7 @@ The Latch node is a branching node — it does not write a result itself, but th
 - `resetResultPath` — boolean result of `resetExpression` this execution
 - `wasLatchedPath` — latch state *before* this execution
 - `isLatchedPath` — latch state *after* this execution
-- `branchPath` — which output index was taken (`0` or `1`)
+- `branchPath` — which branch was taken (`true` or `false` boolean, not integers)
 
 All five are optional and can each be set to any payload path, including an existing path to overwrite it.
 

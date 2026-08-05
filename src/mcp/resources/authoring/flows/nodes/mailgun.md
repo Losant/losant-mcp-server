@@ -40,7 +40,7 @@ Two auth methods: service credential or direct API key.
 |---|---|---|
 | `credentialNameTemplate` | `""` | **Required** (credential method). Mailgun credential name. |
 | `mailgunApiKey` | `""` | **Required** (direct method). Mailgun API key (Account API Key or Domain Sending Key). Template. |
-| `mailgunRegion` | `"us"` | **Required.** `"us"` or `"eu"`. Template. |
+| `mailgunRegion` | `"us"` | **Required.** `"us"` or `"eu"`. Not a template — must be a static string. |
 | `fromTemplate` | `""` | **Required.** Sender email address. Template. |
 | `subjectTemplate` | `""` | **Required.** Email subject. Template. |
 | `bodyTemplate` | `""` | **Required.** Email body. Template. |
@@ -48,7 +48,7 @@ Two auth methods: service credential or direct API key.
 | `ccAddresses` | `[]` | Array of email address template strings. |
 | `bccAddresses` | `[]` | Array of email address template strings. |
 | `replyToTemplate` | `""` | Reply-to address. Template. |
-| `attachments` | `[]` | Array of attachment objects (max 10). |
+| `attachments` | `[]` | Array of attachment objects (max 10). Each object: `{ urlTemplate, contentTemplate, filenameTemplate }` — `urlTemplate` (URL to fetch) or `contentTemplate` (inline content) plus `filenameTemplate` (attachment filename). |
 | `resultPath` | `""` | Payload path to write the send result. |
 
 ## Output
@@ -56,7 +56,7 @@ Two auth methods: service credential or direct API key.
 `resultPath` receives a confirmation object with the Mailgun message ID:
 
 ```json
-{ "working": { "sendResult": { "success": true, "id": "<messageId@mailgun.org>" } } }
+{ "working": { "sendResult": { "id": "<messageId@mailgun.org>", "message": "Queued. Thank you." } } }
 ```
 
 ## Experience workflows
@@ -67,4 +67,4 @@ Same as Cloud.
 
 > **Minimum GEA version:** 1.48.0
 
-Same as Cloud.
+Same as Cloud. The credential method (`credentialNameTemplate`) is **not available on edge** — use `mailgunApiKey` directly.

@@ -25,8 +25,8 @@ Generates a random number within a configured range and writes it to the payload
 
 | Config field | Default | Notes |
 |---|---|---|
-| `min` | `0` | Minimum value (inclusive). Number or template string (e.g. `"{{data.min}}"`). |
-| `max` | `100` | Maximum value (inclusive). Number or template string (e.g. `"{{data.max}}"`). |
+| `min` | `0` | **Required.** Minimum value (inclusive). Number or template string (e.g. `"{{data.min}}"`). |
+| `max` | `100` | **Required.** Maximum value (inclusive). Number or template string (e.g. `"{{data.max}}"`). |
 | `resultPath` | — | **Required.** Payload path to write the result. |
 
 ## Experience workflows

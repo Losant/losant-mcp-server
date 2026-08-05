@@ -1,6 +1,6 @@
 # Validate Payload Node (`type: "ValidatePayloadNode"`)
 
-Validates a value on the workflow payload against a JSON Schema (draft-04). Branches on pass/fail — `outputIds[0]` = invalid (validation failed), `outputIds[1]` = valid (validation passed).
+Validates a value on the workflow payload against a JSON Schema (draft-04). Branches on pass/fail — `outputIds[0]` = invalid (validation failed), `outputIds[1]` = valid (validation passed). Available in cloud, experience, and customNode workflows.
 
 ## Required Fields
 
@@ -32,9 +32,9 @@ Validates a value on the workflow payload against a JSON Schema (draft-04). Bran
 
 | Field | Default | Notes |
 |---|---|---|
-| `schemaType` | `"json"` | `"json"` — schema is a JSON string in `schema`. `"path"` — `schema` is a payload path pointing to the schema object. |
+| `schemaType` | *(on edge, `"path"` requires GEA 1.1.0+; `"json"` works on all versions)* | `"json"` | `"json"` — schema is a JSON string in `schema`. `"path"` — `schema` is a payload path pointing to the schema object. |
 | `schema` | `""` | **Required.** The JSON Schema as a JSON-encoded string (when `schemaType: "json"`) or a payload path (when `schemaType: "path"`). |
-| `toValidatePath` | `""` | **Required.** Payload path of the value to validate. |
+| `toValidatePath` | `""` | Payload path of the value to validate. If omitted, the entire workflow payload is validated. |
 | `errorsPath` | `""` | Payload path to write validation errors on the invalid branch. Errors are an array of objects describing each schema violation. |
 
 ### Wiring

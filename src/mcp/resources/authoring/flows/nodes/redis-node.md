@@ -86,13 +86,19 @@ Two connection modes: standalone (single server) or cluster (multiple nodes).
 
 `keys`, `strings`, `lists`, `sets`, `sorted sets`, `hashes`, `streams`, `geo`, `hyperloglog`, `publishing`
 
+## Output
+
+The result shape at `resultPath` varies by command. Most commands return a scalar (string, number, `null`). `keys` and `smembers` return arrays. `hgetall` returns an object. On error, `errorPath` receives `{ type, message }`.
+
 ## Experience workflows
 
 Same as Cloud.
 
 ## Edge workflows
 
-Same as Cloud. Feature availability by GEA version:
+Same as Cloud with the following version gates:
+- `tlsOn` (TLS support) requires GEA **1.9.0+**.
+- `isCluster` / cluster mode requires GEA **1.38.0+**. Feature availability by GEA version:
 
 | Feature | Min GEA |
 |---|---|

@@ -54,7 +54,7 @@ The Webhook: Reply Node sends a custom HTTP response to a webhook request, or se
 
 | Config field | Default | Notes |
 |---|---|---|
-| `replyIdPath` | `""` | Payload path to the reply ID (from `data.replyId` on the webhook trigger payload). |
+| `replyIdPath` | `"data.replyId"` | Payload path to the reply ID. Defaults to `"data.replyId"` — the location set by the Webhook trigger. |
 | `isWebsocketMessage` | `false` | When `true`, sends a WebSocket message to a connected client instead of an HTTP reply. |
 | `responseCodeTemplate` | `""` | HTTP status code. Template. Only for HTTP replies. |
 | `bodyTemplate` | `""` | Response body or WebSocket message. Template or payload path per `bodyTemplateType`. |
@@ -69,3 +69,5 @@ Not available.
 ## Edge workflows
 
 Not available.
+
+> **Note:** The response body has a maximum size of **256 KB**.

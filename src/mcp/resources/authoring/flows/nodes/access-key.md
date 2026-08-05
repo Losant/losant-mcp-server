@@ -42,6 +42,7 @@ Three configuration modes via `dataMethod`.
 | `dataMethod` | `"individualFields"` | **Required.** `"individualFields"`, `"jsonTemplate"`, or `"payloadPath"`. |
 | `nameTemplate` | `""` | Key name. Template. |
 | `descriptionTemplate` | `""` | Key description. Template. |
+| `statusTemplate` | `"active"` | Initial key status. `"active"` or `"inactive"`. Template. |
 | `resultPath` | `""` | **Required.** Payload path to write the created key object. |
 | `addressFilterTypeTemplate` | `"all"` | IP restriction mode. `"all"` — allow any IP. `"whitelist"` — allow only listed IPs/CIDRs. `"blacklist"` — block listed IPs/CIDRs. Template. |
 | `addressesTemplate` | `[]` | **Required** when `addressFilterTypeTemplate` is `"whitelist"` or `"blacklist"`. Array of IP address or CIDR strings. |
@@ -85,14 +86,22 @@ Three configuration modes via `dataMethod`.
 
 ## Output
 
-`resultPath` receives the created access key object:
+`resultPath` receives the full access key API object plus the `secret`:
 
 ```json
 {
   "working": {
     "accessKey": {
       "key": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-      "secret": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+      "secret": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "status": "active",
+      "name": "Key for device abc123",
+      "description": "",
+      "filterType": "none",
+      "deviceIds": [],
+      "deviceTags": [],
+      "creationDate": "2024-01-01T00:00:00.000Z",
+      "lastUpdated": "2024-01-01T00:00:00.000Z"
     }
   }
 }
