@@ -91,7 +91,7 @@ Routes are matched by specificity — static segments beat parameters, parameter
 | \`public\` | Anyone, no authentication required |
 | \`authenticated\` | Any logged-in experience user |
 | \`group\` | Members of specific groups — also set \`experienceGroupIds\` array |
-| \`device\` | Requests authenticated with a device token — also set \`deviceIdTemplate\` |
+| \`device\` | Experience users whose group is associated with a specific device — also set \`deviceIdTemplate\` |
 
 **Authorized reply** (\`staticReply\` field) — how to respond to authorized/public requests:
 - \`null\` or omitted: a flow's Endpoint Reply Node must respond (flow-driven reply)
@@ -108,7 +108,7 @@ Routes are matched by specificity — static segments beat parameters, parameter
 Key fields for \`experienceEndpoint\`:
 - \`method\`: required
 - \`route\`: required
-- \`access\`: required — \`public\`, \`authenticated\`, \`group\`, or \`device\`
+- \`access\`: optional, defaults to \`public\` — \`public\`, \`authenticated\`, \`group\`, or \`device\`
 - \`experienceGroupIds\`: array of group IDs — required when \`access\` is \`group\`
 - \`deviceIdTemplate\`: string template resolving to a device ID — required when \`access\` is \`device\`
 - \`staticReply\`: object or null — authorized/public reply (see above)

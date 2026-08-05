@@ -196,7 +196,7 @@ See `losant://references/experience/context-configuration` for the full render c
 
 ### Create a device-authenticated endpoint
 
-For IoT devices calling the Experience API directly with a device access token:
+For restricting access to experience users who are in a group associated with a specific device:
 ```json
 {
   "method": "post",
@@ -206,7 +206,7 @@ For IoT devices calling the Experience API directly with a device access token:
   "staticReply": null
 }
 ```
-The device token in the `Authorization` header is validated against `request.params.deviceId`. Mismatched tokens get `unauthorizedReply`.
+The request must carry an experience user token. The platform resolves `deviceIdTemplate` to a device ID, then checks that the authenticated user belongs to an Experience Group associated with that device. Users who fail the check get `unauthorizedReply`.
 
 ### Create a group-restricted endpoint
 
