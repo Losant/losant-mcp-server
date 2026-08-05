@@ -279,6 +279,36 @@ describe('MCP Resources', () => {
           .should.be.rejectedWith(/applicationDashboard/);
       });
 
+      it('should return content for losant://authoring/experience-endpoint', async () => {
+        const result = await client.readResource({ uri: 'losant://authoring/experience-endpoint' });
+
+        result.should.have.property('contents');
+        result.contents[0].should.have.property('uri', 'losant://authoring/experience-endpoint');
+        result.contents[0].should.have.property('mimeType', 'text/markdown');
+        result.contents[0].text.should.containEql('deviceIdTemplate');
+        result.contents[0].text.should.containEql('staticReply');
+      });
+
+      it('should return content for losant://authoring/experience-view', async () => {
+        const result = await client.readResource({ uri: 'losant://authoring/experience-view' });
+
+        result.should.have.property('contents');
+        result.contents[0].should.have.property('uri', 'losant://authoring/experience-view');
+        result.contents[0].should.have.property('mimeType', 'text/markdown');
+        result.contents[0].text.should.containEql('layout');
+        result.contents[0].text.should.containEql('component');
+      });
+
+      it('should return reference content for losant://references/experience/context-configuration', async () => {
+        const result = await client.readResource({ uri: 'losant://references/experience/context-configuration' });
+
+        result.should.have.property('contents');
+        result.contents[0].should.have.property('uri', 'losant://references/experience/context-configuration');
+        result.contents[0].should.have.property('mimeType', 'text/markdown');
+        result.contents[0].text.should.containEql('pageData');
+        result.contents[0].text.should.containEql('experience.user');
+      });
+
       it('should return block content for losant://dashboard/blocks/gauge', async () => {
         const result = await client.readResource({ uri: 'losant://dashboard/blocks/gauge' });
 
@@ -291,6 +321,16 @@ describe('MCP Resources', () => {
       it('should throw for an unknown dashboard block type', async () => {
         await client.readResource({ uri: 'losant://dashboard/blocks/nonexistent-block' })
           .should.be.rejectedWith(/nonexistent-block/);
+      });
+
+      it('should return reference content for losant://references/shared/handlebars', async () => {
+        const result = await client.readResource({ uri: 'losant://references/shared/handlebars' });
+
+        result.should.have.property('contents');
+        result.contents[0].should.have.property('uri', 'losant://references/shared/handlebars');
+        result.contents[0].should.have.property('mimeType', 'text/markdown');
+        result.contents[0].text.should.containEql('format');
+        result.contents[0].text.should.containEql('expression');
       });
 
       it('should return reference content for losant://references/dashboard/context-configuration', async () => {

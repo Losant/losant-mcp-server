@@ -14,13 +14,13 @@ Versions are snapshots of your experience configuration that can be published to
 **NOT versioned** (shared across all versions): users, groups, application globals, application flow storage.
 
 Key fields for \`experienceVersion\`:
-- \`name\`: required, unique within application
+- \`version\`: required — the version name/identifier (e.g. \`"v1.0"\`)
 - \`description\`: optional
-- \`corsRestricted\`: boolean — if true, only origins in \`corsWhitelist\` are allowed
-- \`corsWhitelist\`: array of allowed origin URLs (only used when \`corsRestricted\` is true)
-- \`unauthorizedReply\`: what to return when a user hits an access-protected endpoint without auth — \`redirect\` (to a URL), \`render\` (a view), or \`json\` (fallback JSON response)
-- \`notFoundReply\`: same options for unmatched routes
-- \`globals\`: array of \`{ "key": "...", "value": "..." }\` pairs, max 100 — available in all views and flows for that version
+- \`endpointDefaultCors\`: boolean — when \`true\`, CORS headers are sent on all endpoint responses
+- \`allowedCorsOrigins\`: array of allowed origin URLs for CORS (only used when \`endpointDefaultCors\` is true)
+- \`unauthorizedReply\`: what to return when a user hits an access-protected endpoint without auth — \`{ "type": "redirect", "value": "/login", "statusCode": 302 }\` or \`{ "type": "page", "value": "<viewId>", "statusCode": 401 }\`
+- \`notFoundReply\`: same shape as \`unauthorizedReply\` — returned when no endpoint matches the request route
+- \`globals\`: array of \`{ "key": "...", "json": "..." }\` pairs, max 100 — the \`json\` field is a JSON-encoded string value; available as \`{{globals.KEY}}\` in all views and flows for that version
 
 ### Common Procedure: Develop → Publish
 
@@ -30,7 +30,8 @@ Key fields for \`experienceVersion\`:
 
 ## Experience Views
 
-Views render HTML, CSS, JavaScript, JSON, or dashboard content. Set \`viewType\` at creation — it cannot be changed.
+**For full view authoring detail** — body constraints, content type via headers, Handlebars helpers, and worked examples — read \`losant://authoring/experience-view\`.
+Views render HTML, CSS, JavaScript, JSON, or dashboard content to the user. Three view types: \`layout\` (wrapper), \`page\` (primary content), \`component\` (reusable snippet). \`viewType\` cannot be changed after creation.
 
 | viewType | Purpose | Key constraint |
 |---|---|---|
@@ -39,77 +40,42 @@ Views render HTML, CSS, JavaScript, JSON, or dashboard content. Set \`viewType\`
 | \`component\` | Reusable snippet included in other views | Invoked via \`{{component "name"}}\` |
 
 Key fields for \`experienceView\`:
-- \`name\`: required, must be unique per \`viewType\` within the version
-- \`description\`: optional
+- \`name\`: required, unique per \`viewType\` within the version
+- \`description\`: optional — available in templates as \`{{experience.page.description}}\`
 - \`viewType\`: required — \`layout\`, \`page\`, or \`component\`
 - \`layoutId\`: optional for pages, omit for layouts and components
 - \`body\`: string — the Handlebars/HTML template content for the view (max 131,072 chars)
 - \`headers\`: object — response headers; set \`content-type\` here for CSS, JS, or JSON pages (e.g. \`{ "content-type": "text/css" }\`)
-- \`viewTags\`: array of \`{ "key": "...", "value": "..." }\` metadata pairs
+- \`viewTags\`: object — key/value metadata tags (e.g. \`{ "env": "production" }\`)
 
-**Handlebars helpers available in all views:**
-- \`{{page}}\` — required in layouts; injects the page content
-- \`{{#fillSection "name"}} ... {{/fillSection}}\` — in pages; fills a named section defined in the layout
-- \`{{component "name" context}}\` — renders a component view with optional context
-- \`{{element 'dashboard' dashboardId='<id>' ctx=(obj ...) }}\` — embeds a Losant dashboard (see below)
-- \`{{file "fileId" ttl=3600}}\` — returns the URL for a public or private application file
-
-### Embedding a dashboard in a page
-
-A dashboard is embedded in any experience page (or as a standalone page) by placing the \`{{element 'dashboard' ...}}\` helper in the view's \`body\`. This is the only mechanism — there is no separate "dashboard page type" in the API; the UI's "Dashboard" page selector simply generates this helper for you.
-
-\`\`\`handlebars
-{{element
-  'dashboard'
-  dashboardId='<dashboardId>'
-  theme='light'
-  hideHeader=false
-  showDurationControls=false
-  ctx=(obj
-    deviceId=(template '{{request.params.deviceId}}')
-    userId=(template '{{experience.user.id}}')
-    range=(template '{{request.query.range}}')
-  )
-}}
-\`\`\`
-
-**\`{{element 'dashboard'}}\` arguments:**
-- \`dashboardId\` (required): dashboard ID string, or \`(template '{{pageData.dashboardId}}')\` to drive it from flow data
-- \`theme\`: \`"light"\` (default) or \`"dark"\`
-- \`duration\`: global duration override in ms
-- \`resolution\`: global resolution override in ms (must be ≤ duration)
-- \`time\`: Unix ms timestamp — pins the dashboard to a past state
-- \`hideHeader\`: boolean — hides the dashboard name, description, and time controls
-- \`showDurationControls\`: boolean — shows the duration/resolution toolbar (only when \`hideHeader\` is false)
-- \`ctx\`: an \`(obj ...)\` helper that maps dashboard context variable names to values. Static values are quoted strings; dynamic values use \`(template '{{...}}')\` to reference request context
-
-**Context wiring pattern** — map experience request context to dashboard context variables:
-\`\`\`handlebars
-ctx=(obj
-  deviceId=(template '{{request.params.deviceId}}')
-  userId=(template '{{experience.user.id}}')
-  threshold=(template '{{pageData.alertThreshold}}')
-)
-\`\`\`
-
-**Standalone dashboard page** — when the entire page should be the dashboard (no surrounding HTML), set the \`body\` to just the \`{{element}}\` call and omit \`layoutId\`. The platform renders the dashboard full-page with no Losant chrome.
-
-See \`losant://references/dashboard/context-configuration\` for the complete context variable type reference and injection patterns.
-
-**Context always available**: \`time\`, \`application\`, \`experience.user\`, \`experience.endpoint\`, \`experience.page\`, \`experience.version\`, \`request\`, \`pageData\` (set by the flow via the "Experience Page" node).
+Experience-specific Handlebars helpers (\`{{page}}\`, \`{{component}}\`, \`{{element}}\`, \`{{file}}\`, etc.) and the full render context are documented in \`losant://references/experience/context-configuration\`.
 
 ### Common Procedure: Create a view
 
 1. Confirm \`viewType\` — layout, page, or component
-2. For pages: query \`resourceType=experienceView\` to find the layout ID if the page should use one
-3. Call \`losant_write\` \`operation=createOne\` \`resourceType=experienceView\`
-4. Check \`losant://schemas/experienceViewPost\` for the full body schema
+2. For pages, decide the content type and set \`headers: { "content-type": "..." }\` accordingly — see \`losant://authoring/experience-view\` for the full pattern reference
+3. For pages with a layout: query \`resourceType=experienceView\` to find the layout ID and confirm it exists in \`develop\`
+4. Call \`losant_write\` \`operation=createOne\` \`resourceType=experienceView\` — do **not** include a \`versions\` field (views land in develop automatically)
+5. Check \`losant://schemas/experienceViewPost\` for the full body schema
+
+### Common Procedure: Build a static page (no workflow required)
+
+A static page renders a view directly from an endpoint with no backing workflow — useful for login pages, home pages, error pages, and simple informational content.
+
+1. Create the view: \`losant_write\` \`operation=createOne\` \`resourceType=experienceView\` with \`viewType: "page"\`, a layout, and a \`body\`. Note the returned \`id\`.
+2. Create the endpoint: \`losant_write\` \`operation=createOne\` \`resourceType=experienceEndpoint\` with \`method\`, \`route\`, \`access\`, and \`staticReply: { "type": "page", "value": "<viewId from step 1>", "statusCode": 200 }\`
+
+Alternatively, create the endpoint first (omitting \`staticReply\` or setting it to \`null\`) and wire the view later with \`losant_write\` \`operation=updateOne\` \`resourceType=experienceEndpoint\`.
+
+The page body has access to the standard render context (\`request\`, \`experience.user\`, etc.) but \`pageData\` will be empty — there is no workflow to populate it.
+
+**Context always available**: \`time\`, \`application\`, \`experience.user\`, \`experience.endpoint\`, \`experience.page\`, \`experience.version\`, \`request\`.
 
 ## Experience Endpoints
 
 An endpoint is an HTTP method + route combination. When a request matches, it can reply immediately via a **static reply** configured on the endpoint itself, or hand off to an **experience flow** to build the reply dynamically — or both (static reply takes priority).
 
-**Method**: \`GET\`, \`POST\`, \`PUT\`, \`PATCH\`, \`DELETE\`, or \`OPTIONS\`
+**Method**: \`get\`, \`post\`, \`put\`, \`patch\`, \`delete\`, or \`options\` (lowercase — the schema enum uses lowercase values)
 
 **Route** syntax:
 - Static segment: \`/devices/list\`
@@ -125,7 +91,7 @@ Routes are matched by specificity — static segments beat parameters, parameter
 | \`public\` | Anyone, no authentication required |
 | \`authenticated\` | Any logged-in experience user |
 | \`group\` | Members of specific groups — also set \`experienceGroupIds\` array |
-| \`device\` | Requests authenticated with a device token — also set \`deviceIdTemplate\` |
+| \`device\` | Experience users whose group is associated with a specific device — also set \`deviceIdTemplate\` |
 
 **Authorized reply** (\`staticReply\` field) — how to respond to authorized/public requests:
 - \`null\` or omitted: a flow's Endpoint Reply Node must respond (flow-driven reply)
@@ -142,7 +108,7 @@ Routes are matched by specificity — static segments beat parameters, parameter
 Key fields for \`experienceEndpoint\`:
 - \`method\`: required
 - \`route\`: required
-- \`access\`: required — \`public\`, \`authenticated\`, \`group\`, or \`device\`
+- \`access\`: optional, defaults to \`public\` — \`public\`, \`authenticated\`, \`group\`, or \`device\`
 - \`experienceGroupIds\`: array of group IDs — required when \`access\` is \`group\`
 - \`deviceIdTemplate\`: string template resolving to a device ID — required when \`access\` is \`device\`
 - \`staticReply\`: object or null — authorized/public reply (see above)
@@ -151,7 +117,9 @@ Key fields for \`experienceEndpoint\`:
 - \`description\`: optional
 - \`endpointTags\`: key/value object for metadata
 
-Rate limit: 50 requests/sec sustained, 500 burst per endpoint.
+Rate limit: 50 requests/sec sustained, 500 burst — applied **per slug or domain** (effectively per experience version), not per individual endpoint.
+
+For deep authoring detail — route syntax, \`deviceIdTemplate\`, reply type shapes, the endpoint → workflow → view loop, and common procedures — read \`losant://authoring/experience-endpoint\`.
 
 ### Common Procedure: Create an endpoint
 
@@ -172,8 +140,8 @@ Required fields:
 
 Optional fields:
 - \`firstName\`, \`lastName\`: strings
-- \`userTags\`: array of \`{ "key": "...", "value": "..." }\` pairs for arbitrary metadata (alphanumeric keys + hyphens/underscores)
-- \`groups\`: array of experience group IDs to assign membership at creation
+- \`userTags\`: plain object mapping tag keys to string values (e.g. \`{ "role": "admin", "region": "west" }\`). Keys must match \`^[0-9a-zA-Z_-]{1,255}$\`. Available in view templates as \`{{experience.user.userTags.role}}\`.
+- \`experienceGroupIds\`: array of experience group IDs to assign membership at creation
 
 Users support advanced queries — see \`losant://guides/advanced-queries\` for query syntax.
 
@@ -181,22 +149,35 @@ Users support advanced queries — see \`losant://guides/advanced-queries\` for 
 
 1. Confirm email and password
 2. Query for the group IDs if assigning at creation time: \`losant_query\` \`operation=list\` \`resourceType=experienceGroup\`
-3. Call \`losant_write\` \`operation=createOne\` \`resourceType=experienceUser\` with \`groups\` array
+3. Call \`losant_write\` \`operation=createOne\` \`resourceType=experienceUser\` with \`experienceGroupIds\` array
 4. Check \`losant://schemas/experienceUserPost\` for the full body schema
 
 ## Experience Groups
 
-Groups associate devices with experience users and control endpoint access for \`access=group\` endpoints.
+Groups serve two purposes: **device association** (which devices an experience user can see) and **endpoint access control** (which users can reach a given endpoint).
 
 Key fields for \`experienceGroup\`:
 - \`name\`: required
 - \`description\`: optional
-- \`parentId\`: ID of a parent group — supports multi-tenant hierarchies where parent group members are visible as read-only in child groups
-- \`experienceTags\`: array of \`{ "key": "...", "value": "..." }\` metadata pairs
+- \`parentId\`: ID of a parent group — creates a hierarchy where members of a parent group are automatically considered members of all child groups, inheriting their device associations
+- \`groupTags\`: object — key/value metadata (e.g. \`{ "region": "west" }\`)
 
-Groups support advanced queries.
+Groups support advanced queries — see \`losant://guides/advanced-queries\`.
 
-Devices are associated with groups after creation via the group edit interface or by including device queries in the group config — not via a field in the create body. To query which devices belong to a group, query the device list filtered by group association.
+### Device association
+
+Devices are linked to a group via a device query configured on the group — **not** via a field in the create body. The group's device query is set through the platform UI or API after creation.
+
+The recommended convention is to tag devices with \`group=<groupId>\` and configure the group to select devices by that tag. With this pattern, onboarding a new device only requires adding the tag — the group query picks it up automatically. This approach also scales: tag-based and ID-based group queries are optimized to handle up to 2,000 unique group associations. Advanced queries (e.g. attribute conditions) can hit a 150-component limit at scale and should be avoided for large groups.
+
+Once a group has associated devices, those devices are queryable via the \`experienceGroupId\` and \`experienceUserId\` fields in an advanced device query — both are documented in \`losant://guides/advanced-queries\` under Device query fields. Use this to filter a device list to only the devices a given user or group can see:
+\`\`\`
+losant_query operation=list resourceType=device query={ "experienceGroupId": { "$eq": "<groupId>" } }
+\`\`\`
+
+### Access control
+
+Set \`access: "group"\` on an endpoint and supply \`experienceGroupIds\` to restrict the endpoint to members of those groups (or their ancestors). Non-members receive the endpoint's \`unauthorizedReply\` instead of reaching the backing workflow.
 
 ## Experience Domains & Slugs
 
@@ -209,8 +190,10 @@ Two distinct resource types for routing traffic to an experience version.
 **\`experienceDomain\`** — fully custom domain (e.g., \`portal.example.com\`):
 - \`domain\`: required, valid domain with a known TLD, must be owned by the organization
 - \`versionName\`: which experience version to serve
-- \`sslKey\`, \`sslCertificate\`, \`sslBundle\`: optional — for securing the domain with your own certificate
-- DNS: create a CNAME record pointing your domain to the Losant endpoint provided after creation
+- \`sslKey\`: PEM-encoded private key — optional, for your own TLS certificate
+- \`sslCertificate\`: PEM-encoded certificate — optional, paired with \`sslKey\`
+- \`sslBundle\`: PEM-encoded intermediate/CA bundle — optional, included when your certificate requires a chain
+- DNS: after creating the domain, the API response includes a Losant-provided CNAME target. Create a CNAME record at your DNS registrar pointing your domain to that target. DNS propagation can take minutes to hours; the domain shows as "pending" until verification succeeds.
 
 Multiple domains/slugs can point to the same version. Change which version a domain/slug serves by updating its \`versionName\`.
 

@@ -59,33 +59,9 @@ For `event-list` custom columns, the full `event` object is available:
 
 ---
 
-## The `format` helper
+## Handlebars language reference
 
-`{{format value}}` renders a value with Losant's default formatter: numbers get locale-appropriate formatting, timestamps become human-readable strings. Use in `rowTemplate` fields when you want sensible display without specifying a D3 format string.
-
----
-
-## Expressions
-
-Fields labelled `expression` (e.g. on graph segments, gauge segments) accept a Handlebars template that transforms the raw value before display:
-
-```handlebars
-{{add (multiply value 1.8) 32}}
-```
-
-Available helpers: arithmetic (`add`, `subtract`, `multiply`, `divide`), comparison (`gt`, `lt`, `eq`), string (`upper`, `lower`, `concat`). An invalid expression reverts to the raw value — no error is surfaced to the viewer.
-
----
-
-## JSON templates
-
-The `payload` field on Input Controls buttons is a **JSON template** — the entire string is evaluated as Handlebars and the result must be valid JSON:
-
-```json
-{"brightness": {{brightness}}, "enabled": {{enabled}}, "label": "{{text-label}}"}
-```
-
-Numbers and booleans render unquoted; strings must be double-quoted.
+For the full helper catalog (format helpers, block helpers, expression syntax, JSON template rules, and HTML safety) see [losant://references/shared/handlebars](losant://references/shared/handlebars).
 
 ---
 
