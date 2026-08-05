@@ -5,6 +5,8 @@ description: Runtime payload structure for all Losant workflow classes — stand
 
 # Workflow Payload Reference
 
+The flow payload plays a similar role to `context-configuration` in dashboards and experiences — it is the root data object available to all templates and expressions during execution. Unlike those, it is **mutable**: nodes read from and write to it as execution progresses, building up intermediate results under `working` and passing the final state downstream.
+
 Every workflow execution carries a **payload** — a mutable JSON object that flows from the trigger through every node. Triggers supply initial data under `data`; nodes read from and write to any path on the payload as they execute.
 
 ## Standard envelope fields
