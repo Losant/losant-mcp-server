@@ -13,12 +13,14 @@ import fileGuide from './file-guide.js';
 import notebookGuide from './notebook-guide.js';
 import experienceGuide from './experience-guide.js';
 import deviceAuthGuide from './device-auth-guide.js';
+import dashboardGuide from './dashboard-guide.js';
 import indexContent from './build-api-index-content.js';
 import conf from '../../config.js';
 import memoizee from 'memoizee';
 import { SCHEMA_NAME_TO_FILE, DOC_NAME_TO_FILE,
   DOCS_PATH, RESOURCE_TYPE_SET, SCHEMAS_PATH,
-  WRITABLE_RESOURCE_TYPES, NO_CREATE_TYPES } from '../../constants.js';
+  WRITABLE_RESOURCE_TYPES, NO_CREATE_TYPES,
+  AUTHORING_HUB_TO_FILE, DASHBOARD_BLOCK_TO_FILE, REFERENCES_TO_FILE } from '../../constants.js';
 import { getPluralResourceName } from '../tools/helpers.js';
 import debug from 'debug';
 
@@ -39,7 +41,6 @@ Losant is an IoT application enablement platform for building, connecting, and m
 ---
 
 `;
-
 const WRITABLE_RESOURCE_TYPE_SET = new Set(WRITABLE_RESOURCE_TYPES);
 // Set of plural API collection names for writable, creatable types — used to add the write disclaimer to plural doc pages.
 // Built via getPluralResourceName so irregular plurals (e.g. applicationCertificateAuthorities) are handled correctly.
@@ -56,6 +57,7 @@ const GUIDES_TO_REGISTER = [
   dataTableGuide,
   deviceGuide,
   deviceAuthGuide,
+  dashboardGuide,
   experienceGuide,
   fileGuide,
   integrationGuide,
@@ -94,6 +96,9 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
     }
     if (filePath.includes('experience')) {
       disclaimerLines.push('\nSee [losant://guides/experiences](losant://guides/experiences) for the versioning model, view sub-types, endpoint access control, and common procedures.');
+    }
+    if (filePath.endsWith('applicationDashboard.md') || filePath.endsWith('applicationDashboards.md')) {
+      disclaimerLines.push('\nSee [losant://guides/dashboards](losant://guides/dashboards) for the block catalog, layout rules, context variables, and common workflows.');
     }
     if (filePath.includes('applicationCertificate') || filePath.includes('applicationCertificateAuthority')) {
       disclaimerLines.push('\nSee [losant://guides/device-auth](losant://guides/device-auth) for the API/UI naming difference (Device Certificate vs. applicationCertificate), certificate authority setup, and MQTT mutual TLS authentication workflow.');
@@ -136,9 +141,15 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
   };
 }, { maxAge: 1000 * 60 * 60, primitive: true }); // cache for 1 hour
 
+// Authoring files are served as-is — no Endpoint disclaimer prepended
+const readAuthoringContent = memoizee(async (filePath, href) => {
+  const text = await readFile(filePath, 'utf-8');
+  return { contents: [{ uri: href, mimeType: 'text/markdown', text }] };
+}, { maxAge: 1000 * 60 * 60, primitive: true });
+
 export default (server) => {
-  // +3 = losant://info, losant://docs/{docName} template, losant://schemas/{schemaName} template
-  log(`Registering ${GUIDES_TO_REGISTER.length + 3} resources...`);
+  // +6 = losant://info, doc template, schema template, authoring-hub template, dashboard-block template, reference template
+  log(`Registering ${GUIDES_TO_REGISTER.length + 6} resources...`);
   server.registerResource(
     'info',
     'losant://info',
@@ -191,6 +202,52 @@ export default (server) => {
         throw new Error(`Schema not found: ${schemaName}`);
       }
       return readFileContent(path.join(SCHEMAS_PATH, file), 'application/json', uri.href);
+    }
+  );
+
+  server.registerResource(
+    'authoring-hub',
+    new ResourceTemplate('losant://authoring/{resourceType}', { list: undefined }),
+    {
+      title: 'Losant Authoring Guide',
+      description: 'Hub authoring guide for complex Losant resources — discovered via guide links',
+      mimeType: 'text/markdown'
+    },
+    async (uri, { resourceType }) => {
+      const filePath = AUTHORING_HUB_TO_FILE[resourceType];
+      if (!filePath) { throw new Error(`Authoring hub not found: ${resourceType}`); }
+      return readAuthoringContent(filePath, uri.href);
+    }
+  );
+
+  server.registerResource(
+    'dashboard-block',
+    new ResourceTemplate('losant://dashboard/blocks/{blockType}', { list: undefined }),
+    {
+      title: 'Losant Dashboard Block',
+      description: 'Per-block authoring detail for Losant dashboard blocks — discovered via losant://authoring/dashboard',
+      mimeType: 'text/markdown'
+    },
+    async (uri, { blockType }) => {
+      const filePath = DASHBOARD_BLOCK_TO_FILE[blockType];
+      if (!filePath) { throw new Error(`Dashboard block not found: ${blockType}`); }
+      return readAuthoringContent(filePath, uri.href);
+    }
+  );
+
+  server.registerResource(
+    'reference',
+    new ResourceTemplate('losant://references/{resourceType}/{referenceName}', { list: undefined }),
+    {
+      title: 'Losant Authoring Reference',
+      description: 'Cross-cutting reference docs for dashboard authoring — discovered via authoring guide links',
+      mimeType: 'text/markdown'
+    },
+    async (uri, { resourceType, referenceName }) => {
+      const key = `${resourceType}/${referenceName}`;
+      const filePath = REFERENCES_TO_FILE[key];
+      if (!filePath) { throw new Error(`Reference not found: ${key}`); }
+      return readAuthoringContent(filePath, uri.href);
     }
   );
 

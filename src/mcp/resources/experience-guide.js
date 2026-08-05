@@ -38,21 +38,63 @@ Views render HTML, CSS, JavaScript, JSON, or dashboard content. Set \`viewType\`
 | \`page\` | Primary content rendered to the user | Optionally references a \`layoutId\` |
 | \`component\` | Reusable snippet included in other views | Invoked via \`{{component "name"}}\` |
 
-**Page content types** (set via \`pageType\` inside \`page\` views): \`haml\` (default), \`css\`, \`javascript\`, \`json\`, \`dashboard\` (embeds a Losant dashboard), or a custom MIME type string.
-
 Key fields for \`experienceView\`:
 - \`name\`: required, must be unique per \`viewType\` within the version
 - \`description\`: optional
 - \`viewType\`: required — \`layout\`, \`page\`, or \`component\`
 - \`layoutId\`: optional for pages, omit for layouts and components
+- \`body\`: string — the Handlebars/HTML template content for the view (max 131,072 chars)
+- \`headers\`: object — response headers; set \`content-type\` here for CSS, JS, or JSON pages (e.g. \`{ "content-type": "text/css" }\`)
 - \`viewTags\`: array of \`{ "key": "...", "value": "..." }\` metadata pairs
 
 **Handlebars helpers available in all views:**
 - \`{{page}}\` — required in layouts; injects the page content
 - \`{{#fillSection "name"}} ... {{/fillSection}}\` — in pages; fills a named section defined in the layout
 - \`{{component "name" context}}\` — renders a component view with optional context
-- \`{{element "dashboardId"}}\` — embeds a Losant dashboard
+- \`{{element 'dashboard' dashboardId='<id>' ctx=(obj ...) }}\` — embeds a Losant dashboard (see below)
 - \`{{file "fileId" ttl=3600}}\` — returns the URL for a public or private application file
+
+### Embedding a dashboard in a page
+
+A dashboard is embedded in any experience page (or as a standalone page) by placing the \`{{element 'dashboard' ...}}\` helper in the view's \`body\`. This is the only mechanism — there is no separate "dashboard page type" in the API; the UI's "Dashboard" page selector simply generates this helper for you.
+
+\`\`\`handlebars
+{{element
+  'dashboard'
+  dashboardId='<dashboardId>'
+  theme='light'
+  hideHeader=false
+  showDurationControls=false
+  ctx=(obj
+    deviceId=(template '{{request.params.deviceId}}')
+    userId=(template '{{experience.user.id}}')
+    range=(template '{{request.query.range}}')
+  )
+}}
+\`\`\`
+
+**\`{{element 'dashboard'}}\` arguments:**
+- \`dashboardId\` (required): dashboard ID string, or \`(template '{{pageData.dashboardId}}')\` to drive it from flow data
+- \`theme\`: \`"light"\` (default) or \`"dark"\`
+- \`duration\`: global duration override in ms
+- \`resolution\`: global resolution override in ms (must be ≤ duration)
+- \`time\`: Unix ms timestamp — pins the dashboard to a past state
+- \`hideHeader\`: boolean — hides the dashboard name, description, and time controls
+- \`showDurationControls\`: boolean — shows the duration/resolution toolbar (only when \`hideHeader\` is false)
+- \`ctx\`: an \`(obj ...)\` helper that maps dashboard context variable names to values. Static values are quoted strings; dynamic values use \`(template '{{...}}')\` to reference request context
+
+**Context wiring pattern** — map experience request context to dashboard context variables:
+\`\`\`handlebars
+ctx=(obj
+  deviceId=(template '{{request.params.deviceId}}')
+  userId=(template '{{experience.user.id}}')
+  threshold=(template '{{pageData.alertThreshold}}')
+)
+\`\`\`
+
+**Standalone dashboard page** — when the entire page should be the dashboard (no surrounding HTML), set the \`body\` to just the \`{{element}}\` call and omit \`layoutId\`. The platform renders the dashboard full-page with no Losant chrome.
+
+See \`losant://references/dashboard/context-configuration\` for the complete context variable type reference and injection patterns.
 
 **Context always available**: \`time\`, \`application\`, \`experience.user\`, \`experience.endpoint\`, \`experience.page\`, \`experience.version\`, \`request\`, \`pageData\` (set by the flow via the "Experience Page" node).
 
