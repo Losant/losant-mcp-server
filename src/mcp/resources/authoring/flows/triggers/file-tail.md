@@ -76,7 +76,7 @@ Fires whenever the configured number of bytes has been accumulated. Used primari
   "config": {
     "path": "/data/sensor.bin",
     "encoding": "base64",
-    "byteLength": 16
+    "byteLength": "16"
   },
   "meta": {
     "category": "trigger",
@@ -106,7 +106,7 @@ payload.working.nextInt = buffer.readInt32LE(1);
 | `config.path` | `""` | **Required.** Full path to the file on the container file system. |
 | `config.encoding` | `"utf8"` | **Required.** Output encoding: `"utf8"`, `"base64"`, or `"binary"`. |
 | `config.delimiter` | `""` (= `\n`) | Used in delimiter mode. Omit to use newline default. |
-| `config.byteLength` | — | Used in byte length mode. Number of bytes to accumulate before firing. |
+| `config.byteLength` | — | Used in byte length mode. Number of bytes to accumulate before firing. **Must be a string** (e.g. `"16"`), not a number. |
 
 Send either `delimiter` or `byteLength` — not both.
 

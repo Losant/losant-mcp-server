@@ -70,7 +70,7 @@ Fires when the configured number of bytes has been received.
     "path": "/dev/ttyUSB0",
     "baudRate": 9600,
     "encoding": "base64",
-    "byteLength": 16,
+    "byteLength": "16",
     "parity": "none",
     "dataBits": 8,
     "stopBits": 1,

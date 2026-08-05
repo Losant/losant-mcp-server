@@ -96,32 +96,30 @@ All four config booleans are always sent. `message` defaults to `true`, the rest
 
 #### Payload at runtime
 
+Each event type carries different fields. `data.type` identifies the event:
+
+**`"connect"`** — client connected:
 ```json
-{
-  "time": "<ISO timestamp>",
-  "data": {
-    "type": "message",
-    "message": "<the MQTT message payload as a string>",
-    "topic": "<topic the message was published on>",
-    "topics": ["exampleTopic", "anotherExampleTopic"],
-    "disconnectReason": "Connection Lost",
-    "failureReason": "Unauthorized"
-  },
-  "relayId": "<ID of the integration>",
-  "relayType": "integration",
-  "triggerId": "<ID of the integration>",
-  "triggerType": "integration",
-  "applicationId": "...",
-  "flowId": "...",
-  "globals": {}
-}
+{ "type": "connect" }
 ```
 
-- `data.type` — `"connect"`, `"message"`, `"disconnect"`, or `"failure"`.
-- `data.message` — always a string. Use a JSON Decode node if needed.
-- `data.topic` — the topic the message was published on.
-- `data.disconnectReason` — only present on `disconnect` events.
-- `data.failureReason` — only present on `failure` events.
+**`"message"`** — message received:
+```json
+{ "type": "message", "message": "<payload as string>", "topic": "<topic>", "topics": ["exampleTopic"] }
+```
+
+**`"disconnect"`** — client disconnected:
+```json
+{ "type": "disconnect", "disconnectReason": "Connection Lost" }
+```
+
+**`"failure"`** — connection failed:
+```json
+{ "type": "failure", "failureReason": "Unauthorized" }
+```
+
+- `data.message` — always a string. Use a JSON Decode node if the payload is JSON.
+- `data.topic` — the specific topic the message was published on (after wildcard resolution).
 - `triggerId` is the integration ID, not a topic.
 
 ## Experience workflows

@@ -19,6 +19,8 @@ const GUIDE_FOR_TYPE = {
   experienceVersion: 'losant://guides/experiences',
   experienceView: 'losant://guides/experiences',
   applicationDashboard: 'losant://guides/dashboards',
+  flow: 'losant://guides/flows',
+  flowVersion: 'losant://guides/flows',
   applicationKey: 'losant://guides/device-auth',
   applicationCertificate: 'losant://guides/device-auth',
   applicationCertificateAuthority: 'losant://guides/device-auth'

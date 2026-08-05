@@ -72,7 +72,7 @@ Fires at a specific time on selected days of the week. The UI generates a cron e
 
 ### Advanced cron (`meta.timerTypeSelect: "cron"`)
 
-Fires on an arbitrary cron schedule. Standard 5-field cron syntax. Supports `@yearly`, `@monthly`, `@weekly`, `@daily`, `@hourly`. Does not support `L`, `W`, `#`, `?`, `@reboot`, `@annually`.
+Fires on an arbitrary cron schedule. Supports standard 5-field cron syntax (`minute hour dom month dow`) and 6-field syntax with seconds as the first field (`second minute hour dom month dow`). Supports `@yearly`, `@monthly`, `@weekly`, `@daily`, `@hourly`. Does not support `L`, `W`, `#`, `?`, `@reboot`, `@annually`.
 
 ```json
 {
@@ -111,11 +111,15 @@ Fires on an arbitrary cron schedule. Standard 5-field cron syntax. Supports `@ye
 
 Not available.
 
+## Embedded workflows
+
+Simple interval mode only (`meta.timerTypeSelect: "seconds"`). Cron modes are not supported in embedded. Minimum EEA 1.0.0.
+
 ## Edge workflows
 
 > **Minimum GEA version:** 1.0.0
 
-Same three configuration modes as Cloud with one difference: Edge workflows support **millisecond** intervals. The minimum interval is 100 milliseconds (GEA 1.12.0+); for GEA 1.12.0 and below the minimum is 1 second.
+Same three configuration modes as Cloud with one difference: Edge workflows support **millisecond** intervals. The minimum interval is 100 milliseconds (GEA 1.13.0+); for GEA below 1.13.0 the minimum is 1 second.
 
 For sub-second intervals, use a fractional `config.seconds` value (e.g. `0.5` for 500ms, `0.1` for 100ms).
 

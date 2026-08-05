@@ -51,7 +51,7 @@ For GEA < 1.24.0, omit config or send `config: {}` — the trigger matches any i
 
 | Field | Default | Notes |
 |---|---|---|
-| `config.method` | `"*"` | HTTP method to match: `"GET"`, `"POST"`, `"PUT"`, `"PATCH"`, `"DELETE"`, `"OPTIONS"`, or `"*"` (any). |
+| `config.method` | `"*"` | HTTP method to match: `"get"`, `"post"`, `"put"`, `"patch"`, `"delete"`, `"options"`, or `"*"` (any). Values must be lowercase. |
 | `config.route` | `""` | URL path pattern. Empty string matches any request. |
 
 **Route syntax:**

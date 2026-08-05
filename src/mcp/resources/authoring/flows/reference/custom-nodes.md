@@ -35,7 +35,7 @@ User input values — the fields defined on the custom node — are available in
 
 **2. All branches must end in a Return Node — `CustomNodeCapNode`**
 
-A single-output custom node uses one `CustomNodeCapNode`. A branching custom node uses `CustomNodeCapNodeTrue` and `CustomNodeCapNodeFalse`. Return Nodes **cannot** be placed inside a Loop Node body.
+A single-output custom node uses one `CustomNodeCapNode`. A branching custom node uses two `CustomNodeCapNode` nodes with different `meta.name` values (`"custom-node-end-true"` and `"custom-node-end-false"`). Return Nodes **cannot** be placed inside a Loop Node body.
 
 ```json
 {
@@ -44,12 +44,12 @@ A single-output custom node uses one `CustomNodeCapNode`. A branching custom nod
   "config": {
     "resultSourcePath": "working.result"
   },
-  "meta": { "category": "output", "name": "customNodeCap", "label": "Return", "x": 400, "y": 200 },
+  "meta": { "category": "customNodeEnd", "name": "custom-node-end-single", "label": "Return", "x": 400, "y": 200 },
   "outputIds": [[]]
 }
 ```
 
-`config.resultPath` points to the value on the payload to return to the outer workflow. If the custom node's output result is set to `"none"`, omit `resultPath`.
+`config.resultSourcePath` points to the value on the payload to return to the outer workflow. If the custom node's output result is set to `"none"`, omit `resultSourcePath`.
 
 ## Inputs
 
@@ -68,10 +68,10 @@ User inputs are the fields that appear in the custom node's editor panel when a 
 
 **Single output** — one return node; the outer workflow continues on a single path.
 
-**Branching output** — two return nodes (`CustomNodeCapNodeTrue` / `CustomNodeCapNodeFalse`); the outer workflow branches like a Conditional Node.
+**Branching output** — two `CustomNodeCapNode` nodes with `meta.name: "custom-node-end-true"` and `meta.name: "custom-node-end-false"`; the outer workflow branches like a Conditional Node.
 
 The **output result** sets whether the return value is optional, required, or absent:
-- `"none"` — no value is returned; `config.resultPath` is omitted from the Return Node.
+- `"none"` — no value is returned; `config.resultSourcePath` is omitted from the Return Node.
 - `"optional"` — the outer workflow user can optionally specify a payload path for the returned value.
 - `"required"` — the outer workflow user must specify a payload path.
 
@@ -104,11 +104,11 @@ In the workflow body, the node is represented as a `CustomNodeExecuteNode`:
   "type": "CustomNodeExecuteNode",
   "config": {
     "customNodeId": "5f1c2d3e4f5a6b7c8d9e0f1a",
-    "customNodeVersionName": "v2",
-    "resultSourcePath": "working.converted",
-    "inputs": {
-      "tempF": "{{data.attributes.tempF}}"
-    }
+    "customNodeVersion": "v2",
+    "resultPath": "working.converted",
+    "fields": [
+      { "id": "tempF", "value": "{{data.attributes.tempF}}" }
+    ]
   },
   "meta": { "category": "logic", "name": "customNodeExecute", "label": "Convert Temp", "x": 200, "y": 200 },
   "outputIds": [["next"]]
@@ -116,10 +116,10 @@ In the workflow body, the node is represented as a `CustomNodeExecuteNode`:
 ```
 
 - `config.customNodeId` — the ID of the custom node resource.
-- `config.customNodeVersionName` — the version name to run, or `"develop"` (Application only; never for Edge).
-- `config.resultSourcePath` — payload path where the custom node's return value is written (omit if output result is `"none"`).
-- `config.inputs` — map of input IDs to values (static strings or Handlebars templates).
-- For branching custom nodes, `outputIds` has two entries: `[[trueNodeIds], [falseNodeIds]]`.
+- `config.customNodeVersion` — the version name to run, or `"develop"` (Application only; never for Edge).
+- `config.resultPath` — payload path in the **outer workflow** where the custom node's return value is written (omit if output result is `"none"`).
+- `config.fields` — array of `{ id, value }` objects mapping input IDs to values (static strings or Handlebars templates).
+- For branching custom nodes, `outputIds` has two entries: `[[falseNodeIds], [trueNodeIds]]` — index 0 fires when the `custom-node-end-false` cap node is reached, index 1 when `custom-node-end-true` is reached.
 
 ## Constraints
 

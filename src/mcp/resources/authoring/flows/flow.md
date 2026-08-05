@@ -132,7 +132,7 @@ Edge workflows are deployed to Gateway Edge Agent (GEA) hardware and run locally
 - **Working with an existing edge workflow:** Read the current `minimumAgentVersion` from the workflow before suggesting triggers or nodes. Many edge triggers and nodes have minimum GEA version requirements — if the workflow targets a lower version, those features are unavailable and the workflow cannot be saved with them.
 - **Upgrading:** `minimumAgentVersion` can **only be increased, never decreased**. Before upgrading a workflow's minimum agent version, **always ask the user** — upgrading requires the GEA on all deployed devices to also be updated to at least that version, which may not be possible or desirable in their environment.
 
-> **⚠ WARNING:** Never lower `minimumAgentVersion` below its current value — this is not allowed by the API. If a user asks to use a feature that requires a higher GEA version than the workflow currently targets, explain the requirement and ask whether they want to upgrade the workflow's minimum agent version before proceeding.
+> **⚠ WARNING:** Never lower `minimumAgentVersion` below its current value. The API does not enforce this, but lowering it may cause deployed GEA devices to fail to load the workflow if they do not support the nodes or triggers it uses. If a user asks to use a feature that requires a higher GEA version than the workflow currently targets, explain the requirement and ask whether they want to upgrade before proceeding.
 
 > **Gotchas:**
 > - The single most common edge mistake: editing develop and expecting devices to pick it up. Always publish a new version after editing.
@@ -248,7 +248,7 @@ When a branch merges back to a single path, resume the parent's x and continue i
 | `VerifyExperienceGroupNode` | `[[memberIds], [notMemberIds]]` — two outer entries | Index 0 = user **is a member** of the group; index 1 = user is **not a member**. |
 | `BranchOnChangeNode` | `[[unchangedIds], [changedIds]]` — two outer entries | Index 0 = value **unchanged** (same as previous execution, or first run); index 1 = value **changed**. |
 | `CryptoVerifyNode` | `[[invalidIds], [validIds]]` — two outer entries | Index 0 = verification **failed** (invalid signature); index 1 = verification **passed** (valid signature). |
-| `JwtVerifyNode` | `[[invalidIds], [validIds]]` — two outer entries | Index 0 = JWT **invalid** (bad signature, expired, etc.); index 1 = JWT **valid**. |
+| `JWTVerifyNode` | `[[invalidIds], [validIds]]` — two outer entries | Index 0 = JWT **invalid** (bad signature, expired, etc.); index 1 = JWT **valid**. |
 | `TimeRangeNode` | `[[outOfRangeIds], [inRangeIds]]` — two outer entries | Index 0 = current time is **outside** the configured range; index 1 = current time is **inside** the range. |
 | `VerifyDeviceNode` | `[[notVerifiedIds], [verifiedIds]]` — two outer entries | Index 0 = device is **not associated** with the user/group; index 1 = device **is associated**. |
 | `LoopNode` | `[[afterLoopIds], [insideLoopIds]]` | Index 0 = nodes that fire when the loop finishes; index 1 = nodes inside the loop body. |
@@ -392,7 +392,6 @@ See `losant://flow/nodes/loop` for the full pattern and a worked example.
 | `DeviceDeleteWorkflowNode` | `delete-device` | data | cloud, exp | `losant://flow/nodes/device` |
 | `GetDeviceNode` | `get-device` | data | cloud, exp, custom | `losant://flow/nodes/device` |
 | `DeviceChangeStateNode` | `device-state` | output | cloud, exp, edge, custom | `losant://flow/nodes/device-state` |
-| `DeviceUpdateNode` | `update-device` | data | cloud, exp, custom | `losant://flow/nodes/device` |
 | `StructureEmailNode` | `structure-email` | output | cloud, exp, custom | `losant://flow/nodes/email` |
 | `EndpointReplyNode` | `endpoint-reply` | output | cloud, exp | `losant://flow/nodes/endpoint-reply` |
 | `EventCreateNode` | `create-event` | data | cloud, exp, custom | `losant://flow/nodes/event` |
@@ -542,8 +541,8 @@ See `losant://flow/nodes/loop` for the full pattern and a worked example.
 
 Several detail docs reference these. Read them once and the per-node docs become much shorter:
 
-- `losant://references/flow/payload` — what's on the payload at runtime: standard envelope fields (`data`, `working`, `globals`, `time`, `applicationId`, `flowId`), experience workflow extras (`request.*`, `experience.user`), edge extras (`isConnectedToLosant`, `agentVersion`), and the payload-path vs. template distinction.
+- `losant://references/flow/payload` — what's on the payload at runtime: standard envelope fields (`data`, `working`, `globals`, `time`, `applicationId`, `flowId`), experience workflow extras (`data.path`, `data.method`, `data.body`, etc. and `experience.user`), edge extras (`isConnectedToLosant`, `agentVersion`), and the payload-path vs. template distinction.
 - `losant://references/flow/globals` — the three globals sources (workflow, experience version, application) and their override order; the JSON-encoded API format (`"json": "\"string value\""` not `"json": "string value"`); version scoping rules.
 - `losant://references/flow/templating` — all three template systems: payload paths (dot-notation, static, no `{{}}`), string templates (Handlebars `{{}}` in `*Template` fields, all block helpers and 30+ format helpers), expressions (ConditionalNode/MathNode), and JSON templates (`bodyType: "jsonTemplate"` in HTTP node). Includes embedded workflow restrictions.
 - `losant://references/flow/execution-model` — how a workflow run actually executes: trigger fires and passes a payload through nodes, branches run independently with no merge, what happens when a node throws (all paths halt), how the Workflow Error trigger catches thrown errors, and the distinction between nodes that throw vs. write errors to the payload.
-- `reference/credentials.md` — how `credentialNameTemplate` resolves Losant-managed credentials and what `authMethod` each credential supports. Used by HTTP and every integration node.
+- `losant://guides/credentials` — how `credentialNameTemplate` resolves Losant-managed credentials and what `authMethod` each credential supports. Used by HTTP and every integration node.

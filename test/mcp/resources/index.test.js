@@ -435,6 +435,33 @@ describe('MCP Resources', () => {
       result.contents[0].text.should.containEql('template');
     });
 
+    it('should provide handler for flow reference globals', async () => {
+      const result = await client.readResource({ uri: 'losant://references/flow/globals' });
+
+      result.should.have.property('contents');
+      result.contents[0].should.have.property('uri', 'losant://references/flow/globals');
+      result.contents[0].should.have.property('mimeType', 'text/markdown');
+      result.contents[0].text.should.containEql('globals');
+    });
+
+    it('should provide handler for flow reference custom-nodes', async () => {
+      const result = await client.readResource({ uri: 'losant://references/flow/custom-nodes' });
+
+      result.should.have.property('contents');
+      result.contents[0].should.have.property('uri', 'losant://references/flow/custom-nodes');
+      result.contents[0].should.have.property('mimeType', 'text/markdown');
+      result.contents[0].text.should.containEql('Custom Node');
+    });
+
+    it('should provide handler for flow reference execution-model', async () => {
+      const result = await client.readResource({ uri: 'losant://references/flow/execution-model' });
+
+      result.should.have.property('contents');
+      result.contents[0].should.have.property('uri', 'losant://references/flow/execution-model');
+      result.contents[0].should.have.property('mimeType', 'text/markdown');
+      result.contents[0].text.should.containEql('execution');
+    });
+
     it('should provide handler for flow node access-key', async () => {
       const result = await client.readResource({ uri: 'losant://flow/nodes/access-key' });
 

@@ -43,6 +43,7 @@ For the wiring model, trigger configuration, and per-node config details read:
 - \`losant://references/flow/globals\` — global variables reference
 - \`losant://references/flow/payload\` — payload reference
 - \`losant://references/flow/custom-nodes\` — custom nodes reference
+- \`losant://references/flow/execution-model\` — how execution works: payload flow, branching, throws, and the Workflow Error trigger
 
 ## Workflow Versions
 
