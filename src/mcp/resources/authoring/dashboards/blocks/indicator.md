@@ -22,7 +22,7 @@ See the parent `dashboard-guide.md` for the block object shape, layout grid.
 |---|---|---|---|
 | `realTime` | boolean | `false` | When `true`, live-streams device readings. When `false`, queries historical data over `duration`. |
 | `duration` | integer (ms) \| `"{{dashboard.duration}}"` | — | Historical only. Time window. Use the string template to inherit the dashboard's global duration control. |
-| `segments` | object[] | — | **Required.** Array of data query segments. Each returns `{{value-i}}` and `{{time-i}}` variables (0-indexed). `{{lastUpdated}}` holds the most recent timestamp across all segments regardless of how many return data. |
+| `segments` | object[] | — | **Required.** Array of data query segments. Each returns `{{value-i}}` and `{{time-i}}` variables (0-indexed). |
 | `conditions` | object[] | — | Ordered list of conditions. First truthy condition wins. If omitted, `defaultCondition` always applies. |
 | `defaultCondition` | object | — | The display to use when no condition matches. If both `conditions` and `defaultCondition` are absent, the block renders blank. |
 
@@ -47,7 +47,7 @@ Each entry in `segments` is a `commonSegment` — the same shape used by bar, pi
 | `attribute` | Device attribute to aggregate. |
 | `aggregation` | `MEAN`, `MAX`, `MIN`, `SUM`, `COUNT`, `FIRST`, `LAST`, `MEDIAN`, `STD_DEV`. |
 
-The `i`-th segment result is accessible in conditions as `{{value-i}}` and `{{time-i}}` (0-indexed, so the first segment → `{{value-0}}`).
+The `i`-th segment result is accessible in conditions as `{{value-i}}` and `{{time-i}}` (0-indexed, so the first segment → `{{value-0}}`). `{{lastUpdated}}` holds the most recent timestamp across all segments regardless of how many return data.
 
 ### Conditions
 
