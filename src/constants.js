@@ -178,7 +178,6 @@ export const DASHBOARD_BLOCK_TO_FILE = Object.fromEntries(
 export const REFERENCES_TO_FILE = {
   'shared/handlebars': path.join(AUTHORING_PATH, 'reference/handlebars.md'),
   'flow/custom-nodes': path.join(AUTHORING_PATH, 'flows/reference/custom-nodes.md'),
-  'flow/error-handling': path.join(AUTHORING_PATH, 'flows/reference/error-handling.md'),
   'flow/payload': path.join(AUTHORING_PATH, 'flows/reference/payload.md'),
   'flow/globals': path.join(AUTHORING_PATH, 'flows/reference/globals.md'),
   'flow/templating': path.join(AUTHORING_PATH, 'flows/reference/templating.md'),

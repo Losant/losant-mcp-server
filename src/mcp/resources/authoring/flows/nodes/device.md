@@ -11,8 +11,6 @@ Four nodes for managing device records via the Losant API within a workflow.
 | `UpdateDeviceNode` | `data` | `update-device` | `"Device: Update"` |
 | `DeviceDeleteWorkflowNode` | `data` | `delete-device` | `"Device: Delete"` |
 
-See `losant://references/flow/error-handling` for the `errorBehavior`/`errorPath` pattern. Note: `errorBehavior` is **not supported** on `CreateDeviceNode`, `UpdateDeviceNode`, or `GetDeviceNode` — omit it from all three.
-
 ## Cloud (Application) workflows
 
 ### Device: Create Node (`type: "CreateDeviceNode"`)
@@ -201,7 +199,7 @@ Find devices for an experience user with composite state:
 
 ### Device: Update Node (`type: "UpdateDeviceNode"`)
 
-Patches a device record. Config structure mirrors CreateDeviceNode — use `idTemplate` to identify which device to update, then `dataMethod` to specify how the update payload is provided. `errorBehavior` is **not supported** on this node.
+Patches a device record. Config structure mirrors CreateDeviceNode — use `idTemplate` to identify which device to update, then `dataMethod` to specify how the update payload is provided.
 
 #### Update by JSON template (most common)
 

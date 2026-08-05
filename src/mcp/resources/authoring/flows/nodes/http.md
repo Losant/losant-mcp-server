@@ -11,7 +11,7 @@ Makes an outbound HTTP/HTTPS request and optionally stores the response on the w
 | `meta.name` | `"http"` |
 | `meta.label` | `"HTTP"` (default) |
 
-See `losant://references/flow/templating` for the Handlebars dialect and `losant://references/flow/error-handling` for the `errorBehavior`/`errorPath` pattern. For `authType: "credential"`, `credentialNameTemplate` is the `name` field of a Losant Credential resource — see `losant://guides/credentials`.
+See `losant://references/flow/templating` for the Handlebars dialect. For `authType: "credential"`, `credentialNameTemplate` is the `name` field of a Losant Credential resource — see `losant://guides/credentials`.
 
 ## Cloud (Application) workflows
 

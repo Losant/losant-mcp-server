@@ -40,7 +40,6 @@ For the wiring model, trigger configuration, and per-node config details read:
 - \`losant://flow/nodes/{nodeName}\` — per-node detail
 - \`losant://flow/triggers/{triggerName}\` — per-trigger detail
 - \`losant://references/flow/templating\` — Handlebars dialect, format helpers, expressions, payload paths, and LJSON syntax for HTTP nodes
-- \`losant://references/flow/error-handling\` — errorBehavior / errorPath pattern
 - \`losant://references/flow/globals\` — global variables reference
 - \`losant://references/flow/payload\` — payload reference
 - \`losant://references/flow/custom-nodes\` — custom nodes reference
