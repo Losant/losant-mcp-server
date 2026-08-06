@@ -44,6 +44,7 @@ For the wiring model, trigger configuration, and per-node config details read:
 - \`losant://references/flow/payload\` — payload reference
 - \`losant://references/flow/custom-nodes\` — custom nodes reference
 - \`losant://references/flow/execution-model\` — how execution works: payload flow, branching, throws, and the Workflow Error trigger
+- \`losant://references/flow/patterns\` — six common workflow patterns with concrete node chains: device alert, scheduled API pull, webhook handler, experience login, authenticated API endpoint, device provisioning
 
 ## Workflow Versions
 

@@ -462,6 +462,15 @@ describe('MCP Resources', () => {
       result.contents[0].text.should.containEql('execution');
     });
 
+    it('should provide handler for flow reference patterns', async () => {
+      const result = await client.readResource({ uri: 'losant://references/flow/patterns' });
+
+      result.should.have.property('contents');
+      result.contents[0].should.have.property('uri', 'losant://references/flow/patterns');
+      result.contents[0].should.have.property('mimeType', 'text/markdown');
+      result.contents[0].text.should.containEql('Pattern');
+    });
+
     it('should provide handler for flow node access-key', async () => {
       const result = await client.readResource({ uri: 'losant://flow/nodes/access-key' });
 
