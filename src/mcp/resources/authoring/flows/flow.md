@@ -128,7 +128,7 @@ Edge workflows are deployed to Gateway Edge Agent (GEA) hardware and run locally
 
 **`minimumAgentVersion`:** Every edge workflow has a `minimumAgentVersion` field that controls which GEA features, triggers, and nodes are available. This field is set on the workflow itself (not on a version).
 
-- **Creating a new edge workflow:** Always set `minimumAgentVersion` to the latest available GEA version. The current latest is `"2.4.0"`. The authoritative latest version is published at: https://hub.docker.com/repository/docker/losant/edge-agent
+- **Creating a new edge workflow:** **Ask the user what GEA version their devices are running** before setting `minimumAgentVersion`. For brand-new workflows with no deployed agents yet, default to the latest stable release (check https://hub.docker.com/r/losant/edge-agent for the current tag — `2.4.1` as of this writing). For workflows on existing deployments, use the version already deployed — setting a higher `minimumAgentVersion` requires all field devices to also be updated, which may not be possible.
 - **Working with an existing edge workflow:** Read the current `minimumAgentVersion` from the workflow before suggesting triggers or nodes. Many edge triggers and nodes have minimum GEA version requirements — if the workflow targets a lower version, those features are unavailable and the workflow cannot be saved with them.
 - **Upgrading:** `minimumAgentVersion` can **only be increased, never decreased**. Before upgrading a workflow's minimum agent version, **always ask the user** — upgrading requires the GEA on all deployed devices to also be updated to at least that version, which may not be possible or desirable in their environment.
 

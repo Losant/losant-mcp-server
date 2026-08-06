@@ -45,7 +45,7 @@ The `LoopNode` uses a special two-output wiring model. All three `LoopCapNode` v
 |---|---|---|
 | `loopSourcePath` | — | **Required.** Payload path of the collection to iterate over (see Source types below). |
 | `currentItemPath` | — | **Required.** Payload path where each iteration's context object is written (see Current item context below). |
-| `parallel` | *(requires GEA 1.21.0+ on edge; not available on embedded)* | `false` | When `true`, all iterations run simultaneously (max ~5 concurrent). Payload mutations are not carried between iterations and break is ignored. When `false`, runs serially — one at a time, payload mutations persist across iterations and break is supported. |
+| `parallel` | `false` | Optional. When `true`, all iterations run simultaneously (max ~5 concurrent). Payload mutations are not carried between iterations and break is ignored. When `false`, runs serially — one at a time, payload mutations persist across iterations and break is supported. Requires GEA 1.21.0+ on edge; not available on embedded workflows. |
 | `mapResultPath` | — | Optional. Payload path to write an array of per-iteration map values at the end of the loop. Works in both serial and parallel modes. When set, the loop behaves as a "map" — collecting one value per iteration. |
 | `mapValuePath` | — | Optional. Payload path read at the end of each iteration to collect the map value. Only used when `mapResultPath` is set. If omitted, defaults to `currentItemPath`. If no LoopCapNode is hit in a serial iteration, that iteration's map value is `undefined`. |
 
@@ -79,7 +79,7 @@ Access with e.g. `{{working.current.value}}`, `{{working.current.index}}`, `{{#i
 
 `outputIds` has two outer entries:
 - `outputIds[0]` — nodes that run **after the loop completes** (post-loop path). May be `[]` if nothing should happen after the loop finishes — the workflow path simply ends there.
-- `outputIds[1]` — the **first nodes inside the loop body**. Must not be empty; an empty body causes the loop to skip all iterations.
+- `outputIds[1]` — the **first nodes inside the loop body**. If empty, the loop body is skipped entirely for all iterations (the loop proceeds directly to the post-loop path as if it ran zero iterations).
 
 Every node inside the loop body (including all cap nodes) must have `meta.groupId` set to the LoopNode's `id`.
 
