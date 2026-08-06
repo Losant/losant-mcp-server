@@ -1,0 +1,135 @@
+---
+name: losant-edge-deploy
+description: Schedules deployment of one or more edge workflow versions to edge compute devices, or schedules their removal. Available in cloud and experience workflows.
+---
+
+# Edge: Deploy Node (`type: "EdgeDeployNode"`)
+
+Schedules deployment of one or more edge workflow versions to one or more edge compute devices, or schedules their removal. Deployments are queued asynchronously — the node does not wait for the GEA to pull and apply the version. Available in cloud (Application) and experience workflows only.
+
+## Required Fields
+
+| Field | Value |
+|---|---|
+| `type` | `"EdgeDeployNode"` |
+| `meta.category` | `"data"` |
+| `meta.name` | `"edge-deploy"` |
+| `meta.label` | `"Edge: Deploy"` (default) |
+
+## Cloud (Application) workflows
+
+### Individual fields — one workflow at a time (`flowsMethod: "stringTemplate"`)
+
+```json
+{
+  "id": "deploy-edge",
+  "type": "EdgeDeployNode",
+  "config": {
+    "flowsMethod": "stringTemplate",
+    "flowsTemplate": [
+      { "flowIdTemplate": "5f1c2d3e4f5a6b7c8d9e0f1a", "flowVersionTemplate": "v2" },
+      { "flowIdTemplate": "{{working.secondFlowId}}", "flowVersionTemplate": null }
+    ],
+    "deviceIdTemplate": "{{data.deviceId}}",
+    "resultPath": "working.deployResult"
+  },
+  "meta": { "category": "data", "name": "edge-deploy", "label": "Edge: Deploy", "x": 200, "y": 200 },
+  "outputIds": [["next"]]
+}
+```
+
+| Config field | Default | Notes |
+|---|---|---|
+| `flowsMethod` | `"stringTemplate"` | **Required.** How the workflow list is provided: `"stringTemplate"` — inline array; `"payloadPath"` — payload path; `"jsonTemplate"` — JSON template. |
+| `flowsTemplate` | `[]` | **Required** when `flowsMethod: "stringTemplate"`. Array of 1–25 `{ flowIdTemplate, flowVersionTemplate }` objects. `flowIdTemplate`: the edge workflow ID (template). `flowVersionTemplate`: the published version name to deploy (template), or `null` to schedule removal. Must be unique by `flowId`. Cannot use `"develop"`. |
+| `deviceIdTemplate` | `""` | Target a single device by ID. **Required** when not using `deviceQueryTemplate`. Template. |
+| `deviceQueryTemplate` | `""` | Target multiple devices matching an advanced query. **Required** when not using `deviceIdTemplate`. Template. Non-edge devices matched by the query are silently ignored. |
+| `resultPath` | `""` | Optional payload path to write the result. |
+
+**Send exactly one of `deviceIdTemplate` or `deviceQueryTemplate`** — they are mutually exclusive. The other must be omitted from the config object.
+
+### Payload path (`flowsMethod: "payloadPath"`)
+
+```json
+{
+  "config": {
+    "flowsMethod": "payloadPath",
+    "flowsPayloadPath": "working.deploymentList",
+    "deviceQueryTemplate": "{{globals.targetDeviceQuery}}",
+    "resultPath": "working.deployResult"
+  }
+}
+```
+
+`flowsPayloadPath` must resolve to an object or array of `{ flowId, version }` — where `version: null` schedules removal.
+
+| Config field | Notes |
+|---|---|
+| `flowsPayloadPath` | **Required** when `flowsMethod: "payloadPath"`. Payload path to an object or array of `{ flowId, version }`. |
+
+### JSON template (`flowsMethod: "jsonTemplate"`)
+
+```json
+{
+  "config": {
+    "flowsMethod": "jsonTemplate",
+    "flowsJsonTemplate": "[{\"flowId\": \"{{working.flowId}}\", \"version\": \"{{working.version}}\"}]",
+    "deviceIdTemplate": "{{data.deviceId}}",
+    "resultPath": "working.deployResult"
+  }
+}
+```
+
+| Config field | Notes |
+|---|---|
+| `flowsJsonTemplate` | **Required** when `flowsMethod: "jsonTemplate"`. JSON template resolving to an object or array of `{ flowId, version }`. |
+
+## Output
+
+`resultPath` receives the deployment result:
+
+**Full success:**
+```json
+{ "working": { "deployResult": { "success": true, "scheduled": 2, "errors": [] } } }
+```
+
+**Partial failure** (some deployments encountered API errors):
+```json
+{
+  "working": {
+    "deployResult": {
+      "success": false,
+      "scheduled": 1,
+      "errors": [
+        {
+          "flowId": "5f1c2d3e4f5a6b7c8d9e0f1a",
+          "version": "v2",
+          "error": { "type": "NotFound", "message": "Flow version not found." }
+        }
+      ]
+    }
+  }
+}
+```
+
+`scheduled` counts workflow entries that were successfully queued (not the number of target devices).
+
+**Validation errors throw** (nothing written to `resultPath`, workflow halts): empty `flowsTemplate`, more than 25 entries, duplicate `flowId` values, `"develop"` version, unresolvable `deviceIdTemplate`, or invalid `deviceQueryTemplate`.
+
+**`resultPath` is optional** — if omitted, the node runs silently and continues to `outputIds[0]` regardless of the result.
+
+## Experience workflows
+
+Same as Cloud.
+
+## Edge workflows
+
+Not available.
+
+## Embedded workflows
+
+Not available.
+
+## Custom Node workflows
+
+Same as Cloud.

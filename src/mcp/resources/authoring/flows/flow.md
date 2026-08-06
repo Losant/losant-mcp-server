@@ -392,6 +392,7 @@ See `losant://flow/nodes/loop` for the full pattern and a worked example.
 | `DeviceDeleteWorkflowNode` | `delete-device` | data | cloud, exp | `losant://flow/nodes/device` |
 | `GetDeviceNode` | `get-device` | data | cloud, exp, custom | `losant://flow/nodes/device` |
 | `DeviceChangeStateNode` | `device-state` | output | cloud, exp, edge, custom | `losant://flow/nodes/device-state` |
+| `EdgeDeployNode` | `edge-deploy` | data | cloud, exp, custom | `losant://flow/nodes/edge-deploy` |
 | `StructureEmailNode` | `structure-email` | output | cloud, exp, custom | `losant://flow/nodes/email` |
 | `EndpointReplyNode` | `endpoint-reply` | output | cloud, exp | `losant://flow/nodes/endpoint-reply` |
 | `EventCreateNode` | `create-event` | data | cloud, exp, custom | `losant://flow/nodes/event` |
@@ -431,6 +432,7 @@ See `losant://flow/nodes/loop` for the full pattern and a worked example.
 | `ObjectNode` | `object` | logic | cloud, exp, edge, custom | `losant://flow/nodes/object` |
 | `ParticleCallNode` | `particle-call` | output | cloud, exp, edge, custom | `losant://flow/nodes/particle-call` |
 | `RandomNumberNode` | `random-number` | logic | all | `losant://flow/nodes/random-number` |
+| `RegisterDeviceCertificateNode` | `register-device-certificate` | data | cloud, exp, custom | `losant://flow/nodes/register-device-certificate` |
 | `RawFunctionNode` | `function` | logic | cloud, exp, edge, custom | `losant://flow/nodes/function` |
 | `RedisNode` | `redis` | data | cloud, exp, edge, custom | `losant://flow/nodes/redis-node` |
 | `ResourceJobAcknowledgeNode` | `resource-job-acknowledge` | output | cloud, exp, custom | `losant://flow/nodes/job` |
