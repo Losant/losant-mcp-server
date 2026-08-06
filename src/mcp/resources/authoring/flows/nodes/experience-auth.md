@@ -64,7 +64,7 @@ Authenticates an Experience User and issues an auth token. Four authentication m
 | `"tokenEmail"` | Token AND verifies it matches the given email. |
 | `"tokenEmailPassword"` | Token OR email+password (whichever is provided). |
 
-On success, the authenticated user object is available at `experience.user` on the payload. The new token is included in the result.
+On success, the authenticated user object is written to `userResultPath` and the new auth token string to `tokenResultPath` (if configured). `experience.user` is populated by the Endpoint Trigger from the auth cookie — this node does not update it.
 
 ---
 

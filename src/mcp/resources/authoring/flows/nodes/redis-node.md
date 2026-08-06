@@ -107,3 +107,4 @@ Same as Cloud with the following version gates:
 | `argumentsPath` (payload path for args) | 1.35.0 |
 | `errorBehavior` / `errorPath` | 1.35.0 |
 | `caCertTemplate` (custom CA cert for TLS) | 1.41.0 |
+| `isCluster` (cluster mode) | 1.38.0 |

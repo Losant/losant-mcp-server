@@ -35,7 +35,7 @@ Requests execution of a Resource Job. Does not wait for the job to complete — 
 | `resourceJobIdTemplate` | `""` | **Required.** Resource Job ID or a template resolving to one. |
 | `contextTemplateType` | `"none"` | `"none"` — no context. `"jsonTemplate"` — context from `contextTemplate` as JSON. `"payloadPath"` — context from `contextTemplate` as a payload path. `"workflowPayload"` — send the full workflow payload as context. |
 | `contextTemplate` | `""` | **Required** when `contextTemplateType` is `"jsonTemplate"` or `"payloadPath"`. |
-| `resultPath` | `""` | Payload path to write `{ "executionId": "...", "success": true }` or `{ "error": { "type", "message" } }`. |
+| `resultPath` | `""` | Payload path to write `{ "executionId": "..." }` on success or `{ "error": { "type", "message" } }` on failure. |
 
 ---
 
@@ -67,7 +67,7 @@ Marks an iteration of a Resource Job as succeeded or failed. This node is used i
 | `iterationIdPath` | `""` | Payload path to the iteration ID. Defaults to `data.iterationId` when empty. |
 | `accumulatorMethod` | `"payloadPath"` | How to provide the accumulator value passed to the next iteration. `"payloadPath"` — path to value. `"jsonTemplate"` — JSON template. `"stringTemplate"` — string template. |
 | `accumulatorValue` | `""` | The accumulator value (payload path, JSON, or string depending on `accumulatorMethod`). Ignored in parallel execution mode. |
-| `resultPath` | `""` | Payload path to write `{ "success": true, "completedAt": "...", "startedAt": "..." }` (plus optional `message` and `accumulator`) or `{ "error": { ... } }`. |
+| `resultPath` | `""` | Payload path to write `{ "success": <boolean>, "completedAt": "...", "startedAt": "..." }` (plus optional `message` and `accumulator`) or `{ "error": { ... } }`. `success` is `false` when `successExpression` evaluates falsy. |
 
 The accumulator value is available on the next iteration's payload at `data.accumulator`. Use it to pass state between iterations (e.g. running totals, collected IDs). In parallel mode, the accumulator is ignored.
 

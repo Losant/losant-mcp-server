@@ -83,7 +83,7 @@ Fetches one or more Experience Users. Three find methods available via `findMeth
   "type": "GetExperienceUserNode",
   "config": {
     "findMethod": "userTags",
-    "tags": [{ "keyTemplate": "role", "valueTemplate": "admin" }],
+    "userTags": [{ "keyTemplate": "role", "valueTemplate": "admin" }],
     "findMultiple": true,
     "findMetadata": false,
     "resultsPerPage": "100",
@@ -99,7 +99,7 @@ Fetches one or more Experience Users. Three find methods available via `findMeth
 
 | Config field | Default | Notes |
 |---|---|---|
-| `tags` | `[]` | Array of `{ keyTemplate, valueTemplate }` tag pairs to match. |
+| `userTags` | `[]` | Array of `{ keyTemplate, valueTemplate }` tag pairs to match. |
 | `findMultiple` | `false` | `false` — return first match or `null`. `true` — return array. |
 | `findMetadata` | `false` | When `true` and `findMultiple: true`, wraps result as `{ items, count, totalCount, page, perPage }`. |
 | `resultsPerPage` | `"100"` | Page size. Template. |
@@ -162,6 +162,14 @@ Updates an existing Experience User's fields. Optionally invalidates existing au
 |---|---|---|
 | `emailOrIdTemplate` | `""` | **Required.** Email or user ID to update. Template. |
 | `dataMethod` | `"individualFields"` | `"individualFields"`, `"jsonTemplate"`, or `"payloadPath"`. |
+| `emailTemplate` | `""` | New email address. Template. `individualFields` only. |
+| `passwordTemplate` | `""` | New password (min 8 chars). Template. `individualFields` only. |
+| `firstNameTemplate` | `""` | New first name. Template. `individualFields` only. |
+| `lastNameTemplate` | `""` | New last name. Template. `individualFields` only. |
+| `userJsonTemplate` | `""` | **Required** when `dataMethod: "jsonTemplate"`. User patch as JSON template. |
+| `userPayloadPath` | `""` | **Required** when `dataMethod: "payloadPath"`. Payload path to user patch object. |
+| `groupIdTemplates` | — | Array of Experience Group ID strings. When present (even as `[]`), replaces the user's group memberships entirely. Omit to leave groups unchanged. |
+| `userTags` | `[]` | Array of `{ keyTemplate, valueTemplate }` pairs. Sets or deletes individual user tags. Empty `valueTemplate` deletes the tag. |
 | `invalidateExistingTokens` | `false` | When `true`, all existing auth tokens for this user are invalidated. |
 | `resultPath` | `""` | **Required.** Payload path to write the updated user object. |
 

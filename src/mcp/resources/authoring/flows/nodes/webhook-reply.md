@@ -64,7 +64,7 @@ The Webhook: Reply Node sends a custom HTTP response to a webhook request, or se
 
 ## Experience workflows
 
-Not available.
+Same as Cloud.
 
 ## Edge workflows
 

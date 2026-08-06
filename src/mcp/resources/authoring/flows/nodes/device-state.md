@@ -78,7 +78,7 @@ Three state data modes controlled by `config.attrDataMethod`:
 | `timeSourcePath` | — | Payload path to a time value. Required when `timeSourceType: "payloadPath"`. |
 | `resultPath` | — | Optional. Payload path to write `{ success: true }` on success or `{ error: { type, message } }` on failure. On edge, requires GEA **1.12.0+**. |
 | `metaTemplate` | — | Optional. JSON-string template for a meta attribute added to the state payload. |
-| `metaTemplateType` | `"jsonTemplate"` | How `metaTemplate` is interpreted: `"jsonTemplate"`, `"stringTemplate"`, or `"jsonPath"`. |
+| `metaTemplateType` | `"stringTemplate"` | How `metaTemplate` is interpreted: `"jsonTemplate"`, `"stringTemplate"`, or `"jsonPath"`. |
 | `flowVersionTemplate` | — | Optional. Template for a `flowVersion` field embedded in the state payload. |
 
 ## Experience workflows

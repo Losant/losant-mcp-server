@@ -23,7 +23,7 @@ Not available.
 { "working": { "prediction": { "success": true, "result": [0.92, 0.05, 0.03] } } }
 ```
 
-`result` is an array of prediction values. On error: `{ "success": false, "error": { "type": "TENSOR_FLOW_NODE_ERROR", "message": "..." } }`
+`result` is an array of prediction values. On error: `{ "error": { "type": "TENSOR_FLOW_NODE_ERROR", "message": "..." } }`
 
 ## Experience workflows
 

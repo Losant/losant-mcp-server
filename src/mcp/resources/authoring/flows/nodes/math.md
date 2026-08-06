@@ -33,12 +33,12 @@ Evaluates mathematical expressions against payload values and writes results to 
 | Field | Notes |
 |---|---|
 | `statements` | **Required.** Array of `{ expression, resultPath }` objects. Evaluated in order; later statements can reference values written by earlier ones. |
-| `statements[i].expression` | Handlebars template that renders to a math.js expression. Template values are substituted before evaluation. |
+| `statements[i].expression` | Handlebars template that renders to a Losant expression. Template values are substituted before evaluation. |
 | `statements[i].resultPath` | Payload path where the expression result is written. |
 
 ### Expression syntax
 
-Expressions use [math.js](https://mathjs.org/) syntax. Payload values are injected via Handlebars before evaluation:
+Expressions use Losant's expression evaluator. Payload values are injected via Handlebars before evaluation:
 
 ```
 {{data.attributes.tempC}} * 9 / 5 + 32    → Fahrenheit conversion

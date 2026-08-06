@@ -42,6 +42,7 @@ Creates a new Experience Group.
 | `parentIdTemplate` | `""` | Optional. ID of a parent group for hierarchy. Template. |
 | `deviceQueryJsonTemplate` | `""` | Optional. JSON device query to associate devices with this group. Template. |
 | `groupTagTemplates` | `[]` | Optional. Array of `{ keyTemplate, valueTemplate }` tag objects for the group. |
+| `members` | — | Optional. Array of user email or ID strings to add as initial members at creation. |
 | `groupPayloadPath` | `""` | **Required** when `dataMethod: "payloadPath"`. Payload path to group object. |
 | `resultPath` | `""` | **Required.** Payload path to write the created group object. |
 
@@ -68,7 +69,8 @@ Fetches one or more Experience Groups.
 | Config field | Default | Notes |
 |---|---|---|
 | `findMethod` | `"id"` | `"id"`, `"name"`, `"findByAllTags"`, `"findByAnyTags"`, or `"query"`. |
-| `idTemplate` | `""` | **Required** when `findMethod: "id"` or `"name"`. Group ID or name. Template. |
+| `idTemplate` | `""` | **Required** when `findMethod: "id"`. Group ID. Template. |
+| `name` | `""` | **Required** when `findMethod: "name"`. Group name to search for. Template. |
 | `tags` | `[]` | Array of `{ keyTemplate, valueTemplate }` — used by `findByAllTags` / `findByAnyTags`. |
 | `queryTemplate` | `""` | Advanced query LJSON template — for `findMethod: "query"`. |
 | `resultPath` | `""` | **Required.** Payload path to write the result. |
@@ -100,6 +102,11 @@ Updates an Experience Group's name, description, members, or device associations
 | `dataMethod` | `"individualFields"` | `"individualFields"`, `"jsonTemplate"`, or `"payloadPath"`. |
 | `nameTemplate` | `""` | Optional new name. Template. |
 | `descriptionTemplate` | `""` | Optional new description. Template. |
+| `groupJsonTemplate` | `""` | **Required** when `dataMethod: "jsonTemplate"`. Group patch as JSON template. |
+| `groupPayloadPath` | `""` | **Required** when `dataMethod: "payloadPath"`. Payload path to group patch object. |
+| `parentIdTemplate` | — | Optional. ID of the parent group (for hierarchy). Set to `null` to remove parent. Template. |
+| `deviceQueryJsonTemplate` | `""` | Optional. Device query JSON to associate matching devices. Template. |
+| `groupTags` | `[]` | Optional. Array of `{ keyTemplate, valueTemplate }` to set or delete group tags. Empty `valueTemplate` deletes the tag. |
 | `membersToAdd` | — | Optional array of user IDs or emails to add to the group. |
 | `membersToRemove` | — | Optional array of user IDs or emails to remove from the group. |
 | `membersReplacement` | — | Optional array of user IDs or emails to set as the complete group membership (replaces existing). Cannot be combined with `membersToAdd`/`membersToRemove`. |

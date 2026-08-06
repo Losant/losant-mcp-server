@@ -127,7 +127,7 @@ Retrieves a file from the application's file storage — either its contents as 
 }
 ```
 
-On failure, an `error` object is placed at `destination` instead of a result.
+On failure, `destination` receives `{ "error": { "type": "<type>", "message": "<description>" } }` instead of the result object. Common error types: `"NotFound"` (file doesn't exist), `"ValidationError"` (file status not completed, file too large, or invalid encoding).
 
 ## Experience workflows
 

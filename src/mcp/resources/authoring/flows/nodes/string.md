@@ -55,7 +55,8 @@ Available: cloud, experience, customNode, edge.
 | `trimStart` | `[]` | Remove leading whitespace only. |
 | `trimEnd` | `[]` | Remove trailing whitespace only. |
 | `toNumber` | `[]` | Parse the string to a number. Result is `NaN` if not parseable. |
-| `concat` | `[...strings]` | Concatenate one or more additional strings onto the source. Pass each extra string as a separate element: `["a", "b"]`. |
+| `concat` | `[string]` | Concatenate one additional string onto the source. Exactly one argument: `["suffix"]`. |
+| `noop` | `[]` | Pass source data through to `resultPath` unchanged. |
 | `pad` | `[length, fillChar]` | Pad to `length` characters, centered (fill added to both sides). `fillChar` defaults to a space. `length` must be 0–1000. |
 | `padStart` | `[length, fillChar]` | Pad to `length` characters by prepending `fillChar` on the left. `fillChar` defaults to a space. `length` must be 0–1000. |
 | `padEnd` | `[length, fillChar]` | Pad to `length` characters by appending `fillChar` on the right. `fillChar` defaults to a space. `length` must be 0–1000. |

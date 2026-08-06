@@ -47,7 +47,7 @@ Reads tag values from an Allen-Bradley PLC.
 | Config field | Default | Notes |
 |---|---|---|
 | `hostTemplate` | `""` | **Required.** PLC hostname or IP. Template. |
-| `slotTemplate` | `""` | **Required.** PLC slot number. Template. |
+| `slotTemplate` | `""` | PLC slot number. Template. |
 | `keepRateTemplate` | `""` | Keep-alive interval in milliseconds. Template. |
 | `timeoutTemplate` | `"30000"` | Request timeout in milliseconds. Template. |
 | `readInstructionsType` | `"array"` | `"array"` or `"payloadPath"`. |
@@ -108,7 +108,7 @@ Writes tag values to an Allen-Bradley PLC.
 | Config field | Default | Notes |
 |---|---|---|
 | `hostTemplate` | `""` | **Required.** PLC hostname or IP. Template. |
-| `slotTemplate` | `""` | **Required.** PLC slot number. Template. |
+| `slotTemplate` | `""` | PLC slot number. Template. |
 | `keepRateTemplate` | `""` | Keep-alive interval in milliseconds. Template. |
 | `timeoutTemplate` | `"30000"` | Request timeout in milliseconds. Template. |
 | `writeInstructionsType` | `"array"` | `"array"` — use `writeInstructions` array. `"payloadPath"` — read instructions from a payload path. |

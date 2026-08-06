@@ -49,7 +49,6 @@ When set, `resultPath` receives the notebook execution object:
 {
   "working": {
     "notebookExecution": {
-      "id": "xxxxxxxxxxxxxxxxxxxxxxxx",
       "executionId": "xxxxxxxxxxxxxxxxxxxxxxxx",
       "success": true
     }

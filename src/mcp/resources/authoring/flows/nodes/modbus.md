@@ -101,9 +101,9 @@ Reads values from Modbus registers or coils.
 |---|---|---|
 | Connection fields | — | See connection tables above. |
 | `endiannessTemplate` | `"big"` | Byte order for multi-byte values: `"big"` or `"little"`. Template. |
-| `areUnsignedInts` | `false` | When `true`, treat integer register values as unsigned. |
-| `unitIdAllowZeros` | `false` | When `true`, allows unit IDs of 0 (disabled by default for protocol safety). |
-| `readInstructionsType` | `"array"` | `"array"` or `"payloadPath"`. |
+| `areUnsignedInts` | `false` | When `true`, treat integer register values as unsigned. GEA 1.2.6+. |
+| `unitIdAllowZeros` | `false` | When `true`, allows unit IDs of 0 (disabled by default for protocol safety). GEA 1.28.0+. |
+| `readInstructionsType` | `"array"` | `"array"` or `"payloadPath"` (GEA 1.9.0+). |
 | `readInstructions` | `[]` | **Required.** Array of read instruction objects (see below). |
 | `destinationPath` | `""` | **Required.** Payload path to write results. The `destinationPath` can point to an existing payload path to overwrite it. |
 
@@ -190,8 +190,8 @@ Writes values to Modbus registers or coils.
 | Connection fields | — | See connection tables above. |
 | `writeInstructionsType` | `"array"` | `"array"` or `"payloadPath"`. |
 | `writeInstructions` | `[]` | **Required.** Array of write instruction objects (see below). |
-| `areUnsignedInts` | `false` | When `true`, treat integer register values as unsigned. |
-| `unitIdAllowZeros` | `false` | When `true`, allows unit IDs of 0. |
+| `areUnsignedInts` | `false` | When `true`, treat integer register values as unsigned. GEA 1.2.6+. |
+| `unitIdAllowZeros` | `false` | When `true`, allows unit IDs of 0. GEA 1.28.0+. |
 | `destinationPath` | `""` | Payload path to write per-register results. |
 
 ### Write output shape

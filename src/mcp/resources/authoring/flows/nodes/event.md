@@ -35,6 +35,10 @@ Events are the primary alerting mechanism in Losant.
 }
 ```
 
+The configuration mode is controlled by `config.dataMethod`:
+
+#### `"individualFields"` (default)
+
 | Config field | Notes |
 |---|---|
 | `levelTemplate` | **Required.** `"info"`, `"warning"`, `"error"`, or `"critical"`. Template. |
@@ -50,6 +54,20 @@ Events are the primary alerting mechanism in Losant.
 | `timeSourcePath` | Payload path to a timestamp. Used when `timeSourceType: "payloadPath"`. |
 | `disableTagChangeTracking` | boolean — when `true`, tag changes on this event do not create timeline entries. |
 | `resultPath` | Payload path for the created event object. Shape: `{ id, applicationId, level, subject, message, deviceId, data, eventTags, state, creationDate, lastUpdated }`. The `id` field is needed to Get/Update/Delete the event downstream. |
+
+#### `"jsonTemplate"` — full event object as JSON template
+
+| Config field | Notes |
+|---|---|
+| `eventJsonTemplate` | **Required.** JSON template resolving to the full event creation object (must include `level` and `subject`). |
+| `resultPath` | Payload path for the created event object. |
+
+#### `"payloadPath"` — full event object from payload
+
+| Config field | Notes |
+|---|---|
+| `eventPayloadPath` | **Required.** Payload path to the event object to create. |
+| `resultPath` | Payload path for the created event object. |
 
 ---
 
@@ -222,7 +240,7 @@ Updates one or many events. Mode is stored in **`meta.mode`**. The data to apply
 }
 ```
 
-The bulk update result at `resultPath` is `{ "success": true }` — updates are queued and applied asynchronously, not returned synchronously.
+The bulk update result at `resultPath` is `{ "success": true }` for small sets. When the matching event count is large, the update is queued as a background job and the result is `{ "success": true, "jobId": "...", "jobQueued": true }`.
 
 | Config field | Notes |
 |---|---|
@@ -263,16 +281,19 @@ All three modes use the same `dataMethod` to control what gets updated:
 
 ### Event: Delete Node (`type: "DeleteEventNode"`)
 
-Deletes an event by ID.
+Deletes one or more events. Mode is stored in **`meta.mode`**.
+
+#### Mode: delete one by ID (`meta.mode: "eventIdTemplate"`) — default
 
 ```json
 {
   "id": "delete-event",
   "type": "DeleteEventNode",
   "config": {
-    "eventIdTemplate": "{{working.event.id}}"
+    "eventIdTemplate": "{{working.event.id}}",
+    "resultPath": "working.deleteResult"
   },
-  "meta": { "category": "data", "name": "delete-event", "label": "Event: Delete", "x": 200, "y": 200 },
+  "meta": { "category": "data", "name": "delete-event", "label": "Event: Delete", "mode": "eventIdTemplate", "x": 200, "y": 200 },
   "outputIds": [["next"]]
 }
 ```
@@ -280,6 +301,47 @@ Deletes an event by ID.
 | Config field | Notes |
 |---|---|
 | `eventIdTemplate` | **Required.** Event ID. Template. |
+| `resultPath` | Payload path to write `{ "success": true, "count": 1 }` on success or `{ "error": { "type", "message" } }` on API error. |
+
+#### Mode: delete one by query (`meta.mode: "queryTemplateSingle"`)
+
+```json
+{
+  "config": {
+    "queryTemplate": "{\"state\": {\"$eq\": \"resolved\"}}",
+    "sortField": "creationDate",
+    "sortDirection": "asc",
+    "resultPath": "working.deleteResult"
+  },
+  "meta": { "...", "mode": "queryTemplateSingle" }
+}
+```
+
+| Config field | Notes |
+|---|---|
+| `queryTemplate` | Advanced query JSON template. Deletes the first matching event. |
+| `sortField` | Controls which event is deleted when multiple match: `"creationDate"`, `"level"`, `"state"`, `"subject"`. |
+| `sortDirection` | `"asc"` or `"desc"`. |
+| `resultPath` | Payload path to write `{ "success": true, "count": 1 }` or error. |
+
+#### Mode: delete many by query (`meta.mode: "queryTemplateMultiple"`)
+
+```json
+{
+  "config": {
+    "queryTemplate": "{\"state\": {\"$eq\": \"resolved\"}}",
+    "deleteMultiple": true,
+    "resultPath": "working.deleteResult"
+  },
+  "meta": { "...", "mode": "queryTemplateMultiple" }
+}
+```
+
+| Config field | Notes |
+|---|---|
+| `queryTemplate` | Advanced query JSON template. All matching events are deleted. |
+| `deleteMultiple` | Always `true` for this mode. |
+| `resultPath` | Payload path to write `{ "success": true, "count": <n> }` or error. |
 
 ### Idiom notes
 

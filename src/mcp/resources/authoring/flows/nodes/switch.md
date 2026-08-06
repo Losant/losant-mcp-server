@@ -1,6 +1,6 @@
 # Switch Node (`type: "SwitchNode"`)
 
-Branches the workflow across multiple paths by evaluating a template against a set of configured case values. More expressive than a chain of Conditional nodes when there are three or more distinct branches. Available in cloud, experience, customNode, and embedded workflows.
+Branches the workflow across multiple paths by evaluating a template against a set of configured case values. More expressive than a chain of Conditional nodes when there are three or more distinct branches. Available in cloud, experience, customNode, edge, and embedded workflows.
 
 ## Required Fields
 
@@ -27,10 +27,10 @@ Branches the workflow across multiple paths by evaluating a template against a s
   },
   "meta": { "category": "logic", "name": "switch", "label": "Switch", "x": 200, "y": 200 },
   "outputIds": [
+    ["handle-default"],
     ["handle-active"],
     ["handle-warning"],
-    ["handle-critical"],
-    ["handle-default"]
+    ["handle-critical"]
   ]
 }
 ```
@@ -43,14 +43,15 @@ Branches the workflow across multiple paths by evaluating a template against a s
 | `cases` | **Required.** Array of `{ caseTemplate, caseLabel }` objects, one per branch. |
 | `cases[i].caseTemplate` | The value to compare against `switchTemplate`. Strict string match. |
 | `cases[i].caseLabel` | Human-readable label displayed on the canvas for that branch. |
-| `cases[i].dontBreak` | boolean — when `true`, execution falls through to the next matching case rather than stopping. Default `false`. |
+| `cases[i].dontBreak` | boolean — accepted by the schema but has no effect at runtime. Omit or always set to `false`. |
 
 ### Wiring
 
-`outputIds` has one outer entry per case **plus one extra at the end for the default branch**:
-- `outputIds[0]` → fires when `switchTemplate` matches `cases[0].caseTemplate`
-- `outputIds[1]` → fires when it matches `cases[1].caseTemplate`
-- `outputIds[N]` → fires when no case matches (default)
+`outputIds` has one outer entry for the default branch **plus one entry per case**:
+- `outputIds[0]` → fires when **no case matches** (default)
+- `outputIds[1]` → fires when `switchTemplate` matches `cases[0].caseTemplate`
+- `outputIds[2]` → fires when it matches `cases[1].caseTemplate`
+- `outputIds[N+1]` → fires when it matches `cases[N].caseTemplate`
 
 Any inner array may be empty (`[]`) if that branch needs no further nodes.
 

@@ -53,10 +53,10 @@ When `getAll: false`, `resultPath` receives a `{ key, value }` object. `value` i
 { "working": { "configValue": { "key": "gateway.host", "value": "broker.losant.com" } } }
 ```
 
-When `getAll: true`, `resultPath` receives the full GEA configuration object:
+When `getAll: true`, `resultPath` receives `{ key: ".", value: <full config object> }`:
 
 ```json
-{ "working": { "configValue": { "gateway": { "host": "broker.losant.com", "port": 8883 } } } }
+{ "working": { "configValue": { "key": ".", "value": { "gateway": { "host": "broker.losant.com", "port": 8883 } } } } }
 ```
 
 ---

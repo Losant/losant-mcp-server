@@ -1,6 +1,6 @@
 # Latch Node (`type: "LatchNode"`)
 
-Branches based on a boolean condition that only transitions when the condition changes state. Fires on the first true evaluation, then only fires again after the value goes false and returns to true. Useful for de-bouncing state changes (e.g. "alert once when temperature exceeds threshold, not on every reading"). Available in all flow classes.
+Branches based on a boolean condition that only transitions when the condition changes state. Fires on the first true evaluation, then only fires again after the value goes false and returns to true. Useful for de-bouncing state changes (e.g. "alert once when temperature exceeds threshold, not on every reading"). Available in cloud, experience, customNode, and edge workflows. Not available on embedded.
 
 ## Required Fields
 

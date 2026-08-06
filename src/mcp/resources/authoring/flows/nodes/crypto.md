@@ -76,11 +76,11 @@ Generates a cryptographic signature using a private key. Used for verifying data
 | `keyTemplate` | `""` | The private key, used when `keyTemplateType` is set. |
 | `dataTemplate` | `""` | **Required.** Template resolving to the data to sign. |
 | `dataEncodingTemplate` | `"utf8"` | **Required.** Data encoding. |
-| `algorithmTemplate` | `"SHA256"` | **Required.** Hash algorithm for signing. Template. |
+| `algorithmTemplate` | `"SHA256"` | **Required.** Hash algorithm for signing: `"MD5"`, `"SHA1"`, `"SHA256"`, `"SHA384"`. (`"SHA512"`, `"RIPEMD"`, `"Whirlpool"` are Hash-only and not valid here.) Template. |
 | `paddingTemplate` | `"RSA_PKCS1_PADDING"` | **Required.** RSA padding: `"RSA_PKCS1_PADDING"` or `"RSA_PKCS1_PSS_PADDING"`. |
 | `dsaEncodingTemplate` | `"der"` | **Required.** DSA encoding: `"der"` or `"ieee-p1363"`. |
 | `signatureEncodingTemplate` | `"base64"` | **Required.** Output signature encoding: `"base64"`, `"hex"`, `"latin1"`. |
-| `resultPath` | `""` | Optional. Payload path to write `{ signature: "<string>" }` on success or `{ error: { message } }` on failure. |
+| `resultPath` | `""` | **Required.** Payload path to write `{ signature: "<string>" }` on success or `{ error: { message } }` on failure. |
 
 ---
 

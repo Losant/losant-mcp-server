@@ -1,6 +1,6 @@
 # On Change Node (`type: "BranchOnChangeNode"`)
 
-Branches based on whether a payload value has changed since the last execution. Available in all flow classes.
+Branches based on whether a payload value has changed since the last execution. Available in cloud, experience, customNode, and edge workflows. Not available on embedded.
 
 ## Required Fields
 
@@ -35,7 +35,7 @@ Branches based on whether a payload value has changed since the last execution. 
 | `valuePath` | — | **Required.** Payload path of the value to compare. |
 | `changeType` | `"any"` | **Required.** `"any"` (any kind of change), `"percent"`, `"percentInc"`, `"percentDec"`, `"value"`, `"valueInc"`, `"valueDec"`. |
 | `changeThreshold` | — | Amount of change required. Required when `changeType` is anything other than `"any"`. |
-| `prevValuePath` | — | Payload path to write the previously compared value. |
+| `prevValuePath` | — | Payload path to write the previous state as `{ value: <prevValue>, time: <unixMs> }`. |
 | `onChangeIdTemplate` | `""` | Storage key used to persist the previous value across executions. Scope per-device with `{{data.deviceId}}`. |
 
 > For `changeType` values other than `"any"`, the value at `valuePath` must be numeric. If not numeric, `outputIds[0]` (unchanged) is taken. On first execution (no stored previous value), `outputIds[0]` is also taken.

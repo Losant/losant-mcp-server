@@ -1,6 +1,6 @@
 # SendGrid Node (`type: "SendgridEmailNode"`)
 
-The SendGrid Node sends an email via a configured SendGrid account. Supports attachments (up to 10; edge requires GEA 1.43.3+). Available in cloud, experience, and customNode workflows.
+The SendGrid Node sends an email via a configured SendGrid account. Supports attachments (up to 10; edge requires GEA 1.43.3+). Available in cloud, experience, customNode, and edge workflows.
 
 ## Required Fields
 

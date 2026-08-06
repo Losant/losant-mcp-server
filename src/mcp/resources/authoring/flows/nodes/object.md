@@ -11,7 +11,7 @@ Applies one or more operations to an object (or array) on the workflow payload â
 | `meta.name` | `"object"` |
 | `meta.label` | `"Object"` (default) |
 
-Available: cloud, experience, customNode, edge (GEA 1.20.0+), embedded.
+Available: cloud, experience, customNode, edge (GEA 1.20.0+).
 
 ## Cloud (Application) workflows
 

@@ -97,7 +97,7 @@ Same config fields as Time Series except:
 | `"payloadPath"` | `deviceIdsPath` (string) | Payload path to an array of device IDs. |
 | `"query"` | `queryTemplate` (string) | Advanced device query as a JSON template. |
 | `"expUser"` | `expUserTemplate` (string) | Experience user ID or email. Template. |
-| `"expGroup"` | `expGroupIdTemplate` (string) | Experience group ID. Template. |
+| `"expGroupId"` | `expGroupIdTemplate` (string) | Experience group ID. Template. |
 | `"parentId"` | `parentIdTemplate` (string) | Parent system device ID. Template. |
 
 ### Result shapes
@@ -118,6 +118,30 @@ Same config fields as Time Series except:
 }
 ```
 
+**Time Series — `aggregation: "NONE"` (raw points, no aggregation):**
+
+Returns a different envelope with per-device point arrays. Each device entry contains the raw data points with a `data` object keyed by attribute name:
+```json
+{
+  "start": "<ISO timestamp>",
+  "end": "<ISO timestamp>",
+  "aggregation": "NONE",
+  "limit": 1000,
+  "resolution": null,
+  "devices": {
+    "<deviceId>": {
+      "name": "Device Name",
+      "tags": {},
+      "points": [
+        { "time": "<ISO timestamp>", "data": { "tempC": 72.5 } }
+      ]
+    }
+  }
+}
+```
+
+If a device hit the `limitTemplate` cap, its entry includes `"limitExceeded": true`.
+
 **Gauge — single attribute:**
 ```json
 { "time": "<ISO timestamp>", "value": 72.5 }
@@ -128,6 +152,23 @@ Same config fields as Time Series except:
 {
   "tempC": { "time": "<ISO timestamp>", "value": 72.5 },
   "humidity": { "time": "<ISO timestamp>", "value": 45.2 }
+}
+```
+
+**Gauge — `perDeviceResults: true`, single attribute:**
+```json
+{
+  "<deviceId>": { "time": "<ISO timestamp>", "value": 72.5 }
+}
+```
+
+**Gauge — `perDeviceResults: true`, multiple attributes:**
+```json
+{
+  "<deviceId>": {
+    "tempC": { "time": "<ISO timestamp>", "value": 72.5 },
+    "humidity": { "time": "<ISO timestamp>", "value": 45.2 }
+  }
 }
 ```
 

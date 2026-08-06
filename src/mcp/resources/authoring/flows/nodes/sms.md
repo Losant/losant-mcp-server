@@ -38,7 +38,7 @@ The SMS Node sends SMS messages via Losant's built-in SMS delivery service. **Ra
 `resultPath` receives a confirmation object:
 
 ```json
-{ "working": { "smsResult": { "success": true } } }
+{ "working": { "smsResult": { "number": "+15559876543", "success": true } } }
 ```
 
 ## Experience workflows

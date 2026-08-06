@@ -1,6 +1,6 @@
 # Validate Payload Node (`type: "ValidatePayloadNode"`)
 
-Validates a value on the workflow payload against a JSON Schema (draft-04). Branches on pass/fail — `outputIds[0]` = invalid (validation failed), `outputIds[1]` = valid (validation passed). Available in cloud, experience, and customNode workflows.
+Validates a value on the workflow payload against a JSON Schema (draft-04). Branches on pass/fail — `outputIds[0]` = invalid (validation failed), `outputIds[1]` = valid (validation passed). Available in cloud, experience, customNode, and edge workflows.
 
 ## Required Fields
 

@@ -44,10 +44,10 @@ All three nodes share the same SNMP connection config. See `triggers/snmp-trap.m
 | `snmpVersionTemplate` | `""` | **Required.** `"Version1"`, `"Version2c"`, or `"Version3"`. Template. |
 | `communityTemplate` | `"public"` | **Required** (V1/V2c). Community string. Template. |
 | `nameTemplate` | `""` | **Required** (V3). Username. Template. |
-| `securityLevelTemplate` | `""` | **Required** (V3). `"NoAuthNoPriv"`, `"AuthNoPriv"`, or `"AuthPriv"`. |
-| `authMethodTemplate` | `"SHA"` | V3 auth: `"SHA"` or `"MD5"`. |
+| `securityLevelTemplate` | `"none"` | **Required** (V3). `"none"` (no auth/priv), `"auth"` (auth only), or `"authAndEncrypt"` (auth + privacy). |
+| `authMethodTemplate` | `"sha"` | V3 auth: `"sha"` or `"md5"`. |
 | `authKeyTemplate` | `""` | **Required** (V3 auth). Auth key. Template. |
-| `encryptionMethodTemplate` | `"DES"` | V3 encryption: `"DES"` or `"AES"`. |
+| `encryptionMethodTemplate` | `"des"` | V3 encryption: `"des"` or `"aes"`. |
 | `encryptionKeyTemplate` | `""` | **Required** (V3 AuthPriv). Private key. Template. |
 
 ---
@@ -77,7 +77,7 @@ Reads OID values from an SNMP agent.
 
 | Config field | Notes |
 |---|---|
-| `readInstructionsType` | `"templateStrings"` or `"payloadPath"`. |
+| `readInstructionsType` | **Required.** `"templateStrings"` or `"payloadPath"`. |
 | `readInstructions` | **Required.** Array of `{ oidTemplate, resultKey }` objects. |
 | `resultPath` | **Required.** Payload path to write OID values keyed by `resultKey`. |
 
@@ -109,6 +109,12 @@ Writes values to OIDs on an SNMP agent.
   "outputIds": [["next"]]
 }
 ```
+
+| Config field | Notes |
+|---|---|
+| `writeInstructionsType` | **Required.** `"templateStrings"` or `"payloadPath"`. |
+| `writeInstructions` | **Required.** Array of write instruction objects. |
+| `resultPath` | Payload path to write the write result. |
 
 Write instruction fields: `oidTemplate`, `type` (value type: `"Boolean"`, `"Integer"`, `"OctetString"`, `"Null"`, `"OID"`, `"IpAddress"`, `"Counter"`, `"Gauge"`, `"TimeTicks"`, default `"Integer"`), `valueTemplate` (not required for `"Null"` type).
 

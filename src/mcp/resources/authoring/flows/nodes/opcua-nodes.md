@@ -171,10 +171,10 @@ Writes values to one or more OPC UA nodes. Values are automatically converted to
 ### Write output shape
 
 ```json
-{ "working": { "writeResult": { "write": "success", "errors": [] } } }
+{ "working": { "writeResult": { "write": "success" } } }
 ```
 
-Each entry in `write` corresponds to a write instruction. `errors` contains any per-node error strings.
+On full success the result is `{ "write": "success" }` with no `errors` key. If any write fails, `errors` is added as an array of per-node error strings: `{ "write": "success", "errors": ["Node ns=2;i=1001: BadNodeIdUnknown"] }`.
 
 **Write instruction fields** (when `writeInstructionsType: "array"`):
 

@@ -291,7 +291,7 @@ Removes one or more devices from the application. Two delete modes are available
 }
 ```
 
-`resultPath` receives `{ removed, failed }` for small result sets, or `{ jobQueued: true }` when the query matches a large number of devices (deletion runs asynchronously).
+`resultPath` receives `{ removed, failed }` for small result sets, or `{ jobQueued: true, jobId: "...", success: true }` when the query matches a large number of devices (deletion runs asynchronously as a background job).
 
 | Config field | Notes |
 |---|---|
