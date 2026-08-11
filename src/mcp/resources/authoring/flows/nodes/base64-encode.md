@@ -11,19 +11,19 @@ Encodes a string or binary array on the payload to Base64. Available in **embedd
 | `meta.name` | `"base64-encode"` |
 | `meta.label` | `"Base64: Encode"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Not available.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 Not available.
 
-## Embedded workflows
+## Embedded flows
 
 ```json
 {

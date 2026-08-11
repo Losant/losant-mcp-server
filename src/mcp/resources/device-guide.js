@@ -117,7 +117,7 @@ Edge Compute devices run the Losant Gateway Edge Agent (GEA), which supports bot
 
 ## Reacting to device events with flows
 
-Device activity fires workflows automatically — no polling required:
+Device activity fires flows automatically — no polling required:
 
 - **State reports** → \`losant://flow/triggers/device-state\` — fires when a device reports attributes. Filter by specific attributes using \`attributeWhitelist\`. \`data.*\` contains the reported attributes; \`triggerId\` is the reporting device's ID.
 - **Connection events** → \`losant://flow/triggers/device-connect\` and \`losant://flow/triggers/device-disconnect\` — fire when a device connects or disconnects from the MQTT broker.

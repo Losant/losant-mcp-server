@@ -1,11 +1,11 @@
 ---
 name: losant-certificate-nodes
-description: CertificateCreateNode signs a CSR (or raw public/private key) with a CA key+cert pair to issue a new leaf X.509 certificate. CertificateReadNode reads a certificate's public key and metadata without the private key. Both available in cloud, experience, edge (GEA 2.3.0+), and custom node workflows.
+description: CertificateCreateNode signs a CSR (or raw public/private key) with a CA key+cert pair to issue a new leaf X.509 certificate. CertificateReadNode reads a certificate's public key and metadata without the private key. Both available in cloud, experience, edge (GEA 2.3.0+), and custom node flows.
 ---
 
 # Certificate Nodes — Create, Read
 
-Two nodes for working with X.509 certificates in workflows.
+Two nodes for working with X.509 certificates in flows.
 
 ## Required Fields
 
@@ -20,7 +20,7 @@ Two nodes for working with X.509 certificates in workflows.
 
 Signs a Certificate Signing Request (CSR) with a CA key and certificate to issue a new leaf certificate. **Does not generate self-signed or root certificates** — it requires a pre-existing CA key/cert pair and a CSR (or raw public/private key PEM) as input. When a raw key is given instead of a CSR, at least a Common Name or one Subject Alternative Name must be provided.
 
-### Cloud (Application) workflows
+### Cloud (Application) flows
 
 The CA key and certificate are supplied via a **Certificate/Key Pair Service Credential**.
 
@@ -126,7 +126,7 @@ When provided, these override the corresponding fields from the CSR. All are Han
 
 On **signing error**, `resultPath` receives `{ "error": { "message": "<description>" } }` — the node does **not** throw. Execution continues to the next node; check `working.newCert.error` downstream to detect failures.
 
-**Pre-signing validation errors do throw** (halting the workflow): missing `csrTemplate`, missing CA key/cert on edge, or an invalid `notBefore` date.
+**Pre-signing validation errors do throw** (halting the flow): missing `csrTemplate`, missing CA key/cert on edge, or an invalid `notBefore` date.
 
 ---
 
@@ -134,7 +134,7 @@ On **signing error**, `resultPath` receives `{ "error": { "message": "<descripti
 
 Reads a PEM certificate (or PEM bundle of multiple certificates) and writes the public key and metadata to the payload. Does not require the private key.
 
-### Cloud (Application) workflows
+### Cloud (Application) flows
 
 ```json
 {
@@ -190,11 +190,11 @@ Reads a PEM certificate (or PEM bundle of multiple certificates) and writes the 
 
 ---
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud for both nodes.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 2.3.0
 
@@ -233,8 +233,8 @@ The subject override fields, Subject Alternative Names, key usages, extended key
 
 ### Certificate: Read — edge differences
 
-`crtTemplateType` defaults to `"diskPath"` on edge (vs. `"stringTemplate"` on cloud). The `"diskPath"` option is only valid on edge — switching to a cloud workflow class resets the type to `"stringTemplate"`.
+`crtTemplateType` defaults to `"diskPath"` on edge (vs. `"stringTemplate"` on cloud). The `"diskPath"` option is only valid on edge — switching to a cloud flow class resets the type to `"stringTemplate"`.
 
-## Custom Node workflows
+## Custom Node flows
 
 Same as Cloud for both nodes.

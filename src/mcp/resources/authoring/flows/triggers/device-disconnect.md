@@ -1,6 +1,6 @@
 # Device: Disconnect Trigger
 
-Fires when a device disconnects from Losant over MQTT or changes connection status via the REST API. Available in cloud workflows (with device query) and edge workflows (fires for the edge device itself).
+Fires when a device disconnects from Losant over MQTT or changes connection status via the REST API. Available in cloud flows (with device query) and edge flows (fires for the edge device itself).
 
 Two `type` values select devices differently; both have empty config.
 
@@ -11,7 +11,7 @@ Two `type` values select devices differently; both have empty config.
 | `"deviceIdDisconnect"` | `"deviceIdsTagsDisconnect"` | `"Device: Disconnect"` (default) | A specific device ID in `key` |
 | `"deviceTagDisconnect"` | `"deviceIdsTagsDisconnect"` | `"Device: Disconnect"` (default) | A tag `key/value` pair in `key` |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ### `deviceIdDisconnect` variant — one specific device
 
@@ -70,17 +70,18 @@ Two `type` values select devices differently; both have empty config.
 - `data.connectedAt` — when this session started. Subtract from `time` to get session duration.
 - `data.disconnectReason` — human-readable reason (e.g. `"Keepalive Timeout"`). Free-text — log it rather than branching on specific values.
 - `data.messagesFromDevice` / `data.messagesToDevice` — message counts for this session.
+- `triggerId` — the disconnecting device's ID.
 - `relayId` / `relayType` — at the envelope level, not inside `data`.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.11.0
 
-Edge workflows use `type: "onDisconnect"` — fires only for the Edge Compute Device running the workflow. No device query supported.
+Edge flows use `type: "onDisconnect"` — fires only for the Edge Compute Device running the flow. No device query supported.
 
 | Field | Value |
 |---|---|

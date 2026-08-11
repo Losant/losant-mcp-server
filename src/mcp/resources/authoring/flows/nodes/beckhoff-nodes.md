@@ -1,6 +1,6 @@
 # Beckhoff Nodes — Read, Write
 
-Two nodes for reading and writing symbols on a Beckhoff TwinCAT PLC. See `triggers/beckhoff.md` for the Beckhoff Trigger that fires workflows on symbol value changes.
+Two nodes for reading and writing symbols on a Beckhoff TwinCAT PLC. See `triggers/beckhoff.md` for the Beckhoff Trigger that fires flows on symbol value changes.
 
 ## Required Fields
 
@@ -9,15 +9,15 @@ Two nodes for reading and writing symbols on a Beckhoff TwinCAT PLC. See `trigge
 | `BeckhoffReadNode` | `data` | `beckhoff-read` | `"Beckhoff: Read"` |
 | `BeckhoffWriteNode` | `data` | `beckhoff-write` | `"Beckhoff: Write"` |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Not available.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.49.0
 

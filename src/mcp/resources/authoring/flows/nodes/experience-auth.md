@@ -9,7 +9,7 @@ Two nodes for authenticating Experience Users and generating auth tokens.
 | `ExperienceUserAuthNode` | `experience` | `experience-user-auth` | `"Authenticate"` |
 | `ExperienceUserTokenNode` | `experience` | `experience-user-token` | `"Generate Token"` |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ### Authenticate Node (`type: "ExperienceUserAuthNode"`)
 
@@ -98,10 +98,10 @@ Generates an auth token for an Experience User without requiring their password.
 | `ttlTemplate` | `""` | Token time-to-live in seconds. Leave empty for the experience's default TTL. Template. |
 | `extraDataJsonTemplate` | `""` | Optional JSON data to embed in the token. JSON template. |
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Not available.

@@ -1,6 +1,6 @@
 # ServiceNow Node (`type: "ServiceNowNode"`)
 
-The ServiceNow Node allows a workflow to interact with ServiceNow table records — listing, creating, retrieving, and updating rows in any ServiceNow table. Available in cloud, experience, edge, and customNode workflows.
+The ServiceNow Node allows a flow to interact with ServiceNow table records — listing, creating, retrieving, and updating rows in any ServiceNow table. Available in cloud, experience, edge, and customNode flows.
 
 ## Required Fields
 
@@ -11,7 +11,7 @@ The ServiceNow Node allows a workflow to interact with ServiceNow table records 
 | `meta.name` | `"service-now"` |
 | `meta.label` | `"ServiceNow"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Two ways to specify the ServiceNow instance — by instance name or by full URL. The choice is stored in **`meta.uriType`** (not `config`).
 
@@ -105,11 +105,11 @@ Two ways to specify the ServiceNow instance — by instance name or by full URL.
 | `sysparmDisplayValue` | Return display values instead of raw values. |
 | `sysparmView` | View name to use. |
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.2.0
 

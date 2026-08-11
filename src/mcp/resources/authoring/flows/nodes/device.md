@@ -1,6 +1,6 @@
 # Device Nodes — Create, Get, Update, Delete
 
-Four nodes for managing device records via the Losant API within a workflow.
+Four nodes for managing device records via the Losant API within a flow.
 
 ## Required Fields
 
@@ -11,7 +11,7 @@ Four nodes for managing device records via the Losant API within a workflow.
 | `UpdateDeviceNode` | `data` | `update-device` | `"Device: Update"` |
 | `DeviceDeleteWorkflowNode` | `data` | `delete-device` | `"Device: Delete"` |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ### Device: Create Node (`type: "CreateDeviceNode"`)
 
@@ -25,7 +25,7 @@ Creates a new device in the application. Three configuration modes are available
     "dataMethod": "individualFields",
     "nameTemplate": "{{data.deviceName}}",
     "deviceClassTemplate": "standalone",
-    "deviceTags": [{ "keyTemplate": "source", "valueTemplate": "workflow" }],
+    "deviceTags": [{ "keyTemplate": "source", "valueTemplate": "flow" }],
     "resultPath": "working.newDevice"
   },
   "meta": { "category": "data", "name": "create-device", "label": "Device: Create", "x": 200, "y": 200 },
@@ -327,10 +327,10 @@ Removes one or more devices from the application. Two delete modes are available
 }
 ```
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Not available.

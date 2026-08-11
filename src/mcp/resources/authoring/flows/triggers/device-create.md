@@ -1,6 +1,6 @@
 # Device: Create Trigger (`type: "deviceCreate"`)
 
-Fires a workflow whenever a device is created within the application. Cloud only. Does not fire for bulk device creation (bulk recipe creation, Devices Bulk Create API, template imports). Firing this trigger does not count as a billable payload.
+Fires a flow whenever a device is created within the application. Cloud only. Does not fire for bulk device creation (bulk recipe creation, Devices Bulk Create API, template imports). Firing this trigger does not count as a billable payload.
 
 ## Required Fields
 
@@ -11,7 +11,7 @@ Fires a workflow whenever a device is created within the application. Cloud only
 | `meta.name` | `"deviceCreate"` |
 | `meta.label` | `"Device: Create"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ```json
 {
@@ -28,20 +28,26 @@ Fires a workflow whenever a device is created within the application. Cloud only
 **Payload at runtime:**
 ```json
 {
+  "time": "<ISO timestamp>",
   "data": {
     "device": { "...": "full newly created device object" }
   },
+  "relayId": "<ID of the user, API token, or flow that created the device>",
+  "relayType": "user",
   "triggerId": "<new device ID>",
-  "triggerType": "deviceCreate"
+  "triggerType": "deviceCreate",
+  "applicationId": "...",
+  "flowId": "...",
+  "globals": {}
 }
 ```
 
 `data.device` is the full newly created device object. `triggerId` is the new device's ID.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 Not available.

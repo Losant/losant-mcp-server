@@ -1,6 +1,6 @@
 # Input Controls Block (`blockType: "input"`)
 
-Lets users send device commands or trigger workflow virtual buttons directly from the dashboard. Supports sliders, toggles, text inputs, dropdowns, buttons, and static help text. Controls can also reflect the current device state when locked. Common uses: (1) a lighting control panel with a brightness slider and an on/off toggle that sends a device command on Apply, (2) a thermostat setpoint form where an operator enters a target temperature and submits it directly to the device, (3) a mode selector dropdown paired with a Trigger button that fires a workflow to change an industrial process state.
+Lets users send device commands or trigger flow virtual buttons directly from the dashboard. Supports sliders, toggles, text inputs, dropdowns, buttons, and static help text. Controls can also reflect the current device state when locked. Common uses: (1) a lighting control panel with a brightness slider and an on/off toggle that sends a device command on Apply, (2) a thermostat setpoint form where an operator enters a target temperature and submits it directly to the device, (3) a mode selector dropdown paired with a Trigger button that fires a flow to change an industrial process state.
 
 See the parent `dashboard-guide.md` for the block object shape, layout grid.
 
@@ -84,7 +84,7 @@ Read-only informational panel. Does not contribute to the payload.
 
 ### `button` — trigger action
 
-Buttons are what actually send commands or trigger workflows when clicked. A block with controls but no button cannot send anything.
+Buttons are what actually send commands or trigger flows when clicked. A block with controls but no button cannot send anything.
 
 | Field | Type | Notes |
 |---|---|---|
@@ -92,8 +92,8 @@ Buttons are what actually send commands or trigger workflows when clicked. A blo
 | `action` | `"command"` \| `"workflow"` | What the button does when clicked. |
 | `id` / `templateId` / `label` / `color` / `grid` | — | Standard. |
 | `payload` | string | JSON template for the payload. Reference control values via `{{templateId}}`. |
-| `workflowId` | string \| null | ID of the workflow to trigger (when `action: "workflow"`). |
-| `buttonId` | string | The UI ID of the Virtual Button trigger node inside the workflow (`meta.uiId`). Not an arbitrary string — you must read the workflow's trigger nodes to find the correct value. Max 255 chars. |
+| `workflowId` | string \| null | ID of the flow to trigger (when `action: "workflow"`). |
+| `buttonId` | string | The UI ID of the Virtual Button trigger node inside the flow (`meta.uiId`). Not an arbitrary string — you must read the flow's trigger nodes to find the correct value. Max 255 chars. |
 | `deviceIds` | string[] | Device IDs to send the command to (when `action: "command"`). |
 | `deviceTags` | object[] | Tag-based device selection for commands. |
 | `query` | string | Advanced device query for commands. |
@@ -177,5 +177,5 @@ Each control's `grid` defines its position and size within the block's internal 
 
 - `templateId` is the key used in button payload templates: `{{templateId}}`. The value is rendered without quotes for numbers/booleans, so wrap in quotes for strings.
 - In `"locked"` mode the block shows live device state via `defaultQuery`. In `"unlocked"` mode it allows editing and sending.
-- A button with `action: "workflow"` fires a virtual-button trigger in the specified workflow; the payload lands under the trigger's `data` key.
+- A button with `action: "workflow"` fires a virtual-button trigger in the specified flow; the payload lands under the trigger's `data` key.
 - Controls without a `grid` field will be auto-positioned by the dashboard UI — always specify `grid` when creating via API for deterministic layout.

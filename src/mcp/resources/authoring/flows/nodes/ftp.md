@@ -9,9 +9,9 @@ Two nodes for transferring files to and from FTP, FTPS, and SFTP servers.
 | `FTPGetNode` | `data` | `ftp-get` | `"FTP: Get"` |
 | `FTPPutNode` | `output` | `ftp-put` | `"FTP: Put"` |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
-Both nodes are available in cloud workflows.
+Both nodes are available in cloud flows.
 
 ### FTP: Get Node (`type: "FTPGetNode"`)
 
@@ -95,11 +95,11 @@ Uploads content to an FTP/FTPS/SFTP server.
 
 Content input mode is determined by which content field is set: `fileContentTemplate` for inline text, `fileUrlTemplate` to fetch from a URL, or `diskPathTemplate` for a local file path (edge GEA 2.1.0+). There is no `meta.mode` field on this node.
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.27.0
 

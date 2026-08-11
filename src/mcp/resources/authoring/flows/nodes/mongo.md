@@ -1,6 +1,6 @@
 # MongoDB Node (`type: "MongoNode"`)
 
-The MongoDB Node allows a workflow to query or update values in a MongoDB database. Supports a wide range of collection operations with JSON template arguments and EJSON syntax support.
+The MongoDB Node allows a flow to query or update values in a MongoDB database. Supports a wide range of collection operations with JSON template arguments and EJSON syntax support.
 
 ## Required Fields
 
@@ -11,7 +11,7 @@ The MongoDB Node allows a workflow to query or update values in a MongoDB databa
 | `meta.name` | `"mongo"` |
 | `meta.label` | `"MongoDB"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Two connection methods: service credential (recommended) or direct URI.
 
@@ -65,11 +65,11 @@ Two connection methods: service credential (recommended) or direct URI.
 
 Arguments use EJSON syntax for MongoDB types — e.g. `{ "_id": { "$oid": "...theid..." } }` for ObjectIDs.
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Same as Cloud. Note:
 - `aggregate` and `replaceOne` operations require GEA **1.15.0+**.

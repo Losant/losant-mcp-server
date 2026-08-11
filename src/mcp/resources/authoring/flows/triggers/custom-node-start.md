@@ -1,6 +1,6 @@
 # Start: Custom Node Trigger (`type: "customNodeStart"`)
 
-The entry point for a `flowClass: "customNode"` workflow. Exactly one required per custom node flow; must be paired with at least one `CustomNodeCapNode`. Available in customNode workflows only.
+The entry point for a `flowClass: "customNode"` flow. Exactly one required per custom node flow; must be paired with at least one `CustomNodeCapNode`. Available in customNode flows only.
 
 ## Required Fields
 
@@ -11,19 +11,19 @@ The entry point for a `flowClass: "customNode"` workflow. Exactly one required p
 | `meta.name` | `"customNodeStart"` |
 | `meta.label` | `"Start: Custom Node"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Not available.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 Not available.
 
-## customNode workflows
+## customNode flows
 
 ```json
 {
@@ -36,3 +36,20 @@ Not available.
 ```
 
 - **`key`** — Always set to the literal string `"customNodeStart"`. Required, always send it.
+
+### Payload at runtime
+
+```json
+{
+  "time": "<ISO timestamp>",
+  "data": { "<inputId>": "<value>", "...": "additional input fields from the invoking flow" },
+  "triggerId": "customNodeStart",
+  "triggerType": "customNodeStart",
+  "applicationId": "...",
+  "flowId": "...",
+  "globals": {}
+}
+```
+
+- `triggerId` — always the literal string `"customNodeStart"`.
+- `data` — populated by the invoking flow's `CustomNodeExecuteNode.config.fields` array. Each `{ id, value }` entry becomes a key on `data`. If no fields are configured, `data` is `{}`.

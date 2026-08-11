@@ -1,6 +1,6 @@
 # On Change Node (`type: "BranchOnChangeNode"`)
 
-Branches based on whether a payload value has changed since the last execution. Available in cloud, experience, customNode, and edge workflows. Not available on embedded.
+Branches based on whether a payload value has changed since the last execution. Available in cloud, experience, customNode, and edge flows. Not available on embedded.
 
 ## Required Fields
 
@@ -11,7 +11,7 @@ Branches based on whether a payload value has changed since the last execution. 
 | `meta.name` | `"onchange"` |
 | `meta.label` | `"On Change"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ```json
 {
@@ -40,10 +40,10 @@ Branches based on whether a payload value has changed since the last execution. 
 
 > For `changeType` values other than `"any"`, the value at `valuePath` must be numeric. If not numeric, `outputIds[0]` (unchanged) is taken. On first execution (no stored previous value), `outputIds[0]` is also taken.
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Same as Cloud.

@@ -11,7 +11,7 @@ The Azure Event Hubs Node publishes a message to an Azure Event Hub. Supports th
 | `meta.name` | `"azureEventHubPublish"` |
 | `meta.label` | `"Azure Event Hubs"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Three connection methods: integration, service credential, or direct connection string.
 
@@ -62,11 +62,11 @@ Three connection methods: integration, service credential, or direct connection 
 
 On error: `{ "working": { "ehResult": { "success": false, "error": { "message": "..." } } } }`
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.39.0
 

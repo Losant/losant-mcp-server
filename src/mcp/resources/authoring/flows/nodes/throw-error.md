@@ -1,6 +1,6 @@
 # Throw Error Node (`type: "ThrowErrorNode"`)
 
-Aborts the current workflow execution with a specified error message. The error is routed to the workflow's Workflow Error Trigger if one is configured. Available in all flow classes. Available in cloud, experience, edge (GEA 1.48.0+), and customNode workflows.
+Aborts the current flow execution with a specified error message. The error is routed to the flow's `flowError` trigger if one is configured. Available in all flow classes. Available in cloud, experience, edge (GEA 1.48.0+), and customNode flows.
 
 ## Required Fields
 
@@ -11,7 +11,7 @@ Aborts the current workflow execution with a specified error message. The error 
 | `meta.name` | `"throw-error"` |
 | `meta.label` | `"Throw Error"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ```json
 {
@@ -29,10 +29,10 @@ Aborts the current workflow execution with a specified error message. The error 
 
 `outputIds` must be `[[]]` — this node never continues execution.
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Minimum GEA version: **1.48.0**.

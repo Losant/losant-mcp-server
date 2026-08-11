@@ -1,6 +1,6 @@
 # Redis Trigger (`type: "redis"`)
 
-The Redis Trigger fires a workflow whenever the Edge Compute Device receives a message on the configured Redis Pub/Sub channel.
+The Redis Trigger fires a flow whenever the Edge Compute Device receives a message on the configured Redis Pub/Sub channel.
 
 ## Required Fields
 
@@ -11,15 +11,15 @@ The Redis Trigger fires a workflow whenever the Edge Compute Device receives a m
 | `meta.name` | `"redisTrigger"` |
 | `meta.label` | `"Redis"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Not available.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.5.0
 

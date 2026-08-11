@@ -12,9 +12,9 @@ Every experience view — layout, page, and component — receives the same root
   application,    // { name, id }
   experience,     // { version, endpoint, page, layout, user, authInfo, device? }
   globals,        // key/value map from the version's globals config
-  pageData,       // data passed by the backing workflow via the Endpoint Reply node
+  pageData,       // data passed by the backing flow via the Endpoint Reply node
   request,        // { path, method, params, query, body, headers, cookies }
-  flow            // { name, id, version } — the backing workflow
+  flow            // { name, id, version } — the backing flow
 }
 ```
 
@@ -108,7 +108,7 @@ Globals are set via `losant_write` `operation=updateOne` `resourceType=experienc
 
 ## `pageData`
 
-Arbitrary data passed from the backing workflow to the view via the **Endpoint Reply** node. The workflow can query devices, look up records, or compute any values and pass them as a structured object.
+Arbitrary data passed from the backing flow to the view via the **Endpoint Reply** node. The flow can query devices, look up records, or compute any values and pass them as a structured object.
 
 ```handlebars
 {{pageData.device.name}}
@@ -117,9 +117,9 @@ Arbitrary data passed from the backing workflow to the view via the **Endpoint R
 {{pageData.user.email}}
 ```
 
-`pageData` is `{}` (empty object) if no workflow fired, or if the workflow's Endpoint Reply node didn't include a page data payload.
+`pageData` is `{}` (empty object) if no flow fired, or if the flow's Endpoint Reply node didn't include a page data payload.
 
-### Passing pageData from a workflow
+### Passing pageData from a flow
 
 In the Endpoint Reply node, set the "Page Data" field to any payload path or object expression. Everything set there becomes `pageData` in the view.
 
@@ -159,7 +159,7 @@ Unix timestamp in milliseconds for the request. Use with format helpers for disp
 
 ## `flow`
 
-The experience workflow that handled the request.
+The experience flow that handled the request.
 
 ```handlebars
 {{flow.name}}
@@ -210,7 +210,7 @@ The experience workflow that handled the request.
 
 Experience views have access to the full shared Handlebars dialect — see [losant://references/shared/handlebars](losant://references/shared/handlebars) for format helpers, block helpers, expression syntax, JSON templates, and HTML escaping.
 
-The following helpers are **only available inside experience views** (layouts, pages, components) and are not available in dashboard templates or workflow nodes.
+The following helpers are **only available inside experience views** (layouts, pages, components) and are not available in dashboard templates or flow nodes.
 
 ### `{{page}}` — layouts only
 

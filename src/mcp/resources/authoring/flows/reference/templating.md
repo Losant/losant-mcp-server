@@ -1,11 +1,11 @@
 ---
-name: losant-workflow-templating
-description: Complete reference for all template syntaxes used in workflow node config fields — payload paths (dot-notation destination fields), string templates (Handlebars {{}} in *Template fields), expressions (ConditionalNode, MathNode), and JSON templates (bodyType jsonTemplate). Covers flow-specific rules: static-only payload paths, expression quoting, embedded workflow restrictions, and JSON template correctness patterns.
+name: losant-flow-templating
+description: Complete reference for all template syntaxes used in flow node config fields — payload paths (dot-notation destination fields), string templates (Handlebars {{}} in *Template fields), expressions (ConditionalNode, MathNode), and JSON templates (bodyType jsonTemplate). Covers flow-specific rules: static-only payload paths, expression quoting, embedded flow restrictions, and JSON template correctness patterns.
 ---
 
 # Templating Reference
 
-Losant workflow node config fields use four distinct syntaxes depending on the field type. Using the wrong one produces silent failures.
+Losant flow node config fields use four distinct syntaxes depending on the field type. Using the wrong one produces silent failures.
 
 | Syntax | Used in | Example |
 |---|---|---|
@@ -14,7 +14,7 @@ Losant workflow node config fields use four distinct syntaxes depending on the f
 | **Expression** | ConditionalNode, MathNode expressions | `{{data.temp}} > 75` |
 | **JSON template** | HTTP node `bodyType: "jsonTemplate"` | `{"id": "{{data.id}}"}` |
 
-**Embedded workflow restriction:** Block helpers and format helpers are NOT valid in embedded workflows. Only direct payload references (`{{path.to.value}}`) are supported in embedded node template fields.
+**Embedded flow restriction:** Block helpers and format helpers are NOT valid in embedded flows. Only direct payload references (`{{path.to.value}}`) are supported in embedded node template fields.
 
 ---
 
@@ -46,7 +46,7 @@ String templates are Handlebars expressions wrapped in `{{double curly brackets}
 
 ```handlebars
 {{data.temp}}                          → value at data.temp
-{{globals.apiKey}}                     → workflow global
+{{globals.apiKey}}                     → flow global
 {{working.device.name}}                → nested path
 Hello, {{experience.user.firstName}}!  → mixed static + dynamic
 ```
@@ -81,7 +81,7 @@ No quotes needed around string template output — the expression engine treats 
 "{{data.name}}" === 'Alice'  (wrong — adds literal quotes)
 ```
 
-**Embedded workflow restrictions:** `==` is always strict (`===`) and `!=` is always strict (`!==`). Collection functions (`includes`, `length`) are not available in embedded workflows.
+**Embedded flow restrictions:** `==` is always strict (`===`) and `!=` is always strict (`!==`). Collection functions (`includes`, `length`) are not available in embedded flows.
 
 For the full operator list, keywords, and math functions, see `losant://references/shared/handlebars`.
 

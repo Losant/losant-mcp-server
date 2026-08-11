@@ -1,6 +1,6 @@
 # Device: Connect Trigger
 
-Fires when a device connects to Losant over MQTT or changes connection status via the REST API. Available in cloud workflows (with device query) and edge workflows (fires for the edge device itself).
+Fires when a device connects to Losant over MQTT or changes connection status via the REST API. Available in cloud flows (with device query) and edge flows (fires for the edge device itself).
 
 Two `type` values select devices differently; both have empty config.
 
@@ -11,7 +11,7 @@ Two `type` values select devices differently; both have empty config.
 | `"deviceIdConnect"` | `"deviceIdsTagsConnect"` | `"Device: Connect"` (default) | A specific device ID in `key` |
 | `"deviceTagConnect"` | `"deviceIdsTagsConnect"` | `"Device: Connect"` (default) | A tag `key/value` pair in `key` |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ### `deviceIdConnect` variant — one specific device
 
@@ -66,17 +66,18 @@ Two `type` values select devices differently; both have empty config.
 - `data.address` — remote IP address of the connecting device.
 - `data.method` — `"mqtt"` or `"rest"`.
 - `data.secure` — `true` if MQTT over TLS.
+- `triggerId` — the connecting device's ID (same as the `key` field for `deviceIdConnect`; the device ID for `deviceTagConnect`).
 - `relayId` / `relayType` — at the envelope level, not inside `data`.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.11.0
 
-Edge workflows use `type: "onConnect"` — fires only for the Edge Compute Device running the workflow. No device query supported.
+Edge flows use `type: "onConnect"` — fires only for the Edge Compute Device running the flow. No device query supported.
 
 | Field | Value |
 |---|---|
@@ -114,7 +115,7 @@ Edge workflows use `type: "onConnect"` — fires only for the Edge Compute Devic
 
 ## Idiom notes
 
-- **Pair with a Device: Disconnect trigger in the same or a companion workflow** to track full connectivity lifecycle (connect → do work → disconnect → record downtime).
+- **Pair with a Device: Disconnect trigger in the same or a companion flow** to track full connectivity lifecycle (connect → do work → disconnect → record downtime).
 - **Use the `deviceTag` variant for fleet monitoring.** One trigger fires for every device matching the tag that connects — no need to enumerate individual device IDs.
 - **`triggerId` is the connecting device's ID.** Use it directly instead of querying for the device.
 - **On edge, only the gateway device's own connect fires this trigger.** Peripheral devices connecting through a gateway do not fire it.

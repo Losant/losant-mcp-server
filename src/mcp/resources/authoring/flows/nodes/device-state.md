@@ -1,6 +1,6 @@
 # Device: State Node (`type: "DeviceChangeStateNode"`)
 
-Reports state on behalf of a device from within a workflow. Useful for system-level aggregations or recording computed values. Available in cloud, experience, edge, and customNode workflows.
+Reports state on behalf of a device from within a flow. Useful for system-level aggregations or recording computed values. Available in cloud, experience, edge, and customNode flows.
 
 ## Required Fields
 
@@ -11,7 +11,7 @@ Reports state on behalf of a device from within a workflow. Useful for system-le
 | `meta.name` | `"device-state"` |
 | `meta.label` | `"Device: State"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Device identification is controlled by `config.deviceIdTemplateType`:
 - `"stringTemplate"` (default) — `config.deviceId` is a Handlebars template resolving to the device ID.
@@ -81,14 +81,14 @@ Three state data modes controlled by `config.attrDataMethod`:
 | `metaTemplateType` | `"stringTemplate"` | How `metaTemplate` is interpreted: `"jsonTemplate"`, `"stringTemplate"`, or `"jsonPath"`. |
 | `flowVersionTemplate` | — | Optional. Template for a `flowVersion` field embedded in the state payload. |
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Same as Cloud. Available on all GEA versions. `resultPath` requires GEA **1.12.0+** on edge.
 
-## Embedded workflows
+## Embedded flows
 
 Same as Cloud.

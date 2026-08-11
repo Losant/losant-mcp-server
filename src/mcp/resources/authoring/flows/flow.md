@@ -1,11 +1,13 @@
 ---
-name: losant-workflow-create-update
-description: Build, edit, and publish Losant workflows through the API — workflow vs. workflow-version model, trigger and node object shapes, the outputIds wiring model (including conditional/loop/switch shape variations), loops with meta.groupId, globals, validation rules, and PATCH-vs-version guidance. Includes a catalog of every node type and trigger type with pointers to detail docs. Use whenever you are creating or modifying a workflow body (the `triggers` or `nodes` arrays) via the Losant REST API.
+name: losant-flow-create-update
+description: Build, edit, and publish Losant flows through the API — flow vs. flow-version model, trigger and node object shapes, the outputIds wiring model (including conditional/loop/switch shape variations), loops with meta.groupId, globals, validation rules, and PATCH-vs-version guidance. Includes a catalog of every node type and trigger type with pointers to detail docs. Use whenever you are creating or modifying a flow body (the `triggers` or `nodes` arrays) via the Losant REST API. Note: the Losant UI calls these "Workflows" — the API resource type is `flow`.
 ---
 
-# Losant Workflow Create and Update
+# Losant Flow Create and Update
 
-This guide is the entry point for creating and updating Losant workflows through the API. The **envelope and wiring** are described here in full. The **per-type detail** — what goes in a node's or trigger's `config` — is accessed via `losant://flow/nodes/<name>` and `losant://flow/triggers/<name>`, indexed by the catalog tables below. Cross-cutting concepts that several detail docs reference are at `losant://references/flow/<name>`.
+> **API naming note:** The Losant UI calls these **Workflows**. The API resource type is `flow` (plural endpoint: `/flows`), and all tool calls use `resourceType: "flow"` or `resourceType: "flowVersion"`. This guide uses **flow** throughout to match the API. The terms are interchangeable — "workflow" in UI screenshots or education docs means the same thing as "flow" in API JSON.
+
+This guide is the entry point for creating and updating Losant flows through the API. The **envelope and wiring** are described here in full. The **per-type detail** — what goes in a node's or trigger's `config` — is accessed via `losant://flow/nodes/<name>` and `losant://flow/triggers/<name>`, indexed by the catalog tables below. Cross-cutting concepts that several detail docs reference are at `losant://references/flow/<name>`.
 
 **Reading order for a new authoring task:**
 1. Read the envelope and wiring sections of this file (you're already here).
@@ -16,21 +18,21 @@ This guide is the entry point for creating and updating Losant workflows through
 
 ## Two resources, not one
 
-A workflow is split across two API resources:
+A flow is split across two API resources:
 
-- **Workflow** — the durable container. Holds `name`, `enabled`, `flowClass`, `globals`, and a `defaultVersionId`. The workflow object also has its own `triggers` and `nodes` arrays — those represent the editable **develop** version.
-- **Workflow Version** — an immutable snapshot of `triggers` + `nodes` published under a `version` name (e.g. `"v1"`, `"prod"`). Versions are what edge agents pull and what experience endpoints run by default.
+- **Flow** — the durable container. Holds `name`, `enabled`, `flowClass`, `globals`, and a `defaultVersionId`. The flow object also has its own `triggers` and `nodes` arrays — those represent the editable **develop** version.
+- **Flow Version** — an immutable snapshot of `triggers` + `nodes` published under a `version` name (e.g. `"v1"`, `"prod"`). Versions are what edge agents pull and what experience endpoints run by default.
 
 Typical lifecycle:
 
-1. `POST /applications/{appId}/flows` — create the workflow with initial `triggers` + `nodes` (this becomes the develop version).
+1. `POST /applications/{appId}/flows` — create the flow with initial `triggers` + `nodes` (this becomes the develop version).
 2. `PATCH /applications/{appId}/flows/{flowId}` — edit the develop version.
 3. `POST /applications/{appId}/flows/{flowId}/versions` — publish a named immutable version.
 4. `PATCH /applications/{appId}/flows/{flowId}` with `defaultVersionId` — promote that version.
 
-## Workflow create body (POST)
+## Flow create body (POST)
 
-Required: `name`. Everything else is optional but `flowClass` controls which trigger and node types are allowed — set it explicitly on create; you cannot change it later. For `flowClass: "edge"`, also set `minimumAgentVersion` — see the Edge workflows section below for rules.
+Required: `name`. Everything else is optional but `flowClass` controls which trigger and node types are allowed — set it explicitly on create; you cannot change it later. For `flowClass: "edge"`, also set `minimumAgentVersion` — see the Edge flows section below for rules.
 
 ```json
 {
@@ -52,11 +54,11 @@ Required: `name`. Everything else is optional but `flowClass` controls which tri
 | `experience` | Cloud workers, triggered by an Experience Endpoint | Backs HTTP endpoints exposed to end users. |
 | `edge` | A Losant Gateway Edge Agent (GEA) | Versioning is mandatory — edge agents pull versions, not develop. |
 | `embedded` | The Embedded Edge Agent (EEA) | Very restricted node set. Does NOT support HTTP, custom nodes, and many others. |
-| `customNode` | Cloud workers, as a callable sub-workflow | Requires exactly one `customNodeStart` trigger and at least one `CustomNodeCapNode`. See `losant://references/flow/custom-nodes` for full authoring details. |
+| `customNode` | Cloud workers, as a callable sub-flow | Requires exactly one `customNodeStart` trigger and at least one `CustomNodeCapNode`. See `losant://references/flow/custom-nodes` for full authoring details. |
 
-> **Edge workflow development:** To manually trigger or interact with a running edge workflow, deploy the `develop` version to a test Edge Compute Device and use **Live Look** (accessible from the workflow editor's Debug or Deployments tab). This applies to any trigger that requires manual interaction — virtual buttons, HTTP request triggers, etc.
+> **Edge flow development:** To manually trigger or interact with a running edge flow, deploy the `develop` version to a test Edge Compute Device and use **Live Look** (accessible from the flow editor's Debug or Deployments tab). This applies to any trigger that requires manual interaction — virtual buttons, HTTP request triggers, etc.
 
-## Workflow version body (POST `/versions`)
+## Flow version body (POST `/versions`)
 
 Required: `version` (the name). The `triggers` / `nodes` you send become the immutable snapshot. If you omit them, the current develop version is snapshotted as-is.
 
@@ -71,72 +73,75 @@ Required: `version` (the name). The `triggers` / `nodes` you send become the imm
 
 ---
 
-## Workflow behavior by flow class
+## Flow behavior by flow class
 
 The `flowClass` controls more than which triggers and nodes are valid — it changes when edits go live, how storage works, what the runtime payload contains, and how you debug. Read the section for the class you are building before choosing triggers and nodes.
 
-### Application (Cloud) workflows
+### Application (Cloud) flows
 
-Application workflows run in Losant's cloud and have access to the widest set of triggers and nodes: device state, timers, webhooks, integrations, data tables, events, and most data and output nodes.
+Application flows run in Losant's cloud and have access to the widest set of triggers and nodes: device state, timers, webhooks, integrations, data tables, events, and most data and output nodes.
 
-**When changes go live:** A PATCH to the workflow body immediately affects execution — the develop version runs by default. If `defaultVersionId` is set, that specific published version runs instead and PATCHing develop has no effect on live execution until you update or clear `defaultVersionId`.
+**When changes go live:** A PATCH to the flow body immediately affects execution — the develop version runs by default. If `defaultVersionId` is set, that specific published version runs instead and PATCHing develop has no effect on live execution until you update or clear `defaultVersionId`.
 
-**Storage:** Workflow storage values are shared across all concurrent executions and are readable from the Losant cloud console.
+**Storage:** Flow storage values are shared across all concurrent executions and are readable from the Losant cloud console.
 
 **Debugging:** The debug panel streams execution output in real time from all versions simultaneously.
 
-> **Gotcha:** If your edits to a workflow aren't having any effect, check whether `defaultVersionId` is set and pinning execution to an older version.
+> **Gotcha:** If your edits to a flow aren't having any effect, check whether `defaultVersionId` is set and pinning execution to an older version.
 
 ---
 
-### Experience workflows
+### Experience flows
 
-Experience workflows back HTTP endpoints exposed to end users. They are versioned **alongside** Experience Versions (endpoints and views) — not independently.
+Experience flows back HTTP endpoints exposed to end users. They are versioned **alongside** Experience Versions (endpoints and views) — not independently.
 
-**Triggers:** Only three trigger types are available: Endpoint, Workflow Error, and Virtual Button. Device, timer, webhook, and integration triggers are not supported.
+**Triggers:** Only three trigger types are available: Endpoint, Flow Error, and Virtual Button. Device, timer, webhook, and integration triggers are not supported.
 
-**When changes go live:** Like application workflows, edits to develop are live immediately for the develop experience. Publishing an Experience Version snapshots all workflows at that point.
+**When changes go live:** Like application flows, edits to develop are live immediately for the develop experience. Publishing an Experience Version snapshots all flows at that point.
 
 **Debugging:** Debug output is scoped to the currently viewed Experience Version — you won't see executions from other versions in the debug panel.
 
-**Essential pattern:** Always add a `scope: "local"` Workflow Error Trigger to any experience workflow that handles endpoint requests. Without it, a halting error leaves the HTTP client hanging until timeout with no response sent.
+**Essential pattern:** Always add a `scope: "local"` Flow Error Trigger to any experience flow that handles endpoint requests. Without it, a halting error leaves the HTTP client hanging until timeout with no response sent.
 
-> **Gotcha:** The three-trigger limit is strict. If you need device state, a timer, or an integration to feed data into your experience logic, use an Application workflow to process that data and invoke the experience workflow via a Workflow Trigger output node.
+> **Gotcha:** The three-trigger limit is strict. If you need device state, a timer, or an integration to feed data into your experience logic, use an Application flow to process that data and invoke the experience flow via a Endpoint Trigger.
 
 ---
 
-### Edge workflows
+### Edge flows
 
-Edge workflows are deployed to Gateway Edge Agent (GEA) hardware and run locally on the device. They support hardware-specific triggers (serial, OPC UA, Beckhoff, file watch, UDP, etc.) and make local decisions without requiring a cloud round-trip.
+Edge flows are deployed to Gateway Edge Agent (GEA) hardware and run locally on the device. They support hardware-specific triggers (serial, OPC UA, Beckhoff, file watch, UDP, etc.) and make local decisions without requiring a cloud round-trip.
 
 **When changes go live:** Changes do **not** go live until you publish a named version. Devices pull and run versions — they never execute the develop version directly. PATCHing develop has zero effect on a running device until a new version is published and deployed.
 
 **Storage:** Storage values are per-device and cannot be read from the Losant cloud console.
 
-**Node availability:** Edge workflows have a narrower node set than cloud — no built-in email or SMS nodes, no experience-specific nodes.
+**Node availability:** Edge flows have a narrower node set than cloud — no built-in email or SMS nodes, no experience-specific nodes.
 
-**Payload extras:** Every edge workflow execution includes additional envelope fields beyond the standard payload:
+**Payload extras:** Every edge flow execution includes additional envelope fields beyond the standard payload:
 
 | Field | Notes |
 |---|---|
-| `isConnectedToLosant` | `true` if the device was connected to Losant when the workflow fired. |
-| `agentVersion` | The GEA version string currently running the workflow. |
+| `isConnectedToLosant` | `true` if the device was connected to Losant when the flow fired. |
+| `agentVersion` | The GEA version string currently running the flow. |
+| `deviceId` | Losant device ID of the GEA device running this flow. |
+| `deviceName` | Name of the GEA device. |
+| `deviceTags` | Tags object for the GEA device. |
 | `agentEnvironment` | GEA environment metadata. |
 | `flowVersion` | The name of the published version deployed to the device. |
 
-**Debugging:** Edge workflows use Live Look rather than the standard debug panel. Access it from the workflow editor's Debug or Deployments tab by connecting to a specific deployment, or deploy the develop version to a test device (GEA 1.39.0+) for interactive debugging.
+**Debugging:** Edge flows use Live Look rather than the standard debug panel. Access it from the flow editor's Debug or Deployments tab by connecting to a specific deployment, or deploy the develop version to a test device (GEA 1.39.0+) for interactive debugging.
 
-**`minimumAgentVersion`:** Every edge workflow has a `minimumAgentVersion` field that controls which GEA features, triggers, and nodes are available. This field is set on the workflow itself (not on a version).
+**`minimumAgentVersion`:** Every edge flow has a `minimumAgentVersion` field that controls which GEA features, triggers, and nodes are available. This field is set on the flow itself (not on a version).
 
-- **Creating a new edge workflow:** **Ask the user what GEA version their devices are running** before setting `minimumAgentVersion`. For brand-new workflows with no deployed agents yet, default to the latest stable release (check https://hub.docker.com/r/losant/edge-agent for the current tag — `2.4.1` as of this writing). For workflows on existing deployments, use the version already deployed — setting a higher `minimumAgentVersion` requires all field devices to also be updated, which may not be possible.
-- **Working with an existing edge workflow:** Read the current `minimumAgentVersion` from the workflow before suggesting triggers or nodes. Many edge triggers and nodes have minimum GEA version requirements — if the workflow targets a lower version, those features are unavailable and the workflow cannot be saved with them.
-- **Upgrading:** `minimumAgentVersion` can **only be increased, never decreased**. Before upgrading a workflow's minimum agent version, **always ask the user** — upgrading requires the GEA on all deployed devices to also be updated to at least that version, which may not be possible or desirable in their environment.
+- **Creating a new edge flow:** **Ask the user what GEA version their devices are running** before setting `minimumAgentVersion`. For brand-new flows with no deployed agents yet, default to the latest stable release (check https://hub.docker.com/r/losant/edge-agent for the current tag — `2.4.1` as of this writing). For flows on existing deployments, use the version already deployed — setting a higher `minimumAgentVersion` requires all field devices to also be updated, which may not be possible.
+- **Working with an existing edge flow:** Read the current `minimumAgentVersion` from the flow before suggesting triggers or nodes. Many edge triggers and nodes have minimum GEA version requirements — if the flow targets a lower version, those features are unavailable and the flow cannot be saved with them.
+- **Upgrading:** `minimumAgentVersion` can **only be increased, never decreased**. Before upgrading a flow's minimum agent version, **always ask the user** — upgrading requires the GEA on all deployed devices to also be updated to at least that version, which may not be possible or desirable in their environment.
 
-> **⚠ WARNING:** Never lower `minimumAgentVersion` below its current value. The API does not enforce this, but lowering it may cause deployed GEA devices to fail to load the workflow if they do not support the nodes or triggers it uses. If a user asks to use a feature that requires a higher GEA version than the workflow currently targets, explain the requirement and ask whether they want to upgrade before proceeding.
+> **⚠ WARNING:** Never lower `minimumAgentVersion` below its current value. The API does not enforce this, but lowering it may cause deployed GEA devices to fail to load the flow if they do not support the nodes or triggers it uses. If a user asks to use a feature that requires a higher GEA version than the flow currently targets, explain the requirement and ask whether they want to upgrade before proceeding.
 
 > **Gotchas:**
 > - The single most common edge mistake: editing develop and expecting devices to pick it up. Always publish a new version after editing.
-> - Workflow storage is isolated per-device. Two devices running the same workflow have completely separate storage namespaces.
+> - Flow storage is isolated per-device. Two devices running the same flow have completely separate storage namespaces.
 
 ---
 
@@ -150,7 +155,7 @@ Every trigger object has the same outer shape:
   "type": "timer",      // see the trigger catalog
   "config": { },        // type-specific; can be {}
   "meta":   { "category": "trigger", "name": "timer", "label": "Timer", "x": 0, "y": 0 },
-  "outputIds": [["12234567"]] // expected to be a nano ID of a node in this workflow, but not validated until save
+  "outputIds": [["12234567"]] // expected to be a nano ID of a node in this flow, but not validated until save
 }
 ```
 
@@ -181,7 +186,7 @@ Every node object has the same outer shape:
 
 ## Canvas layout — `meta.x` and `meta.y`
 
-Think of the workflow as a **binary tree** growing downward. The trigger is the root; each node is a tree node; `meta.x` and `meta.y` position it on the canvas.
+Think of the flow as a **binary tree** growing downward. The trigger is the root; each node is a tree node; `meta.x` and `meta.y` position it on the canvas.
 
 **Core rules:**
 
@@ -196,9 +201,9 @@ Think of the workflow as a **binary tree** growing downward. The trigger is the 
 
 **Starting position:**
 
-Set the trigger's starting `x` high enough to accommodate left-branching depth. For a workflow that branches left up to N levels deep, start the trigger at `x = N * 100` or higher.
+Set the trigger's starting `x` high enough to accommodate left-branching depth. For a flow that branches left up to N levels deep, start the trigger at `x = N * 100` or higher.
 
-- Simple linear workflow → trigger at `x: 60`, `y: 60`
+- Simple linear flow → trigger at `x: 60`, `y: 60`
 - One branching level → trigger at `x: 160`, `y: 60`  
 - Two branching levels → trigger at `x: 260`, `y: 60`
 
@@ -257,12 +262,12 @@ When a branch merges back to a single path, resume the parent's x and continue i
 
 ### Wiring rules enforced on save
 
-- Every ID referenced in any `outputIds` must exist as a node `id` in the same workflow.
+- Every ID referenced in any `outputIds` must exist as a node `id` in the same flow.
 - A node cannot reference its own `id` in its `outputIds`.
-- Node IDs must be unique within the workflow.
+- Node IDs must be unique within the flow.
 - Inside a loop, the inside-loop branch may only reference nodes whose `meta.groupId` is the loop's ID (see Loops).
-- For embedded workflows only: the graph must be acyclic; cycles are rejected.
-- For embedded workflows only: node `id`s and `meta.groupId`s must match `^[_0-9a-zA-Z]+$` (alphanumerics and underscore — **no dashes or other punctuation**). Other flow classes accept any unique string, but sticking to the embedded-safe alphabet makes IDs portable.
+- For embedded flows only: the graph must be acyclic; cycles are rejected.
+- For embedded flows only: node `id`s and `meta.groupId`s must match `^[_0-9a-zA-Z]+$` (alphanumerics and underscore — **no dashes or other punctuation**). Other flow classes accept any unique string, but sticking to the embedded-safe alphabet makes IDs portable.
 
 ## Loops
 
@@ -280,7 +285,7 @@ See `losant://flow/nodes/loop` for the full pattern and a worked example.
 
 ---
 
-## Minimal cloud-workflow example
+## Minimal cloud-flow example
 
 ```json
 {
@@ -517,25 +522,25 @@ See `losant://flow/nodes/loop` for the full pattern and a worked example.
 - `A node cannot connect to itself.` — `outputIds` contains the node's own `id`.
 - `Node IDs must be unique.` — Two nodes share an `id`.
 - `<Type> is not valid for <Class> workflows.` — Wrong `flowClass` for the node/trigger type (e.g., `HttpNode` in embedded).
-- `<Type> requires Workflow Agent X.Y.Z or higher.` — Edge workflow using a node newer than its `minimumAgentVersion`. Either bump the version or pick another node.
+- `<Type> requires Workflow Agent X.Y.Z or higher.` — Edge flow using a node newer than its `minimumAgentVersion`. Either bump the version or pick another node.
 
 ## Common mistakes
 
 - Sending a `nodes` array without unique `id`s, or with `outputIds` references to IDs that don't exist. The validator does not "fix" wiring — it rejects it.
 - Forgetting that **publishing a version requires `triggers` and `nodes` to already be valid in develop** (or supplied in the version POST). The version endpoint doesn't merge; it snapshots.
 - Setting `flowClass: "embedded"` and reaching for `HttpNode`, custom nodes, or most data-related nodes — embedded has a deliberately narrow node set.
-- Editing an edge workflow's develop version and expecting devices to pick up the change. Devices only run published versions.
+- Editing an edge flow's develop version and expecting devices to pick up the change. Devices only run published versions.
 - Putting a node inside a loop visually (in `outputIds[1]`) but forgetting `meta.groupId` on the node — validates as "not in the required group".
 
 ## PATCH vs. new version — when to use which
 
 | Situation | Action |
 |---|---|
-| Editing the workflow before it's been "shipped" | PATCH the workflow (edits the develop version). |
-| Cloud workflow, you want changes live immediately | PATCH the workflow. The develop version is what runs unless a `defaultVersionId` is set. |
-| Edge workflow | You **must** publish a new version (edge agents pull versions). PATCH alone has no effect on running agents. |
-| Experience endpoint backed by a workflow version | Publish a new version, then point the Experience Version at it. |
-| Need to roll back | PATCH the workflow setting `defaultVersionId` to an older version's ID. |
+| Editing the flow before it's been "shipped" | PATCH the flow (edits the develop version). |
+| Cloud flow, you want changes live immediately | PATCH the flow. The develop version is what runs unless a `defaultVersionId` is set. |
+| Edge flow | You **must** publish a new version (edge agents pull versions). PATCH alone has no effect on running agents. |
+| Experience endpoint backed by a flow version | Publish a new version, then point the Experience Version at it. |
+| Need to roll back | PATCH the flow setting `defaultVersionId` to an older version's ID. |
 
 ---
 
@@ -543,9 +548,9 @@ See `losant://flow/nodes/loop` for the full pattern and a worked example.
 
 Several detail docs reference these. Read them once and the per-node docs become much shorter:
 
-- `losant://references/flow/payload` — what's on the payload at runtime: standard envelope fields (`data`, `working`, `globals`, `time`, `applicationId`, `flowId`), experience workflow extras (`data.path`, `data.method`, `data.body`, etc. and `experience.user`), edge extras (`isConnectedToLosant`, `agentVersion`), and the payload-path vs. template distinction.
-- `losant://references/flow/globals` — the three globals sources (workflow, experience version, application) and their override order; the JSON-encoded API format (`"json": "\"string value\""` not `"json": "string value"`); version scoping rules.
-- `losant://references/flow/templating` — all three template systems: payload paths (dot-notation, static, no `{{}}`), string templates (Handlebars `{{}}` in `*Template` fields, all block helpers and 30+ format helpers), expressions (ConditionalNode/MathNode), and JSON templates (`bodyType: "jsonTemplate"` in HTTP node). Includes embedded workflow restrictions.
-- `losant://references/flow/execution-model` — how a workflow run actually executes: trigger fires and passes a payload through nodes, branches run independently with no merge, what happens when a node throws (all paths halt), how the Workflow Error trigger catches thrown errors, and the distinction between nodes that throw vs. write errors to the payload.
-- `losant://references/flow/patterns` — six end-to-end workflow patterns with node chains and minimal JSON: device threshold alert with de-bounce, scheduled external API pull, webhook request/reply handler, experience login flow, experience authenticated data endpoint, and device provisioning via webhook.
+- `losant://references/flow/payload` — what's on the payload at runtime: standard envelope fields (`data`, `working`, `globals`, `time`, `applicationId`, `flowId`), experience flow extras (`data.path`, `data.method`, `data.body`, etc. and `experience.user`), edge extras (`isConnectedToLosant`, `agentVersion`), and the payload-path vs. template distinction.
+- `losant://references/flow/globals` — the three globals sources (flow, experience version, application) and their override order; the JSON-encoded API format (`"json": "\"string value\""` not `"json": "string value"`); version scoping rules.
+- `losant://references/flow/templating` — all four template syntaxes: payload paths (dot-notation, static, no `{{}}`), string templates (Handlebars `{{}}` in `*Template` fields), expressions (ConditionalNode/MathNode), and JSON templates (`bodyType: "jsonTemplate"` in HTTP node). Includes embedded flow restrictions.
+- `losant://references/flow/execution-model` — how a flow run actually executes: trigger fires and passes a payload through nodes, branches run independently with no merge, what happens when a node throws (all paths halt), how the flow Error trigger catches thrown errors, and the distinction between nodes that throw vs. write errors to the payload.
+- `losant://references/flow/patterns` — six end-to-end flow patterns with node chains and minimal JSON: device threshold alert with de-bounce, scheduled external API pull, webhook request/reply handler, experience login flow, experience authenticated data endpoint, and device provisioning via webhook.
 - `losant://guides/credentials` — how `credentialNameTemplate` resolves Losant-managed credentials and what `authMethod` each credential supports. Used by HTTP and every integration node.

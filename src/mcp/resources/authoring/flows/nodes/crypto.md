@@ -1,6 +1,6 @@
 # Crypto Nodes — Hash, Sign, Verify
 
-Three nodes for cryptographic operations on workflow data.
+Three nodes for cryptographic operations on flow data.
 
 ## Required Fields
 
@@ -10,7 +10,7 @@ Three nodes for cryptographic operations on workflow data.
 | `CryptoSignNode` | `logic` | `crypto-sign` | `"Crypto: Sign"` | cloud, exp, edge (2.3.0), custom |
 | `CryptoVerifyNode` | `logic` | `crypto-verify` | `"Crypto: Verify"` | cloud, exp, edge (2.3.0), custom |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ### Crypto: Hash Node (`type: "HashNode"`)
 
@@ -122,11 +122,11 @@ Verifies a cryptographic signature against a key/certificate. Branches — `outp
 | `signatureEncodingTemplate` | `"base64"` | **Required.** Must match the encoding used when signing. |
 | `resultPath` | `""` | Optional. Payload path to write `{ error: { message } }` when the node throws an execution error (e.g. bad key). A clean `false` result (signature mismatch) routes to `outputIds[0]` without writing to `resultPath`. |
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 **Crypto: Hash** — minimum GEA 1.1.0. `dataEncodingTemplate` and `secretEncodingTemplate` available on GEA 1.32.0+.
 

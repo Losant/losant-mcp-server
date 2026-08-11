@@ -1,13 +1,13 @@
 ---
-name: losant-workflow-payload
-description: Runtime payload structure for all Losant workflow classes — standard envelope fields, the working namespace convention, flow-class-specific additions (experience request/user fields, edge agent fields), and the distinction between payload paths and string templates.
+name: losant-flow-payload
+description: Runtime payload structure for all Losant flow classes — standard envelope fields, the working namespace convention, flow-class-specific additions (experience request/user fields, edge agent fields), and the distinction between payload paths and string templates.
 ---
 
-# Workflow Payload Reference
+# Flow Payload Reference
 
 The flow payload plays a similar role to `context-configuration` in dashboards and experiences — it is the root data object available to all templates and expressions during execution. Unlike those, it is **mutable**: nodes read from and write to it as execution progresses, building up intermediate results under `working` and passing the final state downstream.
 
-Every workflow execution carries a **payload** — a mutable JSON object that flows from the trigger through every node. Triggers supply initial data under `data`; nodes read from and write to any path on the payload as they execute.
+Every flow execution carries a **payload** — a mutable JSON object that flows from the trigger through every node. Triggers supply initial data under `data`; nodes read from and write to any path on the payload as they execute.
 
 ## Standard envelope fields
 
@@ -15,14 +15,14 @@ All executions start with these fields regardless of flow class:
 
 | Field | Type | Description |
 |---|---|---|
-| `time` | Date | Timestamp of when the workflow fired |
+| `time` | Date | Timestamp of when the flow fired |
 | `data` | object | Trigger-specific payload — shape varies by trigger type; see each trigger's detail doc |
 | `applicationId` | string | ID of the owning application |
 | `applicationName` | string | Name of the owning application |
 | `triggerId` | string | Identifier of the specific trigger instance |
 | `triggerType` | string | Trigger type name (e.g. `"timer"`, `"deviceId"`, `"endpoint"`) |
-| `flowId` | string | ID of the workflow |
-| `flowName` | string | Name of the workflow |
+| `flowId` | string | ID of the flow |
+| `flowName` | string | Name of the flow |
 | `globals` | object | Merged globals object — see `losant://references/flow/globals` |
 
 Example (timer trigger, no device or experience context):
@@ -45,13 +45,13 @@ Example (timer trigger, no device or experience context):
 
 `working` is not a reserved envelope field — it starts undefined. It is the **conventional namespace** for intermediate computed values that nodes write during execution.
 
-For example, a node that fetches data from an HTTP endpoint commonly writes its response to `working.httpResponse`. A subsequent node reads from `working.httpResponse.body`. Nothing enforces this convention — you can write to any path — but using `working.*` separates computed state from trigger input (`data.*`), which keeps workflows readable and debuggable.
+For example, a node that fetches data from an HTTP endpoint commonly writes its response to `working.httpResponse`. A subsequent node reads from `working.httpResponse.body`. Nothing enforces this convention — you can write to any path — but using `working.*` separates computed state from trigger input (`data.*`), which keeps flows readable and debuggable.
 
 **Guideline:** Write to `working.*` for intermediate/computed values. Write to `data.*` only if you are intentionally mutating the trigger's original data. Either is valid; the convention exists for clarity.
 
-## Experience workflow additions
+## Experience flow additions
 
-Experience workflows (backed by Experience Endpoints) receive additional fields on every execution. These fields are set by the endpoint trigger and are read-only during node execution:
+Experience flows (backed by Experience Endpoints) receive additional fields on every execution. These fields are set by the endpoint trigger and are read-only during node execution:
 
 | Field | Description |
 |---|---|
@@ -68,11 +68,11 @@ Experience workflows (backed by Experience Endpoints) receive additional fields 
 | `experience.version` | The experience version name serving this request |
 | `experience.device` | Device object if `access: "device"` authorization, else `null` |
 
-**Responding to requests:** Experience workflows must use an Endpoint Reply node to send an HTTP response. If the workflow finishes without sending a reply, the client hangs until timeout. Always add a `scope: "local"` Workflow Error trigger to send a reply on error.
+**Responding to requests:** Experience flows must use an Endpoint Reply node to send an HTTP response. If the flow finishes without sending a reply, the client hangs until timeout. Always add a `scope: "local"` Workflow Error trigger to send a reply on error.
 
 ## Webhook trigger additions
 
-Webhook triggers (cloud workflows with `waitForReply: true`) also populate request fields under `data.*`:
+Webhook triggers (cloud flows with `waitForReply: true`) also populate request fields under `data.*`:
 
 | Field | Description |
 |---|---|
@@ -83,17 +83,17 @@ Webhook triggers (cloud workflows with `waitForReply: true`) also populate reque
 | `data.body` | Parsed request body |
 | `data.replyId` | Opaque reply ID — must be passed to the Webhook Reply node |
 
-## Edge workflow additions
+## Edge flow additions
 
-Edge workflows running on a Gateway Edge Agent (GEA) receive additional envelope fields:
+Edge flows running on a Gateway Edge Agent (GEA) receive additional envelope fields:
 
 | Field | Description |
 |---|---|
-| `isConnectedToLosant` | `true` if the GEA was connected to Losant when the workflow fired; `false` if running offline |
+| `isConnectedToLosant` | `true` if the GEA was connected to Losant when the flow fired; `false` if running offline |
 | `agentVersion` | GEA version string (e.g. `"2.4.0"`) |
 | `agentEnvironment` | GEA environment metadata object |
 | `flowVersion` | Name of the published version deployed to this device |
-| `deviceId` | Losant device ID of the GEA device running this workflow |
+| `deviceId` | Losant device ID of the GEA device running this flow |
 | `deviceName` | Name of the GEA device |
 | `deviceTags` | Tags object for the GEA device |
 

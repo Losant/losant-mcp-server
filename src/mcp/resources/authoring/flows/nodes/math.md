@@ -11,7 +11,7 @@ Evaluates mathematical expressions against payload values and writes results to 
 | `meta.name` | `"math"` |
 | `meta.label` | `"Math"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ```json
 {
@@ -59,14 +59,14 @@ Each statement writes its expression result to the specified `resultPath`. The r
 }
 ```
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Same as Cloud.
 
-## Embedded workflows
+## Embedded flows
 
 Same as Cloud.

@@ -1,6 +1,6 @@
 # AWS SQS Node (`type: "SqsSendNode"`)
 
-The AWS SQS Node publishes a message to an Amazon SQS queue. Supports FIFO queues, message attributes, and three connection methods. Available in cloud, experience, and customNode workflows.
+The AWS SQS Node publishes a message to an Amazon SQS queue. Supports FIFO queues, message attributes, and three connection methods. Available in cloud, experience, and customNode flows.
 
 ## Required Fields
 
@@ -11,7 +11,7 @@ The AWS SQS Node publishes a message to an Amazon SQS queue. Supports FIFO queue
 | `meta.name` | `"sqs-send"` |
 | `meta.label` | `"AWS SQS"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Three connection methods: integration, service credential, or direct AWS credentials.
 
@@ -62,11 +62,11 @@ Three connection methods: integration, service credential, or direct AWS credent
 { "working": { "sqsResult": { "success": true, "messageId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" } } }
 ```
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.39.0
 

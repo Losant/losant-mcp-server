@@ -11,7 +11,7 @@ The Access Key: Create Node creates a new Losant Access Key for authenticating d
 | `meta.name` | `"create-access-key"` |
 | `meta.label` | `"Access Key: Create"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Three configuration modes via `dataMethod`.
 
@@ -107,12 +107,12 @@ Three configuration modes via `dataMethod`.
 }
 ```
 
-**The `secret` is only returned at creation time and cannot be retrieved again.** Store it immediately — write it to a secure location (e.g. device tags, an external secret store, or send it directly to the device) before the workflow ends.
+**The `secret` is only returned at creation time and cannot be retrieved again.** Store it immediately — write it to a secure location (e.g. device tags, an external secret store, or send it directly to the device) before the flow ends.
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Not available.

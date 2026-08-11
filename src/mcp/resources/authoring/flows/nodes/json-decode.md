@@ -11,7 +11,7 @@ Parses a JSON string at a payload path into a structured value. Available in all
 | `meta.name` | `"json-decode"` |
 | `meta.label` | `"JSON Decode"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ```json
 {
@@ -27,13 +27,13 @@ Parses a JSON string at a payload path into a structured value. Available in all
 |---|---|---|
 | `source` | — | **Required.** Payload path of the JSON string to decode. |
 | `destination` | — | **Required.** Payload path to write the parsed value. |
-| `errorBehavior` | `"throw"` | `"throw"` — workflow errors on bad JSON. `"payloadPath"` — stores the error at `errorPath` instead. |
+| `errorBehavior` | `"throw"` | `"throw"` — flow errors on bad JSON. `"payloadPath"` — stores the error at `errorPath` instead. |
 | `errorPath` | — | Required when `errorBehavior: "payloadPath"`. Payload path to write the parse error. |
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Same as Cloud. Error handling via `errorBehavior` requires GEA 1.14.0+.

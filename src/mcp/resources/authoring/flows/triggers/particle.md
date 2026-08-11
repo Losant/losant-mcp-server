@@ -1,6 +1,6 @@
 # Particle Trigger (`type: "integration"`)
 
-The Particle Trigger fires a workflow whenever an event is received on the selected Particle integration or the integration receives a connection event.
+The Particle Trigger fires a flow whenever an event is received on the selected Particle integration or the integration receives a connection event.
 
 ## Required Fields
 
@@ -11,7 +11,7 @@ The Particle Trigger fires a workflow whenever an event is received on the selec
 | `meta.name` | `"particle"` |
 | `meta.label` | `"Particle"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 A Particle integration resource must exist in the application before this trigger can be used. Use `losant_query` with `resourceType=integration` to find the integration ID.
 
@@ -128,10 +128,10 @@ All event types share the same envelope. `data.type` identifies which event fire
 - `triggerId` is the integration ID, not the event name.
 - The event names the integration subscribes to are configured on the integration resource itself, not on the trigger.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 Not available.

@@ -11,7 +11,7 @@ Generates a random number within a configured range and writes it to the payload
 | `meta.name` | `"random-number"` |
 | `meta.label` | `"Random Number"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ```json
 {
@@ -29,10 +29,10 @@ Generates a random number within a configured range and writes it to the payload
 | `max` | `100` | **Required.** Maximum value (inclusive). Number or template string (e.g. `"{{data.max}}"`). |
 | `resultPath` | — | **Required.** Payload path to write the result. |
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Same as Cloud.

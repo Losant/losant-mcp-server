@@ -1,6 +1,6 @@
 # GCP Pub/Sub Trigger (`type: "integration"`)
 
-The GCP (Google Cloud Platform) Pub/Sub Trigger fires a workflow whenever a message is sent to one of the topics defined on a given Google Pub/Sub integration, or when the integration receives a connection event.
+The GCP (Google Cloud Platform) Pub/Sub Trigger fires a flow whenever a message is sent to one of the topics defined on a given Google Pub/Sub integration, or when the integration receives a connection event.
 
 ## Required Fields
 
@@ -11,7 +11,7 @@ The GCP (Google Cloud Platform) Pub/Sub Trigger fires a workflow whenever a mess
 | `meta.name` | `"googlePubSub"` |
 | `meta.label` | `"GCP Pub/Sub"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 A Google Pub/Sub integration resource must exist in the application before this trigger can be used. Use `losant_query` with `resourceType=integration` to find the integration ID.
 
@@ -126,10 +126,10 @@ All event types share the same envelope. `data.type` identifies which event fire
 - `relayId` / `relayType` are at the **envelope level**, not inside `data`.
 - `triggerId` is the integration ID, not a topic name.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 Not available.

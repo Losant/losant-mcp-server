@@ -11,7 +11,7 @@ Parses, manipulates, and formats date/time values using Moment.js operations —
 | `meta.name` | `"date-time"` |
 | `meta.label` | `"Date/Time"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ```json
 {
@@ -62,11 +62,11 @@ Parses, manipulates, and formats date/time values using Moment.js operations —
 | `unixTimestampSeconds` | Number | Convert to Unix timestamp in seconds. |
 | `unixTimestampMilliseconds` | Number | Convert to Unix timestamp in milliseconds. |
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.11.0
 >

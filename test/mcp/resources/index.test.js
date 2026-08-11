@@ -489,6 +489,24 @@ describe('MCP Resources', () => {
       result.contents[0].text.should.match(/CreateAccessKeyNode/);
     });
 
+    it('should provide handler for flow node edge-deploy', async () => {
+      const result = await client.readResource({ uri: 'losant://flow/nodes/edge-deploy' });
+
+      result.should.have.property('contents');
+      result.contents[0].should.have.property('uri', 'losant://flow/nodes/edge-deploy');
+      result.contents[0].should.have.property('mimeType', 'text/markdown');
+      result.contents[0].text.should.containEql('EdgeDeployNode');
+    });
+
+    it('should provide handler for flow node register-device-certificate', async () => {
+      const result = await client.readResource({ uri: 'losant://flow/nodes/register-device-certificate' });
+
+      result.should.have.property('contents');
+      result.contents[0].should.have.property('uri', 'losant://flow/nodes/register-device-certificate');
+      result.contents[0].should.have.property('mimeType', 'text/markdown');
+      result.contents[0].text.should.containEql('RegisterDeviceCertificateNode');
+    });
+
     it('should provide handler for dashboard block bar', async () => {
       const result = await client.readResource({ uri: 'losant://dashboard/blocks/bar' });
 

@@ -1,6 +1,6 @@
 # Device: Command Node (`type: "DeviceSendCommandNode"`)
 
-Sends a named command with a payload to one or more devices over MQTT. Device selection mode is stored in `meta.deviceSelectionType`. Available in cloud, experience, and customNode workflows. Not available on edge.
+Sends a named command with a payload to one or more devices over MQTT. Device selection mode is stored in `meta.deviceSelectionType`. Available in cloud, experience, and customNode flows. Not available on edge.
 
 ## Required Fields
 
@@ -11,7 +11,7 @@ Sends a named command with a payload to one or more devices over MQTT. Device se
 | `meta.name` | `"device-command"` |
 | `meta.label` | `"Device: Command"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Three device selection modes controlled by `meta.deviceSelectionType`:
 
@@ -81,12 +81,12 @@ Three device selection modes controlled by `meta.deviceSelectionType`:
 
 ## Output
 
-The Device: Command node is fire-and-forget — it publishes the command to the MQTT broker and does not wait for acknowledgement. There is no `resultPath` field. The workflow always continues on `outputIds[0]` after publishing.
+The Device: Command node is fire-and-forget — it publishes the command to the MQTT broker and does not wait for acknowledgement. There is no `resultPath` field. The flow always continues on `outputIds[0]` after publishing.
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Not available.

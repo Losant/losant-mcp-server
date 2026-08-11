@@ -1,6 +1,6 @@
 # Mutate Node (`type: "MutateNode"`)
 
-Sets, removes, copies, or moves values on the workflow payload using declarative rules. The primary node for payload manipulation — prefer this over the Function node for simple read/write operations.
+Sets, removes, copies, or moves values on the flow payload using declarative rules. The primary node for payload manipulation — prefer this over the Function node for simple read/write operations.
 
 ## Required Fields
 
@@ -13,7 +13,7 @@ Sets, removes, copies, or moves values on the workflow payload using declarative
 
 Available: cloud, experience, customNode, edge, embedded.
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ```json
 {
@@ -125,10 +125,10 @@ Equivalent to `copy` + `remove` in a single operation.
 - The `working` namespace is the idiomatic scratchpad for intermediate values.
 - Setting `valueTemplateType: "json"` on a template that doesn't produce valid JSON will store `undefined`.
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Same as Cloud.

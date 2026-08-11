@@ -11,7 +11,7 @@ The Webhook: Reply Node sends a custom HTTP response to a webhook request, or se
 | `meta.name` | `"webhook-reply"` |
 | `meta.label` | `"Webhook: Reply"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ### HTTP reply
 
@@ -62,11 +62,11 @@ The Webhook: Reply Node sends a custom HTTP response to a webhook request, or se
 | `encodingTemplate` | `"utf8"` | Message encoding. Only when `isWebsocketMessage: true`. Template. |
 | `headerInfo` | `[]` | Array of `{ keyTemplate, valueTemplate }` response headers. Only for HTTP replies. |
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Not available.
 

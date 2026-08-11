@@ -1,6 +1,6 @@
 # Loop Nodes — Loop, Next, Return, Break
 
-Four nodes that work together to build loops in a Losant workflow. The three `LoopCapNode` variants (`loop-next`, `loop-return`, `loop-break`) are only valid inside a loop body — they cannot be used in any other context.
+Four nodes that work together to build loops in a Losant flow. The three `LoopCapNode` variants (`loop-next`, `loop-return`, `loop-break`) are only valid inside a loop body — they cannot be used in any other context.
 
 ## Required Fields
 
@@ -13,7 +13,7 @@ Four nodes that work together to build loops in a Losant workflow. The three `Lo
 
 The `LoopNode` uses a special two-output wiring model. All three `LoopCapNode` variants have no outputs (`outputIds: []`) and must have `meta.groupId` set to the `LoopNode`'s `id`.
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ```json
 {
@@ -45,7 +45,7 @@ The `LoopNode` uses a special two-output wiring model. All three `LoopCapNode` v
 |---|---|---|
 | `loopSourcePath` | — | **Required.** Payload path of the collection to iterate over (see Source types below). |
 | `currentItemPath` | — | **Required.** Payload path where each iteration's context object is written (see Current item context below). |
-| `parallel` | `false` | Optional. When `true`, all iterations run simultaneously (max ~5 concurrent). Payload mutations are not carried between iterations and break is ignored. When `false`, runs serially — one at a time, payload mutations persist across iterations and break is supported. Requires GEA 1.21.0+ on edge; not available on embedded workflows. |
+| `parallel` | `false` | Optional. When `true`, all iterations run simultaneously (max ~5 concurrent). Payload mutations are not carried between iterations and break is ignored. When `false`, runs serially — one at a time, payload mutations persist across iterations and break is supported. Requires GEA 1.21.0+ on edge; not available on embedded flows. |
 | `mapResultPath` | — | Optional. Payload path to write an array of per-iteration map values at the end of the loop. Works in both serial and parallel modes. When set, the loop behaves as a "map" — collecting one value per iteration. |
 | `mapValuePath` | — | Optional. Payload path read at the end of each iteration to collect the map value. Only used when `mapResultPath` is set. If omitted, defaults to `currentItemPath`. If no LoopCapNode is hit in a serial iteration, that iteration's map value is `undefined`. |
 
@@ -78,7 +78,7 @@ Access with e.g. `{{working.current.value}}`, `{{working.current.index}}`, `{{#i
 ### Wiring
 
 `outputIds` has two outer entries:
-- `outputIds[0]` — nodes that run **after the loop completes** (post-loop path). May be `[]` if nothing should happen after the loop finishes — the workflow path simply ends there.
+- `outputIds[0]` — nodes that run **after the loop completes** (post-loop path). May be `[]` if nothing should happen after the loop finishes — the flow path simply ends there.
 - `outputIds[1]` — the **first nodes inside the loop body**. If empty, the loop body is skipped entirely for all iterations (the loop proceeds directly to the post-loop path as if it ran zero iterations).
 
 Every node inside the loop body (including all cap nodes) must have `meta.groupId` set to the LoopNode's `id`.
@@ -87,8 +87,8 @@ Every node inside the loop body (including all cap nodes) must have `meta.groupI
 
 The LoopNode uses **two independent coordinate systems**:
 
-- **The LoopNode itself** is positioned as any other main-flow node — normal x/y rules, flowing vertically with the rest of the workflow.
-- **The loop body** is a self-contained sub-workflow in a **separate x zone**. It resets to the top of the canvas and applies the same N-branch layout rules from its own origin, completely independent of where the LoopNode sits in the main flow.
+- **The LoopNode itself** is positioned as any other main-flow node — normal x/y rules, flowing vertically with the rest of the flow.
+- **The loop body** is a self-contained sub-flow in a **separate x zone**. It resets to the top of the canvas and applies the same N-branch layout rules from its own origin, completely independent of where the LoopNode sits in the main flow.
 
 `groupStartX` and `groupStartY` define the top-left corner of the loop body's coordinate space:
 
@@ -304,10 +304,10 @@ Transforms an array of sensor objects into an array of just their temperatures u
 
 After the loop, `working.temps` is an array of temperature values, one per sensor.
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
-Same as Cloud. `parallel` mode and `mapResultPath` require GEA **1.21.0+** and are not available on embedded workflows.
+Same as Cloud. `parallel` mode and `mapResultPath` require GEA **1.21.0+** and are not available on embedded flows.

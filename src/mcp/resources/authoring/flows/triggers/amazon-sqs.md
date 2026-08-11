@@ -1,6 +1,6 @@
 # Amazon SQS Trigger (`type: "integration"`)
 
-The Amazon SQS Trigger fires a workflow whenever an integration receives an Amazon Simple Queue Service (SQS) message or connection event.
+The Amazon SQS Trigger fires a flow whenever an integration receives an Amazon Simple Queue Service (SQS) message or connection event.
 
 ## Required Fields
 
@@ -11,7 +11,7 @@ The Amazon SQS Trigger fires a workflow whenever an integration receives an Amaz
 | `meta.name` | `"sqs"` |
 | `meta.label` | `"AWS SQS"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 An Amazon SQS integration resource must exist in the application before this trigger can be used. Use `losant_query` with `resourceType=integration` to find the integration ID.
 
@@ -125,11 +125,11 @@ All event types share the same envelope. `data.type` identifies which event fire
 }
 ```
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 Not available.
 

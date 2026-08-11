@@ -1,6 +1,6 @@
 # Timer Trigger (`type: "timer"`)
 
-The Timer Trigger will fire a workflow on a scheduled interval.
+The Timer Trigger will fire a flow on a scheduled interval.
 
 ## Required Fields
 
@@ -16,7 +16,7 @@ The Timer Trigger will fire a workflow on a scheduled interval.
 - `key` is server-generated — omit it.
 - `data` is always an empty object `{}` — the timer carries no payload data.
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Three configuration modes are available. Choose one.
 
@@ -107,19 +107,19 @@ Fires on an arbitrary cron schedule. Supports standard 5-field cron syntax (`min
 }
 ```
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Embedded workflows
+## Embedded flows
 
 Simple interval mode only (`meta.timerTypeSelect: "seconds"`). Cron modes are not supported in embedded. Minimum EEA 1.0.0.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.0.0
 
-Same three configuration modes as Cloud with one difference: Edge workflows support **millisecond** intervals. The minimum interval is 100 milliseconds (GEA 1.13.0+); for GEA below 1.13.0 the minimum is 1 second.
+Same three configuration modes as Cloud with one difference: Edge flows support **millisecond** intervals. The minimum interval is 100 milliseconds (GEA 1.13.0+); for GEA below 1.13.0 the minimum is 1 second.
 
 For sub-second intervals, use a fractional `config.seconds` value (e.g. `0.5` for 500ms, `0.1` for 100ms).
 
@@ -145,6 +145,6 @@ Simple schedule and advanced cron modes are configured identically to Cloud. The
 
 - **Prefer `cron` mode for production schedules.** Simple interval and cronWeekly are convenience wrappers; `cron` gives full control and makes intent explicit in the JSON.
 - **Cron runs in UTC.** If the user describes a schedule in local time, convert it before writing the expression.
-- **Multiple timers in one workflow.** Add multiple entries to the `triggers` array to fire the same workflow on different schedules — e.g. one hourly summary and one daily report.
-- **Timer drift.** Losant does not guarantee sub-second accuracy. For workflows that must execute at an exact wall-clock time, build in a small tolerance window in any downstream time comparisons.
-- **Cloud timers are paused when a workflow is disabled.** Missed firings are not backfilled — the timer simply resumes on re-enable.
+- **Multiple timers in one flow.** Add multiple entries to the `triggers` array to fire the same flow on different schedules — e.g. one hourly summary and one daily report.
+- **Timer drift.** Losant does not guarantee sub-second accuracy. For flows that must execute at an exact wall-clock time, build in a small tolerance window in any downstream time comparisons.
+- **Cloud timers are paused when a flow is disabled.** Missed firings are not backfilled — the timer simply resumes on re-enable.

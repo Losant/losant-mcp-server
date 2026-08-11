@@ -1,6 +1,6 @@
 # Object Node (`type: "ObjectNode"`)
 
-Applies one or more operations to an object (or array) on the workflow payload — pick, omit, merge, extract keys/values, zip, and more. Up to **10 operations** can be chained within a single node, each receiving the output of the previous one as its source.
+Applies one or more operations to an object (or array) on the flow payload — pick, omit, merge, extract keys/values, zip, and more. Up to **10 operations** can be chained within a single node, each receiving the output of the previous one as its source.
 
 ## Required Fields
 
@@ -13,7 +13,7 @@ Applies one or more operations to an object (or array) on the workflow payload �
 
 Available: cloud, experience, customNode, edge (GEA 1.20.0+).
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ```json
 {
@@ -91,10 +91,10 @@ Available: cloud, experience, customNode, edge (GEA 1.20.0+).
 
 After running: `working.summary` holds `{ id, name, source: "device" }`; `working.summaryKeys` holds `["id", "name"]`.
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Minimum GEA version: 1.20.0. Same as Cloud otherwise.

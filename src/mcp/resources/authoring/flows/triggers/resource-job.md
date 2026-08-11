@@ -12,7 +12,7 @@ Three trigger types that fire at different stages of a Resource Job execution. A
 
 `meta.category` is `"trigger"` for all three.
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 All three share the same structure. `key` is the Resource Job ID.
 
@@ -30,6 +30,7 @@ All three share the same structure. `key` is the Resource Job ID.
 
 ```json
 {
+  "time": "<ISO timestamp>",
   "data": {
     "accumulator": "{\"example\": 900001}",
     "device": { "...": "the device being processed in this iteration" },
@@ -53,12 +54,13 @@ All three share the same structure. `key` is the Resource Job ID.
 
 ```json
 {
+  "time": "<ISO timestamp>",
   "data": {
     "accumulator": "{\"example\": 900001}",
     "execution": {
       "status": "completed",
       "executionReportUrl": "https://...",
-      "executionSummary": { "succeeded": 23, "failed": 5, "timedOut": 4, "remaining": 0 },
+      "executionSummary": { "succeeded": 23, "failed": 5, "timedOut": 4, "remaining": 0, "inProgress": 0 },
       "runCompletedAt": "<ISO timestamp>"
     },
     "resourceJob": { "...": "full resource job configuration object" },
@@ -71,7 +73,7 @@ All three share the same structure. `key` is the Resource Job ID.
 }
 ```
 
-- `data.execution.executionSummary` — counts of succeeded, failed, timedOut, and remaining iterations.
+- `data.execution.executionSummary` — counts of succeeded, failed, timedOut, inProgress, and remaining iterations.
 - `data.execution.executionReportUrl` — URL to download a CSV execution report.
 - `data.success` — `true` if the job completed without failures or timeouts.
 
@@ -79,6 +81,7 @@ All three share the same structure. `key` is the Resource Job ID.
 
 ```json
 {
+  "time": "<ISO timestamp>",
   "data": {
     "accumulator": "{\"example\": 900001}",
     "device": { "...": "the device that timed out" },
@@ -95,17 +98,17 @@ All three share the same structure. `key` is the Resource Job ID.
 
 - `data.iterationStartedAt` — when this iteration began; useful for calculating elapsed time before timeout.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 Not available.
 
 ## Idiom notes
 
-- **Always acknowledge each iteration.** Use a Job: Acknowledge node on every execution path of a `resourceJobIteration` workflow — including error branches. Unacknowledged iterations count against the timeout.
+- **Always acknowledge each iteration.** Use a Job: Acknowledge node on every execution path of a `resourceJobIteration` flow — including error branches. Unacknowledged iterations count against the timeout.
 - **Use the accumulator for cross-iteration state.** `data.accumulator` is a JSON-encoded string that persists between iterations. Decode it with a JSON Decode node, update the value, re-encode it, and pass it to the acknowledge node. It is reset to `{}` at the start of each job run.
 - **Handle the timeout trigger separately.** Wire a `resourceJobIterationTimeout` trigger to log or alert on slow iterations. It fires when a single iteration exceeds the job's configured timeout — the iteration is then retried or marked as failed depending on the job config.
 - **Check `data.success` in the `resourceJobComplete` handler** before acting on results. A `false` value means some iterations failed — use `data.execution.executionSummary` to see counts and `data.execution.executionReportUrl` to download the full report.

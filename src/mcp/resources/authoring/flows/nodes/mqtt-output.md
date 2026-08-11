@@ -1,6 +1,6 @@
 # MQTT Node (`type: "MqttMessageNode"`)
 
-The MQTT Node publishes a message to the Losant MQTT Broker, the Gateway Edge Agent Local Broker, or an external broker. Use it to send commands to devices, trigger other workflows, or publish on custom topics.
+The MQTT Node publishes a message to the Losant MQTT Broker, the Gateway Edge Agent Local Broker, or an external broker. Use it to send commands to devices, trigger other flows, or publish on custom topics.
 
 ## Required Fields
 
@@ -11,7 +11,7 @@ The MQTT Node publishes a message to the Losant MQTT Broker, the Gateway Edge Ag
 | `meta.name` | `"mqtt"` |
 | `meta.label` | `"MQTT"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ```json
 {
@@ -32,13 +32,13 @@ The MQTT Node publishes a message to the Losant MQTT Broker, the Gateway Edge Ag
 | `integrationId` | `"losant"` | **Required.** `"losant"` — Losant cloud broker. Cloud also supports MQTT integration IDs. |
 | `topicTemplate` | `""` | **Required.** MQTT topic. Template. Must not be a Losant system or device state topic. |
 | `messageTemplate` | `""` | Message payload as a string template. |
-| `resultPath` | `""` | Optional. **Embedded workflows only** — stores the `eea_send_message()` return code. Has no effect on cloud or edge workflows. |
+| `resultPath` | `""` | Optional. **Embedded flows only** — stores the `eea_send_message()` return code. Has no effect on cloud or edge flows. |
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Same as Cloud. Additional `integrationId` values on edge:
 
@@ -50,9 +50,9 @@ Same as Cloud. Additional `integrationId` values on edge:
 
 When `integrationId: "external"`, also set `configNameTemplate` to the name of the MQTT client configuration in the GEA config file.
 
-## Embedded workflows
+## Embedded flows
 
-On embedded workflows, `integrationId` is not used. The node invokes the `eea_send_message()` function with the topic and message. An optional `resultPath` field stores the return code (`0` = success, any other value = failure). If `resultPath` is omitted and the function returns a failure code, the workflow errors.
+On embedded flows, `integrationId` is not used. The node invokes the `eea_send_message()` function with the topic and message. An optional `resultPath` field stores the return code (`0` = success, any other value = failure). If `resultPath` is omitted and the function returns a failure code, the flow errors.
 
 | Config field | Notes |
 |---|---|

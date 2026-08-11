@@ -1,6 +1,6 @@
 # Experience Group Nodes
 
-Five nodes for managing Experience Groups within a workflow.
+Five nodes for managing Experience Groups within a flow.
 
 ## Required Fields
 
@@ -12,7 +12,7 @@ Five nodes for managing Experience Groups within a workflow.
 | `ExperienceGroupSummaryNode` | `experience` | `group-summary` | `"Group: Summary"` |
 | `VerifyExperienceGroupNode` | `experience` | `verify-experience-group` | `"Group: Verify"` |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ### Group: Create Node (`type: "CreateExperienceGroupNode"`)
 
@@ -160,10 +160,10 @@ Verifies that an Experience User is a member of a specific group. Branches — `
 | `emailOrIdTemplate` | `"{{experience.user.id}}"` | **Required.** User email or ID to check. Template. |
 | `groupIdTemplate` | `""` | **Required.** Group ID to verify membership in. Template. |
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Not available.

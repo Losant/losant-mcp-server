@@ -1,12 +1,14 @@
 import { buildReferenceSection } from './helpers.js';
 const content = `# Flows Guide
 
-Flows (workflows) are the automation engine of Losant. A flow defines triggers (what starts it) and nodes (what it does). This guide covers what you need to know to create and update flows via \`losant_write\`.
+> **API naming note:** The Losant UI calls these **Workflows**. The API resource type is \`flow\`. Use \`resourceType: "flow"\` and \`resourceType: "flowVersion"\` with \`losant_write\` and \`losant_query\`.
+
+Flows are the automation engine of Losant. A flow defines triggers (what starts it) and nodes (what it does). This guide covers what you need to know to create and update flows via \`losant_write\`.
 
 ## Key Concepts
 
 - **flowClass**: determines which triggers and nodes are available — \`cloud\` (general purpose), \`experience\` (backend for Experience endpoints), \`edge\` (runs on gateway hardware), \`embedded\` (low-power devices), \`customNode\` (reusable sub-flow)
-- **Develop version vs. versions**: every flow has a live "develop" version. Use \`losant_write\` with \`resourceType=flow\` to update the develop version. Use \`resourceType=flowVersion\` to snapshot a named version.
+- **Develop version vs. versions**: every flow has a live "develop" version. Use \`losant_write\` with \`resourceType: "flow"\` to update the develop version. Use \`resourceType: "flowVersion"\` to snapshot a named version.
 - **Triggers and nodes**: both are arrays of objects with type-specific \`config\` and wiring via \`outputIds\`
 
 ## Creating a Flow
@@ -43,10 +45,10 @@ For the wiring model, trigger configuration, and per-node config details read:
 - \`losant://references/flow/globals\` — global variables reference
 - \`losant://references/flow/payload\` — payload reference
 - \`losant://references/flow/custom-nodes\` — custom nodes reference
-- \`losant://references/flow/execution-model\` — how execution works: payload flow, branching, throws, and the Workflow Error trigger
-- \`losant://references/flow/patterns\` — six common workflow patterns with concrete node chains: device alert, scheduled API pull, webhook handler, experience login, authenticated API endpoint, device provisioning
+- \`losant://references/flow/execution-model\` — how execution works: payload flow, branching, throws, and the Flow Error trigger
+- \`losant://references/flow/patterns\` — six common flow patterns with concrete node chains: device alert, scheduled API pull, webhook handler, experience login, authenticated API endpoint, device provisioning
 
-## Workflow Versions
+## Flow Versions
 
 Use \`resourceType=flowVersion\` with \`operation=createOne\` to snapshot the current develop version:
 \`\`\`json
@@ -60,7 +62,7 @@ Requires \`parentResourceId\` = the \`flowId\`.
 
 > **flowVersion triggers and nodes are frozen.** Once a version is created, its trigger and node configuration cannot be changed. \`updateOne\` on a \`flowVersion\` only allows patching \`notes\` and \`enabled\` — nothing structural. To revise the logic, make changes on the develop version (the \`flow\` itself via \`updateOne\`) and then snapshot a new \`flowVersion\`.
 
-## Common LLM Workflows
+## Common LLM Procedures
 
 ### Create a new empty flow
 1. Confirm \`flowClass\` (default: \`cloud\`) and \`category\`
@@ -90,7 +92,7 @@ export default {
   uriName: 'losant://guides/flows',
   resourceConfig: {
     title: 'Flows Guide',
-    description: 'Domain guide for Losant flows — flow classes, triggers, nodes, versions, and common workflows',
+    description: 'Domain guide for Losant flows — flow classes, triggers, nodes, versions, and common procedures',
     mimeType: 'text/markdown'
   },
   getContent: async (uri) => {

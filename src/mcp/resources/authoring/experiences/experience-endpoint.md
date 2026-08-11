@@ -1,6 +1,6 @@
 ---
 name: losant-experience-endpoint-authoring
-description: Build and configure Losant Experience Endpoints — route syntax, access control (public/authenticated/group/device), static vs. flow-driven replies, unauthorized reply, deviceIdTemplate, and the complete endpoint → workflow → view loop. Use whenever creating or modifying an experienceEndpoint via the Losant REST API.
+description: Build and configure Losant Experience Endpoints — route syntax, access control (public/authenticated/group/device), static vs. flow-driven replies, unauthorized reply, deviceIdTemplate, and the complete endpoint → flow → view loop. Use whenever creating or modifying an experienceEndpoint via the Losant REST API.
 ---
 
 # Losant Experience Endpoint Authoring
@@ -20,8 +20,8 @@ Before creating an endpoint, answer two questions:
 - Only experience users associated with a specific device via group membership → `access: "device"`
 
 **2. What should it return?**
-- A static page or redirect (no workflow needed) → set `staticReply`
-- Dynamic content driven by device data, user data, or business logic → flow-driven (leave `staticReply` null, connect an experience workflow)
+- A static page or redirect (no flow needed) → set `staticReply`
+- Dynamic content driven by device data, user data, or business logic → flow-driven (leave `staticReply` null, connect an experience flow)
 
 ---
 
@@ -39,7 +39,7 @@ Before creating an endpoint, answer two questions:
 - Parameters beat wildcards
 - Two routes at the same level with different parameter names (e.g. `/{deviceId}` and `/{userId}`) are a conflict and will be rejected on save
 
-Path parameters are available in views and workflow payloads as `request.params.<name>`.
+Path parameters are available in views and flow payloads as `request.params.<name>`.
 
 ---
 
@@ -73,19 +73,19 @@ If the authenticated user is not in a group associated with the resolved device 
 
 ### `staticReply` — authorized/public requests
 
-When set, the endpoint responds immediately without firing a workflow. If both `staticReply` is set and a workflow fires an Endpoint Reply node, **`staticReply` wins** — the workflow still executes but its reply is discarded.
+When set, the endpoint responds immediately without firing a flow. If both `staticReply` is set and a flow fires an Endpoint Reply node, **`staticReply` wins** — the flow still executes but its reply is discarded.
 
 **Flow-driven (default):**
 ```json
 "staticReply": null
 ```
-Leave null or omit entirely. The connected workflow's Endpoint Reply node controls the response.
+Leave null or omit entirely. The connected flow's Endpoint Reply node controls the response.
 
 **Render a view:**
 ```json
 "staticReply": { "type": "page", "value": "<experienceViewId>", "statusCode": 200 }
 ```
-Renders the specified view. `pageData` will be empty — no workflow ran to populate it. Best for login pages, home pages, and error pages.
+Renders the specified view. `pageData` will be empty — no flow ran to populate it. Best for login pages, home pages, and error pages.
 
 **Redirect:**
 ```json
@@ -95,7 +95,7 @@ Renders the specified view. `pageData` will be empty — no workflow ran to popu
 
 ### `unauthorizedReply` — unauthenticated/unauthorized requests
 
-How to respond when a user is not logged in, not in the required group, or not associated with the required device. No workflows fire for unauthorized requests.
+How to respond when a user is not logged in, not in the required group, or not associated with the required device. No flows fire for unauthorized requests.
 
 ```json
 "unauthorizedReply": { "type": "redirect", "value": "/login", "statusCode": 302 }
@@ -108,35 +108,35 @@ Omit or set to `null` to fall through to the version's default unauthorized repl
 
 ---
 
-## The endpoint → workflow → view loop
+## The endpoint → flow → view loop
 
 Flow-driven endpoints are the most powerful pattern. The full data flow:
 
 ```
 HTTP request
   → Endpoint matches method + route
-  → Experience workflow fires (Endpoint Trigger node)
-  → Workflow builds pageData object (queries devices, fetches data, etc.)
+  → Experience flow fires (Endpoint Trigger node)
+  → Flow builds pageData object (queries devices, fetches data, etc.)
   → Endpoint Reply node sets page + pageData
   → Platform renders the view with pageData in context
-  → {{pageData.device.name}} in the view body resolves to the value set by the workflow
+  → {{pageData.device.name}} in the view body resolves to the value set by the flow
 ```
 
-**Connecting an endpoint to a workflow:**
+**Connecting an endpoint to a flow:**
 
-The workflow must be **experience-type** (not application-type). It needs an **Endpoint Trigger** node configured to match:
+The flow must be **experience-type** (not application-type). It needs an **Endpoint Trigger** node configured to match:
 - The same `method` (GET, POST, etc.)
 - The same `route` (including parameter names exactly — `/devices/{deviceId}` matches `/devices/{deviceId}`, not `/devices/{id}`)
 - The same experience version (or `develop`)
 
-The **Endpoint Reply** node in the workflow sets:
+The **Endpoint Reply** node in the flow sets:
 - The view to render (`page` field — the experience view ID)
 - The `pageData` payload — an arbitrary object the view receives as `{{pageData.*}}`
 - HTTP status code (default 200)
 
-**pageData is the contract between the workflow and the view.** Name the properties intentionally — they become the template variables.
+**pageData is the contract between the flow and the view.** Name the properties intentionally — they become the template variables.
 
-Example: a workflow that fetches a device and passes it to the view:
+Example: a flow that fetches a device and passes it to the view:
 ```
 Endpoint Trigger (GET /devices/{deviceId})
   → Device: Get node (query by request.params.deviceId)
@@ -151,7 +151,7 @@ In the view body:
 
 See `losant://references/experience/context-configuration` for the full render context available in views.
 
-> **Note:** Workflow authoring (Endpoint Trigger node, Endpoint Reply node, experience-type flow creation) is covered in `losant://authoring/flow` once that guide is available.
+> **Note:** Flow authoring (Endpoint Trigger node, Endpoint Reply node, experience-type flow creation) is covered in `losant://authoring/flow` once that guide is available.
 
 ---
 
@@ -192,7 +192,7 @@ See `losant://references/experience/context-configuration` for the full render c
   "unauthorizedReply": { "type": "redirect", "value": "/login", "statusCode": 302 }
 }
 ```
-3. Create an experience-type workflow with an Endpoint Trigger for `GET /devices/{deviceId}` and an Endpoint Reply node that renders the view with `pageData`
+3. Create an experience-type flow with an Endpoint Trigger for `GET /devices/{deviceId}` and an Endpoint Reply node that renders the view with `pageData`
 
 ### Create a device-authenticated endpoint
 

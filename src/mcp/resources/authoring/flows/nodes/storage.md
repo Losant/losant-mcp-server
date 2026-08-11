@@ -1,6 +1,6 @@
-# Workflow Storage Nodes
+# Flow Storage Nodes
 
-Two nodes for reading and writing workflow-scoped persistent storage. Values persist across workflow executions and are shared across all instances of the same workflow. Available in cloud, experience, customNode, and embedded workflows.
+Two nodes for reading and writing flow-scoped persistent storage. Values persist across flow executions and are shared across all instances of the same flow. Available in cloud, experience, customNode, and embedded flows.
 
 ## Required Fields
 
@@ -9,9 +9,9 @@ Two nodes for reading and writing workflow-scoped persistent storage. Values per
 | `GetValueNode` | `data` | `get-value` | `"Storage: Get Value"` |
 | `StoreValueNode` | `data` | `store-value` | `"Storage: Set Value"` |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
-### GetValueNode — Read from workflow storage
+### GetValueNode — Read from flow storage
 
 Reads a stored value by key and writes it to a payload path.
 
@@ -38,7 +38,7 @@ Reads a stored value by key and writes it to a payload path.
 
 ---
 
-### StoreValueNode — Write to workflow storage
+### StoreValueNode — Write to flow storage
 
 Writes a value to a storage key.
 
@@ -66,15 +66,15 @@ Writes a value to a storage key.
 
 ### Idiom notes
 
-- Storage keys are workflow-scoped — different workflows cannot share storage.
+- Storage keys are flow-scoped — different flows cannot share storage.
 - Make keys device-specific by including `{{data.deviceId}}` when the value should differ per device.
 - Values are stored as strings — use `{{add working.counter 0}}` to coerce a stored number back to numeric type in subsequent templates.
 - Always read (`GetValueNode`) before writing (`StoreValueNode`) for counters and rate limiters — the stored value may be `undefined` on first run.
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Same as Cloud. Storage values are **per-device** on edge — each deployed device has its own isolated storage namespace, and values cannot be read from the Losant cloud console.

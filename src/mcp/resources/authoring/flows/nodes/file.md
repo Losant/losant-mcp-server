@@ -9,7 +9,7 @@ Two nodes for creating and retrieving files within a Losant application's file s
 | `FileCreateNode` | `data` | `file-create` | `"File: Create"` |
 | `FileGetNode` | `data` | `file-get` | `"File: Get"` |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ### File: Create Node (`type: "FileCreateNode"`)
 
@@ -129,10 +129,10 @@ Retrieves a file from the application's file storage — either its contents as 
 
 On failure, `destination` receives `{ "error": { "type": "<type>", "message": "<description>" } }` instead of the result object. Common error types: `"NotFound"` (file doesn't exist), `"ValidationError"` (file status not completed, file too large, or invalid encoding).
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Not available.

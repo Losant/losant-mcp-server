@@ -11,19 +11,19 @@ Decodes a Base64 string on the payload. Available in **embedded** flow class onl
 | `meta.name` | `"base64-decode"` |
 | `meta.label` | `"Base64: Decode"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Not available.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 Not available.
 
-## Embedded workflows
+## Embedded flows
 
 ```json
 {

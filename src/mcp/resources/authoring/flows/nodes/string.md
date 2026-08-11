@@ -13,7 +13,7 @@ Manipulates a string value on the payload using one of several operations — sp
 
 Available: cloud, experience, customNode, edge.
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ```json
 {
@@ -70,10 +70,10 @@ Available: cloud, experience, customNode, edge.
 { "working": { "parts": ["hello", "world"] } }
 ```
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Same as Cloud. `indexOf` requires GEA 1.15.0+.

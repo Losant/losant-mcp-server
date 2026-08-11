@@ -1,6 +1,6 @@
 # WebSocket Trigger (`type: "integration"`)
 
-The WebSocket Trigger fires a workflow whenever the selected WebSocket integration receives a message or connection event. Losant maintains the outbound WebSocket connection to a remote server.
+The WebSocket Trigger fires a flow whenever the selected WebSocket integration receives a message or connection event. Losant maintains the outbound WebSocket connection to a remote server.
 
 ## Required Fields
 
@@ -11,7 +11,7 @@ The WebSocket Trigger fires a workflow whenever the selected WebSocket integrati
 | `meta.name` | `"websocket"` |
 | `meta.label` | `"WebSocket"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 A WebSocket integration resource must exist in the application before this trigger can be used. Use `losant_query` with `resourceType=integration` to find the integration ID.
 
@@ -78,7 +78,7 @@ All event types share the same envelope. `data.type` identifies which event fire
 }
 ```
 
-- `data.message.data` — the frame payload as a **string**. Binary frames are UTF-8 encoded. Always use a JSON Decode node before accessing structured fields — and make your workflow resilient to cases where decoding fails.
+- `data.message.data` — the frame payload as a **string**. Binary frames are UTF-8 encoded. Always use a JSON Decode node before accessing structured fields — and make your flow resilient to cases where decoding fails.
 - `data.message.length` — byte length of the frame.
 - `data.headers` — HTTP headers from the WebSocket upgrade response, preserved on every message event.
 
@@ -134,10 +134,10 @@ All event types share the same envelope. `data.type` identifies which event fire
 
 > **Note:** This trigger should not be confused with the Webhook Trigger. The WebSocket Trigger fires for messages received through a WebSocket integration (Losant connects outbound to a remote server). The Webhook Trigger fires for inbound connections from clients connecting to a WebSocket-type Webhook.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 Not available.

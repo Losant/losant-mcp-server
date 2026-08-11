@@ -11,7 +11,7 @@ Pauses execution for a specified duration. Available in cloud, experience, edge,
 | `meta.name` | `"delay"` |
 | `meta.label` | `"Delay"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ```json
 {
@@ -25,16 +25,16 @@ Pauses execution for a specified duration. Available in cloud, experience, edge,
 
 | Config field | Default | Notes |
 |---|---|---|
-| `delay` | — | **Required.** Number of seconds as a string template (e.g. `"5"` or `"{{data.waitSecs}}"`). Max 59 seconds in cloud and experience workflows. |
+| `delay` | — | **Required.** Number of seconds as a string template (e.g. `"5"` or `"{{data.waitSecs}}"`). Max 59 seconds in cloud and experience flows. |
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud. Max 59 seconds.
 
-## Edge workflows
+## Edge flows
 
 Same as Cloud. No maximum duration restriction on edge.
 
-## Embedded workflows
+## Embedded flows
 
 Same as Cloud.

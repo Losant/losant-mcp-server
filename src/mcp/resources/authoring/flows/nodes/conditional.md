@@ -1,6 +1,6 @@
 # Conditional Node (`type: "ConditionalNode"`)
 
-Branches the workflow based on a Losant expression. The most common branching node — use whenever you need an if/else split. Available in all flow classes: cloud, experience, customNode, edge, and embedded.
+Branches the flow based on a Losant expression. The most common branching node — use whenever you need an if/else split. Available in all flow classes: cloud, experience, customNode, edge, and embedded.
 
 ## Required Fields
 
@@ -11,7 +11,7 @@ Branches the workflow based on a Losant expression. The most common branching no
 | `meta.name` | `"conditional"` |
 | `meta.label` | `"Conditional"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ```json
 {
@@ -65,6 +65,6 @@ Supports `&&`, `||`, `!`, and parentheses. Numbers are compared numerically in c
 - Missing paths render as `""` which is falsy, not an error.
 - `outputIds` must have exactly two outer arrays — a missing second array causes a validation error.
 
-## Experience workflows, Edge workflows, Embedded workflows, Custom Node workflows
+## Experience flows, Edge flows, Embedded flows, Custom Node flows
 
 Same as Cloud.

@@ -1,6 +1,6 @@
 # Application: Sync Trigger (`type: "onSync"`)
 
-The Application: Sync Trigger fires a workflow whenever the Gateway Edge Agent receives updated peripherals, global values, or changes to its Edge Compute device configuration.
+The Application: Sync Trigger fires a flow whenever the Gateway Edge Agent receives updated peripherals, global values, or changes to its Edge Compute device configuration.
 
 ## Required Fields
 
@@ -11,15 +11,15 @@ The Application: Sync Trigger fires a workflow whenever the Gateway Edge Agent r
 | `meta.name` | `"onSync"` |
 | `meta.label` | `"Application: Sync"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Not available.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.39.0
 

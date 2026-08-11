@@ -1,6 +1,6 @@
 # Redis Node (`type: "RedisNode"`)
 
-The Redis Node allows a workflow to query or update values in a Redis database. Supports standalone and cluster connection modes and a wide range of Redis commands.
+The Redis Node allows a flow to query or update values in a Redis database. Supports standalone and cluster connection modes and a wide range of Redis commands.
 
 ## Required Fields
 
@@ -11,7 +11,7 @@ The Redis Node allows a workflow to query or update values in a Redis database. 
 | `meta.name` | `"redis"` |
 | `meta.label` | `"Redis"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Two connection modes: standalone (single server) or cluster (multiple nodes).
 
@@ -90,11 +90,11 @@ Two connection modes: standalone (single server) or cluster (multiple nodes).
 
 The result shape at `resultPath` varies by command. Most commands return a scalar (string, number, `null`). `keys` and `smembers` return arrays. `hgetall` returns an object. On error, `errorPath` receives `{ type, message }`.
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Same as Cloud with the following version gates:
 - `tlsOn` (TLS support) requires GEA **1.9.0+**.

@@ -1,6 +1,6 @@
 # HTTP Request Trigger (`type: "request"`)
 
-The HTTP Request Trigger fires a workflow whenever the Gateway Edge Agent receives a request on its local web server. The trigger can fire on all requests or those matching a specific method and/or route.
+The HTTP Request Trigger fires a flow whenever the Gateway Edge Agent receives a request on its local web server. The trigger can fire on all requests or those matching a specific method and/or route.
 
 ## Required Fields
 
@@ -11,15 +11,15 @@ The HTTP Request Trigger fires a workflow whenever the Gateway Edge Agent receiv
 | `meta.name` | `"request"` |
 | `meta.label` | `"HTTP Request"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Not available.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.0.0. Method and route configuration require GEA 1.24.0+.
 

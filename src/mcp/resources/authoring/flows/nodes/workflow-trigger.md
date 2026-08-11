@@ -1,6 +1,6 @@
 # Workflow Trigger Node (`type: "WorkflowTriggerNode"`)
 
-The Workflow Trigger Node triggers another workflow's Virtual Button — immediately, on a schedule, or cancels a previously scheduled run. Available in cloud, experience, and customNode workflows.
+The Workflow Trigger Node triggers another flow's Virtual Button — immediately, on a schedule, or cancels a previously scheduled run. Available in cloud, experience, and customNode flows.
 
 ## Required Fields
 
@@ -11,7 +11,7 @@ The Workflow Trigger Node triggers another workflow's Virtual Button — immedia
 | `meta.name` | `"workflow-trigger"` |
 | `meta.label` | `"Workflow"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ### Immediate execution (default)
 
@@ -66,9 +66,9 @@ The Workflow Trigger Node triggers another workflow's Virtual Button — immedia
 | Config field | Default | Notes |
 |---|---|---|
 | `behavior` | `"immediate"` | **Required.** `"immediate"`, `"schedule"`, or `"cancel"`. |
-| `triggerWorkflowId` | `""` | **Required** (not cancel). Target workflow ID as a plain string — not a template. |
-| `flowVersionTemplate` | `""` | **Required** (not cancel). Workflow version (e.g. `"develop"`, `"v1"`). Template. |
-| `triggerVirtualButtonId` | `""` | **Required** (not cancel). The server-generated `key` of the Virtual Button trigger in the target workflow — **not** the node's `id`. This key is assigned by the server when the target workflow is created and is returned in the trigger object. See the two-step pattern below. |
+| `triggerWorkflowId` | `""` | **Required** (not cancel). Target flow ID as a plain string — not a template. |
+| `flowVersionTemplate` | `""` | **Required** (not cancel). Flow version (e.g. `"develop"`, `"v1"`). Template. |
+| `triggerVirtualButtonId` | `""` | **Required** (not cancel). The server-generated `key` of the Virtual Button trigger in the target flow — **not** the node's `id`. This key is assigned by the server when the target flow is created and is returned in the trigger object. See the two-step pattern below. |
 | `payloadTemplateType` | `"json"` | `"json"`, `"string"`, or `"path"`. |
 | `payloadTemplate` | `""` | Payload to send. JSON template, string, or payload path per `payloadTemplateType`. |
 | `scheduling` | `"relative"` | **Required** when `behavior: "schedule"`. `"relative"` or `"absolute"`. |
@@ -88,17 +88,15 @@ The Workflow Trigger Node triggers another workflow's Virtual Button — immedia
 **`cancel`:** confirms the scheduled run was cancelled.
 ### Getting `triggerVirtualButtonId` — two-step pattern
 
-The `key` of a Virtual Button trigger is server-generated and not known until after the target workflow is created. To wire a WorkflowTriggerNode correctly:
+The `key` of a Virtual Button trigger is server-generated and not known until after the target flow is created. To wire a WorkflowTriggerNode correctly:
 
-1. **Create the target workflow** via `losant_write`. The response includes the `triggers` array with the server-assigned `key` on the Virtual Button trigger.
-2. **Use that key** as `triggerVirtualButtonId` in the WorkflowTriggerNode config — either hardcode it or store it in workflow globals.
+1. **Create the target flow** via `losant_write`. The response includes the `triggers` array with the server-assigned `key` on the Virtual Button trigger.
+2. **Use that key** as `triggerVirtualButtonId` in the WorkflowTriggerNode config — either hardcode it or store it in flow globals.
 
-If you are creating a workflow that will trigger *itself* via a virtual button (rare), you must create the workflow first (step 1), retrieve the assigned key from the response, then PATCH the workflow to add the WorkflowTriggerNode using that key.
-
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Not available.

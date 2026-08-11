@@ -1,6 +1,6 @@
 # Twilio Node (`type: "TwilioSmsNode"`)
 
-The Twilio Node sends SMS messages via a configured Twilio account. Returns a result per recipient with success or error information. Available in cloud, experience, and customNode workflows.
+The Twilio Node sends SMS messages via a configured Twilio account. Returns a result per recipient with success or error information. Available in cloud, experience, and customNode flows.
 
 ## Required Fields
 
@@ -11,7 +11,7 @@ The Twilio Node sends SMS messages via a configured Twilio account. Returns a re
 | `meta.name` | `"twilio"` |
 | `meta.label` | `"Twilio"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Three auth methods. The direct-key methods are controlled by **`meta.authMethod`**: `"apiKey"` or `"token"`. Credential mode is detected by the presence of `credentialNameTemplate` in `config` — `meta.authMethod` is not set for credential mode (`"credential"` is not a valid schema value). On edge, only `"apiKey"` and `"token"` are available.
 
@@ -77,10 +77,10 @@ Three auth methods. The direct-key methods are controlled by **`meta.authMethod`
 | `toNumbers` | `[]` | **Required.** Array of recipient phone number strings (e.g. `["+15559876543", "{{data.phone}}"]`). At least one required. Each element is a template. |
 | `resultsPath` | `""` | Payload path to write the array of per-recipient results. |
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Same as Cloud. The credential method (`credentialNameTemplate`) is not available on edge — use `meta.authMethod: "apiKey"` or `"token"` with direct credentials instead.

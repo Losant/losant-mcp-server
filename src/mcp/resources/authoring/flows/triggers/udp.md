@@ -1,6 +1,6 @@
 # UDP Message Trigger (`type: "udp"`)
 
-The UDP Message Trigger fires a workflow whenever the Edge Compute Device receives a UDP datagram on the configured port.
+The UDP Message Trigger fires a flow whenever the Edge Compute Device receives a UDP datagram on the configured port.
 
 ## Required Fields
 
@@ -11,15 +11,15 @@ The UDP Message Trigger fires a workflow whenever the Edge Compute Device receiv
 | `meta.name` | `"udp"` |
 | `meta.label` | `"UDP Message"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Not available.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.2.0
 

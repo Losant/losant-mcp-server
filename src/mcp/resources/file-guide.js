@@ -109,7 +109,7 @@ Use \`losant_query\` \`operation=list\` \`resourceType=file\` with \`filterField
 
 ## Reacting to file operations with flows
 
-File create, update, and delete operations can fire cloud workflows automatically:
+File create, update, and delete operations can fire cloud flows automatically:
 
 - **File events** → \`losant://flow/triggers/app-file\` — fires when a file is created, updated, or deleted. Useful for post-upload processing pipelines (e.g. parse a CSV on upload, generate a thumbnail, or validate a file before making it available).
 

@@ -22,7 +22,7 @@ All GPS values (`gpsCheck`, `gpsCenter`, and the coordinates in `polygonCoords`/
 | **NMEA GLL** | `"$GPGLL,3719.940,N,12201.873,S,225444,A,*1C"` |
 | **NMEA GGA** | `"$GPGGA,123519,4807.038,N,01131.000,E,1,08,0.9,545.4,M,46.9,M,,*47"` |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ### Circular radius mode (`checkType: "radius"`)
 
@@ -109,10 +109,10 @@ All GPS values (`gpsCheck`, `gpsCenter`, and the coordinates in `polygonCoords`/
 
 The `resultPath` can point to an existing payload path to overwrite it.
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Same as Cloud.

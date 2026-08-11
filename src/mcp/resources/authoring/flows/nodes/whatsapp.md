@@ -1,6 +1,6 @@
 # WhatsApp Node (`type: "WhatsAppNode"`)
 
-The WhatsApp Node sends WhatsApp messages via a WhatsApp Business account. Supports free-form text messages and WhatsApp message templates. Available in cloud, experience, and customNode workflows.
+The WhatsApp Node sends WhatsApp messages via a WhatsApp Business account. Supports free-form text messages and WhatsApp message templates. Available in cloud, experience, and customNode flows.
 
 ## Required Fields
 
@@ -11,7 +11,7 @@ The WhatsApp Node sends WhatsApp messages via a WhatsApp Business account. Suppo
 | `meta.name` | `"whatsapp"` |
 | `meta.label` | `"WhatsApp"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Two auth methods: service credential or direct (From Number ID + Access Token).
 
@@ -54,11 +54,11 @@ Two auth methods: service credential or direct (From Number ID + Access Token).
 ] } }
 ```
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.45.0
 

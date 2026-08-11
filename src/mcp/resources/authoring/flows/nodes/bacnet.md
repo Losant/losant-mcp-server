@@ -10,15 +10,15 @@ Three nodes for interacting with BACnet building automation devices.
 | `BacnetWhoIsNode` | `data` | `bacnet-who-is` | `"BACnet: Who-Is"` | 1.25.0 |
 | `BacnetWriteNode` | `data` | `bacnet-write` | `"BACnet: Write"` | 1.19.0 |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Not available.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 ### BACnet: Read Node (`type: "BacnetReadNode"`)
 

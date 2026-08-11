@@ -1,25 +1,25 @@
 ---
-name: losant-workflow-globals
-description: Globals in Losant workflows — the three sources (application globals, experience version globals, workflow globals) and their override order, the API format for workflow globals (JSON-encoded strings), version-scoping rules, and how to access globals in node templates.
+name: losant-flow-globals
+description: Globals in Losant flows — the three sources (application globals, experience version globals, flow globals) and their override order, the API format for flow globals (JSON-encoded strings), version-scoping rules, and how to access globals in node templates.
 ---
 
-# Workflow Globals Reference
+# Flow Globals Reference
 
-"Globals" is an overloaded term in Losant. Three separate things contribute to the `globals` object available on a workflow payload at runtime. Knowing which is which prevents a common API authoring mistake.
+"Globals" is an overloaded term in Losant. Three separate things contribute to the `globals` object available on a flow payload at runtime. Knowing which is which prevents a common API authoring mistake.
 
 ## The three sources
 
 | Source | Where it's set | Scope | Override priority |
 |---|---|---|---|
-| **Application globals** | Application settings | All workflows in the app | Lowest |
-| **Experience Version globals** | `experienceVersion` resource | Experience workflows for that version only | Middle |
-| **Workflow globals** | `globals` array on the flow/version | This specific workflow version | Highest |
+| **Application globals** | Application settings | All flows in the app | Lowest |
+| **Experience Version globals** | `experienceVersion` resource | Experience flows for that version only | Middle |
+| **Flow globals** | `globals` array on the flow/version | This specific flow version | Highest |
 
 At runtime, Losant merges all three into a single `globals` object on the payload. When the same key appears in multiple sources, the highest-priority source wins.
 
-**The critical API authoring distinction:** When you POST or PATCH a workflow, the `globals` field only contains **workflow-level globals**. Application globals and Experience Version globals are configured separately and are injected at runtime — you do not include them in the flow JSON and you cannot read or set them via the workflow API.
+**The critical API authoring distinction:** When you POST or PATCH a flow, the `globals` field only contains **flow-level globals**. Application globals and Experience Version globals are configured separately and are injected at runtime — you do not include them in the flow JSON and you cannot read or set them via the flow API.
 
-## API format for workflow globals
+## API format for flow globals
 
 `globals` is an array of `{ key, json }` objects. **Key names must match `^[0-9a-zA-Z_-]{1,255}$`** — alphanumerics, underscores, and dashes only. Dots, spaces, and other special characters cause a 400 pattern-mismatch error. The `json` field is a **JSON-encoded string** — the value is first serialized to JSON, and that JSON string becomes the value of `json`.
 
@@ -35,7 +35,7 @@ At runtime, Losant merges all three into a single `globals` object on the payloa
 
 A quick mental model: take the value you want, run `JSON.stringify()` on it, and the result is your `json` string.
 
-### Full workflow globals example
+### Full flow globals example
 
 ```json
 {
@@ -59,16 +59,16 @@ All three sources are merged under the same `globals` key on the payload. Access
 
 ## Version scoping
 
-Workflow globals are **version-specific**. Each published version — and the develop version — has an independent copy of the globals array.
+Flow globals are **version-specific**. Each published version — and the develop version — has an independent copy of the globals array.
 
 - Changing globals in develop does not affect published versions.
 - Publishing a new version snapshots the develop globals at that moment.
-- Changing an **application** global affects all workflow versions that reference it (unless that key is overridden at the workflow level for a given version).
+- Changing an **application** global affects all flow versions that reference it (unless that key is overridden at the flow level for a given version).
 
-Maximum 100 globals per workflow version (develop counts as one version).
+Maximum 100 globals per flow version (develop counts as one version).
 
-## Application globals vs. workflow globals — summary for API consumers
+## Application globals vs. flow globals — summary for API consumers
 
-If a user wants a value available across all their workflows (an API key, a global phone number), that belongs in **Application globals** and is set through the Losant platform UI or Applications API — not in the flow JSON. The workflow just reads `{{globals.myKey}}` and the value appears at runtime.
+If a user wants a value available across all their flows (an API key, a global phone number), that belongs in **Application globals** and is set through the Losant platform UI or Applications API — not in the flow JSON. The flow just reads `{{globals.myKey}}` and the value appears at runtime.
 
-If a value should be **version-specific or override an application global** for this particular workflow, put it in the `globals` array on the flow definition. Same key name → this version wins over the application setting.
+If a value should be **version-specific or override an application global** for this particular flow, put it in the `globals` array on the flow definition. Same key name → this version wins over the application setting.

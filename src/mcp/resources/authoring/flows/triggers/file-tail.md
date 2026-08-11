@@ -1,6 +1,6 @@
 # File Tail Trigger (`type: "fileTail"`)
 
-The File Tail Trigger allows you to monitor and analyze logs and other files on the Gateway Edge Agent's container or host file system. It monitors new data being written to a file and fires a workflow whenever a configured delimiter or byte length has been reached.
+The File Tail Trigger allows you to monitor and analyze logs and other files on the Gateway Edge Agent's container or host file system. It monitors new data being written to a file and fires a flow whenever a configured delimiter or byte length has been reached.
 
 ## Required Fields
 
@@ -11,15 +11,15 @@ The File Tail Trigger allows you to monitor and analyze logs and other files on 
 | `meta.name` | `"fileTail"` |
 | `meta.label` | `"File Tail"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Not available.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.12.0
 
@@ -129,7 +129,7 @@ Send either `delimiter` or `byteLength` — not both.
 
 - `data.content` — the new file content encoded per `config.encoding`.
 - `data.path` — the file path being tailed.
-- `triggerId` — the configured file path. Use this to distinguish which File Tail trigger fired when multiple are present in the same workflow.
+- `triggerId` — the configured file path. Use this to distinguish which File Tail trigger fired when multiple are present in the same flow.
 
 ### File system access
 

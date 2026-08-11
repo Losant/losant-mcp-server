@@ -17,10 +17,11 @@ let indexContent = `# Losant API Documentation
 - [Device Authentication Guide](losant://guides/device-auth) - Access keys and device certificates for MQTT broker authentication; API vs. UI naming for certificate resources
 
 > **API naming note**: Some resource types have names in the API that differ from their display names in the Losant UI:
+> - API: \`flow\` / \`flowVersion\` → UI: **Workflow** / **Workflow Version**
 > - API: \`applicationCertificate\` → UI: **Device Certificate**
 > - API: \`applicationCertificateAuthority\` → UI: **Device Certificate Authority**
 > - API: \`applicationKey\` → UI: **Access Key**
-> Use the API names (\`applicationCertificate\`, \`applicationCertificateAuthority\`, \`applicationKey\`) with \`losant_query\` and \`losant_write\`.
+> Always use the API names with \`losant_query\` and \`losant_write\`.
 
 ## Supported Resources
 The following resources can be queried with the losant_query tool:

@@ -11,15 +11,15 @@ The HTTP Response Node sends an HTTP reply to a request received by the Gateway 
 | `meta.name` | `"http-response"` |
 | `meta.label` | `"HTTP Response"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Not available.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.0.0
 
@@ -44,7 +44,7 @@ Not available.
 | Config field | Default | Notes |
 |---|---|---|
 | `responseCodeTemplate` | `""` | **Required.** HTTP status code (100–599). Template. |
-| `bodyTemplateType` | `"string"` | `"string"` — string template. `"path"` — payload path. `"payload"` — send the full workflow payload as body. |
+| `bodyTemplateType` | `"string"` | `"string"` — string template. `"path"` — payload path. `"payload"` — send the full flow payload as body. |
 | `bodyTemplate` | `""` | Response body. Template or payload path per `bodyTemplateType`. Omit when `bodyTemplateType: "payload"`. |
 | `headerInfo` | `[]` | Array of `{ keyTemplate, valueTemplate }` response headers. |
 | `cookieInfo` | `[]` | Array of cookie objects. Each object: `nameTemplate` (**Required**), `valueTemplate`, `maxAgeTemplate`, `pathTemplate` (GEA **1.2.0+** on edge). |

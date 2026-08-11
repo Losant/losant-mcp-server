@@ -11,7 +11,7 @@ Writes a generated identifier to a payload path. Available in all flow classes.
 | `meta.name` | `"generate-id"` |
 | `meta.label` | `"Generate ID"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ```json
 {
@@ -31,10 +31,10 @@ Writes a generated identifier to a payload path. Available in all flow classes.
 | `numCharactersTemplate` | — | Optional when `idTypeTemplate` is `"nanoid"`. Length of the generated ID (1–256). Defaults to 21 when omitted. Template. |
 | `destinationPath` | — | **Required.** Payload path where the generated ID is written. |
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Minimum GEA version: **1.1.0**.

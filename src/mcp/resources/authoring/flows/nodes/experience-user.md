@@ -1,6 +1,6 @@
 # Experience User Nodes
 
-Five nodes for managing Experience Users and verifying device associations within a workflow.
+Five nodes for managing Experience Users and verifying device associations within a flow.
 
 ## Required Fields
 
@@ -12,7 +12,7 @@ Five nodes for managing Experience Users and verifying device associations withi
 | `DeleteExperienceUserNode` | `experience` | `delete-experience-user` | `"User: Delete"` |
 | `VerifyDeviceNode` | `experience` | `verify-experience-device` | `"Device: Verify"` |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ### User: Create Node (`type: "CreateExperienceUserNode"`)
 
@@ -223,10 +223,10 @@ Verifies that a device is associated with an Experience User (or group). Branche
 | `idTemplate` | `"{{experience.user.id}}"` | **Required.** User or group ID to check association against. Template. |
 | `idTypeTemplate` | `"experienceUser"` | **Required.** `"experienceUser"` or `"experienceGroup"`. Template. |
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Not available.

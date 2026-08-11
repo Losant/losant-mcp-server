@@ -1,6 +1,6 @@
 # Losant Handlebars Reference
 
-Losant uses a Handlebars-based templating dialect across dashboards, experience views, and workflows. This reference covers the full language — syntax modes, block helpers, every format helper, expression operators, and JSON templates.
+Losant uses a Handlebars-based templating dialect across dashboards, experience views, and flows. This reference covers the full language — syntax modes, block helpers, every format helper, expression operators, and JSON templates.
 
 **Context-specific variables** (what data is available in each authoring area) are documented separately:
 - Dashboard render context → `losant://references/dashboard/templates`
@@ -13,7 +13,7 @@ Losant uses a Handlebars-based templating dialect across dashboards, experience 
 | Mode | Syntax | Where used | Returns |
 |---|---|---|---|
 | **String template** | `{{...}}` | Almost everywhere — block configs, view bodies, row templates, condition labels | Always a string |
-| **Expression** | Evaluated formula | Fields explicitly labelled "expression" — graph/gauge segment `expression`, indicator/gauge/device-count conditions, workflow Conditional and Math nodes | Number, boolean, or string |
+| **Expression** | Evaluated formula | Fields explicitly labelled "expression" — graph/gauge segment `expression`, indicator/gauge/device-count conditions, flow Conditional and Math nodes | Number, boolean, or string |
 | **JSON template** | Full Handlebars string that must evaluate to valid JSON | Input Controls button payloads, Losant API node | JSON value |
 
 ---
@@ -22,7 +22,7 @@ Losant uses a Handlebars-based templating dialect across dashboards, experience 
 
 1. **String templates always render to strings.** Even `{{someNumber}}` produces `"42"`, not `42`. In JSON templates this matters — numbers and booleans must be unquoted in the template so the rendered result is valid JSON.
 
-2. **`{{value}}` HTML-escapes output; `{{{value}}}` does not.** Double braces are safe everywhere — `<` becomes `&lt;`, `&` becomes `&amp;`, etc. Triple braces render raw HTML exactly as-is. Triple braces are intended for experience view HTML bodies when you want to inject HTML stored in a variable (e.g. Markdown converted to HTML via `{{{toHtml content}}}`). In workflow node string fields, dashboard block configs, and JSON templates, triple braces are almost never needed and will produce literal HTML tags in the output.
+2. **`{{value}}` HTML-escapes output; `{{{value}}}` does not.** Double braces are safe everywhere — `<` becomes `&lt;`, `&` becomes `&amp;`, etc. Triple braces render raw HTML exactly as-is. Triple braces are intended for experience view HTML bodies when you want to inject HTML stored in a variable (e.g. Markdown converted to HTML via `{{{toHtml content}}}`). In flow node string fields, dashboard block configs, and JSON templates, triple braces are almost never needed and will produce literal HTML tags in the output.
 
 3. **Block helpers produce text output.** `{{#if condition}}...{{/if}}` produces the text between the tags when truthy. In HTML contexts this is exactly what you want. In a JSON template, blocks can break JSON validity if they produce whitespace or text in the wrong place — plan structure accordingly.
 

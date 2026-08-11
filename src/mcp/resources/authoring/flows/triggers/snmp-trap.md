@@ -1,6 +1,6 @@
 # SNMP: Trap Trigger (`type: "snmpTrap"`)
 
-The SNMP: Trap Trigger fires a workflow whenever the Edge Compute Device receives an SNMP trap message or an SNMP inform request on the configured port.
+The SNMP: Trap Trigger fires a flow whenever the Edge Compute Device receives an SNMP trap message or an SNMP inform request on the configured port.
 
 > **Note:** An SNMP trap or inform received on a given port will also trigger any UDP Triggers listening on the same port.
 
@@ -13,15 +13,15 @@ The SNMP: Trap Trigger fires a workflow whenever the Edge Compute Device receive
 | `meta.name` | `"snmpTrap"` |
 | `meta.label` | `"SNMP: Trap"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Not available.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.27.0
 
@@ -134,6 +134,6 @@ Two SNMP version modes are available. `config.udpPort` defaults to `162` and is 
 - `data.message.community` — community string. Present for v1/2c only; absent for v3.
 - `data.message.username` — username. Present for v3 only; absent for v1/2c.
 - `data.message.version` — `"1"`, `"2c"`, or `"3"`.
-- `data.message.pdu.id` — PDU message ID. Not present for SNMP v1 traps.
+- `data.message.pdu.id` — PDU message ID. Present for v2c/v3 traps and InformRequests; absent for v1 traps.
 - `data.message.pdu.type` — `"Trap"` (v1), `"TrapV2"` (v2c or v3), or `"InformRequest"`.
 - `data.message.pdu.varbinds` — array of variable bindings. Each has `oid` (string), `type` (integer SNMP value type), and `value` (shape varies by type). May be absent.

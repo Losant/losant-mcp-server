@@ -9,15 +9,15 @@ Two nodes for reading and writing files on the Gateway Edge Agent's container or
 | `FileReadNode` | `data` | `file-read` | `"File: Read"` |
 | `FileWriteNode` | `data` | `file-write` | `"File: Write"` |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Not available.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.0.0
 

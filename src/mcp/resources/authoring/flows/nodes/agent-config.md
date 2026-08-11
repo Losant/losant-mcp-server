@@ -9,15 +9,15 @@ Two nodes for reading and writing Gateway Edge Agent configuration values at run
 | `AgentConfigGetNode` | `data` | `agent-config-get` | `"Agent Config: Get"` |
 | `AgentConfigSetNode` | `data` | `agent-config-set` | `"Agent Config: Set"` |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Not available.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 ### Agent Config: Get Node (`type: "AgentConfigGetNode"`)
 
@@ -65,7 +65,7 @@ When `getAll: true`, `resultPath` receives `{ key: ".", value: <full config obje
 
 > **Minimum GEA version:** 1.24.0
 
-Updates one or more GEA runtime configuration values. Changes take effect after all currently running workflows complete.
+Updates one or more GEA runtime configuration values. Changes take effect after all currently running flows complete.
 
 ```json
 {
@@ -95,4 +95,4 @@ Updates one or more GEA runtime configuration values. Changes take effect after 
 { "working": { "setResult": { "success": true } } }
 ```
 
-On failure, `resultPath` receives `{ "success": false, "error": "..." }`. Check this value downstream if your workflow needs to react to a failed set.
+On failure, `resultPath` receives `{ "success": false, "error": "..." }`. Check this value downstream if your flow needs to react to a failed set.

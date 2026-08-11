@@ -1,6 +1,6 @@
 # Debug Node (`type: "DebugNode"`)
 
-Surfaces the current payload (or a specific property of it) to the workflow's debug log. Purely observational — does not mutate the payload. Available in all flow classes.
+Surfaces the current payload (or a specific property of it) to the flow's debug log. Purely observational — does not mutate the payload. Available in all flow classes.
 
 ## Required Fields
 
@@ -11,7 +11,7 @@ Surfaces the current payload (or a specific property of it) to the workflow's de
 | `meta.name` | `"debug"` |
 | `meta.label` | `"Debug"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ```json
 {
@@ -31,14 +31,14 @@ Surfaces the current payload (or a specific property of it) to the workflow's de
 | `property` | string | — | Optional payload path. When set, shows only the value at that path instead of the full payload. |
 | `level` | enum | `"verbose"` | `verbose`, `info`, `warn`, `error`. Filters the debug panel by severity. On edge, level selection requires GEA 1.38.0+. |
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Same as Cloud.
 
-## Embedded workflows
+## Embedded flows
 
 Same as Cloud.

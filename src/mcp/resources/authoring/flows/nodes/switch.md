@@ -1,6 +1,6 @@
 # Switch Node (`type: "SwitchNode"`)
 
-Branches the workflow across multiple paths by evaluating a template against a set of configured case values. More expressive than a chain of Conditional nodes when there are three or more distinct branches. Available in cloud, experience, customNode, edge, and embedded workflows.
+Branches the flow across multiple paths by evaluating a template against a set of configured case values. More expressive than a chain of Conditional nodes when there are three or more distinct branches. Available in cloud, experience, customNode, edge, and embedded flows.
 
 ## Required Fields
 
@@ -11,7 +11,7 @@ Branches the workflow across multiple paths by evaluating a template against a s
 | `meta.name` | `"switch"` |
 | `meta.label` | `"Switch"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ```json
 {
@@ -55,10 +55,10 @@ Branches the workflow across multiple paths by evaluating a template against a s
 
 Any inner array may be empty (`[]`) if that branch needs no further nodes.
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Same as Cloud.

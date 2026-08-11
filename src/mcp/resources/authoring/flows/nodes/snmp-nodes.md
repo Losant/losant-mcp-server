@@ -10,15 +10,15 @@ Three nodes for communicating with SNMP-managed network devices.
 | `SnmpWriteNode` | `data` | `snmp-write` | `"SNMP: Write"` |
 | `SnmpGetSubtreeNode` | `data` | `snmp-get-subtree` | `"SNMP: Get Subtree"` |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Not available.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.23.0
 

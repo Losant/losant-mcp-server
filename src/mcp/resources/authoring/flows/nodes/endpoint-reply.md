@@ -1,6 +1,6 @@
 # Endpoint: Reply Node (`type: "EndpointReplyNode"`)
 
-Sends an HTTP response back to a request received via an Endpoint Trigger. **Required** for any workflow triggered by an Endpoint trigger — the client will hang indefinitely without a reply. Available in cloud (not recommended) and experience workflows.
+Sends an HTTP response back to a request received via an Endpoint Trigger. **Required** for any flow triggered by an Endpoint trigger — the client will hang indefinitely without a reply. Available in cloud (not recommended) and experience flows.
 
 ## Required Fields
 
@@ -11,11 +11,11 @@ Sends an HTTP response back to a request received via an Endpoint Trigger. **Req
 | `meta.name` | `"endpoint-reply"` |
 | `meta.label` | `"Endpoint: Reply"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
-Not recommended — use `flowClass: "experience"` for endpoint-handling workflows. Cloud support exists only for legacy reasons. Config is identical to Experience workflows.
+Not recommended — use `flowClass: "experience"` for endpoint-handling flows. Cloud support exists only for legacy reasons. Config is identical to Experience flows.
 
-## Experience workflows
+## Experience flows
 
 ```json
 {
@@ -47,10 +47,10 @@ Not recommended — use `flowClass: "experience"` for endpoint-handling workflow
 | `mqttTopicsPath` | Payload path to an array of MQTT topic strings. Alternative to `mqttTopicsTemplate` for `replyType: "mqtt"`. |
 | `cookieInfo` | Array of `{ nameTemplate, valueTemplate, maxAgeTemplate }` objects. Sets HTTP cookies on the reply. |
 | `sameSiteTemplate` | SameSite policy for reply cookies: `"none"`, `"lax"`, or `"strict"`. Template. |
-| `experienceVersion` | Cloud workflows only. Experience version to use when rendering the page (e.g. `"develop"`). Used with `replyType: "page"`. |
+| `experienceVersion` | Cloud flows only. Experience version to use when rendering the page (e.g. `"develop"`). Used with `replyType: "page"`. |
 
 > Always wire both success and error branches to an EndpointReplyNode — every request must receive exactly one response.
 
-## Edge workflows
+## Edge flows
 
 Not available.

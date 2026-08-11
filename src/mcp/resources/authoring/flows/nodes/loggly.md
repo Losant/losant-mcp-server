@@ -11,7 +11,7 @@ The Loggly: Write Node sends one or more log messages to a SolarWinds Loggly acc
 | `meta.name` | `"loggly-write"` |
 | `meta.label` | `"Loggly: Write"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Two auth methods: service credential or direct API token.
 
@@ -52,11 +52,11 @@ Two auth methods: service credential or direct API token.
 
 `results` is an array with one entry per log entry sent. On error: `{ "success": false, "error": "..." }` (no `results` key).
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.38.0
 

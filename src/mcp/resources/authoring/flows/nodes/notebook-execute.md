@@ -11,7 +11,7 @@ The Notebook: Execute Node requests execution of a Losant Notebook. It does not 
 | `meta.name` | `"notebook-execute"` |
 | `meta.label` | `"Notebook: Execute"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ```json
 {
@@ -33,7 +33,7 @@ The Notebook: Execute Node requests execution of a Losant Notebook. It does not 
 | Config field | Default | Notes |
 |---|---|---|
 | `notebookIdTemplate` | `""` | **Required.** Notebook ID or a template resolving to one. |
-| `contextTemplateType` | `"none"` | How to provide the notebook context. `"none"` — no context. `"jsonTemplate"` — context from `contextTemplate` as a JSON template. `"payloadPath"` — context from `contextTemplate` as a payload path. `"workflowPayload"` — send the entire workflow payload as context. |
+| `contextTemplateType` | `"none"` | How to provide the notebook context. `"none"` — no context. `"jsonTemplate"` — context from `contextTemplate` as a JSON template. `"payloadPath"` — context from `contextTemplate` as a payload path. `"workflowPayload"` — send the entire flow payload as context. |
 | `contextTemplate` | `""` | **Required** when `contextTemplateType` is `"jsonTemplate"` or `"payloadPath"`. The JSON template or payload path for the context. |
 | `relativeToSourceType` | `"payloadTime"` | The query time sent to the notebook. `"payloadTime"` — use `payload.time`. `"now"` — use the current wall-clock time. `"payloadPath"` — use the timestamp at `relativeToPath`. |
 | `relativeToPath` | `""` | **Required** when `relativeToSourceType: "payloadPath"`. Payload path to the timestamp. |
@@ -58,12 +58,12 @@ When set, `resultPath` receives the notebook execution object:
 
 Use the `executionId` with a Losant API Node to poll for completion if needed.
 
-On error (e.g. notebook not found, execution limit exceeded), an error object is placed at `resultPath` or the workflow halts depending on error handling.
+On error (e.g. notebook not found, execution limit exceeded), an error object is placed at `resultPath` or the flow halts depending on error handling.
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Not available.

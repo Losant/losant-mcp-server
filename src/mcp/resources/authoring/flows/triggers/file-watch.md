@@ -1,6 +1,6 @@
 # File Watch Trigger (`type: "fileWatch"`)
 
-The File Watch Trigger fires a workflow whenever file or directory changes are observed on the Gateway Edge Agent's container or host file system.
+The File Watch Trigger fires a flow whenever file or directory changes are observed on the Gateway Edge Agent's container or host file system.
 
 ## Required Fields
 
@@ -11,15 +11,15 @@ The File Watch Trigger fires a workflow whenever file or directory changes are o
 | `meta.name` | `"fileWatch"` |
 | `meta.label` | `"File Watch"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Not available.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.3.0
 

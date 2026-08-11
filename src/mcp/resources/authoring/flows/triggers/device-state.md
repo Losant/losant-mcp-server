@@ -1,6 +1,6 @@
 # Device: State Trigger
 
-Fires when a device reports state. The most common cloud workflow trigger for reacting to sensor data. Cloud only.
+Fires when a device reports state. The most common cloud flow trigger for reacting to sensor data. Cloud only.
 
 Two `type` values select devices differently; both support the same config fields.
 
@@ -11,7 +11,7 @@ Two `type` values select devices differently; both support the same config field
 | `"deviceId"` | `"device"` | `"Device: State"` (default) | A specific device ID in `key` |
 | `"deviceTag"` | `"deviceTag"` | `"Device: State"` (default) | A tag `key/value` pair in `key` |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ### `deviceId` variant — one specific device
 
@@ -47,7 +47,7 @@ Two `type` values select devices differently; both support the same config field
 
 - `key` format is `"tagKey/tagValue"`. Use `"tagKey/"` (trailing slash) to match any device with a given tag key regardless of value. Use `"/tagValue"` to match any key with a given value.
 
-**Multiple devices or tags:** Each trigger node targets one device ID or one tag. To fire on multiple devices or multiple tags, add one trigger per device/tag — each as a separate entry in the workflow's `triggers` array with its own `key`.
+**Multiple devices or tags:** Each trigger node targets one device ID or one tag. To fire on multiple devices or multiple tags, add one trigger per device/tag — each as a separate entry in the flow's `triggers` array with its own `key`.
 
 ### Config — required fields
 
@@ -69,7 +69,7 @@ The UI always sends `triggerOn` and `batchBehavior`. Treat both as required.
 
 ### Payload at runtime — individual report
 
-Device state attributes are placed **directly on `data`**. `time` is the state report's own timestamp, not the workflow execution time.
+Device state attributes are placed **directly on `data`**. `time` is the state report's own timestamp, not the flow execution time.
 
 ```json
 {
@@ -92,6 +92,8 @@ Device state attributes are placed **directly on `data`**. `time` is the state r
 - `data` — only attributes reported and accepted in this update. Attributes not in the report or with invalid values are absent.
 - `meta` — present at root level only when the device included a meta value with the state report.
 - `triggerId` — the reporting device's ID.
+- `triggerType` — `"deviceId"` when triggered by the `deviceId` variant; `"deviceTag"` when triggered by the `deviceTag` variant.
+- When `config.allowInvalid: true` and an invalid report is received, `data` is `null` and `original` (root level, alongside `data`) contains the raw unparsed message string.
 
 ### Payload at runtime — batch report (`batchBehavior: "once"`)
 
@@ -114,17 +116,17 @@ When configured to fire once for the entire batch, `data` is an array. Attribute
 }
 ```
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 Not available.
 
 ## Idiom notes
 
-- **Use `deviceId` variant for per-device workflows, `deviceTag` variant for fleet-wide workflows.** The tag variant fires once per reporting device, not once per tag group.
+- **Use `deviceId` variant for per-device flows, `deviceTag` variant for fleet-wide flows.** The tag variant fires once per reporting device, not once per tag group.
 - **`batchBehavior: "once"` fires once across all matching devices.** Use it for fleet aggregations (e.g. "when any truck reports, compute the fleet average"). Use individual (no `batchBehavior`) when you need to act on each device's data separately.
 - **Filter by specific attributes using `attributeWhitelist` or `attributeBlacklist`.** Without a filter the trigger fires on any state report, even if the attributes you care about haven't changed. Narrowing the filter reduces unnecessary executions.
 - **`triggerId` is the reporting device's ID.** Reference it as `{{triggerId}}` in templates or as the payload path `triggerId` in payload path fields — there is no `data.deviceId` field on the device state trigger payload.

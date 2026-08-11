@@ -11,7 +11,7 @@ Serializes a value on the payload into a JSON string. Available in all flow clas
 | `meta.name` | `"json-encode"` |
 | `meta.label` | `"JSON Encode"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ```json
 {
@@ -28,10 +28,10 @@ Serializes a value on the payload into a JSON string. Available in all flow clas
 | `source` | **Required.** Payload path of the value to serialize. |
 | `destination` | **Required.** Payload path to write the JSON string. |
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Same as Cloud.

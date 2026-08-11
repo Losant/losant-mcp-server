@@ -1,6 +1,6 @@
 # AWS Nodes — Lambda, S3 Get, S3 Put
 
-Three nodes for interacting with Amazon Web Services from a workflow.
+Three nodes for interacting with Amazon Web Services from a flow.
 
 ## Required Fields
 
@@ -39,7 +39,7 @@ Send one set or the other on every node — not both. See the S3 node tables bel
 
 ---
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ### AWS Lambda Node (`type: "AwsLambdaNode"`)
 
@@ -70,7 +70,7 @@ Invokes an AWS Lambda function and optionally writes the response to the payload
 | `awsSecretAccessKey` | `""` | **Required** (direct method). AWS secret access key. |
 | `awsRegion` | `""` | **Required** (direct method). AWS region (e.g. `"us-east-1"`). |
 | `functionName` | `""` | **Required.** Lambda function name or ARN. |
-| `sourceMethod` | `"workflowPayload"` | What to send as the Lambda invocation payload. `"workflowPayload"` — send the full workflow payload. `"payloadPath"` — send the value at `sourceData` path. `"jsonTemplate"` — send `sourceData` rendered as a JSON template. |
+| `sourceMethod` | `"workflowPayload"` | What to send as the Lambda invocation payload. `"workflowPayload"` — send the full flow payload. `"payloadPath"` — send the value at `sourceData` path. `"jsonTemplate"` — send `sourceData` rendered as a JSON template. |
 | `sourceData` | `""` | **Required** when `sourceMethod` is `"payloadPath"` or `"jsonTemplate"`. |
 | `resultPath` | `""` | Payload path to write the Lambda response. |
 | `errorBehavior` | `"throw"` | `"throw"` — halt on error. `"payloadPath"` — write error to `errorPath`. |
@@ -210,11 +210,11 @@ On error:
 { "working": { "s3Result": { "success": false, "error": "Access Denied" } } }
 ```
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud for all three nodes.
 
-## Edge workflows
+## Edge flows
 
 **AWS Lambda** — available on all GEA versions. `timeoutTemplate` (per-invocation timeout in **milliseconds**, not seconds) requires GEA 1.47.0+. `errorBehavior`/`errorPath` require GEA **1.18.1+** on edge. The **credential method** (`credentialNameTemplate`) is not available on edge — use `awsAccessKeyId`/`awsSecretAccessKey`/`awsRegion` directly.
 

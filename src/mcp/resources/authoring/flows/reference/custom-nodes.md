@@ -1,21 +1,21 @@
 # Custom Nodes
 
-Custom Nodes are reusable groups of Losant workflow nodes packaged into a single node that appears in the application's workflow palette. They encapsulate common logic — API integrations, temperature conversions, redirect frameworks — so workflows can use them without duplicating the underlying implementation.
+Custom Nodes are reusable groups of Losant flow nodes packaged into a single node that appears in the application's flow palette. They encapsulate common logic — API integrations, temperature conversions, redirect frameworks — so flows can use them without duplicating the underlying implementation.
 
-Custom Nodes are themselves workflows with `flowClass: "customNode"`. Building one is like building a workflow, with a few structural differences described below.
+Custom Nodes are themselves flows with `flowClass: "customNode"`. Building one is like building a flow, with a few structural differences described below.
 
 ## Application vs. Edge Custom Nodes
 
 | Type | Used in | Minimum GEA |
 |---|---|---|
-| Application Custom Node | Application workflows, Experience workflows, other Application Custom Nodes | — |
-| Edge Custom Node | Edge workflows, other Edge Custom Nodes | 1.41.0 |
+| Application Custom Node | Application flows, Experience flows, other Application Custom Nodes | — |
+| Edge Custom Node | Edge flows, other Edge Custom Nodes | 1.41.0 |
 
 The type is set at creation and **cannot be changed later**. Choose the type based on where the node will be consumed.
 
-## Building a custom node — workflow structure
+## Building a custom node — flow structure
 
-A custom node uses `flowClass: "customNode"` and follows the same `triggers` + `nodes` structure as any workflow, with two key differences:
+A custom node uses `flowClass: "customNode"` and follows the same `triggers` + `nodes` structure as any flow, with two key differences:
 
 **1. One required trigger — `customNodeStart`**
 
@@ -49,11 +49,11 @@ A single-output custom node uses one `CustomNodeCapNode`. A branching custom nod
 }
 ```
 
-`config.resultSourcePath` points to the value on the payload to return to the outer workflow. If the custom node's output result is set to `"none"`, omit `resultSourcePath`.
+`config.resultSourcePath` points to the value on the payload to return to the outer flow. If the custom node's output result is set to `"none"`, omit `resultSourcePath`.
 
 ## Inputs
 
-User inputs are the fields that appear in the custom node's editor panel when a workflow uses the node. They are defined on the custom node resource (not in the workflow body). Each input has a unique ID; its value arrives at `data.<id>` in the node's execution.
+User inputs are the fields that appear in the custom node's editor panel when a flow uses the node. They are defined on the custom node resource (not in the flow body). Each input has a unique ID; its value arrives at `data.<id>` in the node's execution.
 
 | Input type | Value type | Notes |
 |---|---|---|
@@ -66,37 +66,37 @@ User inputs are the fields that appear in the custom node's editor panel when a 
 
 ## Output types and result
 
-**Single output** — one return node; the outer workflow continues on a single path.
+**Single output** — one return node; the outer flow continues on a single path.
 
-**Branching output** — two `CustomNodeCapNode` nodes with `meta.name: "custom-node-end-true"` and `meta.name: "custom-node-end-false"`; the outer workflow branches like a Conditional Node.
+**Branching output** — two `CustomNodeCapNode` nodes with `meta.name: "custom-node-end-true"` and `meta.name: "custom-node-end-false"`; the outer flow branches like a Conditional Node.
 
 The **output result** sets whether the return value is optional, required, or absent:
 - `"none"` — no value is returned; `config.resultSourcePath` is omitted from the Return Node.
-- `"optional"` — the outer workflow user can optionally specify a payload path for the returned value.
-- `"required"` — the outer workflow user must specify a payload path.
+- `"optional"` — the outer flow user can optionally specify a payload path for the returned value.
+- `"required"` — the outer flow user must specify a payload path.
 
 ## Versioning
 
-Custom node versioning follows workflow versioning rules, with important differences:
+Custom node versioning follows flow versioning rules, with important differences:
 
 ### Application Custom Nodes
 
-- Any version can be set as the **default** — workflows that don't pin a version run the default.
-- The **develop version runs live** in any workflow configured to use it. Changes to develop immediately affect all instances using it — including inside immutable workflow versions.
-- **Strong recommendation:** Publish a named version and set it as default before using in production. Never rely on `develop` in production workflows.
+- Any version can be set as the **default** — flows that don't pin a version run the develop version.
+- The **develop version runs live** in any flow configured to use it. Changes to develop immediately affect all instances using it — including inside immutable flow versions.
+- **Strong recommendation:** Publish a named version and set it as default before using in production. Never rely on `develop` in production flows.
 
 ### Edge Custom Nodes
 
 - The **develop version cannot be used** in any Edge Workflow. A named published version is always required.
 - The custom node must have a **Minimum Agent Version** set (GEA 1.41.0 is the earliest supported). The Edge Workflow's minimum agent version must be ≥ the custom node's minimum agent version.
 - To update a deployed Edge Custom Node: update develop → publish a new version → update the Edge Workflow to reference the new version → publish a new Edge Workflow version → deploy to devices.
-- The develop version **can** be deployed to a test device for interactive debugging via Live Look (same as edge workflows).
+- The develop version **can** be deployed to a test device for interactive debugging via Live Look (same as edge flows).
 
-## Using a custom node in a workflow
+## Using a custom node in a flow
 
-Once published, an Application Custom Node appears in the palette of Application and Experience workflows. An Edge Custom Node appears in the palette of Edge Workflows.
+Once published, an Application Custom Node appears in the palette of Application and Experience flows. An Edge Custom Node appears in the palette of Edge Flows.
 
-In the workflow body, the node is represented as a `CustomNodeExecuteNode`:
+In the flow body, the node is represented as a `CustomNodeExecuteNode`:
 
 ```json
 {
@@ -117,7 +117,7 @@ In the workflow body, the node is represented as a `CustomNodeExecuteNode`:
 
 - `config.customNodeId` — the ID of the custom node resource.
 - `config.customNodeVersion` — the version name to run, or `"develop"` (Application only; never for Edge).
-- `config.resultPath` — payload path in the **outer workflow** where the custom node's return value is written (omit if output result is `"none"`).
+- `config.resultPath` — payload path in the **outer flow** where the custom node's return value is written (omit if output result is `"none"`).
 - `config.fields` — array of `{ id, value }` objects mapping input IDs to values (static strings or Handlebars templates).
 - For branching custom nodes, `outputIds` has two entries: `[[falseNodeIds], [trueNodeIds]]` — index 0 fires when the `custom-node-end-false` cap node is reached, index 1 when `custom-node-end-true` is reached.
 

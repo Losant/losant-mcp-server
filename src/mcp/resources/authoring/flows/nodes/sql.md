@@ -1,6 +1,6 @@
 # SQL Node (`type: "SqlNode"`)
 
-The SQL Node allows a workflow to query or update values in a SQL database. Supports MSSQL, MySQL, PostgreSQL, and SQLite 3 (edge only for SQLite). Available in cloud, experience, and customNode workflows.
+The SQL Node allows a flow to query or update values in a SQL database. Supports MSSQL, MySQL, PostgreSQL, and SQLite 3 (edge only for SQLite). Available in cloud, experience, and customNode flows.
 
 ## Required Fields
 
@@ -11,9 +11,9 @@ The SQL Node allows a workflow to query or update values in a SQL database. Supp
 | `meta.name` | `"sql"` |
 | `meta.label` | `"SQL"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
-Two connection methods: service credential or direct configuration. Cloud and experience workflows support MSSQL, MySQL, and PostgreSQL only — SQLite 3 is edge-only.
+Two connection methods: service credential or direct configuration. Cloud and experience flows support MSSQL, MySQL, and PostgreSQL only — SQLite 3 is edge-only.
 
 **Credential method:**
 ```json
@@ -67,11 +67,11 @@ Two connection methods: service credential or direct configuration. Cloud and ex
 | `sslDataMethod` | `"payloadPath"` | When `sslOn: true`: `"jsonTemplate"` or `"payloadPath"`. |
 | `sslDataTemplate` | `""` | SSL configuration. **Required** when `sslOn: true`. |
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.5.0
 

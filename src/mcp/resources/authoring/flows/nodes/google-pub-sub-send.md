@@ -11,7 +11,7 @@ The GCP Pub/Sub Node publishes a message to a Google Cloud Pub/Sub topic. Suppor
 | `meta.name` | `"google-publish"` |
 | `meta.label` | `"GCP Pub/Sub"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Four auth methods: integration, service credential, JSON template, or payload path.
 
@@ -59,11 +59,11 @@ Four auth methods: integration, service credential, JSON template, or payload pa
 { "working": { "pubsubResult": { "success": true, "messageId": "1234567890" } } }
 ```
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.39.0
 

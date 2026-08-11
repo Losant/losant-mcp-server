@@ -1,6 +1,6 @@
 # Salesforce Cases Node (`type: "SalesforceNode"`)
 
-The Salesforce Cases Node allows a workflow to create, read, update, and delete Salesforce Case records. Targeted specifically at the Salesforce Case SObject.
+The Salesforce Cases Node allows a flow to create, read, update, and delete Salesforce Case records. Targeted specifically at the Salesforce Case SObject.
 
 ## Required Fields
 
@@ -11,7 +11,7 @@ The Salesforce Cases Node allows a workflow to create, read, update, and delete 
 | `meta.name` | `"salesforce-service"` |
 | `meta.label` | `"Salesforce Cases"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Authentication uses Salesforce username, password, and optional security token directly — there is no credential type for Salesforce.
 
@@ -76,10 +76,10 @@ Authentication uses Salesforce username, password, and optional security token d
 - **`count`**: `{ success: true, errors: [], count: <number> }`
 - **Error**: `{ success: false, errors: ["Error: <message>"] }`
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Same as Cloud (no minimum GEA version).

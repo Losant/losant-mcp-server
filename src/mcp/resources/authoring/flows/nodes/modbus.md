@@ -9,15 +9,15 @@ Two nodes for communicating with Modbus TCP, RTU serial, and ASCII serial device
 | `ModbusReadNode` | `data` | `modbus-read` | `"Modbus: Read"` |
 | `ModbusWriteNode` | `data` | `modbus-write` | `"Modbus: Write"` |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Not available.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.0.0
 

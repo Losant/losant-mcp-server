@@ -11,7 +11,7 @@ The Datadog Logs: Write Node sends one or more log messages to a Datadog instanc
 | `meta.name` | `"datadog-logs-write"` |
 | `meta.label` | `"Datadog Logs: Write"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Two auth methods: service credential (cloud/experience) or direct API key + site (edge).
 
@@ -43,11 +43,11 @@ Two auth methods: service credential (cloud/experience) or direct API key + site
 | `writePayloadPath` | `""` | **Required** (payloadPath). Payload path to log entries. |
 | `resultPath` | `""` | Payload path to write the send result. |
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 2.2.0
 

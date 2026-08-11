@@ -11,7 +11,7 @@ The Mailgun Node sends an email via a configured Mailgun account. Supports attac
 | `meta.name` | `"mailgun"` |
 | `meta.label` | `"Mailgun"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Two auth methods: service credential or direct API key.
 
@@ -59,11 +59,11 @@ Two auth methods: service credential or direct API key.
 { "working": { "sendResult": { "id": "<messageId@mailgun.org>", "message": "Queued. Thank you." } } }
 ```
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.48.0
 

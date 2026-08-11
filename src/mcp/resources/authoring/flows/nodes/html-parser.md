@@ -11,7 +11,7 @@ The HTML/XML Parser Node parses an HTML or XML document string and optionally ap
 | `meta.name` | `"html-parser"` |
 | `meta.label` | `"HTML/XML Parser"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ```json
 {
@@ -35,10 +35,10 @@ The HTML/XML Parser Node parses an HTML or XML document string and optionally ap
 | `resultFormatTemplate` | `"text"` | **Required.** Output format: `"text"` (visible text concatenated), `"xml"` (XML string), or `"json"` (structured JSON via xml-js). Template. |
 | `resultPath` | `""` | **Required.** Payload path to write the parsed result. **Always an array** — one element per matched element. Even without a selector the result is a one-element array containing the whole document. |
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Same as Cloud.

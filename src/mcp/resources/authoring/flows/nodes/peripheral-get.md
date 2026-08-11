@@ -1,6 +1,6 @@
 # Peripheral: Get Node (`type: "GetPeripheralNode"`)
 
-The Peripheral: Get Node retrieves peripheral or floating device records associated with the Edge Compute Device running the workflow. Up to 1,000 peripheral devices are synced to the gateway.
+The Peripheral: Get Node retrieves peripheral or floating device records associated with the Edge Compute Device running the flow. Up to 1,000 peripheral devices are synced to the gateway.
 
 ## Required Fields
 
@@ -11,15 +11,15 @@ The Peripheral: Get Node retrieves peripheral or floating device records associa
 | `meta.name` | `"get-peripheral"` |
 | `meta.label` | `"Peripheral: Get"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Not available.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.16.0
 

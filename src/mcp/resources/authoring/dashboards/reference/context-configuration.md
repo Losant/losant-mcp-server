@@ -257,9 +257,9 @@ Both patterns draw from the same root object available to any experience view:
 | `request.query` | Query string values |
 | `request.body` | POST/PATCH request body |
 | `experience.user` | Logged-in user's ID, tags, groups |
-| `pageData` | Any data the backing Experience Workflow computed and passed via the Endpoint Reply node |
+| `pageData` | Any data the backing Experience flow computed and passed via the Endpoint Reply node |
 
-`pageData` is the most flexible source — a backing workflow can query devices, look up records, and pass the results as a structured object, any field of which can flow into a dashboard context variable.
+`pageData` is the most flexible source — a backing flow can query devices, look up records, and pass the results as a structured object, any field of which can flow into a dashboard context variable.
 
 ---
 

@@ -28,19 +28,19 @@ A layout is the outer HTML wrapper that surrounds pages. It contains everything 
 
 **Real-world examples:**
 1. A single `"Main Layout"` containing the site header with a logo and nav links, `{{page}}` for content, and a footer — used by every authenticated route in the portal.
-2. Two layouts: `"AuthenticatedLayout"` (with user menu, logout link, branded nav) and `"PublicLayout"` (minimal, no user-specific content) — the backing workflow selects which layout to use based on whether the user is logged in, passing it to the Endpoint Reply node.
+2. Two layouts: `"AuthenticatedLayout"` (with user menu, logout link, branded nav) and `"PublicLayout"` (minimal, no user-specific content) — the backing flow selects which layout to use based on whether the user is logged in, passing it to the Endpoint Reply node.
 3. A layout with `{{section "pageStyles"}}` and `{{section "pageScripts"}}` slots so device-detail pages can inject a map library and a chart library without those scripts loading on every other page.
 
 ---
 
 ### `page` — what the endpoint actually sends to the browser
 
-A page is the primary content for a specific route. When an endpoint fires, it's a page that gets returned to the user — either directly via the endpoint's static reply, or via the Endpoint Reply node in a backing workflow. A page can use a layout as its wrapper, or stand alone with full HTML markup.
+A page is the primary content for a specific route. When an endpoint fires, it's a page that gets returned to the user — either directly via the endpoint's static reply, or via the Endpoint Reply node in a backing flow. A page can use a layout as its wrapper, or stand alone with full HTML markup.
 
 **Use a page when** an endpoint needs to serve something to a browser or API client: an HTML view, a JSON response, a CSS file, or an embedded dashboard. Every user-facing route needs at least one page.
 
 **Real-world examples:**
-1. A device detail HTML page at `GET /devices/{deviceId}` — the backing workflow queries the device, passes it as `pageData.device`, and the page renders the device's attributes, connection status, and a time-series chart embedded via `{{element 'dashboard' ...}}`.
+1. A device detail HTML page at `GET /devices/{deviceId}` — the backing flow queries the device, passes it as `pageData.device`, and the page renders the device's attributes, connection status, and a time-series chart embedded via `{{element 'dashboard' ...}}`.
 2. A JSON API endpoint at `GET /api/devices` — page has `headers: { "content-type": "application/json" }`, body is a Handlebars template that builds a JSON array from `pageData.devices`. No layout needed.
 3. A fleet overview page at `GET /fleet` — embeds a Losant dashboard using `{{element 'dashboard' dashboardId=pageData.dashboardId ctx=(obj experienceUserId=experience.user.id)}}` so each user sees only their fleet's data.
 

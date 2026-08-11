@@ -11,7 +11,7 @@ The SMS Node sends SMS messages via Losant's built-in SMS delivery service. **Ra
 | `meta.name` | `"structure-sms"` |
 | `meta.label` | `"SMS"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ```json
 {
@@ -41,10 +41,10 @@ The SMS Node sends SMS messages via Losant's built-in SMS delivery service. **Ra
 { "working": { "smsResult": { "number": "+15559876543", "success": true } } }
 ```
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Not available.

@@ -1,6 +1,6 @@
 # Beckhoff Trigger (`type: "beckhoff"`)
 
-The Beckhoff Trigger fires a workflow whenever one of the trigger's monitored symbols receives a new value on a Beckhoff Automation TwinCAT PLC.
+The Beckhoff Trigger fires a flow whenever one of the trigger's monitored symbols receives a new value on a Beckhoff Automation TwinCAT PLC.
 
 ## Required Fields
 
@@ -11,15 +11,15 @@ The Beckhoff Trigger fires a workflow whenever one of the trigger's monitored sy
 | `meta.name` | `"beckhoff"` |
 | `meta.label` | `"Beckhoff"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Not available.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.49.0
 

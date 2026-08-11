@@ -9,15 +9,15 @@ Two nodes for reading and writing data blocks on Siemens S7 PLCs (S7-300, S7-400
 | `S7ReadNode` | `data` | `s7-read` | `"Siemens S7: Read"` |
 | `S7WriteNode` | `data` | `s7-write` | `"Siemens S7: Write"` |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Not available.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.39.0
 

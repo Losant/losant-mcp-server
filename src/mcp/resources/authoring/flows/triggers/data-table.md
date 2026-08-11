@@ -1,6 +1,6 @@
 # Data Table Trigger (`type: "dataTable"`)
 
-The Data Table Trigger fires a workflow whenever a row is added, updated, or removed from a given Data Table.
+The Data Table Trigger fires a flow whenever a row is added, updated, or removed from a given Data Table.
 
 ## Required Fields
 
@@ -11,7 +11,7 @@ The Data Table Trigger fires a workflow whenever a row is added, updated, or rem
 | `meta.name` | `"dataTable"` |
 | `meta.label` | `"Data Table"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ```json
 {
@@ -157,17 +157,17 @@ The payload shape varies by action. `data.action` identifies which event fired.
 - Updates that result in no value changes.
 - Bulk deletes via "Delete all rows" in the UI or the Data Table Rows: Truncate API endpoint.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 Not available.
 
 ## Idiom notes
 
-- **Filter by enabling only `config.insert`, `config.update`, or `config.delete`** to handle only the events you care about. A workflow handling inserts and one handling deletes are cleaner than a single workflow with a switch on `data.action`.
-- **Bulk deletes ("Delete all rows" or the Truncate API) do not fire this trigger.** If you need to react to bulk operations, use a separate workflow with a Virtual Button or Timer that periodically checks row counts.
+- **Filter by enabling only `config.insert`, `config.update`, or `config.delete`** to handle only the events you care about. A flow handling inserts and one handling deletes are cleaner than a single flow with a switch on `data.action`.
+- **Bulk deletes ("Delete all rows" or the Truncate API) do not fire this trigger.** If you need to react to bulk operations, use a separate flow with a Virtual Button or Timer that periodically checks row counts.
 - **`data.newRow` contains the full row after an insert or update.** For updates and deletes, `data.oldRow` has the state before the change — use it to compute diffs.
 - **The trigger fires once per row, not once per batch.** A `bulkInsert` fires as a single `bulkInsert` event, not N individual `insert` events.

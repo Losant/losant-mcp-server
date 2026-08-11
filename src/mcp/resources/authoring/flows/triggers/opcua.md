@@ -1,6 +1,6 @@
 # OPC UA Trigger (`type: "opcua"`)
 
-The OPC UA Trigger fires a workflow whenever an Edge Compute Device receives a change message on the configured OPC UA monitored node.
+The OPC UA Trigger fires a flow whenever an Edge Compute Device receives a change message on the configured OPC UA monitored node.
 
 ## Required Fields
 
@@ -11,15 +11,15 @@ The OPC UA Trigger fires a workflow whenever an Edge Compute Device receives a c
 | `meta.name` | `"opcua"` |
 | `meta.label` | `"OPC UA"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Not available.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.9.0
 

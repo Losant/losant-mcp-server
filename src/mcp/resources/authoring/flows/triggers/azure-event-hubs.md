@@ -1,6 +1,6 @@
 # Azure Event Hubs Trigger (`type: "integration"`)
 
-The Azure Event Hubs Trigger fires a workflow whenever an integration receives an Azure Event Hubs message or connection event on the configured partition keys.
+The Azure Event Hubs Trigger fires a flow whenever an integration receives an Azure Event Hubs message or connection event on the configured partition keys.
 
 ## Required Fields
 
@@ -11,7 +11,7 @@ The Azure Event Hubs Trigger fires a workflow whenever an integration receives a
 | `meta.name` | `"azureEventHub"` |
 | `meta.label` | `"Azure Event Hubs"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 An Azure Event Hubs integration resource must exist in the application before this trigger can be used. Use `losant_query` with `resourceType=integration` to find the integration ID.
 
@@ -125,10 +125,10 @@ All event types share the same envelope. `data.type` identifies which event fire
 }
 ```
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 Not available.

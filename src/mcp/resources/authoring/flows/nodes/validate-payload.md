@@ -1,6 +1,6 @@
 # Validate Payload Node (`type: "ValidatePayloadNode"`)
 
-Validates a value on the workflow payload against a JSON Schema (draft-04). Branches on pass/fail — `outputIds[0]` = invalid (validation failed), `outputIds[1]` = valid (validation passed). Available in cloud, experience, customNode, and edge workflows.
+Validates a value on the flow payload against a JSON Schema (draft-04). Branches on pass/fail — `outputIds[0]` = invalid (validation failed), `outputIds[1]` = valid (validation passed). Available in cloud, experience, customNode, and edge flows.
 
 ## Required Fields
 
@@ -11,7 +11,7 @@ Validates a value on the workflow payload against a JSON Schema (draft-04). Bran
 | `meta.name` | `"validate-payload"` |
 | `meta.label` | `"Validate Payload"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ```json
 {
@@ -34,7 +34,7 @@ Validates a value on the workflow payload against a JSON Schema (draft-04). Bran
 |---|---|---|
 | `schemaType` | `"json"` | `"json"` — schema is a JSON string in `schema`. `"path"` — `schema` is a payload path pointing to the schema object. On edge, `"path"` requires GEA 1.1.0+; `"json"` works on all versions. |
 | `schema` | `""` | **Required.** The JSON Schema as a JSON-encoded string (when `schemaType: "json"`) or a payload path (when `schemaType: "path"`). |
-| `toValidatePath` | `""` | Payload path of the value to validate. If omitted, the entire workflow payload is validated. |
+| `toValidatePath` | `""` | Payload path of the value to validate. If omitted, the entire flow payload is validated. |
 | `errorsPath` | `""` | Payload path to write validation errors on the invalid branch. Errors are an array of objects describing each schema violation. |
 
 ### Wiring
@@ -42,10 +42,10 @@ Validates a value on the workflow payload against a JSON Schema (draft-04). Bran
 `outputIds[0]` — fires when validation fails. Check `errorsPath` for details.
 `outputIds[1]` — fires when the value passes schema validation.
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Same as Cloud.

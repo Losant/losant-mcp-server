@@ -1,6 +1,6 @@
 # Device: Startup Trigger (`type: "onBoot"`)
 
-Fires a workflow whenever the Gateway Edge Agent starts or restarts. Edge only. Minimum GEA 1.11.0.
+Fires a flow whenever the Gateway Edge Agent starts or restarts. Edge only. Minimum GEA 1.11.0.
 
 ## Required Fields
 
@@ -11,15 +11,15 @@ Fires a workflow whenever the Gateway Edge Agent starts or restarts. Edge only. 
 | `meta.name` | `"onBoot"` |
 | `meta.label` | `"Device: Startup"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Not available.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 ```json
 {
@@ -35,6 +35,7 @@ Not available.
 **Payload at runtime:**
 ```json
 {
+  "time": "<ISO timestamp of agent startup>",
   "data": {},
   "isConnectedToLosant": false,
   "triggerId": "<trigger key>",

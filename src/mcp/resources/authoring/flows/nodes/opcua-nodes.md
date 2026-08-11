@@ -1,6 +1,6 @@
 # OPC UA Nodes — Browse, Read, Write, Call
 
-Four nodes for interacting with OPC UA servers from edge workflows.
+Four nodes for interacting with OPC UA servers from edge flows.
 
 ## Required Fields
 
@@ -11,15 +11,15 @@ Four nodes for interacting with OPC UA servers from edge workflows.
 | `OpcUaWriteNode` | `data` | `opcua-write` | `"OPC UA: Write"` | 1.6.0 |
 | `OpcUaCallNode` | `data` | `opcua-call` | `"OPC UA: Call"` | 1.9.0 |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Not available.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 All four nodes share the same connection and security config fields.
 

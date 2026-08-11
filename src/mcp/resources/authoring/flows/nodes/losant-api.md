@@ -1,6 +1,6 @@
 # Losant API Node (`type: "LosantApiNode"`)
 
-The Losant API Node allows a workflow to make application-scoped requests against the Losant REST API — querying or modifying any resource available to the application. Use it to interact with Losant resources that don't have a dedicated node (dashboards, webhooks, integrations, etc.).
+The Losant API Node allows a flow to make application-scoped requests against the Losant REST API — querying or modifying any resource available to the application. Use it to interact with Losant resources that don't have a dedicated node (dashboards, webhooks, integrations, etc.).
 
 ## Required Fields
 
@@ -11,7 +11,7 @@ The Losant API Node allows a workflow to make application-scoped requests agains
 | `meta.name` | `"losantapi"` |
 | `meta.label` | `"Losant API"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 The node targets a specific API resource and action, then passes parameters for that call. By default it authenticates as the current application. An optional manual token can be provided to query a different application.
 
@@ -82,11 +82,11 @@ The node targets a specific API resource and action, then passes parameters for 
 { "error": { "type": "<error type>", "statusCode": 404, "message": "<description>" } }
 ```
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.23.0
 

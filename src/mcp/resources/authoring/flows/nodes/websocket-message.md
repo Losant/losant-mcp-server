@@ -1,6 +1,6 @@
 # WebSocket Message Node (`type: "WebsocketMessageNode"`)
 
-The WebSocket Message Node publishes a message to a WebSocket integration. The integration must be connected — messages are not queued if the connection is down. Available in cloud, experience, and customNode workflows.
+The WebSocket Message Node publishes a message to a WebSocket integration. The integration must be connected — messages are not queued if the connection is down. Available in cloud, experience, and customNode flows.
 
 ## Required Fields
 
@@ -11,7 +11,7 @@ The WebSocket Message Node publishes a message to a WebSocket integration. The i
 | `meta.name` | `"websocket"` |
 | `meta.label` | `"WebSocket"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ```json
 {
@@ -33,10 +33,10 @@ The WebSocket Message Node publishes a message to a WebSocket integration. The i
 | `messageTemplate` | `""` | **Required.** Message to send. Template. Always a string — use JSON template syntax for structured data. |
 | `encodingTemplate` | `"utf8"` | **Required.** Message encoding. Template. |
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Not available.

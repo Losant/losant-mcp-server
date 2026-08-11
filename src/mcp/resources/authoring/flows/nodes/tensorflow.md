@@ -11,7 +11,7 @@ The TensorFlow: Predict Node makes predictions against a pre-trained TensorFlow 
 | `meta.name` | `"tensorflow-predict"` |
 | `meta.label` | `"TensorFlow: Predict"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Not available.
 
@@ -25,11 +25,11 @@ Not available.
 
 `result` is an array of prediction values. On error: `{ "error": { "type": "TENSOR_FLOW_NODE_ERROR", "message": "..." } }`
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.10.0
 >

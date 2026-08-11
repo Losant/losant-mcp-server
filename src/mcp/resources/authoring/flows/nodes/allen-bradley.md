@@ -9,15 +9,15 @@ Two nodes for reading and writing tags on Allen-Bradley PLCs (EtherNet/IP protoc
 | `AllenBradleyReadNode` | `data` | `allen-bradley-read` | `"Allen-Bradley: Read"` |
 | `AllenBradleyWriteNode` | `data` | `allen-bradley-write` | `"Allen-Bradley: Write"` |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Not available.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.4.0
 

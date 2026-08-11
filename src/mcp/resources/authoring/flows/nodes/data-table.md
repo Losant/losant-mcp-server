@@ -11,7 +11,7 @@ Four nodes for querying, inserting, updating, and deleting rows in Losant Data T
 | `DataTableUpdateRowNode` | `data` | `update-table-row` | `"Table: Update Row"` |
 | `DataTableDeleteRowNode` | `data` | `delete-table-row` | `"Table: Delete Rows"` |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ### Table: Get Rows Node (`type: "DataTableQueryNode"`)
 
@@ -174,12 +174,12 @@ Selects the row(s) to update by **ID** or **query**, then applies the update via
 - All `*JsonTemplate` and `queryTemplate` fields are **LJSON templates** — the entire string is processed as a JSON template where string values can contain `{{}}` Handlebars references. See `losant://references/flow/templating`.
 - Use `queryTemplate: "{}"` to match all rows — be careful with delete/update.
 - `DataTableQueryNode` result: access rows as `{{working.rows.items.[0].columnName}}`.
-- None of these nodes have `errorBehavior`. API-level errors (e.g. invalid query, row not found) write `{ error: { type, message } }` to `resultPath` and the workflow continues. System errors route to the Workflow Error trigger.
+- None of these nodes have `errorBehavior`. API-level errors (e.g. invalid query, row not found) write `{ error: { type, message } }` to `resultPath` and the flow continues. System errors route to the Workflow Error trigger.
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Not available.

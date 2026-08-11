@@ -1,6 +1,6 @@
 # Annotation Node (`type: "AnnotationNode"`)
 
-A visual-only node that displays a text label on the workflow canvas. Has no runtime behavior and does not affect payload or execution. Available in all flow classes.
+A visual-only node that displays a text label on the flow canvas. Has no runtime behavior and does not affect payload or execution. Available in all flow classes.
 
 ## Required Fields
 
@@ -11,7 +11,7 @@ A visual-only node that displays a text label on the workflow canvas. Has no run
 | `meta.name` | `"note"` |
 | `meta.label` | `"Annotation"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ```json
 {
@@ -40,10 +40,10 @@ A visual-only node that displays a text label on the workflow canvas. Has no run
 | `width` | `260` | Width in pixels. Must be a multiple of 20. UI range: 100–600. |
 | `height` | `220` | Height in pixels. Must be a multiple of 20. UI range: 100–600. |
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Same as Cloud.

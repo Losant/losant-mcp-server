@@ -11,7 +11,7 @@ The Particle Call Node calls a remote function on a Particle device via the Part
 | `meta.name` | `"particle-call"` |
 | `meta.label` | `"Particle Call"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Two connection methods: integration or direct access token.
 
@@ -45,11 +45,11 @@ Two connection methods: integration or direct access token.
 | `argPayloadPath` | `""` | **Required** when `argMethod: "payloadPath"`. Payload path to argument. |
 | `resultPath` | `""` | Payload path to write `{ device info, return_value }` or `{ error }`. |
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.39.0
 

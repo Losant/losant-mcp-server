@@ -20,7 +20,7 @@ The **envelope, layout grid, and shared block shape** are described here in full
 
 ## One resource, no versioning
 
-Unlike workflows, a dashboard has **no version model**. There is one mutable document per dashboard. PATCH edits go live immediately for everyone viewing the dashboard on next refresh.
+Unlike flows, a dashboard has **no version model**. There is one mutable document per dashboard. PATCH edits go live immediately for everyone viewing the dashboard on next refresh.
 
 - `POST /applications/{appId}/dashboards` to create.
 - `PATCH /applications/{appId}/dashboards/{dashboardId}` to update name, blocks, context, refresh rate, access, etc.
@@ -171,7 +171,7 @@ Use this to pick the right block before looking up its spec.
 | **Device & fleet tables** | `device-state-table`, `device-list`, `device-count`, `device-log` | Showing device metadata, attribute state, or connectivity across a fleet |
 | **Location** | `map`, `heatmap`, `position-chart` | Visualizing where devices are or have been (GPS or image-coordinate) |
 | **Events & status** | `event-list`, `open-event-indicator`, `indicator` | Surfacing alerts, event state, or computed go/no-go status |
-| **Control & interaction** | `input` | Letting viewers send device commands or trigger workflows |
+| **Control & interaction** | `input` | Letting viewers send device commands or trigger flows |
 | **Visual & layout** | `image`, `image-overlay`, `section-header`, `iframe` | SCADA panels, background images, dividers, embedded external pages |
 | **Custom rendering** | `custom-chart`, `custom-html` | Vega/Vega-Lite visualizations or arbitrary HTML/JS |
 | **Administrative lists** | `application-list`, `dashboard-list`, `workflow-list`, `data-table` | Showing platform resources, not device telemetry |

@@ -1,6 +1,6 @@
 # Event Nodes — Create, Get, Update, Delete
 
-Four nodes for managing Losant application events within a workflow.
+Four nodes for managing Losant application events within a flow.
 
 ## Required Fields
 
@@ -13,7 +13,7 @@ Four nodes for managing Losant application events within a workflow.
 
 **Note:** None of the four event nodes support `errorBehavior`/`errorPath`. API-level failures write an error to `resultPath` (as `{ error: { type, message } }`); all other errors throw.
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ### Event: Create Node (`type: "CreateEventNode"`)
 
@@ -169,7 +169,7 @@ Updates one or many events. Mode is stored in **`meta.mode`**. The data to apply
     "targetEventIdTemplate": "{{working.event.id}}",
     "dataMethod": "individualFields",
     "stateTemplate": "acknowledged",
-    "commentTemplate": "Acknowledged by automated workflow",
+    "commentTemplate": "Acknowledged by automated flow",
     "levelTemplate": "",
     "subjectTemplate": "",
     "deviceIdTemplate": "",
@@ -350,10 +350,10 @@ Deletes one or more events. Mode is stored in **`meta.mode`**.
 - Link events to devices via `deviceIdTemplate` to enable Event List dashboard blocks.
 - Store structured context via `dataSourceType: "jsonTemplate"` and `dataSourceJson: "{\"temp\":{{data.attributes.tempC}}}"`.
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Not available.

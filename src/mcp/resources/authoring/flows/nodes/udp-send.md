@@ -11,15 +11,15 @@ The UDP Send Node sends a UDP datagram to a destination host and port from the G
 | `meta.name` | `"udp-send"` |
 | `meta.label` | `"UDP Send"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Not available.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.2.0
 

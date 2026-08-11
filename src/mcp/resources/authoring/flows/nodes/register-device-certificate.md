@@ -1,11 +1,11 @@
 ---
 name: losant-register-device-certificate
-description: Registers a new device certificate for MQTT broker authentication within the current Losant application. Available in cloud and experience workflows.
+description: Registers a new device certificate for MQTT broker authentication within the current Losant application. Available in cloud and experience flows.
 ---
 
 # Device Certificate: Register Node (`type: "RegisterDeviceCertificateNode"`)
 
-Registers a new X.509 device certificate for authenticating against the Losant MQTT Broker. The certificate must be signed by an application Certificate Authority already registered in the application. Optionally associates the certificate with a specific device and configures connection restrictions (IP allowlist and MQTT topic filter). Available in cloud (Application) and experience workflows.
+Registers a new X.509 device certificate for authenticating against the Losant MQTT Broker. The certificate must be signed by an application Certificate Authority already registered in the application. Optionally associates the certificate with a specific device and configures connection restrictions (IP allowlist and MQTT topic filter). Available in cloud (Application) and experience flows.
 
 ## Required Fields
 
@@ -16,7 +16,7 @@ Registers a new X.509 device certificate for authenticating against the Losant M
 | `meta.name` | `"register-device-certificate"` |
 | `meta.label` | `"Device Certificate: Register"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Three data methods are available. **`dataMethod`** controls which fields are used.
 
@@ -53,8 +53,8 @@ Three data methods are available. **`dataMethod`** controls which fields are use
 | `statusTemplate` | `"active"` | `"active"` (default) or `"inactive"`. Template. |
 | `deviceIdTemplate` | `""` | Optional Losant device ID to associate with this certificate. Template. A certificate can be associated with at most one device; once assigned, the device cannot be changed. |
 | `filterTypeTemplate` | `""` | MQTT topic filter policy: `"none"` — deny all; `"all"` — allow all; `"whitelist"` — allow only listed topics; `"blacklist"` — allow all except listed topics. Template. |
-| `pubTopicsTemplate` | `[]` | Array of publish topic strings (each templateable). **Required** when `filterTypeTemplate` is `"whitelist"` or `"blacklist"` and `subTopicsTemplate` is also empty — at least one topic between the two arrays is required. Omit when `filterTypeTemplate` is `"all"` or `"none"`. |
-| `subTopicsTemplate` | `[]` | Array of subscribe topic strings (each templateable). Same rules as `pubTopicsTemplate`. |
+| `pubTopicsTemplate` | `[]` | Array of publish topic strings (each templateable). When `filterTypeTemplate` is `"whitelist"` or `"blacklist"`, at least one entry across `pubTopicsTemplate` **and** `subTopicsTemplate` combined is required. Omit when `filterTypeTemplate` is `"all"` or `"none"`. |
+| `subTopicsTemplate` | `[]` | Array of subscribe topic strings (each templateable). Same combined-non-empty requirement as `pubTopicsTemplate` when `filterTypeTemplate` is `"whitelist"` or `"blacklist"`. |
 | `addressFilterTypeTemplate` | `""` | IP address filter policy: `"all"` — allow all; `"whitelist"` — allow only listed addresses; `"blacklist"` — deny listed addresses. Template. |
 | `addressesTemplate` | `[]` | Array of IP address or CIDR strings (each templateable). **Required** when `addressFilterTypeTemplate` is `"whitelist"` or `"blacklist"`. Omit when `"all"`. |
 | `resultPath` | `""` | Optional payload path to write the result. |
@@ -132,22 +132,22 @@ Three data methods are available. **`dataMethod`** controls which fields are use
 
 On **API or validation error**, `resultPath` receives `{ "error": { "type": "<type>", "message": "<description>" } }` — the node does not throw for these cases. Execution continues to `outputIds[0]`; check `working.registeredCert.error` downstream.
 
-Unexpected internal errors (not API errors) re-throw and halt the workflow.
+Unexpected internal errors (not API errors) re-throw and halt the flow.
 
 **`resultPath` is optional** — if omitted the result is silently discarded.
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Not available.
 
-## Embedded workflows
+## Embedded flows
 
 Not available.
 
-## Custom Node workflows
+## Custom Node flows
 
 Same as Cloud.

@@ -1,6 +1,6 @@
 # Google Cloud Nodes — BigQuery, Storage Get, Storage Put, Function, ML
 
-Five nodes for interacting with Google Cloud Platform services from a workflow.
+Five nodes for interacting with Google Cloud Platform services from a flow.
 
 ## Required Fields
 
@@ -41,7 +41,7 @@ The field name for the JWT credential data differs by node type — GCS uses `jw
 
 ---
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ### GCP: BigQuery Node (`type: "GoogleBigQueryNode"`)
 
@@ -259,11 +259,11 @@ Sends data to Google Cloud ML (Vertex AI) and retrieves model predictions.
 | `instancesPath` | `""` | **Required.** Payload path containing the array of instances to send for prediction. |
 | `resultPath` | `""` | **Required.** Payload path to write the prediction results. |
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud for all five nodes.
 
-## Edge workflows
+## Edge flows
 
 **GCP: BigQuery** and **GCP: ML** — available on all GEA versions.
 

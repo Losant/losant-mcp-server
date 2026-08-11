@@ -1,6 +1,6 @@
 # Data Query Nodes — Time Series, Gauge
 
-Two nodes for querying device state data from the Losant platform. Available in cloud, experience, and customNode workflows.
+Two nodes for querying device state data from the Losant platform. Available in cloud, experience, and customNode flows.
 
 ## Required Fields
 
@@ -9,7 +9,7 @@ Two nodes for querying device state data from the Losant platform. Available in 
 | `TimeSeriesNode` | `data` | `time-series` | `"Data: Time Series"` |
 | `GaugeNode` | `data` | `gauge` | `"Data: Gauge Query"` |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ### Data: Time Series Node (`type: "TimeSeriesNode"`)
 
@@ -176,10 +176,10 @@ If no devices are found or no data is available, an empty object `{}` is placed 
 
 **Max data:** 30 MB per query execution.
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Not available.

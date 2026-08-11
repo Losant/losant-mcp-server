@@ -1,6 +1,6 @@
 # Serial Trigger (`type: "serial"`)
 
-The Serial Trigger fires a workflow whenever the Edge Compute Device receives enough data via a Serial connection to satisfy the configured parse method.
+The Serial Trigger fires a flow whenever the Edge Compute Device receives enough data via a Serial connection to satisfy the configured parse method.
 
 ## Required Fields
 
@@ -11,15 +11,15 @@ The Serial Trigger fires a workflow whenever the Edge Compute Device receives en
 | `meta.name` | `"serial"` |
 | `meta.label` | `"Serial"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Not available.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.6.0
 
@@ -97,7 +97,7 @@ Fires when the configured number of bytes has been received.
 | `config.path` | `""` | 1.6.0 | **Required.** Serial port path (e.g. `/dev/ttyUSB0`). |
 | `config.baudRate` | `9600` | 1.6.0 | **Required.** Communication speed. Any positive integer (GEA 1.19.2+). Pre-1.19.2: must be one of `110`, `300`, `600`, `1200`, `2400`, `4800`, `9600`, `14400`, `19200`, `38400`, `57600`, `115200`, `128000`, `256000`. |
 | `config.encoding` | `"utf8"` | 1.6.0 | **Required.** Output encoding for received data: `"utf8"`, `"ascii"`, `"utf16le"`, `"base64"`, `"binary"`, `"hex"`. |
-| `config.delimiter` | `""` | 1.6.0 | Required in delimiter mode. Character or string that triggers the workflow. |
+| `config.delimiter` | `""` | 1.6.0 | Required in delimiter mode. Character or string that triggers the flow. |
 | `config.delimiterEncoding` | `"utf8"` | 1.19.2 | Encoding for the delimiter value: `"utf8"`, `"ascii"`, `"utf16le"`, `"base64"`, `"binary"`, `"hex"`. |
 | `config.byteLength` | `""` | 1.6.0 | Required in byte length mode. Number of bytes to accumulate before firing. |
 | `config.parity` | `"none"` | 1.19.0 | `"none"`, `"even"`, `"odd"`, `"mark"`, `"space"`. Fixed at `"none"` for GEA < 1.19.0. |

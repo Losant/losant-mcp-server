@@ -9,7 +9,7 @@ Two nodes for converting between CSV strings and arrays of objects.
 | `CSVDecodeNode` | `logic` | `csv-decode` | `"CSV: Decode"` |
 | `CSVEncodeNode` | `logic` | `csv-encode` | `"CSV: Encode"` |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ### CSV: Decode Node (`type: "CSVDecodeNode"`)
 
@@ -78,11 +78,11 @@ Converts an array of row objects into a CSV string.
 | `headerTemplateType` | `"objectKeys"` | Where to get column headers: `"objectKeys"` (use row object keys), `"stringTemplates"` (explicit list), or `"payloadPath"` (path to array of header strings). |
 | `headerTemplate` | — | Used when `headerTemplateType` is `"stringTemplates"` or `"payloadPath"`. |
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.6.0
 

@@ -1,11 +1,11 @@
 ---
 name: losant-edge-deploy
-description: Schedules deployment of one or more edge workflow versions to edge compute devices, or schedules their removal. Available in cloud and experience workflows.
+description: Schedules deployment of one or more edge flow versions to edge compute devices, or schedules their removal. Available in cloud and experience flows.
 ---
 
 # Edge: Deploy Node (`type: "EdgeDeployNode"`)
 
-Schedules deployment of one or more edge workflow versions to one or more edge compute devices, or schedules their removal. Deployments are queued asynchronously — the node does not wait for the GEA to pull and apply the version. Available in cloud (Application) and experience workflows only.
+Schedules deployment of one or more edge flow versions to one or more edge compute devices, or schedules their removal. Deployments are queued asynchronously — the node does not wait for the GEA to pull and apply the version. Available in cloud (Application) and experience flows only.
 
 ## Required Fields
 
@@ -16,9 +16,9 @@ Schedules deployment of one or more edge workflow versions to one or more edge c
 | `meta.name` | `"edge-deploy"` |
 | `meta.label` | `"Edge: Deploy"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
-### Individual fields — one workflow at a time (`flowsMethod: "stringTemplate"`)
+### Individual fields — one flow at a time (`flowsMethod: "stringTemplate"`)
 
 ```json
 {
@@ -40,8 +40,8 @@ Schedules deployment of one or more edge workflow versions to one or more edge c
 
 | Config field | Default | Notes |
 |---|---|---|
-| `flowsMethod` | `"stringTemplate"` | **Required.** How the workflow list is provided: `"stringTemplate"` — inline array; `"payloadPath"` — payload path; `"jsonTemplate"` — JSON template. |
-| `flowsTemplate` | `[]` | **Required** when `flowsMethod: "stringTemplate"`. Array of 1–25 `{ flowIdTemplate, flowVersionTemplate }` objects. `flowIdTemplate`: the edge workflow ID (template). `flowVersionTemplate`: the published version name to deploy (template), or `null` to schedule removal. Must be unique by `flowId`. Cannot use `"develop"`. |
+| `flowsMethod` | `"stringTemplate"` | **Required.** How the flow list is provided: `"stringTemplate"` — inline array; `"payloadPath"` — payload path; `"jsonTemplate"` — JSON template. |
+| `flowsTemplate` | `[]` | **Required** when `flowsMethod: "stringTemplate"`. Array of 1–25 `{ flowIdTemplate, flowVersionTemplate }` objects. `flowIdTemplate`: the edge flow ID (template). `flowVersionTemplate`: the published version name to deploy (template), or `null` to schedule removal. Must be unique by `flowId`. Cannot use `"develop"`. |
 | `deviceIdTemplate` | `""` | Target a single device by ID. **Required** when not using `deviceQueryTemplate`. Template. |
 | `deviceQueryTemplate` | `""` | Target multiple devices matching an advanced query. **Required** when not using `deviceIdTemplate`. Template. Non-edge devices matched by the query are silently ignored. |
 | `resultPath` | `""` | Optional payload path to write the result. |
@@ -112,24 +112,24 @@ Schedules deployment of one or more edge workflow versions to one or more edge c
 }
 ```
 
-`scheduled` counts workflow entries that were successfully queued (not the number of target devices).
+`scheduled` counts flow entries that were successfully queued (not the number of target devices).
 
-**Validation errors throw** (nothing written to `resultPath`, workflow halts): empty `flowsTemplate`, more than 25 entries, duplicate `flowId` values, `"develop"` version, unresolvable `deviceIdTemplate`, or invalid `deviceQueryTemplate`.
+**Validation errors throw** (nothing written to `resultPath`, flow halts): empty `flowsTemplate`, more than 25 entries, duplicate `flowId` values, `"develop"` version, unresolvable `deviceIdTemplate`, or invalid `deviceQueryTemplate`.
 
 **`resultPath` is optional** — if omitted, the node runs silently and continues to `outputIds[0]` regardless of the result.
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Not available.
 
-## Embedded workflows
+## Embedded flows
 
 Not available.
 
-## Custom Node workflows
+## Custom Node flows
 
 Same as Cloud.

@@ -1,6 +1,6 @@
 # SAML Nodes — Login URL, Verify
 
-Two nodes for SAML-based single sign-on with Experience Users. Available in cloud, experience, and customNode workflows.
+Two nodes for SAML-based single sign-on with Experience Users. Available in cloud, experience, and customNode flows.
 
 ## Required Fields
 
@@ -9,7 +9,7 @@ Two nodes for SAML-based single sign-on with Experience Users. Available in clou
 | `SamlLoginRedirectNode` | `experience` | `saml-login` | `"SAML: Login URL"` |
 | `SamlVerifyNode` | `experience` | `saml-verify` | `"SAML: Verify"` |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ### SAML: Login URL Node (`type: "SamlLoginRedirectNode"`)
 
@@ -67,10 +67,10 @@ Verifies a SAML response returned by the Identity Provider after authentication.
 
 On the valid branch, `resultPath` contains the user attributes asserted by the IdP. Use these to look up or create an Experience User.
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Not available.

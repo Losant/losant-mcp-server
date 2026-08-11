@@ -11,15 +11,15 @@ The Run Executable Node executes a shell command or script on the Gateway Edge A
 | `meta.name` | `"run-executable"` |
 | `meta.label` | `"Run Executable"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Not available.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.0.0
 

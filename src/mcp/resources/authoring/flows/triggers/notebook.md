@@ -1,6 +1,6 @@
 # Notebook Trigger (`type: "notebook"`)
 
-Fires a workflow whenever the selected Losant Notebook completes an execution, whether successfully or with errors. Cloud only.
+Fires a flow whenever the selected Losant Notebook completes an execution, whether successfully or with errors. Cloud only.
 
 ## Required Fields
 
@@ -11,7 +11,7 @@ Fires a workflow whenever the selected Losant Notebook completes an execution, w
 | `meta.name` | `"notebook"` |
 | `meta.label` | `"Notebook"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ```json
 {
@@ -28,6 +28,7 @@ Fires a workflow whenever the selected Losant Notebook completes an execution, w
 **Payload at runtime:**
 ```json
 {
+  "time": "<ISO timestamp>",
   "data": {
     "success": true,
     "notebook": { "...": "full notebook object" },
@@ -52,11 +53,11 @@ Fires a workflow whenever the selected Losant Notebook completes an execution, w
 - `data.execution.executionErrors` — array of error objects if the notebook failed.
 - `data.execution.templateContext` — stringified JSON from the notebook; use a JSON Decode node to parse it.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 Not available.
 
@@ -65,4 +66,4 @@ Not available.
 - **Always check `data.success` before acting on outputs.** A `false` value means the notebook execution failed — inspect `data.execution.executionErrors` for details before trying to use output files or `templateContext`.
 - **`data.execution.templateContext` is a JSON-encoded string.** Use a JSON Decode node to parse it into a usable object before accessing its properties.
 - **Output file URLs in `data.execution.outputInfo` are time-limited presigned URLs.** Download or forward them promptly — they expire and cannot be regenerated from the trigger payload.
-- **One trigger per notebook.** The `key` field targets a specific notebook by ID. If you need to react to multiple notebooks, use separate workflows or a single workflow with multiple notebook triggers in the `triggers` array.
+- **One trigger per notebook.** The `key` field targets a specific notebook by ID. If you need to react to multiple notebooks, use separate flows or a single flow with multiple notebook triggers in the `triggers` array.

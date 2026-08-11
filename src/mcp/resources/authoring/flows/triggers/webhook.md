@@ -1,6 +1,6 @@
 # Webhook Trigger (`type: "webhook"`)
 
-Fires a workflow whenever the selected webhook resource receives an HTTP request or WebSocket message. Cloud only.
+Fires a flow whenever the selected webhook resource receives an HTTP request or WebSocket message. Cloud only.
 
 ## Required Fields
 
@@ -11,7 +11,7 @@ Fires a workflow whenever the selected webhook resource receives an HTTP request
 | `meta.name` | `"webhook"` |
 | `meta.label` | `"Webhook"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ```json
 {
@@ -59,19 +59,19 @@ Fires three times per client lifecycle: `connect`, `message`, and `disconnect`. 
 - **`message`**: `data.message` is `{ "data": "<string>", "length": <bytes> }`.
 - **`disconnect`**: `data.message` is `{ "reason": "<string>", "statusCode": <code> }`. Platform codes: `1006` abnormal closure, `1008` rate limit, `1009` message too large, `1012` maintenance.
 
-`data.type` identifies the event. `data.headers` (original WebSocket upgrade headers) is present on all three events.
+`data.type` identifies the event. All three events also include `data.method` (always `"get"`), `data.path`, `data.query`, and `data.headers` (original WebSocket upgrade headers).
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 Not available.
 
 ## Idiom notes
 
 - **Check `data.replyId` before wiring a Webhook Reply node.** `data.replyId` is only present when the webhook resource is configured to wait for a reply. If absent, a reply node will fail.
-- **For WebSocket webhooks, the same `data.replyId` identifies the client across `connect`, `message`, and `disconnect` events.** Store it (e.g. in workflow storage) if you need to push messages back to a specific client later.
-- **Max payload size is 256 KB.** Requests exceeding this limit are rejected before the workflow fires. If your webhook receives large bodies, have the sender upload to a file or storage service and pass a reference instead.
-- **The first reply to a request wins.** If multiple workflows all trigger on the same webhook and send a reply, only the first one received by the platform is returned to the caller. Design for at most one reply per request.
+- **For WebSocket webhooks, the same `data.replyId` identifies the client across `connect`, `message`, and `disconnect` events.** Store it (e.g. in flow storage) if you need to push messages back to a specific client later.
+- **Max payload size is 256 KB.** Requests exceeding this limit are rejected before the flow fires. If your webhook receives large bodies, have the sender upload to a file or storage service and pass a reference instead.
+- **The first reply to a request wins.** If multiple flows all trigger on the same webhook and send a reply, only the first one received by the platform is returned to the caller. Design for at most one reply per request.

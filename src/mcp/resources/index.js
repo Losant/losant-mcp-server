@@ -32,7 +32,7 @@ const brokerHost = apiHost.replace(/^api\./, 'broker.');
 const infoPreamble = `# Losant MCP Server — Info
 
 ## About Losant
-Losant is an IoT application enablement platform for building, connecting, and managing IoT solutions at scale. It provides connected devices via MQTT and REST, a visual workflow engine for device automation and business logic, real-time dashboards for data visualization, Experience Builder for custom end-user web interfaces and APIs, and Edge Compute for running workflows locally on gateway devices without cloud dependency.
+Losant is an IoT application enablement platform for building, connecting, and managing IoT solutions at scale. It provides connected devices via MQTT and REST, a visual flow engine for device automation and business logic, real-time dashboards for data visualization, Experience Builder for custom end-user web interfaces and APIs, and Edge Compute for running flows locally on gateway devices without cloud dependency.
 
 ## Environment
 - **API URL**: ${apiUrl}
@@ -101,16 +101,16 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
       disclaimerLines.push('\nSee [losant://guides/experiences](losant://guides/experiences) for the versioning model, view sub-types, endpoint access control, and common procedures.');
     }
     if (filePath.endsWith('applicationDashboard.md') || filePath.endsWith('applicationDashboards.md')) {
-      disclaimerLines.push('\nSee [losant://guides/dashboards](losant://guides/dashboards) for the block catalog, layout rules, context variables, and common workflows.');
+      disclaimerLines.push('\nSee [losant://guides/dashboards](losant://guides/dashboards) for the block catalog, layout rules, context variables, and common flows.');
     }
     if (filePath.includes('applicationCertificate') || filePath.includes('applicationCertificateAuthority')) {
-      disclaimerLines.push('\nSee [losant://guides/device-auth](losant://guides/device-auth) for the API/UI naming difference (Device Certificate vs. applicationCertificate), certificate authority setup, and MQTT mutual TLS authentication workflow.');
+      disclaimerLines.push('\nSee [losant://guides/device-auth](losant://guides/device-auth) for the API/UI naming difference (Device Certificate vs. applicationCertificate), certificate authority setup, and MQTT mutual TLS authentication flow.');
     }
     if (filePath.endsWith('applicationKey.md') || filePath.endsWith('applicationKeys.md')) {
       disclaimerLines.push('\nSee [losant://guides/device-auth](losant://guides/device-auth) for MQTT credential fields, device restriction options, and the access secret one-time return behavior.');
     }
     if (filePath.endsWith('flow.md') || filePath.endsWith('flows.md') || filePath.endsWith('flowVersion.md') || filePath.endsWith('flowVersions.md')) {
-      disclaimerLines.push('\nSee [losant://guides/flows](losant://guides/flows) for the full workflow authoring guide — trigger catalog, node catalog, wiring model, payload reference, and templating.');
+      disclaimerLines.push('\nSee [losant://guides/flows](losant://guides/flows) for the full flow authoring guide — trigger catalog, node catalog, wiring model, payload reference, and templating.');
     }
     if (filePath.endsWith('data.md')) {
       disclaimerLines.push('- endpoint "timeSeriesQuery" used by tool `losant_timeseries` as operation "timeSeriesQuery"');
@@ -232,7 +232,7 @@ export default (server) => {
     new ResourceTemplate('losant://flow/nodes/{nodeName}', { list: undefined }),
     {
       title: 'Losant Flow Node',
-      description: 'Per-node authoring detail for Losant workflow nodes — discovered via losant://authoring/flow',
+      description: 'Per-node authoring detail for Losant flow nodes — discovered via losant://authoring/flow',
       mimeType: 'text/markdown'
     },
     async (uri, { nodeName }) => {
@@ -247,7 +247,7 @@ export default (server) => {
     new ResourceTemplate('losant://flow/triggers/{triggerName}', { list: undefined }),
     {
       title: 'Losant Flow Trigger',
-      description: 'Per-trigger authoring detail for Losant workflow triggers — discovered via losant://authoring/flow',
+      description: 'Per-trigger authoring detail for Losant flow triggers — discovered via losant://authoring/flow',
       mimeType: 'text/markdown'
     },
     async (uri, { triggerName }) => {

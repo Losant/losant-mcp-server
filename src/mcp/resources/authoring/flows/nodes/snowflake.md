@@ -1,6 +1,6 @@
 # Snowflake Node (`type: "SnowflakeNode"`)
 
-The Snowflake Node allows a workflow to execute SQL queries against a Snowflake data warehouse and return the results on the payload. Available in cloud, experience, and customNode workflows.
+The Snowflake Node allows a flow to execute SQL queries against a Snowflake data warehouse and return the results on the payload. Available in cloud, experience, and customNode flows.
 
 ## Required Fields
 
@@ -11,9 +11,9 @@ The Snowflake Node allows a workflow to execute SQL queries against a Snowflake 
 | `meta.name` | `"snowflake"` |
 | `meta.label` | `"Snowflake"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
-Cloud workflows authenticate via a Snowflake service credential.
+Cloud flows authenticate via a Snowflake service credential.
 
 ```json
 {
@@ -57,15 +57,15 @@ Cloud workflows authenticate via a Snowflake service credential.
 
 On error: `{ "working": { "result": { "error": { "message": "..." } } } }`
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.52.0
 
-Edge workflows authenticate directly with Snowflake credentials instead of a service credential.
+Edge flows authenticate directly with Snowflake credentials instead of a service credential.
 
 ```json
 {

@@ -1,6 +1,6 @@
 # Email Node (`type: "StructureEmailNode"`)
 
-Sends an email using Losant's built-in email delivery. No credential required. **Rate limited to 1 send per minute per workflow.** For production use, prefer SendGrid or Mailgun nodes. The From address is auto-generated from the workflow ID and cannot be customized. Available in cloud, experience, and customNode workflows.
+Sends an email using Losant's built-in email delivery. No credential required. **Rate limited to 1 send per minute per flow.** For production use, prefer SendGrid or Mailgun nodes. The From address is auto-generated from the flow ID and cannot be customized. Available in cloud, experience, and customNode flows.
 
 ## Required Fields
 
@@ -11,7 +11,7 @@ Sends an email using Losant's built-in email delivery. No credential required. *
 | `meta.name` | `"structure-email"` |
 | `meta.label` | `"Email"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ```json
 {
@@ -45,10 +45,10 @@ Sends an email using Losant's built-in email delivery. No credential required. *
 
 On error (throttled or send failure), `resultPath` receives `{ "error": { "type": "...", "message": "..." } }`.
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
-Not available. Use SendGrid or Mailgun nodes for email from edge workflows.
+Not available. Use SendGrid or Mailgun nodes for email from edge flows.

@@ -1,6 +1,6 @@
 # Email Trigger (`type: "inboundEmail"`)
 
-The Email Trigger fires a workflow whenever an email is sent to your application's email address or one of its subaddresses.
+The Email Trigger fires a flow whenever an email is sent to your application's email address or one of its subaddresses.
 
 ## Required Fields
 
@@ -11,7 +11,7 @@ The Email Trigger fires a workflow whenever an email is sent to your application
 | `meta.name` | `"inboundEmail"` |
 | `meta.label` | `"Email"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 Your application's email address is `<applicationId>@workflows.losant.com`. The trigger fires when an email arrives at that address (To, CC, or BCC).
 
@@ -85,10 +85,10 @@ Your application's email address is `<applicationId>@workflows.losant.com`. The 
 | Rate limit | 30 messages per 15-second window per application |
 | Attachment URL expiry | 7 days |
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 Not available.

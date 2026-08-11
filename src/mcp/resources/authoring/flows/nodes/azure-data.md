@@ -1,6 +1,6 @@
 # Azure Nodes — Blob Get, Blob Put, Function, Table Storage
 
-Four nodes for interacting with Microsoft Azure services from a workflow.
+Four nodes for interacting with Microsoft Azure services from a flow.
 
 ## Required Fields
 
@@ -32,7 +32,7 @@ Send one set or the other — not both. Credential method is not available on ed
 
 ---
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ### Azure Blob: Get Node (`type: "AzureBlobStorageGetNode"`)
 
@@ -185,7 +185,7 @@ Three auth options: service credential (`credentialNameTemplate`), API key (`api
 
 ### Azure Function output shape
 
-`resultPath` receives `{ body, statusCode, azureHeaders }` on success. The workflow always continues regardless of outcome — errors are written to `resultPath` rather than halting the workflow.
+`resultPath` receives `{ body, statusCode, azureHeaders }` on success. The flow always continues regardless of outcome — errors are written to `resultPath` rather than halting the flow.
 
 **Success:**
 ```json
@@ -283,11 +283,11 @@ The shape at `destination` varies by operation:
 
 **On error** — `{ "error": { "odata.error": { "code": "ResourceNotFound", "message": { "lang": "en-US", "value": "The specified resource does not exist." } } } }`
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud for all four nodes.
 
-## Edge workflows
+## Edge flows
 
 **Azure Blob: Get / Put** — minimum GEA 1.31.0. Credential method is not available on edge — use direct `accountTemplate` + `accountKeyTemplate`. Disk mode (`meta.mode: "disk"` for Put; `diskPathTemplate` for Get) available on GEA 2.1.0+.
 

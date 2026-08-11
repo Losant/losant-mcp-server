@@ -1,6 +1,6 @@
 # Endpoint Trigger (`type: "endpoint"`)
 
-The Endpoint Trigger fires a workflow when the selected Experience Endpoint receives an HTTP request, or when any endpoint request is received at a domain tied to the selected Experience Version.
+The Endpoint Trigger fires a flow when the selected Experience Endpoint receives an HTTP request, or when any endpoint request is received at a domain tied to the selected Experience Version.
 
 ## Required Fields
 
@@ -11,11 +11,11 @@ The Endpoint Trigger fires a workflow when the selected Experience Endpoint rece
 | `meta.name` | `"endpoint"` |
 | `meta.label` | `"Endpoint"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
-> **Not recommended.** Endpoint triggers in cloud workflows bypass Experience Version routing. Use `flowClass: "experience"` instead. Cloud support exists only for legacy reasons.
+> **Not recommended.** Endpoint triggers in cloud flows bypass Experience Version routing. Use `flowClass: "experience"` instead. Cloud support exists only for legacy reasons.
 
-Three selection modes are available in cloud workflows. `config.experienceVersion` is always sent and defaults to `"develop"`.
+Three selection modes are available in cloud flows. `config.experienceVersion` is always sent and defaults to `"develop"`.
 
 ### Specific endpoint in a version
 
@@ -61,11 +61,11 @@ Three selection modes are available in cloud workflows. `config.experienceVersio
 
 **`config.experienceVersion`** — Required for "specific endpoint" and "any endpoint in a specific version" modes. Defaults to `"develop"`. Omit only for "any endpoint in any version".
 
-The payload shape is identical to experience workflows.
+The payload shape is identical to experience flows.
 
-## Experience workflows
+## Experience flows
 
-> **Strongly recommended.** Always use `flowClass: "experience"` for endpoint triggers. Experience workflows are version-aware — a request to your `develop` domain fires only the develop version of the workflow, keeping routing behavior predictable. Using cloud workflows for endpoints bypasses versioning and leads to unpredictable behavior.
+> **Strongly recommended.** Always use `flowClass: "experience"` for endpoint triggers. Experience flows are version-aware — a request to your `develop` domain fires only the develop version of the flow, keeping routing behavior predictable. Using cloud flows for endpoints bypasses versioning and leads to unpredictable behavior.
 
 Two selection modes are available:
 
@@ -91,7 +91,7 @@ Fires only when the named endpoint receives a request. `key` is the Experience E
 
 ### Any endpoint in this version
 
-Fires on any request to any endpoint in the same Experience Version as the workflow. `key` is the zero ID. Useful for logging; replying from this mode is strongly discouraged as it may race with other endpoint triggers.
+Fires on any request to any endpoint in the same Experience Version as the flow. `key` is the zero ID. Useful for logging; replying from this mode is strongly discouraged as it may race with other endpoint triggers.
 
 ```json
 {
@@ -150,6 +150,7 @@ Fires on any request to any endpoint in the same Experience Version as the workf
 - `data.params` — path parameters extracted from the route definition (e.g. `/devices/:deviceId`).
 - `data.query` — URL query string parameters.
 - `data.replyId` — pass to an Endpoint Reply node to send a response. Every request must be replied to or the client will hang.
+- `experience.endpoint` — the full Experience Endpoint object that received the request. Always present.
 - `experience.user` — authenticated Experience User, or `null` for unauthenticated requests.
 - `experience.version` — the Experience Version name that received the request.
 - `experience.authInfo` — token details (`issuedAt`, `expiresAt`, `extraData`), or `null` if no token.
@@ -158,14 +159,14 @@ Fires on any request to any endpoint in the same Experience Version as the workf
 
 Fires for requests that match no endpoint (404), unauthorized requests (401/403). Does **not** fire for 429, 400, 413, or automatic OPTIONS/CORS replies.
 
-## Edge workflows
+## Edge flows
 
 Not available.
 
 ## Idiom notes
 
-- **Always use `flowClass: "experience"` for endpoint-handling workflows.** Cloud workflows bypass Experience Version routing, making behavior unpredictable across versions.
+- **Always use `flowClass: "experience"` for endpoint-handling flows.** Cloud flows bypass Experience Version routing, making behavior unpredictable across versions.
 - **Every request must be replied to.** Wire both success and error branches to an Endpoint Reply node — a hanging request will time out at the client.
 - **`replyId` must be passed to the Endpoint Reply node.** It comes from `data.replyId` in the payload. Always read it from the payload rather than hardcoding it.
-- **Avoid "any endpoint" triggers for reply workflows.** Multiple "any endpoint" triggers racing to reply the same request leads to undefined behavior. Use them only for logging or analytics.
+- **Avoid "any endpoint" triggers for reply flows.** Multiple "any endpoint" triggers racing to reply the same request leads to undefined behavior. Use them only for logging or analytics.
 - **Static replies on the endpoint itself take precedence over flow replies.** If `staticReply` is set on the endpoint resource, the flow's Endpoint Reply output is ignored.

@@ -1,6 +1,6 @@
 # Latch Node (`type: "LatchNode"`)
 
-Branches based on a boolean condition that only transitions when the condition changes state. Fires on the first true evaluation, then only fires again after the value goes false and returns to true. Useful for de-bouncing state changes (e.g. "alert once when temperature exceeds threshold, not on every reading"). Available in cloud, experience, customNode, and edge workflows. Not available on embedded.
+Branches based on a boolean condition that only transitions when the condition changes state. Fires on the first true evaluation, then only fires again after the value goes false and returns to true. Useful for de-bouncing state changes (e.g. "alert once when temperature exceeds threshold, not on every reading"). Available in cloud, experience, customNode, and edge flows. Not available on embedded.
 
 ## Required Fields
 
@@ -11,7 +11,7 @@ Branches based on a boolean condition that only transitions when the condition c
 | `meta.name` | `"latch"` |
 | `meta.label` | `"Latch"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ```json
 {
@@ -53,10 +53,10 @@ The Latch node is a branching node — it does not write a result itself, but th
 
 All five are optional and can each be set to any payload path, including an existing path to overwrite it.
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Same as Cloud.

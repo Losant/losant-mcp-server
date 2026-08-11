@@ -1,6 +1,6 @@
 # Resource Job Nodes — Execute, Acknowledge
 
-Two nodes for managing Resource Job executions from within a workflow. These are used together: Job: Execute starts a job run, and Job: Acknowledge is called inside the job's iteration workflow to mark each item as succeeded or failed.
+Two nodes for managing Resource Job executions from within a flow. These are used together: Job: Execute starts a job run, and Job: Acknowledge is called inside the job's iteration flow to mark each item as succeeded or failed.
 
 ## Required Fields
 
@@ -9,7 +9,7 @@ Two nodes for managing Resource Job executions from within a workflow. These are
 | `ResourceJobExecuteNode` | `output` | `resource-job-execute` | `"Job: Execute"` |
 | `ResourceJobAcknowledgeNode` | `output` | `resource-job-acknowledge` | `"Job: Acknowledge"` |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ### Job: Execute Node (`type: "ResourceJobExecuteNode"`)
 
@@ -33,7 +33,7 @@ Requests execution of a Resource Job. Does not wait for the job to complete — 
 | Config field | Default | Notes |
 |---|---|---|
 | `resourceJobIdTemplate` | `""` | **Required.** Resource Job ID or a template resolving to one. |
-| `contextTemplateType` | `"none"` | `"none"` — no context. `"jsonTemplate"` — context from `contextTemplate` as JSON. `"payloadPath"` — context from `contextTemplate` as a payload path. `"workflowPayload"` — send the full workflow payload as context. |
+| `contextTemplateType` | `"none"` | `"none"` — no context. `"jsonTemplate"` — context from `contextTemplate` as JSON. `"payloadPath"` — context from `contextTemplate` as a payload path. `"workflowPayload"` — send the full flow payload as context. |
 | `contextTemplate` | `""` | **Required** when `contextTemplateType` is `"jsonTemplate"` or `"payloadPath"`. |
 | `resultPath` | `""` | Payload path to write `{ "executionId": "..." }` on success or `{ "error": { "type", "message" } }` on failure. |
 
@@ -41,7 +41,7 @@ Requests execution of a Resource Job. Does not wait for the job to complete — 
 
 ### Job: Acknowledge Node (`type: "ResourceJobAcknowledgeNode"`)
 
-Marks an iteration of a Resource Job as succeeded or failed. This node is used inside the workflow triggered by the `resourceJobIteration` trigger — one Acknowledge node must be reached per iteration to signal completion to the job runner.
+Marks an iteration of a Resource Job as succeeded or failed. This node is used inside the flow triggered by the `resourceJobIteration` trigger — one Acknowledge node must be reached per iteration to signal completion to the job runner.
 
 ```json
 {
@@ -71,10 +71,10 @@ Marks an iteration of a Resource Job as succeeded or failed. This node is used i
 
 The accumulator value is available on the next iteration's payload at `data.accumulator`. Use it to pass state between iterations (e.g. running totals, collected IDs). In parallel mode, the accumulator is ignored.
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Not available.

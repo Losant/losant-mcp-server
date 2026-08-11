@@ -11,9 +11,9 @@ Two `type` values select devices differently; both use the same `config.seconds`
 | `"deviceIdInactivity"` | `"deviceIdsTagsInactivity"` | `"Device: Inactive"` (default) | A specific device ID in `key` |
 | `"deviceTagInactivity"` | `"deviceIdsTagsInactivity"` | `"Device: Inactive"` (default) | A tag `key/value` pair in `key` |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
-The trigger fires individually per matching device — if 10 devices match the tag and all exceed the threshold at once, the workflow fires 10 times.
+The trigger fires individually per matching device — if 10 devices match the tag and all exceed the threshold at once, the flow fires 10 times.
 
 **Multiple devices or tags:** Each trigger targets one device ID or one tag. Add one trigger per device/tag as separate entries in the `triggers` array.
 
@@ -83,11 +83,11 @@ The trigger fires individually per matching device — if 10 devices match the t
 - Inactivity is measured by state report **arrival time**, not the timestamp in the state data.
 - When `config.seconds` changes on save, all in-progress timers are discarded and restart on the next state report.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 Not available.
 

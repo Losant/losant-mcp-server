@@ -1,6 +1,6 @@
 # MQTT Trigger (`type: "mqttTopic"`)
 
-The MQTT Trigger fires a workflow whenever a message is published to a topic on the Losant MQTT Broker, the Gateway Edge Agent Local Broker, an external broker, or an MQTT integration.
+The MQTT Trigger fires a flow whenever a message is published to a topic on the Losant MQTT Broker, the Gateway Edge Agent Local Broker, an external broker, or an MQTT integration.
 
 ## Required Fields
 
@@ -11,9 +11,9 @@ The MQTT Trigger fires a workflow whenever a message is published to a topic on 
 | `meta.name` | `"mqtt"` |
 | `meta.label` | `"MQTT"` (default) |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
-Two sources are available in cloud workflows: Losant's cloud broker or an MQTT integration.
+Two sources are available in cloud flows: Losant's cloud broker or an MQTT integration.
 
 ### Losant broker
 
@@ -122,15 +122,15 @@ Each event type carries different fields. `data.type` identifies the event:
 - `data.topic` — the specific topic the message was published on (after wildcard resolution).
 - `triggerId` is the integration ID, not a topic.
 
-## Experience workflows
+## Experience flows
 
 Not available.
 
-## Edge workflows
+## Edge flows
 
 > **Minimum GEA version:** 1.0.0 (Losant broker). 1.17.0 (local broker). 1.42.0 (external broker).
 
-Three broker sources are available in edge workflows. `config.integrationId` selects the source and defaults to `"losant"`.
+Three broker sources are available in edge flows. `config.integrationId` selects the source and defaults to `"losant"`.
 
 ### Losant broker (default)
 
@@ -245,8 +245,22 @@ Fires when a message arrives from an external MQTT broker configured in the GEA 
 
 ## Idiom notes
 
-- **Use the Losant broker variant for device-to-workflow messaging.** The MQTT integration variant is for external broker subscriptions; the Losant broker variant is the right choice when devices publish to Losant's built-in MQTT endpoint.
+- **Use the Losant broker variant for device-to-flow messaging.** The MQTT integration variant is for external broker subscriptions; the Losant broker variant is the right choice when devices publish to Losant's built-in MQTT endpoint.
 - **Topic wildcards work for the Losant broker.** `losant/<applicationId>/+/state` matches state messages from any device. `#` at the end matches all subtopics. Do not use wildcards that would match unintended topics.
 - **`data` is always a string** — the raw MQTT message payload. Use a JSON Decode node if the publisher sends JSON and you need to access fields within it.
 - **On edge, the local GEA broker topic uses the raw MQTT path** — not the Losant cloud topic format. Configure the topic to match what local edge agents or peripherals actually publish.
-- **Avoid overlapping topic subscriptions in multiple workflows.** Each matching workflow fires independently; if two workflows share the same topic, both execute on every message.
+- **Avoid overlapping topic subscriptions in multiple flows.** Each matching flow fires independently; if two flows share the same topic, both execute on every message.
+
+## Embedded flows
+
+> **Minimum EEA version:** 1.0.0
+
+Simple topic match only — no wildcards. The trigger fires when `eea_message_received` is called with a matching topic on the embedded device.
+
+Same config shape as Cloud (the topic string in `key`). Payload:
+
+| Field | Description |
+|---|---|
+| `data` | The message payload as a string |
+| `triggerId` | The topic the message was received on |
+| `triggerType` | `"mqttTopic"` |

@@ -1,6 +1,6 @@
 # Array Node (`type: "ArrayNode"`)
 
-Applies one of 23 operations to an array on the workflow payload — filter, sort, search, slice, push/pop, group, and more. The schema accepts up to 15 rules per node, but the UI editor manages a single rule — generate one ArrayNode per operation when authoring via the MCP.
+Applies one of 23 operations to an array on the flow payload — filter, sort, search, slice, push/pop, group, and more. The schema accepts up to 15 rules per node, but the UI editor manages a single rule — generate one ArrayNode per operation when authoring via the MCP.
 
 ## Required Fields
 
@@ -13,7 +13,7 @@ Applies one of 23 operations to an array on the workflow payload — filter, sor
 
 Available: cloud, experience, customNode, edge (version varies by operation), embedded (select operations only).
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ```json
 {
@@ -92,7 +92,7 @@ The table columns mean:
 ### `inputTemplate` by mode
 
 - **template mode** (`concat`, `indexOf`, `insertAt`, `push`, `replaceAt`, `unshift`): Standard Handlebars template resolving to the value. E.g. `"{{data.newItem}}"` or `"42"`.
-- **expression mode** (`filter`): Expression using Handlebars-wrapped variables. Wrap each variable in `{{}}`: `{{value}}` (current element), `{{index}}` (0-based position), `{{array}}` (the full array), `{{payload}}` (the full workflow payload). E.g. `{{value}} > 50` or `{{value.active}} === true`.
+- **expression mode** (`filter`): Expression using Handlebars-wrapped variables. Wrap each variable in `{{}}`: `{{value}}` (current element), `{{index}}` (0-based position), `{{array}}` (the full array), `{{payload}}` (the full flow payload). E.g. `{{value}} > 50` or `{{value.active}} === true`.
 - **path mode** (`deduplicateBy`, `groupBy`, `keyBy`, `sortBy`): A plain property name string within each element — **not** a Handlebars template. E.g. `"status"`, `"id"`, `"name"`. Do not use `{{}}` here.
 
 ### Worked examples
@@ -167,10 +167,10 @@ Results land in two places depending on the operation:
 }
 ```
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Same as Cloud (edge availability varies by operation and GEA version).

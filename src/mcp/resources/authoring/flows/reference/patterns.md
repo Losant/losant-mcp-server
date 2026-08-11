@@ -1,11 +1,11 @@
 ---
-name: losant-workflow-patterns
-description: Six common workflow patterns with concrete node chains and minimal JSON examples — device threshold alert with de-bounce, scheduled external API pull, webhook request/reply handler, experience login flow, experience authenticated data endpoint, and device provisioning via webhook.
+name: losant-flow-patterns
+description: Six common flow patterns with concrete node chains and minimal JSON examples — device threshold alert with de-bounce, scheduled external API pull, webhook request/reply handler, experience login flow, experience authenticated data endpoint, and device provisioning via webhook.
 ---
 
-# Common Workflow Patterns
+# Common Flow Patterns
 
-Grounded examples of the most frequent real-world workflow shapes. Each pattern shows the trigger-to-output chain, the key config fields, and the non-obvious gotcha that causes the most problems. Individual node details are at `losant://flow/nodes/<name>` and `losant://flow/triggers/<name>`.
+Grounded examples of the most frequent real-world flow shapes. Each pattern shows the trigger-to-output chain, the key config fields, and the non-obvious gotcha that causes the most problems. Individual node details are at `losant://flow/nodes/<name>` and `losant://flow/triggers/<name>`.
 
 ---
 
@@ -38,6 +38,13 @@ Device State trigger → **Conditional** (threshold check) → **Latch** (suppre
     },
     "meta": { "category": "logic", "name": "latch", "label": "Latch", "x": 360, "y": 160 },
     "outputIds": [["end"], ["notify"]]
+  },
+  {
+    "id": "end",
+    "type": "DebugNode",
+    "config": { "message": "Value within normal range", "level": "verbose" },
+    "meta": { "category": "debug", "name": "debug", "label": "Normal", "x": 160, "y": 460 },
+    "outputIds": [[]]
   },
   {
     "id": "notify",
@@ -116,7 +123,7 @@ Timer trigger → **HTTP** (call external API) → **Conditional** (status 200?)
 ]
 ```
 
-**Gotcha:** The HTTP node writes `{ statusCode, headers, body, requestDuration, request }` to `responsePath`. The API response body is at `working.result.body` — not `working.result`. If the body is a JSON string (some APIs return it that way), add a JSON Decode node before the Conditional. Store the API key in workflow globals, not hardcoded in the template.
+**Gotcha:** The HTTP node writes `{ statusCode, headers, body, requestDuration, request }` to `responsePath`. The API response body is at `working.result.body` — not `working.result`. If the body is a JSON string (some APIs return it that way), add a JSON Decode node before the Conditional. Store the API key in flow globals, not hardcoded in the template.
 
 ---
 
@@ -126,7 +133,7 @@ Timer trigger → **HTTP** (call external API) → **Conditional** (status 200?)
 
 ### Chain
 
-Webhook trigger (wait-for-reply) → process nodes → **Webhook Reply** (success) | **Workflow Error trigger** → **Webhook Reply** (error safety net)
+Webhook trigger (wait-for-reply) → process nodes → **Webhook Reply** (success) | **`flowError` trigger** → **Webhook Reply** (error safety net)
 
 ### Key nodes
 
@@ -158,6 +165,13 @@ Webhook trigger (wait-for-reply) → process nodes → **Webhook Reply** (succes
     "outputIds": [[]]
   },
   {
+    "id": "process",
+    "type": "DebugNode",
+    "config": { "message": "Processing validated payload", "level": "verbose" },
+    "meta": { "category": "debug", "name": "debug", "label": "Process (add nodes here)", "x": 360, "y": 260 },
+    "outputIds": [["reply-200"]]
+  },
+  {
     "id": "reply-200",
     "type": "WebhookReplyNode",
     "config": {
@@ -173,11 +187,11 @@ Webhook trigger (wait-for-reply) → process nodes → **Webhook Reply** (succes
 ]
 ```
 
-**Webhook trigger config:** Set `waitForReply: true` on the webhook resource — without this, the trigger fires immediately and the external caller gets an empty 200 before your workflow has a chance to reply.
+**Webhook trigger config:** Set `waitForReply: true` on the webhook resource — without this, the trigger fires immediately and the external caller gets an empty 200 before your flow has a chance to reply.
 
-**Error safety net:** Add a `flowError` trigger with `config.scope: "local"` **directly inside the same webhook workflow**. Its only node is a Webhook Reply sending a 500 with the error info — this prevents the external caller hanging if a node throws. A `scope: "local"` Workflow Error trigger catches errors only within the workflow it lives in; putting it in a separate workflow would not catch errors from the webhook workflow.
+**Error safety net:** Add a `flowError` trigger with `config.scope: "local"` **directly inside the same webhook flow**. Its only node is a Webhook Reply sending a 500 with the error info — this prevents the external caller hanging if a node throws. A `scope: "local"` Flow Error trigger catches errors only within the flow it lives in; putting it in a separate flow would not catch errors from the webhook flow.
 
-**Gotcha:** `data.replyId` is the opaque reply ID set by the Webhook trigger. Always pass it through to Webhook Reply unchanged. The webhook `key` in the trigger object is the UUID that appears in the webhook URL — the server assigns it on create; omit it when creating the workflow.
+**Gotcha:** `data.replyId` is the opaque reply ID set by the Webhook trigger. Always pass it through to Webhook Reply unchanged. The webhook `key` in the trigger object is the UUID that appears in the webhook URL — the server assigns it on create; omit it when creating the flow.
 
 ---
 
@@ -265,13 +279,25 @@ POST /login ──┘                                     ──► false: Condi
     },
     "meta": { "category": "output", "name": "endpoint-reply", "label": "Render login", "x": 60, "y": 360 },
     "outputIds": [[]]
+  },
+  {
+    "id": "redirect-home",
+    "type": "EndpointReplyNode",
+    "config": {
+      "replyIdPath": "data.replyId",
+      "replyType": "redirect",
+      "bodyTemplate": "/",
+      "responseCodeTemplate": "302"
+    },
+    "meta": { "category": "output", "name": "endpoint-reply", "label": "Redirect to home", "x": 460, "y": 260 },
+    "outputIds": [[]]
   }
 ]
 ```
 
 **Gotcha:** `ExperienceUserAuthNode.outputIds[0]` = authentication **failed**; `outputIds[1]` = **succeeded**. This is opposite to the Conditional pattern — don't flip them.
 
-**Critical:** Add a `scope: "local"` Workflow Error trigger to the experience workflow with its own EndpointReplyNode sending a 500. Without it, any unhandled error (e.g., a required template field resolves to nothing) leaves the browser request hanging until timeout.
+**Critical:** Add a `scope: "local"` Flow Error trigger (`flowError`) to the experience flow with its own EndpointReplyNode sending a 500. Without it, any unhandled error (e.g., a required template field resolves to nothing) leaves the browser request hanging until timeout.
 
 ---
 
@@ -339,7 +365,7 @@ Endpoint trigger (GET `/api/devices`) → **Conditional** (`{{experience.user}}`
 
 **`bodyTemplateType: "path"`** writes the value at `working.devices` directly as the response body — no need to `jsonEncode` it. Use this whenever the body is already a structured object on the payload.
 
-**Gotcha:** Every code path must reach an EndpointReplyNode. A workflow that throws (e.g., GetDeviceNode fails) before sending a reply leaves the client hanging. Scope a Workflow Error trigger to this workflow that sends a 500 reply as a safety net.
+**Gotcha:** Every code path must reach an EndpointReplyNode. A flow that throws (e.g., GetDeviceNode fails) before sending a reply leaves the client hanging. Scope a Flow Error trigger (`flowError`) to this flow that sends a 500 reply as a safety net.
 
 ---
 

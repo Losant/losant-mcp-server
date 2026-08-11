@@ -131,7 +131,7 @@ Check \`losant://schemas/dataTableRowPatch\` for the full body schema.
 
 ## Reacting to data table changes with flows
 
-Data table row operations can fire workflows automatically:
+Data table row operations can fire flows automatically:
 
 - **Row changes** → \`losant://flow/triggers/data-table\` — fires on \`insert\`, \`bulkInsert\`, \`update\`, and \`delete\`. \`data.action\` identifies the operation; \`data.newRow\` has the row after an insert or update; \`data.oldRow\` has the previous state for updates and deletes.
 

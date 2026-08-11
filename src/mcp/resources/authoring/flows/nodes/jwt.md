@@ -1,6 +1,6 @@
 # JWT Nodes — Create, Decode, Verify
 
-Three nodes for working with JSON Web Tokens in workflows.
+Three nodes for working with JSON Web Tokens in flows.
 
 ## Required Fields
 
@@ -10,7 +10,7 @@ Three nodes for working with JSON Web Tokens in workflows.
 | `JWTDecodeNode` | `logic` | `jwt-decode` | `"JWT: Decode"` |
 | `JWTVerifyNode` | `logic` | `jwt-verify` | `"JWT: Verify"` |
 
-## Cloud (Application) workflows
+## Cloud (Application) flows
 
 ### JWT: Create Node (`type: "JWTCreateNode"`)
 
@@ -47,7 +47,7 @@ Creates a signed JWT from a payload. Two signing methods: service credential (re
 | `expiresIn` | `86400` | Expiry in seconds. Stored in `meta.timeUnit` and `meta.rateValue` for display. |
 | `headerTemplateType` | `"json"` | How the JWT header is provided. `"json"` — header is a JSON template string. `"path"` — header is a payload path to an object. |
 | `headerTemplate` | `""` | Custom JWT header fields as a JSON template or payload path. Optional — omit to use the default header (`{ "alg": "<algorithm>", "typ": "JWT" }`). |
-| `destinationPath` | `""` | **Required.** Payload path to write the signed token string. On error, writes `{ error: { type, message } }` and the workflow continues. |
+| `destinationPath` | `""` | **Required.** Payload path to write the signed token string. On error, writes `{ error: { type, message } }` and the flow continues. |
 
 **`meta.timeUnit`** and **`meta.isExpRequired`** are always sent by the UI — include them.
 
@@ -81,7 +81,7 @@ Decodes a JWT without verifying the signature. Useful for reading claims from a 
 
 ### JWT: Verify Node (`type: "JWTVerifyNode"`)
 
-Verifies a JWT signature and branches the workflow. `outputIds[0]` = **invalid** (verification failed); `outputIds[1]` = **valid** (verification passed).
+Verifies a JWT signature and branches the flow. `outputIds[0]` = **invalid** (verification failed); `outputIds[1]` = **valid** (verification passed).
 
 ```json
 {
@@ -105,11 +105,11 @@ Verifies a JWT signature and branches the workflow. `outputIds[0]` = **invalid**
 | `tokenTemplate` | `""` | **Required.** Template resolving to the JWT string to verify. |
 | `errorPath` | `""` | Payload path where error details are written on the invalid branch. |
 
-## Experience workflows
+## Experience flows
 
 Same as Cloud.
 
-## Edge workflows
+## Edge flows
 
 Same as Cloud with the following restrictions and version gates:
 - `credentialNameTemplate` is **not available on edge** — use direct signing (`secretTemplate` + `algorithmTemplate`) only.
