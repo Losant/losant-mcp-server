@@ -109,6 +109,9 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
     if (filePath.endsWith('applicationKey.md') || filePath.endsWith('applicationKeys.md')) {
       disclaimerLines.push('\nSee [losant://guides/device-auth](losant://guides/device-auth) for MQTT credential fields, device restriction options, and the access secret one-time return behavior.');
     }
+    if (filePath.endsWith('flow.md') || filePath.endsWith('flows.md') || filePath.endsWith('flowVersion.md') || filePath.endsWith('flowVersions.md')) {
+      disclaimerLines.push('\nSee [losant://guides/flows](losant://guides/flows) for the full workflow authoring guide — trigger catalog, node catalog, wiring model, payload reference, and templating.');
+    }
     if (filePath.endsWith('data.md')) {
       disclaimerLines.push('- endpoint "timeSeriesQuery" used by tool `losant_timeseries` as operation "timeSeriesQuery"');
       disclaimerLines.push('- endpoint "lastValueQuery" used by tool `losant_timeseries` as operation "lastValueQuery"');

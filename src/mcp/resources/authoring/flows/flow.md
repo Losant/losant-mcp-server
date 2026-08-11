@@ -52,7 +52,7 @@ Required: `name`. Everything else is optional but `flowClass` controls which tri
 | `experience` | Cloud workers, triggered by an Experience Endpoint | Backs HTTP endpoints exposed to end users. |
 | `edge` | A Losant Gateway Edge Agent (GEA) | Versioning is mandatory — edge agents pull versions, not develop. |
 | `embedded` | The Embedded Edge Agent (EEA) | Very restricted node set. Does NOT support HTTP, custom nodes, and many others. |
-| `customNode` | Cloud workers, as a callable sub-workflow | Requires exactly one `CustomNodeStart` trigger and at least one `CustomNodeCapNode`. See `losant://references/flow/custom-nodes` for full authoring details. |
+| `customNode` | Cloud workers, as a callable sub-workflow | Requires exactly one `customNodeStart` trigger and at least one `CustomNodeCapNode`. See `losant://references/flow/custom-nodes` for full authoring details. |
 
 > **Edge workflow development:** To manually trigger or interact with a running edge workflow, deploy the `develop` version to a test Edge Compute Device and use **Live Look** (accessible from the workflow editor's Debug or Deployments tab). This applies to any trigger that requires manual interaction — virtual buttons, HTTP request triggers, etc.
 
@@ -276,7 +276,7 @@ See `losant://flow/nodes/loop` for the full pattern and a worked example.
 
 ## Globals
 
-`globals` is an array of `{ key, json }` entries. `key` is the name made available as `{{globals.key}}` in any node's templates. `json` is the value as a **JSON-encoded string** (so `"\"https://example.com\""` for a string, `"42"` for a number). Globals are version-scoped — published versions snapshot the globals at publish time.
+`globals` is an array of `{ key, json }` entries. `key` is the name made available as `{{globals.key}}` in any node's templates. **Key names must match `^[0-9a-zA-Z_-]{1,255}$`** — alphanumerics, underscores, and dashes only; dots and spaces cause a 400. `json` is the value as a **JSON-encoded string** (so `"\"https://example.com\""` for a string, `"42"` for a number). Globals are version-scoped — published versions snapshot the globals at publish time.
 
 ---
 

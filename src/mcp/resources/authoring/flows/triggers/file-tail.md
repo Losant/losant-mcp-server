@@ -119,6 +119,7 @@ Send either `delimiter` or `byteLength` — not both.
     "content": "<new file content as encoded string>",
     "path": "/data/logs/app.log"
   },
+  "triggerId": "/data/logs/app.log",
   "triggerType": "fileTail",
   "applicationId": "...",
   "flowId": "...",
@@ -128,6 +129,7 @@ Send either `delimiter` or `byteLength` — not both.
 
 - `data.content` — the new file content encoded per `config.encoding`.
 - `data.path` — the file path being tailed.
+- `triggerId` — the configured file path. Use this to distinguish which File Tail trigger fired when multiple are present in the same workflow.
 
 ### File system access
 

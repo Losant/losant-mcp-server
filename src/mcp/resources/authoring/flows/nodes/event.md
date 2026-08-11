@@ -348,7 +348,7 @@ Deletes one or more events. Mode is stored in **`meta.mode`**.
 - **Create once, update state** — create when an alert fires; acknowledge when handled; resolve when cleared.
 - Use `queryTemplateMultiple` on UpdateEventNode to bulk-acknowledge all open events matching a device or tag.
 - Link events to devices via `deviceIdTemplate` to enable Event List dashboard blocks.
-- Use `dataTemplate` to store structured context: `"{\"temp\":{{data.attributes.tempC}}}"`.
+- Store structured context via `dataSourceType: "jsonTemplate"` and `dataSourceJson: "{\"temp\":{{data.attributes.tempC}}}"`.
 
 ## Experience workflows
 

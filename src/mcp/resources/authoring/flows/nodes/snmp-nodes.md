@@ -22,7 +22,7 @@ Not available.
 
 > **Minimum GEA version:** 1.23.0
 
-All three nodes share the same SNMP connection config. See `triggers/snmp-trap.md` for the SNMP Trap Trigger that receives inbound SNMP traps.
+All three nodes share the same SNMP connection config. See `losant://flow/triggers/snmp-trap` for the SNMP Trap Trigger that receives inbound SNMP traps.
 
 ### Shared SNMP connection config
 

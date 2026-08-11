@@ -70,6 +70,19 @@ Experience workflows (backed by Experience Endpoints) receive additional fields 
 
 **Responding to requests:** Experience workflows must use an Endpoint Reply node to send an HTTP response. If the workflow finishes without sending a reply, the client hangs until timeout. Always add a `scope: "local"` Workflow Error trigger to send a reply on error.
 
+## Webhook trigger additions
+
+Webhook triggers (cloud workflows with `waitForReply: true`) also populate request fields under `data.*`:
+
+| Field | Description |
+|---|---|
+| `data.path` | URL path of the webhook request |
+| `data.method` | HTTP method, lowercase |
+| `data.headers` | Object of request headers |
+| `data.query` | Object of query string parameters |
+| `data.body` | Parsed request body |
+| `data.replyId` | Opaque reply ID — must be passed to the Webhook Reply node |
+
 ## Edge workflow additions
 
 Edge workflows running on a Gateway Edge Agent (GEA) receive additional envelope fields:
@@ -80,6 +93,9 @@ Edge workflows running on a Gateway Edge Agent (GEA) receive additional envelope
 | `agentVersion` | GEA version string (e.g. `"2.4.0"`) |
 | `agentEnvironment` | GEA environment metadata object |
 | `flowVersion` | Name of the published version deployed to this device |
+| `deviceId` | Losant device ID of the GEA device running this workflow |
+| `deviceName` | Name of the GEA device |
+| `deviceTags` | Tags object for the GEA device |
 
 ## Payload paths vs. string templates
 

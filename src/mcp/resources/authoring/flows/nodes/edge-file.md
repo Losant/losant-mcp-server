@@ -21,7 +21,7 @@ Not available.
 
 > **Minimum GEA version:** 1.0.0
 
-See `triggers/file-tail.md` for notes on Docker volume mounts and file permissions when accessing host files.
+See `losant://flow/triggers/file-tail` for notes on Docker volume mounts and file permissions when accessing host files.
 
 ### File: Read Node (`type: "FileReadNode"`)
 

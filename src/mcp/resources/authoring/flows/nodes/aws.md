@@ -12,14 +12,21 @@ Three nodes for interacting with Amazon Web Services from a workflow.
 
 ### AWS authentication — used by all three nodes
 
-Two methods. Credential (recommended — secret stays out of the workflow body) or direct key entry.
+Two methods. Credential (recommended) or direct key entry. **Field names differ between Lambda and S3:**
 
-**Credential method:**
+| Auth field | Lambda | S3 Get / S3 Put |
+|---|---|---|
+| Credential method | `credentialNameTemplate` | `credentialNameTemplate` |
+| Access key ID | `awsAccessKeyId` | `accessKeyIdTemplate` |
+| Secret access key | `awsSecretAccessKey` | `secretAccessKeyTemplate` |
+| Region | `awsRegion` | `regionTemplate` |
+
+**Credential method (Lambda example):**
 ```json
 { "credentialNameTemplate": "my-aws-credential" }
 ```
 
-**Direct method:**
+**Direct method (Lambda example):**
 ```json
 {
   "awsAccessKeyId": "{{globals.awsKeyId}}",
@@ -28,7 +35,7 @@ Two methods. Credential (recommended — secret stays out of the workflow body) 
 }
 ```
 
-Send one set or the other on every node — not both.
+Send one set or the other on every node — not both. See the S3 node tables below for the exact S3 field names.
 
 ---
 

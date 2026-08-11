@@ -43,8 +43,8 @@ Both nodes support TCP, RTU serial, and ASCII serial connection types.
 | `pathTemplate` | `""` | **Required.** Serial port path (e.g. `"/dev/ttyS0"`). Template. |
 | `baudRateTemplate` | `"9600"` | Baud rate. Template. |
 | `parityTemplate` | `"none"` | `"none"`, `"even"`, `"odd"`, `"mark"`, or `"space"`. Template. Requires GEA **1.11.0+** on edge. |
-| `dataBitsTemplate` | *(GEA 1.11.0+ on edge)* | `"8"` | Data bits (`7` or `8`). Template. |
-| `stopBitsTemplate` | *(GEA 1.11.0+ on edge)* | `"1"` | Stop bits (`1` or `2`). Template. |
+| `dataBitsTemplate` | `"8"` | Data bits (`7` or `8`). Template. Requires GEA 1.11.0+ on edge. |
+| `stopBitsTemplate` | `"1"` | Stop bits (`1` or `2`). Template. Requires GEA 1.11.0+ on edge. |
 
 #### ASCII Serial (`connectionTypeTemplate: "asciiSerial"`)
 

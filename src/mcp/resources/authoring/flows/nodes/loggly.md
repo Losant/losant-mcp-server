@@ -48,9 +48,9 @@ Two auth methods: service credential or direct API token.
 
 ```json
 { "working": { "logglyResult": { "success": true, "results": [ { "success": true } ] } } }
+```
 
 `results` is an array with one entry per log entry sent. On error: `{ "success": false, "error": "..." }` (no `results` key).
-```
 
 ## Experience workflows
 

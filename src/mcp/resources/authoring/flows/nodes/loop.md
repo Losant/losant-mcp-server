@@ -29,7 +29,7 @@ The `LoopNode` uses a special two-output wiring model. All three `LoopCapNode` v
     "category": "logic", "name": "loop", "label": "Loop",
     "description": "",
     "x": 160, "y": 160,
-    "groupStartX": 60,
+    "groupStartX": 400,
     "groupStartY": 60
   },
   "outputIds": [

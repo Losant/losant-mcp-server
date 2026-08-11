@@ -58,9 +58,9 @@ Three connection methods: integration, service credential, or direct connection 
 
 ```json
 { "working": { "ehResult": { "success": true } } }
+```
 
 On error: `{ "working": { "ehResult": { "success": false, "error": { "message": "..." } } } }`
-```
 
 ## Experience workflows
 

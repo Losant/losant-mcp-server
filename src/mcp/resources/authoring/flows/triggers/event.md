@@ -36,15 +36,22 @@ The Event Trigger fires a workflow whenever an event matching the criteria defin
 
 ### Config
 
-All config fields are always sent by the UI. Always include them.
+Always send all fields — the UI always includes them.
+
+**Top-level trigger field:**
 
 | Field | Type | Default | Notes |
 |---|---|---|---|
 | `key` | enum | `"error"` | Event level filter. `"any"` — all levels. `"info"`, `"warning"`, `"error"`, `"critical"` — specific level only. |
-| `config.subject` | string | `""` | Subject filter using case-insensitive glob matching. `""` matches any subject. |
-| `config.new` | boolean | `true` | Fire when an event is created or placed in the `new` state. |
-| `config.acknowledged` | boolean | `false` | Fire when an event transitions to the `acknowledged` state. |
-| `config.resolved` | boolean | `false` | Fire when an event transitions to the `resolved` state. |
+
+**`config` object fields:**
+
+| Field | Type | Default | Notes |
+|---|---|---|---|
+| `subject` | string | `""` | Subject filter using case-insensitive glob matching. `""` matches any subject. |
+| `new` | boolean | `true` | Fire when an event is created or placed in the `new` state. |
+| `acknowledged` | boolean | `false` | Fire when an event transitions to the `acknowledged` state. |
+| `resolved` | boolean | `false` | Fire when an event transitions to the `resolved` state. |
 
 At least one of `config.new`, `config.acknowledged`, or `config.resolved` should be `true`.
 

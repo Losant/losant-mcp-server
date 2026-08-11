@@ -37,7 +37,7 @@ Three methods. Credential (recommended) or inline key JSON.
 }
 ```
 
-The field name for the JWT credential data differs by node type — GCS and Function use `jwtData`; BigQuery and ML use `jwtJsonTemplate`/`jwtPayloadPath`.
+The field name for the JWT credential data differs by node type — GCS uses `jwtData`; Function uses `jwtDataTemplate`; BigQuery and ML use `jwtJsonTemplate`/`jwtPayloadPath`.
 
 ---
 

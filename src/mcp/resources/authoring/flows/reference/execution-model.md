@@ -31,9 +31,14 @@ The most common cause of an unexpected throw is a required template field resolv
 
 ## Workflow Error trigger
 
-The Workflow Error trigger is a separate workflow (or a trigger within a workflow) that fires whenever a throw occurs. It can be scoped to:
-- All workflows in the application
-- A specific set of workflows
+The Workflow Error trigger fires whenever a throw occurs. It is configured with a **`scope`** that controls which workflows it catches errors from:
+
+| `config.scope` | Catches errors from |
+|---|---|
+| `"local"` | Only the workflow this trigger lives in. **Use this inside experience and webhook workflows** to guarantee a response is always sent. |
+| `"cloud"` | All cloud (Application) workflows in the application. |
+| `"experience"` | All experience workflows in the application. |
+| `"global"` | All workflows of all classes in the application. |
 
 This makes it the standard catch mechanism — the equivalent of a try/catch at the workflow level.
 
@@ -42,7 +47,14 @@ This makes it the standard catch mechanism — the equivalent of a try/catch at 
 - Log the error or fire an alert
 - Notify on-call channels when a critical workflow fails
 
-The error payload delivered to the Workflow Error trigger includes context about what failed — the workflow, the node, and the error message — available under `data` in the trigger payload.
+The error payload delivered to the Workflow Error trigger includes context about what failed. Key fields under `data`:
+
+| Field | Description |
+|---|---|
+| `data.errorInfo.error.message` | The error message string |
+| `data.errorInfo.error.type` | The error type (e.g. `"Validation"`) |
+| `data.errorInfo.nodeId` | ID of the node that threw |
+| `data.erroredPayload` | Full payload snapshot at the point of the error |
 
 ---
 

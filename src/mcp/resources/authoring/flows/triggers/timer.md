@@ -147,4 +147,4 @@ Simple schedule and advanced cron modes are configured identically to Cloud. The
 - **Cron runs in UTC.** If the user describes a schedule in local time, convert it before writing the expression.
 - **Multiple timers in one workflow.** Add multiple entries to the `triggers` array to fire the same workflow on different schedules — e.g. one hourly summary and one daily report.
 - **Timer drift.** Losant does not guarantee sub-second accuracy. For workflows that must execute at an exact wall-clock time, build in a small tolerance window in any downstream time comparisons.
-- **Cloud and experience timers are paused when a workflow is disabled.** Missed firings are not backfilled — the timer simply resumes on re-enable.
+- **Cloud timers are paused when a workflow is disabled.** Missed firings are not backfilled — the timer simply resumes on re-enable.

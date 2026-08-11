@@ -21,7 +21,7 @@ At runtime, Losant merges all three into a single `globals` object on the payloa
 
 ## API format for workflow globals
 
-`globals` is an array of `{ key, json }` objects. The `json` field is a **JSON-encoded string** — the value is first serialized to JSON, and that JSON string becomes the value of `json`.
+`globals` is an array of `{ key, json }` objects. **Key names must match `^[0-9a-zA-Z_-]{1,255}$`** — alphanumerics, underscores, and dashes only. Dots, spaces, and other special characters cause a 400 pattern-mismatch error. The `json` field is a **JSON-encoded string** — the value is first serialized to JSON, and that JSON string becomes the value of `json`.
 
 | Value you want | `json` field value | Full object |
 |---|---|---|

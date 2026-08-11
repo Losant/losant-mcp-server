@@ -250,6 +250,15 @@ describe('MCP Resources', () => {
       result.contents[0].text.should.match(/MongoDB|query|operator/i);
     });
 
+    it('should provide handler for flows guide', async () => {
+      const result = await client.readResource({ uri: 'losant://guides/flows' });
+
+      result.should.have.property('contents');
+      result.contents[0].should.have.property('uri', 'losant://guides/flows');
+      result.contents[0].should.have.property('mimeType', 'text/markdown');
+      result.contents[0].text.should.containEql('flow');
+    });
+
     it('should provide handler for device auth guide', async () => {
       const result = await client.readResource({ uri: 'losant://guides/device-auth' });
 

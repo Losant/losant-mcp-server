@@ -78,7 +78,7 @@ Timer trigger → **HTTP** (call external API) → **Conditional** (status 200?)
     "config": {
       "method": "GET",
       "uriTemplate": "https://api.example.com/sensors/{{globals.sensorId}}",
-      "headerInfo": [{ "keyTemplate": "Authorization", "valueTemplate": "Bearer {{globals.apiKey}}" }],
+      "headerInfo": [{ "key": "Authorization", "valueTemplate": "Bearer {{globals.apiKey}}" }],
       "responsePath": "working.result",
       "errorBehavior": "payloadPath",
       "errorPath": "working.fetchError"
@@ -92,6 +92,13 @@ Timer trigger → **HTTP** (call external API) → **Conditional** (status 200?)
     "config": { "expression": "{{working.result.statusCode}} === 200" },
     "meta": { "category": "logic", "name": "conditional", "label": "200 OK?", "x": 160, "y": 260 },
     "outputIds": [["log-error"], ["store-state"]]
+  },
+  {
+    "id": "log-error",
+    "type": "DebugNode",
+    "config": { "message": "API fetch failed: {{working.result.statusCode}} {{working.fetchError}}", "level": "error" },
+    "meta": { "category": "debug", "name": "debug", "label": "Log error", "x": 60, "y": 360 },
+    "outputIds": [[]]
   },
   {
     "id": "store-state",
@@ -168,7 +175,7 @@ Webhook trigger (wait-for-reply) → process nodes → **Webhook Reply** (succes
 
 **Webhook trigger config:** Set `waitForReply: true` on the webhook resource — without this, the trigger fires immediately and the external caller gets an empty 200 before your workflow has a chance to reply.
 
-**Error safety net:** Add a separate workflow with `flowError` trigger scoped to this workflow. Its only node is a Webhook Reply sending a 500 with the error info — this prevents the external caller hanging if a node throws.
+**Error safety net:** Add a `flowError` trigger with `config.scope: "local"` **directly inside the same webhook workflow**. Its only node is a Webhook Reply sending a 500 with the error info — this prevents the external caller hanging if a node throws. A `scope: "local"` Workflow Error trigger catches errors only within the workflow it lives in; putting it in a separate workflow would not catch errors from the webhook workflow.
 
 **Gotcha:** `data.replyId` is the opaque reply ID set by the Webhook trigger. Always pass it through to Webhook Reply unchanged. The webhook `key` in the trigger object is the UUID that appears in the webhook URL — the server assigns it on create; omit it when creating the workflow.
 

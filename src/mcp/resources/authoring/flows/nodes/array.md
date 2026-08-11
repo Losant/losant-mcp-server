@@ -147,7 +147,7 @@ Group by status property, write result to a path:
 
 Results land in two places depending on the operation:
 
-**`destArrayPath`** — the modified array after all rules run. Used by operations that mutate the array (`push`, `pop`, `filter` via destArrayPath, `sort`, etc.). If `destArrayPath` is omitted the modified array overwrites `sourceArrayPath`. Can be set to any existing payload path to overwrite it.
+**`destArrayPath`** — the modified array after all rules run. Used by operations that mutate the source array in place (`push`, `pop`, `compact`, `concat`, `flatten`, `sort`, etc.). If `destArrayPath` is omitted the modified array overwrites `sourceArrayPath`. Can be set to any existing payload path to overwrite it. Operations like `filter`, `deduplicateBy`, and `groupBy` produce their result via `rules[n].outputPath` instead and do **not** use `destArrayPath`.
 
 **`rules[n].outputPath`** — a per-rule secondary result written for operations that produce a non-array value or a separate result: the filtered array (`filter`), sorted array (`sort`, `sortBy`), found index (`indexOf`), element at index (`lookupAt`), removed item (`pop`, `shift`, `removeAt`), grouped object (`groupBy`), keyed object (`keyBy`), deduplicated array (`deduplicateBy`), or sum (`sum`). Multiple rules in a single node can each write to their own `outputPath`.
 

@@ -1,6 +1,6 @@
 # ServiceNow Node (`type: "ServiceNowNode"`)
 
-The ServiceNow Node allows a workflow to interact with ServiceNow table records — listing, creating, retrieving, updating, and deleting rows in any ServiceNow table. Available in cloud, experience, and customNode workflows.
+The ServiceNow Node allows a workflow to interact with ServiceNow table records — listing, creating, retrieving, and updating rows in any ServiceNow table. Available in cloud, experience, edge, and customNode workflows.
 
 ## Required Fields
 
@@ -30,8 +30,8 @@ Two ways to specify the ServiceNow instance — by instance name or by full URL.
     "idTemplate": "",
     "resultPath": "working.incidents",
     "params": [
-      { "name": "sysparmQuery", "value": "active=true" },
-      { "name": "sysparmLimit", "value": "10" }
+      { "type": "string", "name": "sysparmQuery", "value": "active=true" },
+      { "type": "string", "name": "sysparmLimit", "value": "10" }
     ],
     "bodyTemplateType": "individualFields",
     "bodyTemplate": []
