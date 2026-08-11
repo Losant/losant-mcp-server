@@ -1,5 +1,5 @@
 # Build stage
-FROM node:24.18.1-alpine AS base
+FROM node:24.19.0-alpine AS base
 
 # Install pnpm
 RUN corepack enable
@@ -17,7 +17,7 @@ COPY src ./src
 COPY bin ./bin
 
 # Production stage
-FROM node:24.18.1-alpine
+FROM node:24.19.0-alpine
 
 LABEL org.opencontainers.image.title="Losant MCP Server" \
       org.opencontainers.image.description="Losant MCP Server for handling device communication and integration with Losant platform" \
