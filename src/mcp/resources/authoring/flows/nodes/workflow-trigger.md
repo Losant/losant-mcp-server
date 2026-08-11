@@ -67,7 +67,7 @@ The Workflow Trigger Node triggers another flow's Virtual Button — immediately
 |---|---|---|
 | `behavior` | `"immediate"` | **Required.** `"immediate"`, `"schedule"`, or `"cancel"`. |
 | `triggerWorkflowId` | `""` | **Required** (not cancel). Target flow ID as a plain string — not a template. |
-| `flowVersionTemplate` | `""` | **Required** (not cancel). Flow version (e.g. `"develop"`, `"v1"`). Template. |
+| `flowVersionTemplate` | `""` | **Required** (not cancel). Flow version (e.g. `"develop"`, `"v1"`, or `"default"` to run whichever version is marked as the application default). Template. |
 | `triggerVirtualButtonId` | `""` | **Required** (not cancel). The server-generated `key` of the Virtual Button trigger in the target flow — **not** the node's `id`. This key is assigned by the server when the target flow is created and is returned in the trigger object. See the two-step pattern below. |
 | `payloadTemplateType` | `"json"` | `"json"`, `"string"`, or `"path"`. |
 | `payloadTemplate` | `""` | Payload to send. JSON template, string, or payload path per `payloadTemplateType`. |

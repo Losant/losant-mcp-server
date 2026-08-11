@@ -1,6 +1,6 @@
 # Flow Storage Nodes
 
-Two nodes for reading and writing flow-scoped persistent storage. Values persist across flow executions and are shared across all instances of the same flow. Available in cloud, experience, customNode, and embedded flows.
+Two nodes for reading and writing flow-scoped persistent storage. Values persist across flow executions and are shared across all instances of the same flow. Available in cloud, experience, edge, customNode, and embedded flows.
 
 ## Required Fields
 
@@ -34,7 +34,7 @@ Reads a stored value by key and writes it to a payload path.
 | `valuePath` | — | **Required.** Payload path to write the stored value. Writes `undefined` (or `defaultValue`) if the key doesn't exist. |
 | `defaultValue` | — | Optional. Value written to `valuePath` when `keyName` does not exist in storage. |
 | `defaultValueType` | `"template"` | How to interpret `defaultValue`: `"template"`, `"json"`, or `"path"`. |
-| `getAll` | `false` | When `true`, retrieves all storage keys as an object and writes the result to `valuePath`. `keyName` is ignored and may be omitted. |
+| `getAll` | `false` | When `true`, retrieves all storage keys as an object and writes the result to `valuePath`. `keyName` is ignored and may be omitted. Requires GEA 1.10.0+ on edge. |
 
 ---
 

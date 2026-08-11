@@ -40,7 +40,7 @@ Two auth methods: service credential or direct (From Number ID + Access Token).
 | `messageSourceMethod` | `"stringTemplate"` | **Required.** `"stringTemplate"`, `"payloadPath"`, or `"jsonTemplate"`. |
 | `messageSourceValue` | `""` | **Required.** The message — a string template, payload path, or JSON template per `messageSourceMethod`. |
 | `templateNameTemplate` | `""` | WhatsApp message template name. When set, sends a template message instead of free-form text. Template. |
-| `templateLanguageTemplate` | `""` | **Required** when using a message template. Language code (e.g. `"en_US"`). Template. |
+| `templateLanguageTemplate` | `""` | Optional. Language code (e.g. `"en_US"`). Template. Used only when `templateNameTemplate` is set. |
 | `resultsPath` | `""` | Payload path to write the array of per-recipient results. |
 
 ## Output

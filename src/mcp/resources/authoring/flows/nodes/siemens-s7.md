@@ -114,7 +114,14 @@ Writes values to Siemens S7 data blocks.
 }
 ```
 
-Write instructions require the same connection fields plus `valueTypeTemplate` (`"singleValue"` or `"arrayOfValues"`), `valueTemplate`, and all block/offset/dataType fields.
+| Config field | Default | Notes |
+|---|---|---|
+| `hostTemplate` | `""` | **Required.** PLC hostname or IP. Template. |
+| `rackTemplate` | `"0"` | **Required.** PLC rack number. Template. |
+| `slotTemplate` | `"1"` | **Required.** PLC slot number. Template. |
+| `writeInstructionsType` | `"array"` | **Required.** `"array"` or `"payloadPath"`. |
+| `writeInstructions` | `[]` | **Required.** Array of write instruction objects. Each requires `dbTemplate`, `offsetTemplate`, `dataTypeTemplate`, `valueTemplate`, and `key`. |
+| `destinationPath` | `""` | **Required.** Payload path to write the result. |
 
 
 ### Write output shape

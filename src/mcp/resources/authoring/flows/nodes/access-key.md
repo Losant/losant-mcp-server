@@ -1,6 +1,6 @@
 # Access Key: Create Node (`type: "CreateAccessKeyNode"`)
 
-The Access Key: Create Node creates a new Losant Access Key for authenticating devices against the Losant MQTT Broker. Returns the generated key ID and secret — **the secret is only available at creation time and cannot be retrieved again**.
+The Access Key: Create Node creates a new Losant Access Key for authenticating devices against the Losant MQTT Broker. Returns the generated key ID and secret — **the secret is only available at creation time and cannot be retrieved again**. Available in cloud, experience, and customNode flows. Not available on edge or embedded.
 
 ## Required Fields
 

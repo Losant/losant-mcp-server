@@ -1,6 +1,6 @@
 # Salesforce Cases Node (`type: "SalesforceNode"`)
 
-The Salesforce Cases Node allows a flow to create, read, update, and delete Salesforce Case records. Targeted specifically at the Salesforce Case SObject.
+The Salesforce Cases Node allows a flow to create, read, update, and delete Salesforce Case records. Targeted specifically at the Salesforce Case SObject. Available in cloud, experience, customNode, and edge flows.
 
 ## Required Fields
 

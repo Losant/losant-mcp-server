@@ -7,7 +7,7 @@ Two nodes for transferring files to and from FTP, FTPS, and SFTP servers.
 | `type` | `meta.category` | `meta.name` | `meta.label` default |
 |---|---|---|---|
 | `FTPGetNode` | `data` | `ftp-get` | `"FTP: Get"` |
-| `FTPPutNode` | `output` | `ftp-put` | `"FTP: Put"` |
+| `FTPPutNode` | `data` | `ftp-put` | `"FTP: Put"` |
 
 ## Cloud (Application) flows
 

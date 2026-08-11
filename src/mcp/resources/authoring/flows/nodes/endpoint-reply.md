@@ -54,3 +54,7 @@ Not recommended — use `flowClass: "experience"` for endpoint-handling flows. C
 ## Edge flows
 
 Not available.
+
+## Custom Node flows
+
+Same as Experience.

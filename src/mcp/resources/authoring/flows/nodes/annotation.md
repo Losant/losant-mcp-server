@@ -9,7 +9,7 @@ A visual-only node that displays a text label on the flow canvas. Has no runtime
 | `type` | `"AnnotationNode"` |
 | `meta.category` | `"annotation"` |
 | `meta.name` | `"note"` |
-| `meta.label` | `"Annotation"` (default) |
+| `meta.label` | `"Note"` (default) |
 
 ## Cloud (Application) flows
 

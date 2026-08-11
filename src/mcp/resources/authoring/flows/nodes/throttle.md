@@ -1,6 +1,6 @@
 # Throttle Node (`type: "ThrottleNode"`)
 
-Rate-limits flow execution. When the configured rate is exceeded, the throttled branch fires instead of the main branch. Useful for preventing alert spam or limiting downstream API calls. Branches — `outputIds[0]` = throttled (suppressed), `outputIds[1]` = not throttled (passes through). Available in cloud, experience, and customNode flows.
+Rate-limits flow execution. When the configured rate is exceeded, the throttled branch fires instead of the main branch. Useful for preventing alert spam or limiting downstream API calls. Branches — `outputIds[0]` = throttled (suppressed), `outputIds[1]` = not throttled (passes through). Available in cloud, experience, edge, and customNode flows.
 
 ## Required Fields
 
@@ -37,7 +37,7 @@ Rate-limits flow execution. When the configured rate is exceeded, the throttled 
 |---|---|---|
 | `ratePerMinute` | — | **Required.** The rate limit converted to per-minute. The UI stores the human-readable unit in `meta.rateUnit` and `meta.rateValue` and converts to `ratePerMinute`. Range: 1–600 per minute (1 per minute to 10 per second). |
 | `throttleIdTemplate` | `""` | Template identifying what to throttle. Use `{{data.deviceId}}` to throttle per-device. Empty string throttles the entire flow globally. |
-| `timeSincePath` | `""` | Optional. Payload path to write the milliseconds since the last non-throttled execution. |
+| `timeSincePath` | `""` | Legacy field. Preserved in existing configs but not offered for new nodes in the editor. Payload path to write the milliseconds since the last non-throttled execution. |
 
 **`meta.rateUnit`** and **`meta.rateValue`** are always sent by the UI and store the human-readable representation (e.g. `rateUnit: "Hour"`, `rateValue: "1"` for 1 per hour). Always include them so the UI can display the rate correctly.
 

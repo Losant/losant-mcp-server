@@ -195,7 +195,7 @@ Deletes an Experience User.
 | Config field | Default | Notes |
 |---|---|---|
 | `emailOrIdTemplate` | `""` | **Required.** Email or user ID to delete. Template. |
-| `resultPath` | `""` | Payload path to write the result. |
+| `resultPath` | `""` | **Required.** Payload path to write the result. |
 
 ---
 

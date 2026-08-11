@@ -1,6 +1,6 @@
 # Device: State Node (`type: "DeviceChangeStateNode"`)
 
-Reports state on behalf of a device from within a flow. Useful for system-level aggregations or recording computed values. Available in cloud, experience, edge, and customNode flows.
+Reports state on behalf of a device from within a flow. Useful for system-level aggregations or recording computed values. Available in cloud, experience, edge, embedded, and customNode flows.
 
 ## Required Fields
 

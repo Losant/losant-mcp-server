@@ -37,7 +37,7 @@ Two auth methods: service credential or direct API token.
 | `credentialNameTemplate` | `""` | **Required** (credential method). Loggly credential name. |
 | `apiTokenTemplate` | `""` | **Required** (direct method). Loggly customer token. Template. |
 | `writeMethod` | `"individualFields"` | **Required.** `"individualFields"`, `"jsonTemplate"`, or `"payloadPath"`. |
-| `writeFields` | `[]` | **Required** (individualFields). Array of log entry objects. Each entry supports: `messageTemplate` (required), `tagsTemplate` (comma-separated tag string). |
+| `writeFields` | `[]` | **Required** (individualFields). Array of log entry objects. Each entry supports: `messageTemplate` (string template for the log message), `jsonTemplate` (JSON template for structured log data — mutually exclusive with `messageTemplate`), `tagsTemplate` (comma-separated tag string). |
 | `writeJsonTemplate` | `""` | **Required** (jsonTemplate). Log entries as a JSON template. |
 | `writePayloadPath` | `""` | **Required** (payloadPath). Payload path to log entries. |
 | `resultPath` | `""` | Payload path to write the send result. |

@@ -44,12 +44,12 @@ Creates a signed JWT from a payload. Two signing methods: service credential (re
 | `issuerTemplate` | `""` | `iss` claim. Optional. |
 | `dataTemplate` | `""` | **Required.** JWT payload as JSON template. |
 | `dataTemplateType` | `"json"` | **Required.** `"json"` or `"path"` (payload path to object). |
-| `expiresIn` | `86400` | Expiry in seconds. Stored in `meta.timeUnit` and `meta.rateValue` for display. |
+| `expiresIn` | `86400` | Expiry in seconds. Stored in `meta.timeUnit` for display. |
 | `headerTemplateType` | `"json"` | How the JWT header is provided. `"json"` — header is a JSON template string. `"path"` — header is a payload path to an object. |
 | `headerTemplate` | `""` | Custom JWT header fields as a JSON template or payload path. Optional — omit to use the default header (`{ "alg": "<algorithm>", "typ": "JWT" }`). |
 | `destinationPath` | `""` | **Required.** Payload path to write the signed token string. On error, writes `{ error: { type, message } }` and the flow continues. |
 
-**`meta.timeUnit`** and **`meta.isExpRequired`** are always sent by the UI — include them.
+**`meta.timeUnit`** and **`meta.isExpRequired`** are always sent by the UI — include them. Valid `meta.timeUnit` values: `"Seconds"`, `"Minutes"`, `"Hours"`, `"Days"`.
 
 ---
 

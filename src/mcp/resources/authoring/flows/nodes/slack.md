@@ -1,6 +1,6 @@
 # Slack Node (`type: "SlackNode"`)
 
-Posts a message to a Slack channel via an incoming webhook URL. Available in cloud, experience, and customNode flows.
+Posts a message to a Slack channel via an incoming webhook URL. Available in cloud, experience, edge, and customNode flows.
 
 ## Required Fields
 

@@ -59,7 +59,7 @@ Reads property values from BACnet device objects.
 | `portTemplate` | `""` | Legacy alias for `incomingPortTemplate` — the editor writes to `incomingPortTemplate`. Prefer `incomingPortTemplate`. |
 | `incomingPortTemplate` | `""` | Local incoming port. Template. |
 | `apduTimeout` | `""` | APDU request timeout in milliseconds. Template. |
-| `readInstructionsType` | `"array"` | `"array"` or `"payloadPath"`. |
+| `readInstructionsType` | `"array"` | **Required.** `"array"` or `"payloadPath"`. |
 | `readInstructions` | `[]` | **Required.** Array of read instruction objects. |
 | `destinationPath` | `""` | **Required.** Payload path to write results. The `destinationPath` can point to an existing payload path to overwrite it. |
 
