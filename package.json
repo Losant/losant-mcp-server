@@ -57,7 +57,7 @@
   "devDependencies": {
     "@losant/eslint-config-losant": "^2.1.0",
     "c8": "^12.0.0",
-    "eslint": "^10.8.0",
+    "eslint": "^10.8.1",
     "esmock": "^2.7.6",
     "husky": "^9.1.7",
     "lint-staged": "^17.3.0",
