@@ -65,8 +65,9 @@ Each key in the result object corresponds to the `key` field in a `readInstructi
   "working": {
     "plcData": {
       "sensorValue": 42.5,
-      "tempValue": 75.3,
-      "errors": [],
+      "errors": [
+        { "key": "tempValue", "error": { "message": "Tag not found" } }
+      ],
       "plcProperties": {
         "vendorId": 1,
         "productCode": 65,
@@ -79,7 +80,7 @@ Each key in the result object corresponds to the `key` field in a `readInstructi
 }
 ```
 
-`errors` is an array of per-tag error strings for any tags that failed to read. `plcProperties` contains PLC identity information. Successfully read tags appear as top-level keys using the `key` value from `readInstructions`. The `destinationPath` can point to an existing payload path to overwrite it.
+`errors` is an array of per-tag error objects `{ key, error: { message } }` for any tags that failed to read (empty array when all tags succeed). `plcProperties` contains PLC identity information. Successfully read tags appear as top-level keys using the `key` value from `readInstructions`. The `destinationPath` can point to an existing payload path to overwrite it.
 
 ---
 
@@ -121,10 +122,12 @@ Writes tag values to an Allen-Bradley PLC.
 {
   "working": {
     "writeResult": {
-      "errors": []
+      "errors": [
+        { "key": "SetPoint", "error": { "message": "Write failed: tag does not exist" } }
+      ]
     }
   }
 }
 ```
 
-`errors` is an array of per-tag error strings for any tags that failed to write. An empty array means all writes succeeded. The `destinationPath` can point to an existing payload path to overwrite it.
+`errors` is an array of per-tag error objects `{ key, error: { message } }` for any tags that failed to write (empty array means all writes succeeded). The `destinationPath` can point to an existing payload path to overwrite it.

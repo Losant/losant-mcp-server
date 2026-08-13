@@ -1,6 +1,6 @@
 # Time Range Node (`type: "TimeRangeNode"`)
 
-Branches the flow based on whether the current time (or a specified time) falls within a configured HH:MM range, optionally filtered by day of week. `outputIds[0]` = **out of range**; `outputIds[1]` = **in range**. Available in cloud, experience, and customNode flows.
+Branches the flow based on whether the current time (or a specified time) falls within a configured HH:MM range, optionally filtered by day of week. `outputIds[0]` = **out of range**; `outputIds[1]` = **in range**. Available in cloud, experience, customNode, and edge flows.
 
 ## Required Fields
 
@@ -37,7 +37,7 @@ Branches the flow based on whether the current time (or a specified time) falls 
 |---|---|---|
 | `startTimeTemplate` | `""` | **Required.** Start of range in `"HH:MM"` 24-hour format. Template. |
 | `endTimeTemplate` | `""` | **Required.** End of range in `"HH:MM"` 24-hour format. Template. |
-| `timeZoneTemplate` | Browser timezone | **Required.** IANA timezone name (e.g. `"America/Chicago"`, `"UTC"`). Template. Always send explicitly — do not rely on the browser default. |
+| `timeZoneTemplate` | — | **Required.** IANA timezone name (e.g. `"America/Chicago"`, `"UTC"`). Template. |
 | `daysType` | `"array"` | `"array"` — use `days` boolean array. `"path"` — use `daysPath` payload path. |
 | `days` | `[true×7]` | 7-element boolean array: `[Sun, Mon, Tue, Wed, Thu, Fri, Sat]`. Only used when `daysType: "array"`. |
 | `daysPath` | `""` | Payload path to an array of day numbers (0=Sun…6=Sat). Only used when `daysType: "path"`. |

@@ -35,6 +35,8 @@ At runtime, Losant merges all three into a single `globals` object on the payloa
 
 A quick mental model: take the value you want, run `JSON.stringify()` on it, and the result is your `json` string.
 
+**`json` field limit:** The `json` field has a maximum of 32,767 characters.
+
 ### Full flow globals example
 
 ```json
@@ -72,3 +74,5 @@ Maximum 100 globals per flow version (develop counts as one version).
 If a user wants a value available across all their flows (an API key, a global phone number), that belongs in **Application globals** and is set through the Losant platform UI or Applications API — not in the flow JSON. The flow just reads `{{globals.myKey}}` and the value appears at runtime.
 
 If a value should be **version-specific or override an application global** for this particular flow, put it in the `globals` array on the flow definition. Same key name → this version wins over the application setting.
+
+**Edge filtering:** Application globals with `cloudOnly: true` are filtered out for edge flows — they are not merged into the edge payload.

@@ -91,4 +91,6 @@ Same as Cloud. Available on all GEA versions. `resultPath` requires GEA **1.12.0
 
 ## Embedded flows
 
-Same as Cloud.
+In an embedded workflow the node always reports state for the **device running the workflow** — `deviceId` / `deviceIdTemplateType` are ignored and should not be set. All other config fields (`attrDataMethod`, `attrInfos`, `timeSourceType`, etc.) behave the same as Cloud.
+
+> **Minimum EEA version:** 1.0.0

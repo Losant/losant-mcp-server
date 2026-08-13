@@ -34,7 +34,7 @@ Fires a flow whenever the selected Losant Notebook completes an execution, wheth
     "notebook": { "...": "full notebook object" },
     "execution": {
       "status": "completed",
-      "inputInfo": { "input.csv": { "url": "...", "size": 4096 } },
+      "inputInfo": { "input.csv": { "inputType": "file", "url": "...", "size": 4096 } },
       "outputInfo": { "report.pdf": { "url": "...", "size": 8192 } },
       "executionErrors": [],
       "templateContext": "{\"deviceCount\": 42}"
@@ -48,7 +48,7 @@ Fires a flow whenever the selected Losant Notebook completes an execution, wheth
 ```
 
 - `data.success` — `true` if execution succeeded, `false` if it failed.
-- `data.execution.inputInfo` — map of input filenames to `{ url, size }`.
+- `data.execution.inputInfo` — map of input filenames to objects containing all stored input configuration fields. All entries include at minimum `inputType`. Depending on the input type, entries may also include `queryJson`, `dataTableId`, `url`, `size`, and other fields.
 - `data.execution.outputInfo` — map of output filenames to `{ url, size }`.
 - `data.execution.executionErrors` — array of error objects if the notebook failed.
 - `data.execution.templateContext` — stringified JSON from the notebook; use a JSON Decode node to parse it.

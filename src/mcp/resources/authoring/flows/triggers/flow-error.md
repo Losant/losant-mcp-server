@@ -147,7 +147,7 @@ In edge flows, the trigger only fires for errors within the same flow. Starting 
 }
 ```
 
-The payload shape is identical to Cloud, with one difference: when `scope: "global"` and the error occurred in a **different** flow, `triggerId` will be `"global-flowError"` instead of `"<flowId>-flowError"`. To find the erroring flow's ID in that case, read `data.erroredPayload.flowId`.
+The payload shape is identical to Cloud, with one difference: when `scope: "global"`, `triggerId` is always `"global-flowError"` — regardless of whether the error occurred in the same flow or a different flow. To find the erroring flow's ID, read `data.erroredPayload.flowId`.
 
 ## Idiom notes
 

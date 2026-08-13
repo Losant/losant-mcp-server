@@ -66,15 +66,15 @@ The Workflow Trigger Node triggers another flow's Virtual Button — immediately
 | Config field | Default | Notes |
 |---|---|---|
 | `behavior` | `"immediate"` | **Required.** `"immediate"`, `"schedule"`, or `"cancel"`. |
-| `triggerWorkflowId` | `""` | **Required** (not cancel). Target flow ID as a plain string — not a template. |
+| `triggerWorkflowId` | `""` | **Required** (not cancel). Template. The ID of the target flow. |
 | `flowVersionTemplate` | `""` | **Required** (not cancel). Flow version (e.g. `"develop"`, `"v1"`, or `"default"` to run whichever version is marked as the application default). Template. |
-| `triggerVirtualButtonId` | `""` | **Required** (not cancel). The server-generated `key` of the Virtual Button trigger in the target flow — **not** the node's `id`. This key is assigned by the server when the target flow is created and is returned in the trigger object. See the two-step pattern below. |
+| `triggerVirtualButtonId` | `""` | **Required** (not cancel). The value of `meta.uiId` set on the Virtual Button trigger in the target flow. This is a stable identifier you set when creating the Virtual Button trigger; the server does not generate it. |
 | `payloadTemplateType` | `"json"` | `"json"`, `"string"`, or `"path"`. |
 | `payloadTemplate` | `""` | Payload to send. JSON template, string, or payload path per `payloadTemplateType`. |
 | `scheduling` | `"relative"` | **Required** when `behavior: "schedule"`. `"relative"` or `"absolute"`. |
 | `secondsTemplate` | `""` | **Required** when `scheduling: "relative"`. Seconds from now. Template. |
 | `dateTemplate` | `""` | **Required** when `scheduling: "absolute"`. ISO 8601 datetime. Template. |
-| `runIdTemplate` | `""` | **Required** when `behavior: "cancel"`. The run ID from when the execution was scheduled. Template. |
+| `runIdTemplate` | `""` | **Required** when `behavior: "cancel"`. The run ID from when the execution was scheduled. Template. Also used with `behavior: "schedule"` to set the run ID for the scheduled execution. |
 | `resultPath` | `""` | Payload path to write the result. |
 
 ### Output
@@ -86,12 +86,13 @@ The Workflow Trigger Node triggers another flow's Virtual Button — immediately
 **`schedule`:** `{ "runId": "...", "runAt": "...", "flowId": "...", "flowVersion": "...", "virtualButtonId": "...", "payload": {...}, "success": true, "newOrUpdate": "new" }` — `newOrUpdate` is `"update"` when replacing an existing scheduled run.
 
 **`cancel`:** confirms the scheduled run was cancelled.
-### Getting `triggerVirtualButtonId` — two-step pattern
+### Setting `triggerVirtualButtonId` — pre-assign a `uiId`
 
-The `key` of a Virtual Button trigger is server-generated and not known until after the target flow is created. To wire a WorkflowTriggerNode correctly:
+`triggerVirtualButtonId` matches on `meta.uiId` of the Virtual Button trigger, which is a value **you choose** — the server does not generate it. To wire a WorkflowTriggerNode correctly:
 
-1. **Create the target flow** via `losant_write`. The response includes the `triggers` array with the server-assigned `key` on the Virtual Button trigger.
-2. **Use that key** as `triggerVirtualButtonId` in the WorkflowTriggerNode config — either hardcode it or store it in flow globals.
+1. **Decide on a `uiId` value** before creating the target flow (e.g. `"start-processing"`).
+2. **Set `meta.uiId`** on the Virtual Button trigger when POSTing the target flow.
+3. **Use that same value** as `triggerVirtualButtonId` in the WorkflowTriggerNode config.
 
 ## Experience flows
 

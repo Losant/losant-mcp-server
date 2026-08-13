@@ -49,7 +49,7 @@ All five config booleans are always sent by the UI. Always include them.
 
 | Field | Default | Notes |
 |---|---|---|
-| `config.create` | `false` | Fire when a matching file is created. |
+| `config.create` | `true` | Fire when a matching file is created. |
 | `config.update` | `false` | Fire when a matching file's content changes. |
 | `config.delete` | `false` | Fire when a matching file is deleted. |
 | `config.public` | `true` | Watch public files. |

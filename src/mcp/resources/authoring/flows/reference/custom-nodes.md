@@ -37,6 +37,7 @@ User input values — the fields defined on the custom node — are available in
 
 A single-output custom node uses one `CustomNodeCapNode`. A branching custom node uses two `CustomNodeCapNode` nodes with different `meta.name` values (`"custom-node-end-true"` and `"custom-node-end-false"`). Return Nodes **cannot** be placed inside a Loop Node body.
 
+**Single-output cap node:**
 ```json
 {
   "id": "done",
@@ -48,6 +49,39 @@ A single-output custom node uses one `CustomNodeCapNode`. A branching custom nod
   "outputIds": [[]]
 }
 ```
+
+**Branching cap nodes (false/negative branch — index 0):**
+```json
+{
+  "id": "done-false",
+  "type": "CustomNodeCapNode",
+  "config": {
+    "branchIndexTemplate": "0",
+    "resultSourcePath": "working.result"
+  },
+  "meta": { "category": "customNodeEnd", "name": "custom-node-end-false", "label": "Return False", "x": 400, "y": 100 },
+  "outputIds": [[]]
+}
+```
+
+**Branching cap nodes (true/positive branch — index 1):**
+```json
+{
+  "id": "done-true",
+  "type": "CustomNodeCapNode",
+  "config": {
+    "branchIndexTemplate": "1",
+    "resultSourcePath": "working.result"
+  },
+  "meta": { "category": "customNodeEnd", "name": "custom-node-end-true", "label": "Return True", "x": 400, "y": 300 },
+  "outputIds": [[]]
+}
+```
+
+| Cap node config field | Notes |
+|---|---|
+| `branchIndexTemplate` | **Required for branching nodes.** `"0"` for the false/negative branch; `"1"` for the true/positive branch. Without this field, `branchIndex` evaluates to NaN and the execute node throws "failed to return a valid branch path" at runtime. Omit for single-output cap nodes. |
+| `resultSourcePath` | Payload path of the value to return to the outer flow. Omit if the custom node's output result is `"none"`. |
 
 `config.resultSourcePath` points to the value on the payload to return to the outer flow. If the custom node's output result is set to `"none"`, omit `resultSourcePath`.
 
@@ -63,6 +97,7 @@ User inputs are the fields that appear in the custom node's editor panel when a 
 | Payload Path | string | User enters a payload path; the value at that path is the input. |
 | Select | string | User picks from a dropdown of configured options. |
 | Checkbox | boolean | `true` when checked, `false` when unchecked. |
+| Section | — | Cosmetic section-header divider that appears in the custom node editor. Carries no value; used only to visually group inputs. |
 
 ## Output types and result
 
@@ -116,7 +151,7 @@ In the flow body, the node is represented as a `CustomNodeExecuteNode`:
 ```
 
 - `config.customNodeId` — the ID of the custom node resource.
-- `config.customNodeVersion` — the version name to run, or `"develop"` (Application only; never for Edge).
+- `config.customNodeVersion` — the version name to run, `"develop"` (Application only; never for Edge), or `"default"` (resolves to the pinned default version, or `develop` if no default is set).
 - `config.resultPath` — payload path in the **outer flow** where the custom node's return value is written (omit if output result is `"none"`).
 - `config.fields` — array of `{ id, value }` objects mapping input IDs to values (static strings or Handlebars templates).
 - For branching custom nodes, `outputIds` has two entries: `[[falseNodeIds], [trueNodeIds]]` — index 0 fires when the `custom-node-end-false` cap node is reached, index 1 when `custom-node-end-true` is reached.

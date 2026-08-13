@@ -66,9 +66,8 @@ All event types share the same envelope. `data.type` identifies which event fire
     "data": "the message payload as a string",
     "attributes": { "env": "prod", "region": "us-east1" },
     "id": "1234567890",
-    "timestamp": "2024-01-15T12:00:00.000Z",
-    "topic": "my-gcp-topic",
-    "topics": ["my-gcp-topic", "another-topic"]
+    "timestamp": 1705320000000,
+    "topic": "my-gcp-topic"
   },
   "relayId": "5f1c2d3e4f5a6b7c8d9e0f1a",
   "relayType": "integration",
@@ -83,16 +82,18 @@ All event types share the same envelope. `data.type` identifies which event fire
 - `data.data` — the message payload as a string. Use a JSON Decode node if the publisher sends JSON.
 - `data.attributes` — key/value map of Pub/Sub message attributes.
 - `data.id` — GCP-assigned message ID.
-- `data.timestamp` — GCP-assigned publish timestamp.
+- `data.timestamp` — GCP-assigned publish time as a Unix millisecond integer (e.g. `1705320000000`).
 - `data.topic` — the bare subscription name the message arrived on (e.g. `"test-prerelease"`), not a full GCP resource path.
-- `data.topics` — all bare subscription names the integration is subscribed to.
 
 #### `connect` — integration connected
 
 ```json
 {
   "time": "<ISO timestamp>",
-  "data": { "type": "connect" },
+  "data": {
+    "type": "connect",
+    "topics": ["my-gcp-topic", "another-topic"]
+  },
   "relayId": "5f1c...", "relayType": "integration",
   "triggerId": "5f1c...", "triggerType": "integration",
   "applicationId": "...", "flowId": "...", "globals": {}

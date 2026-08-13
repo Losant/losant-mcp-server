@@ -65,7 +65,6 @@ All event types share the same envelope. `data.type` identifies which event fire
       "firstKey": { "value": 2, "dataType": "Number" },
       "secondKey": { "value": "myValue", "dataType": "String" }
     },
-    "queueUrl": "https://sqs.us-east-1.amazonaws.com/123456789/myQueue",
     "systemAttributes": {
       "ApproximateFirstReceiveTimestamp": "",
       "ApproximateReceiveCount": "1",
@@ -86,7 +85,6 @@ All event types share the same envelope. `data.type` identifies which event fire
 - `data.message` — the SQS message body as a string.
 - `data.messageId` — the SQS-assigned message ID.
 - `data.messageAttributes` — custom attributes attached to the message.
-- `data.queueUrl` — the URL of the SQS queue.
 - `data.systemAttributes` — SQS system metadata.
 
 #### `connect` — integration connected
@@ -94,7 +92,10 @@ All event types share the same envelope. `data.type` identifies which event fire
 ```json
 {
   "time": "<ISO timestamp>",
-  "data": { "type": "connect" },
+  "data": {
+    "type": "connect",
+    "queueUrl": "https://sqs.us-east-1.amazonaws.com/123456789/myQueue"
+  },
   "relayId": "5f1c...", "relayType": "integration",
   "triggerId": "5f1c...", "triggerType": "integration",
   "applicationId": "...", "flowId": "...", "globals": {}

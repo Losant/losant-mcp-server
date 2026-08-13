@@ -43,7 +43,7 @@ Not available.
 
 | Config field | Default | Notes |
 |---|---|---|
-| `responseCodeTemplate` | `""` | **Required.** HTTP status code (100–599). Template. |
+| `responseCodeTemplate` | `""` | Optional. HTTP status code (100–599). Template. Defaults to `200` when omitted. |
 | `bodyTemplateType` | `"string"` | `"string"` — string template. `"path"` — payload path. `"payload"` — send the full flow payload as body. |
 | `bodyTemplate` | `""` | Response body. Template or payload path per `bodyTemplateType`. Omit when `bodyTemplateType: "payload"`. |
 | `headerInfo` | `[]` | Array of `{ keyTemplate, valueTemplate }` response headers. |

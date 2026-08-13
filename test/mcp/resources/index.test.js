@@ -148,6 +148,24 @@ describe('MCP Resources', () => {
       referenceTemplate.template.uriTemplate.toString().should.equal('losant://references/{resourceType}/{referenceName}');
       referenceTemplate.config.should.have.property('mimeType', 'text/markdown');
     });
+
+    it('should register flow-node template with pattern losant://flow/nodes/{nodeName}', async () => {
+      registerResourceLoader(mockServer);
+
+      const flowNodeTemplate = registeredTemplates.find((t) => t.name === 'flow-node');
+      should.exist(flowNodeTemplate);
+      flowNodeTemplate.template.uriTemplate.toString().should.equal('losant://flow/nodes/{nodeName}');
+      flowNodeTemplate.config.should.have.property('mimeType', 'text/markdown');
+    });
+
+    it('should register flow-trigger template with pattern losant://flow/triggers/{triggerName}', async () => {
+      registerResourceLoader(mockServer);
+
+      const flowTriggerTemplate = registeredTemplates.find((t) => t.name === 'flow-trigger');
+      should.exist(flowTriggerTemplate);
+      flowTriggerTemplate.template.uriTemplate.toString().should.equal('losant://flow/triggers/{triggerName}');
+      flowTriggerTemplate.config.should.have.property('mimeType', 'text/markdown');
+    });
   });
 
   describe('Resource Content Retrieval', () => {
@@ -514,6 +532,24 @@ describe('MCP Resources', () => {
       result.contents[0].should.have.property('uri', 'losant://dashboard/blocks/bar');
       result.contents[0].should.have.property('mimeType', 'text/markdown');
       result.contents[0].text.should.match(/Bar Chart Block/);
+    });
+
+    it('should provide handler for flow node debug', async () => {
+      const result = await client.readResource({ uri: 'losant://flow/nodes/debug' });
+
+      result.should.have.property('contents');
+      result.contents[0].should.have.property('uri', 'losant://flow/nodes/debug');
+      result.contents[0].should.have.property('mimeType', 'text/markdown');
+      result.contents[0].text.should.match(/DebugNode|debug/i);
+    });
+
+    it('should provide handler for flow trigger timer', async () => {
+      const result = await client.readResource({ uri: 'losant://flow/triggers/timer' });
+
+      result.should.have.property('contents');
+      result.contents[0].should.have.property('uri', 'losant://flow/triggers/timer');
+      result.contents[0].should.have.property('mimeType', 'text/markdown');
+      result.contents[0].text.should.match(/timer|cron/i);
     });
   });
 });

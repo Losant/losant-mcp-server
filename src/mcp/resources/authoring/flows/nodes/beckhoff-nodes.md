@@ -43,7 +43,7 @@ Reads current symbol values from a Beckhoff TwinCAT PLC.
     "timeoutTemplate": "30000",
     "readInstructionsType": "array",
     "readInstructions": [
-      { "nameTemplate": "GVL_Var.TestDint1", "key": "temperature" }
+      { "type": "symbol", "nameTemplate": "GVL_Var.TestDint1", "key": "temperature" }
     ],
     "destinationPath": "working.plcData"
   },
@@ -62,7 +62,7 @@ Reads current symbol values from a Beckhoff TwinCAT PLC.
 | `routerTcpPortTemplate` | `"48898"` | Router TCP port. Template. |
 | `timeoutTemplate` | `"30000"` | Request timeout in milliseconds. Template. |
 | `readInstructionsType` | `"array"` | `"array"` or `"payloadPath"`. |
-| `readInstructions` | `[]` | **Required.** Array of `{ nameTemplate, key }` objects. `key` is optional — defaults to the symbol name if omitted. |
+| `readInstructions` | `[]` | **Required.** Array of `{ type, nameTemplate, key }` objects. `type` must be `"symbol"`. `key` is optional — defaults to the symbol name if omitted. |
 | `destinationPath` | `""` | **Required.** Payload path to write symbol values. The `destinationPath` can point to an existing payload path to overwrite it. |
 
 ### Read output shape
@@ -100,6 +100,7 @@ Writes values to Beckhoff TwinCAT PLC symbols.
     "writeInstructionsType": "array",
     "writeInstructions": [
       {
+        "type": "symbol",
         "nameTemplate": "GVL_Var.SetPoint",
         "dataMethod": "stringTemplate",
         "dataTemplate": "{{working.setpoint}}",
@@ -113,7 +114,7 @@ Writes values to Beckhoff TwinCAT PLC symbols.
 }
 ```
 
-Write instructions require `nameTemplate` (symbol name), `dataMethod` (`"stringTemplate"`, `"jsonTemplate"`, or `"payloadPath"`), and the corresponding data field. `autoFill: true` auto-populates missing struct properties (GEA 1.51.0+).
+Write instructions require `type: "symbol"`, `nameTemplate` (symbol name), `dataMethod` (`"stringTemplate"`, `"jsonTemplate"`, or `"payloadPath"`), and the corresponding data field. `autoFill: true` auto-populates missing struct properties (GEA 1.51.0+).
 
 ### Write output shape
 

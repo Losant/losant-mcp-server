@@ -55,7 +55,7 @@ The named configuration in the agent config file must include the connection fie
 name = 'beckhoffTrig1'
 type = 'beckhoff'
 localAmsNetId = '192.168.5.221.1.2'
-localAdsPort = 32750
+localAdsPort = 37250
 targetAmsNetId = '5.123.154.18.1.1'
 targetAdsPort = 851
 routerHost = '127.0.0.1'
@@ -105,7 +105,7 @@ Define the connection and subscriptions directly in the trigger config.
 | `targetAdsPort` | `"851"` | Target runtime ADS port. |
 | `routerHost` | — | **Required.** Hostname or IP of the TwinCAT router. |
 | `routerTcpPort` | `"48898"` | Port of the TwinCAT router. |
-| `cycleTimeMs` | — | **Required.** Poll interval in milliseconds. Min `10`, max `3600000` (1 hour). Lower values increase responsiveness but add load. |
+| `cycleTimeMs` | `10000` | Poll interval in milliseconds. Min `10`, max `3600000` (1 hour). Lower values increase responsiveness but add load. |
 | `subscriptions` | `[]` | **Required.** Array of `{ "name": "<symbolName>" }` objects. At least one required. |
 
 ### Payload at runtime

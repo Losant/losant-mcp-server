@@ -41,7 +41,7 @@ Not available.
   "type": "TensorFlowPredictNode",
   "config": {
     "modelTypeTemplate": "layers",
-    "modelTemplate": "/data/models/sensor-model",
+    "modelTemplate": "/data/models/sensor-model/model.json",
     "dataPath": "working.inputTensor",
     "shapePath": "",
     "dataTypeTemplate": "autodetect",
@@ -55,8 +55,8 @@ Not available.
 | Config field | Default | Notes |
 |---|---|---|
 | `modelTypeTemplate` | `"layers"` | **Required.** TensorFlow model type: `"layers"` or `"graph"`. Template. |
-| `modelTemplate` | `""` | **Required.** Path to the model directory on the GEA file system. Template. |
+| `modelTemplate` | `""` | **Required.** Full path to the `model.json` file on the GEA file system (e.g. `/data/models/my-model/model.json`), not the directory. Template. |
 | `dataPath` | `""` | **Required.** Payload path containing the input tensor data (array or nested arrays). |
 | `shapePath` | `""` | Optional payload path to an array specifying the input tensor shape. |
-| `dataTypeTemplate` | `"autodetect"` | Input data type: `"autodetect"`, `"float32"`, `"int32"`, `"bool"`, `"string"`. When `"autodetect"`, omitted from config. Template. |
+| `dataTypeTemplate` | `"autodetect"` | Input data type: `"autodetect"`, `"float32"`, `"int32"`, `"bool"`, `"string"`. When `"autodetect"`, omitted from config. Template. **Caution:** `"autodetect"` requires the model's `input_shape` to be present; if it is absent the node will throw at runtime. Prefer an explicit type when the shape is unknown. |
 | `resultPath` | `""` | Payload path to write the prediction results. |

@@ -64,7 +64,7 @@ Available: cloud, experience, customNode, edge (GEA 1.20.0+).
 | `omit` | **Required** — JSON array of key names | — | Remove specified keys from source. **Requires `destPath`** to persist result. |
 | `pick` | **Required** — JSON array of key names | — | Keep only specified keys in source. **Requires `destPath`** to persist result. |
 | `values` | — | ✓ receives `[value, ...]` array | Extract the source object's values as an array. Source passes through; result goes to `outputPath`. |
-| `zipObject` | **Required** — JSON array of key names | — | Combine source (array of values) with `inputTemplate` (array of keys) to produce an object. Source must be an array. **Requires `destPath`** to persist result. Requires GEA 1.30.0+ on edge. |
+| `zipObject` | **Required** — JSON array of key strings | — | Combines `inputTemplate` (array of keys) with the source (array of values) to produce an object. Source must be an array of values; `inputTemplate` must be a JSON array of key strings. **Requires `destPath`** to persist result. Requires GEA 1.30.0+ on edge. |
 
 ### Key distinctions
 

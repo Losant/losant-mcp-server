@@ -83,6 +83,18 @@ Webhook triggers (cloud flows with `waitForReply: true`) also populate request f
 | `data.body` | Parsed request body |
 | `data.replyId` | Opaque reply ID — must be passed to the Webhook Reply node |
 
+## Device and device-tag trigger additions (cloud)
+
+Cloud flows triggered by a device-state, device-connect, device-disconnect, or device-inactivity trigger (both `deviceId` and `deviceTag` variants) also receive the following fields on the payload:
+
+| Field | Description |
+|---|---|
+| `deviceName` | Name of the device that triggered the flow |
+| `deviceTags` | Tags object for the triggering device |
+| `device` | Full device JSON object (includes attributes, tags, name, etc.) for the triggering device |
+
+`flowVersion` is present on cloud payloads when a published version is running (i.e. `defaultVersionId` is set on the flow). It is not exclusive to edge.
+
 ## Edge flow additions
 
 Edge flows running on a Gateway Edge Agent (GEA) receive additional envelope fields:
@@ -92,10 +104,11 @@ Edge flows running on a Gateway Edge Agent (GEA) receive additional envelope fie
 | `isConnectedToLosant` | `true` if the GEA was connected to Losant when the flow fired; `false` if running offline |
 | `agentVersion` | GEA version string (e.g. `"2.4.0"`) |
 | `agentEnvironment` | GEA environment metadata object |
-| `flowVersion` | Name of the published version deployed to this device |
+| `flowVersion` | Name of the published version deployed to this device (also present on cloud payloads when a version is deployed — not edge-exclusive) |
 | `deviceId` | Losant device ID of the GEA device running this flow |
-| `deviceName` | Name of the GEA device |
-| `deviceTags` | Tags object for the GEA device |
+| `deviceName` | Name of the GEA device (also present on cloud device-triggered flows — not edge-exclusive) |
+| `deviceTags` | Tags object for the GEA device (also present on cloud device-triggered flows — not edge-exclusive) |
+| `device` | Full device JSON object for the GEA device (also present on cloud device-triggered flows) |
 
 ## Payload paths vs. string templates
 

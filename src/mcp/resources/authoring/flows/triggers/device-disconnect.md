@@ -61,13 +61,16 @@ Two `type` values select devices differently; both have empty config.
   "relayType": "apiToken",
   "triggerId": "<trigger key>",
   "triggerType": "deviceIdDisconnect",
+  "deviceName": "<name of the disconnecting device>",
+  "deviceTags": { "<tagKey>": ["<tagValue>"] },
+  "device": { "<full device JSON including attributes, tags, name, etc.>" },
   "applicationId": "...",
   "flowId": "...",
   "globals": {}
 }
 ```
 
-- `data.connectedAt` — when this session started. Subtract from `time` to get session duration.
+- `data.connectedAt` — when this session started (may be absent if the connection time was not tracked). Subtract from `time` to get session duration.
 - `data.disconnectReason` — human-readable reason (e.g. `"Keepalive Timeout"`). Free-text — log it rather than branching on specific values.
 - `data.messagesFromDevice` / `data.messagesToDevice` — message counts for this session.
 - `triggerId` — the disconnecting device's ID.
@@ -123,6 +126,6 @@ Edge flows use `type: "onDisconnect"` — fires only for the Edge Compute Device
 
 - **Pair with a Device: Connect trigger** to track the full connectivity lifecycle.
 - **Use the `deviceTag` variant for fleet monitoring.** One trigger covers all matching devices without enumerating IDs.
-- **`data.disconnectReason` indicates why the connection ended.** Check it to distinguish intentional disconnects from unexpected drops before deciding what action to take.
+- **`data.disconnectReason` is free-text and implementation-specific.** Do not branch on specific values — log it for debugging instead.
 - **`triggerId` is the disconnecting device's ID.** Use it to look up or update the specific device without a separate query.
 - **On edge, only the gateway device's own disconnect fires this trigger.** Peripheral device disconnects do not.

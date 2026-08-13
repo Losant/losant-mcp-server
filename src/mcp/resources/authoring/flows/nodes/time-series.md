@@ -44,11 +44,11 @@ Retrieves device state data across a time range, aggregated to a configurable re
 |---|---|---|
 | `findMethod` | — | **Required.** Device selection method (see Device selection below). |
 | `attribute` | `[]` | **Required.** Array of attribute names to query. Single attribute returns simpler result shape. |
-| `duration` | — | **Required.** Query time range in milliseconds (e.g. `86400000` = last 24 hours). `null` for custom end time. |
+| `duration` | — | **Required when `aggregation` is not `"NONE"`.** Query time range in milliseconds (e.g. `86400000` = last 24 hours). Do not pass `null` — it produces a 1 ms window. When `aggregation: "NONE"`, `duration` may be omitted; the query returns raw data points without a fixed time window. |
 | `end` | — | Optional. Custom end time as a Unix timestamp in milliseconds. Defaults to now. Used with non-null `duration` to query a historical window ending at a specific time. |
 | `resolution` | — | **Required.** Aggregation time bucket in milliseconds (e.g. `3600000` = 1-hour buckets). `null` for custom. Must be ≤ `duration`. |
-| `aggregation` | — | **Required.** Aggregation method: `"MEAN"`, `"MIN"`, `"MAX"`, `"SUM"`, `"COUNT"`, `"FIRST"`, `"LAST"`, `"NONE"`, and others. |
-| `aggregationOptions` | `[]` | Array of `{ key, valueTemplate }` for aggregation methods that require additional options. |
+| `aggregation` | — | **Required.** Aggregation method: `"MEAN"`, `"MIN"`, `"MAX"`, `"SUM"`, `"COUNT"`, `"FIRST"`, `"LAST"`, `"NONE"`, `"MEDIAN"`, `"STD_DEV"`, `"TIMEATVALUE"`. |
+| `aggregationOptions` | `[]` | Array of `{ keyTemplate, valueTemplate }` for aggregation methods that require additional options. Only `"TIMEATVALUE"` uses this field. |
 | `perDeviceResults` | `false` | When `true`, result is keyed by device ID instead of aggregated across all matched devices. |
 | `orderTemplate` | `"asc"` | `"asc"` or `"desc"`. Template. |
 | `limitTemplate` | `""` | Max number of data points (max 25,000). Only applies when `aggregation: "NONE"`. Template. |
@@ -85,7 +85,7 @@ Retrieves the most recent (or recent period's aggregated) state value for one or
 Same config fields as Time Series except:
 - No `resolution` — gauge always returns a single aggregated value per attribute.
 - No `orderTemplate` or `limitTemplate`.
-- `duration: null` means "last received data point" (the default/most common use case).
+- `duration: null` produces a 1 ms query window, which is effectively useless. Omit `duration` or use a small positive value to get recent data.
 - `aggregation` cannot be `"NONE"`.
 
 ### Device selection (`findMethod`)

@@ -48,7 +48,7 @@ Fires at a specific time on selected days of the week. The UI generates a cron e
 {
   "type": "timer",
   "config": {
-    "cron": "0 9 * * 1,2,3,4,5",
+    "cron": "0 0 9 * * 1,2,3,4,5",
     "tz": "America/New_York"
   },
   "meta": {
@@ -57,7 +57,7 @@ Fires at a specific time on selected days of the week. The UI generates a cron e
     "label": "Timer",
     "timerTypeSelect": "cronWeekly",
     "weekdays": [1, 2, 3, 4, 5],
-    "timeAt": "09:00",
+    "timeAt": "09:00:00",
     "x": 60,
     "y": 60
   },
@@ -68,7 +68,7 @@ Fires at a specific time on selected days of the week. The UI generates a cron e
 - `config.cron` — the generated cron string.
 - `config.tz` — IANA timezone name (e.g. `"America/Chicago"`, `"UTC"`).
 - `meta.weekdays` — array of day numbers (0 = Sunday … 6 = Saturday).
-- `meta.timeAt` — time string in `"HH:MM"` 24-hour format.
+- `meta.timeAt` — time string in `"HH:MM:SS"` 24-hour format.
 
 ### Advanced cron (`meta.timerTypeSelect: "cron"`)
 
@@ -113,7 +113,7 @@ Not available.
 
 ## Embedded flows
 
-Simple interval mode only (`meta.timerTypeSelect: "seconds"`). Cron modes are not supported in embedded. Minimum EEA 1.0.0.
+Simple interval mode only (`meta.timerTypeSelect: "seconds"`). Cron modes are not supported in embedded. Minimum EEA 1.0.0. The minimum timer interval for embedded is 0.1 seconds (100 ms).
 
 ## Edge flows
 

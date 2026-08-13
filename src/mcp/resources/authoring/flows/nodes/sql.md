@@ -75,4 +75,4 @@ Same as Cloud.
 
 > **Minimum GEA version:** 1.5.0
 
-Same as Cloud with one addition: **SQLite 3** is supported on edge (`systemTemplate: "sqlite3"`). Set `hostTemplate` to the local file path of the SQLite database file (e.g. `"/data/mydb.sqlite"`). No host, port, user, password, or SSL fields are used for SQLite.
+Same as Cloud with one addition: **SQLite 3** is supported on edge (`systemTemplate: "sqlite3"`). Set `hostTemplate` to the local file path of the SQLite database file (e.g. `"/data/mydb.sqlite"`). For SQLite, `hostTemplate` is the path to the database file. Port, user, password, and SSL fields are not used.

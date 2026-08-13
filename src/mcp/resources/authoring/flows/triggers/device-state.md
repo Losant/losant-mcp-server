@@ -83,16 +83,20 @@ Device state attributes are placed **directly on `data`**. `time` is the state r
   "relayType": "device",
   "triggerId": "<ID of the reporting device>",
   "triggerType": "deviceId",
+  "deviceName": "<name of the reporting device>",
+  "deviceTags": { "<tagKey>": ["<tagValue>"] },
+  "device": { "<full device JSON including attributes, tags, name, etc.>" },
   "applicationId": "...",
   "flowId": "...",
   "globals": {}
 }
 ```
 
+- `relayType` — `"device"` when the device reported directly, but can also be `"apiToken"`, `"flow"`, or `"user"` depending on what entity made the API call that reported state.
 - `data` — only attributes reported and accepted in this update. Attributes not in the report or with invalid values are absent.
 - `meta` — present at root level only when the device included a meta value with the state report.
 - `triggerId` — the reporting device's ID.
-- `triggerType` — `"deviceId"` when triggered by the `deviceId` variant; `"deviceTag"` when triggered by the `deviceTag` variant.
+- `triggerType` — always `"deviceId"` regardless of which trigger variant fired (`deviceId` or `deviceTag`).
 - When `config.allowInvalid: true` and an invalid report is received, `data` is `null` and `original` (root level, alongside `data`) contains the raw unparsed message string.
 
 ### Payload at runtime — batch report (`batchBehavior: "once"`)
@@ -110,11 +114,16 @@ When configured to fire once for the entire batch, `data` is an array. Attribute
   "relayType": "device",
   "triggerId": "<ID of the reporting device>",
   "triggerType": "deviceId",
+  "deviceName": "<name of the reporting device>",
+  "deviceTags": { "<tagKey>": ["<tagValue>"] },
+  "device": { "<full device JSON including attributes, tags, name, etc.>" },
   "applicationId": "...",
   "flowId": "...",
   "globals": {}
 }
 ```
+
+- `relayType` — `"device"` when the device reported directly, but can also be `"apiToken"`, `"flow"`, or `"user"` depending on what entity made the API call that reported state.
 
 ## Experience flows
 
@@ -129,5 +138,5 @@ Not available.
 - **Use `deviceId` variant for per-device flows, `deviceTag` variant for fleet-wide flows.** The tag variant fires once per reporting device, not once per tag group.
 - **`batchBehavior: "once"` fires once across all matching devices.** Use it for fleet aggregations (e.g. "when any truck reports, compute the fleet average"). Use individual (no `batchBehavior`) when you need to act on each device's data separately.
 - **Filter by specific attributes using `attributeWhitelist` or `attributeBlacklist`.** Without a filter the trigger fires on any state report, even if the attributes you care about haven't changed. Narrowing the filter reduces unnecessary executions.
-- **`triggerId` is the reporting device's ID.** Reference it as `{{triggerId}}` in templates or as the payload path `triggerId` in payload path fields — there is no `data.deviceId` field on the device state trigger payload.
-- **State timestamps in the payload are the report arrival time, not necessarily the sensor measurement time.** If the device embeds its own timestamp in a state attribute, use that for time-accurate processing.
+- **`triggerId` is the reporting device's ID.** Reference it as `{{triggerId}}` in templates or as the payload path `triggerId` in payload path fields. The full device object is also available at `device` (root level) — use `device.deviceId` or `triggerId` interchangeably for the device ID. `triggerType` is always `"deviceId"` regardless of whether the `deviceId` or `deviceTag` trigger variant fired.
+- **`time` in the payload is the state report's own timestamp**, not the flow execution time and not the server arrival time. If the device embeds a separate measurement timestamp in a state attribute, use that for sensor-time-accurate processing.

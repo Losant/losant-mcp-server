@@ -250,7 +250,7 @@ When a branch merges back to a single path, resume the parent's x and continue i
 | `ConditionalNode`, `GeofenceNode` | `[[falseIds], [trueIds]]` — two outer entries | Index 0 = condition false / outside; index 1 = condition true / inside. Either inner array may be empty (`[]`). |
 | `LatchNode` | `[[notLatchingIds], [newlyLatchedIds]]` — two outer entries | Index 0 = not newly latching (already latched or expression false); index 1 = first-time latch (transition from unlatched to latched). |
 | `ExperienceUserAuthNode` | `[[failedIds], [authenticatedIds]]` — two outer entries | Index 0 = authentication **failed**; index 1 = authentication **succeeded**. |
-| `VerifyExperienceGroupNode` | `[[memberIds], [notMemberIds]]` — two outer entries | Index 0 = user **is a member** of the group; index 1 = user is **not a member**. |
+| `VerifyExperienceGroupNode` | `[[notMemberIds], [memberIds]]` — two outer entries | Index 0 = user is **not a member** of the group (false path); index 1 = user **is a member** (true path). |
 | `BranchOnChangeNode` | `[[unchangedIds], [changedIds]]` — two outer entries | Index 0 = value **unchanged** (same as previous execution, or first run); index 1 = value **changed**. |
 | `CryptoVerifyNode` | `[[invalidIds], [validIds]]` — two outer entries | Index 0 = verification **failed** (invalid signature); index 1 = verification **passed** (valid signature). |
 | `JWTVerifyNode` | `[[invalidIds], [validIds]]` — two outer entries | Index 0 = JWT **invalid** (bad signature, expired, etc.); index 1 = JWT **valid**. |

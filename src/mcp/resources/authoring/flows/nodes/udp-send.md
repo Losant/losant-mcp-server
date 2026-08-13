@@ -44,6 +44,6 @@ Not available.
 | `hostTemplate` | `""` | **Required.** Destination hostname or IPv4/IPv6 address. Template. |
 | `portTemplate` | `""` | **Required.** Destination port (1–65535). Template. |
 | `messageTemplate` | `""` | Message payload. Template. |
-| `encodingTemplate` | `"utf8"` | **Required.** Message encoding. Template. |
+| `encodingTemplate` | `"utf8"` | Optional. Message encoding. Defaults to `'utf8'` when absent. Template. |
 | `broadcastTemplate` | `false` | When `true`, allows sending to broadcast addresses. GEA 1.19.2+. |
 | `resultPath` | `""` | Payload path to write `{ success: true }` or `{ error }`. |

@@ -46,10 +46,14 @@ Not available.
   "triggerId": "customNodeStart",
   "triggerType": "customNodeStart",
   "applicationId": "...",
-  "flowId": "...",
-  "globals": {}
+  "customNodeId": "...",
+  "customNodeName": "My Custom Node",
+  "customNodeVersion": "v1.0.0"
 }
 ```
 
 - `triggerId` — always the literal string `"customNodeStart"`.
 - `data` — populated by the invoking flow's `CustomNodeExecuteNode.config.fields` array. Each `{ id, value }` entry becomes a key on `data`. If no fields are configured, `data` is `{}`.
+- `customNodeId` — the flow ID of the custom node definition.
+- `customNodeName` — the display name of the custom node.
+- `customNodeVersion` — the version of the custom node being executed.

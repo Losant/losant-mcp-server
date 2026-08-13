@@ -64,3 +64,5 @@ Same as Cloud.
 ## Edge flows
 
 Same as Cloud. Attachments require GEA 1.43.3+.
+
+> **Note:** `credentialNameTemplate` is **not available on edge**. Use the direct API key field (`sendgridApiKey`) instead.

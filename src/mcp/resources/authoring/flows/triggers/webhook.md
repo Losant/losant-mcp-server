@@ -53,10 +53,10 @@ Fires a flow whenever the selected webhook resource receives an HTTP request or 
 
 ### WebSocket webhook payload
 
-Fires three times per client lifecycle: `connect`, `message`, and `disconnect`. `data.replyId` identifies the specific client and persists across all three events.
+Fires once per WebSocket lifecycle event: once on connect, once per message received, and once on disconnect. A client sending multiple messages causes multiple trigger firings. `data.replyId` identifies the specific client and persists across all events.
 
 - **`connect`**: `data.message` is `{}`.
-- **`message`**: `data.message` is `{ "data": "<string>", "length": <bytes> }`.
+- **`message`**: `data.message` is `{ "data": <object or string>, "length": <bytes> }`. The runtime JSON-parses the message — `data` is an object for valid JSON messages, or a string for non-JSON messages.
 - **`disconnect`**: `data.message` is `{ "reason": "<string>", "statusCode": <code> }`. Platform codes: `1006` abnormal closure, `1008` rate limit, `1009` message too large, `1012` maintenance.
 
 `data.type` identifies the event. All three events also include `data.method` (always `"get"`), `data.path`, `data.query`, and `data.headers` (original WebSocket upgrade headers).

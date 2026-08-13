@@ -92,7 +92,7 @@ Fires whenever the configured number of bytes has been accumulated. Used primari
 For binary data, use `"encoding": "base64"`. Access the underlying bytes in a Function node:
 
 ```javascript
-const buffer = Buffer.from(payload.data.content, 'base64');
+const buffer = Buffer.from(payload.data.contents, 'base64');
 payload.working.firstByte = buffer[0];
 payload.working.nextInt = buffer.readInt32LE(1);
 ```
@@ -104,7 +104,7 @@ payload.working.nextInt = buffer.readInt32LE(1);
 | Field | Default | Notes |
 |---|---|---|
 | `config.path` | `""` | **Required.** Full path to the file on the container file system. |
-| `config.encoding` | `"utf8"` | **Required.** Output encoding: `"utf8"`, `"base64"`, or `"binary"`. |
+| `config.encoding` | `"utf8"` | **Required.** Output encoding: `"utf8"`, `"base64"`, `"binary"`, `"ascii"`, `"utf16le"`, `"ucs2"`, `"latin1"`, or `"hex"`. |
 | `config.delimiter` | `""` (= `\n`) | Used in delimiter mode. Omit to use newline default. |
 | `config.byteLength` | — | Used in byte length mode. Number of bytes to accumulate before firing. **Must be a string** (e.g. `"16"`), not a number. |
 
@@ -116,10 +116,10 @@ Send either `delimiter` or `byteLength` — not both.
 {
   "time": "<ISO timestamp>",
   "data": {
-    "content": "<new file content as encoded string>",
+    "contents": "<new file content as encoded string>",
     "path": "/data/logs/app.log"
   },
-  "triggerId": "/data/logs/app.log",
+  "triggerId": "<server-generated node key>",
   "triggerType": "fileTail",
   "applicationId": "...",
   "flowId": "...",
@@ -127,9 +127,9 @@ Send either `delimiter` or `byteLength` — not both.
 }
 ```
 
-- `data.content` — the new file content encoded per `config.encoding`.
+- `data.contents` — the new file content encoded per `config.encoding`.
 - `data.path` — the file path being tailed.
-- `triggerId` — the configured file path. Use this to distinguish which File Tail trigger fired when multiple are present in the same flow.
+- `triggerId` — the server-generated node key (not the file path). To get the file path, use `data.path`. Use `triggerId` to distinguish which File Tail trigger fired when multiple are present in the same flow.
 
 ### File system access
 

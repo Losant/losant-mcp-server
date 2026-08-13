@@ -85,7 +85,7 @@ If multiple triggers have routes that both match a request, **all matching trigg
     "query": { "page": "2" },
     "replyId": "SUOpCIlHPCisYg_HNSVR5"
   },
-  "triggerId": "request",
+  "triggerId": "<server-generated node key>",
   "triggerType": "request",
   "applicationId": "...",
   "flowId": "...",
@@ -100,7 +100,7 @@ If multiple triggers have routes that both match a request, **all matching trigg
 - `data.path` — actual request path.
 - `data.query` — URL query parameters.
 - `data.replyId` — unique request identifier. Pass to an HTTP Response node to send a reply. Every request must be replied to or the client will hang.
-- `triggerId` — always the literal string `"request"`.
+- `triggerId` — for the configured trigger (GEA 1.24.0+ with `method`/`route`), this is the server-generated node key assigned when the trigger was created. For legacy triggers (GEA < 1.24.0, no config), it is the literal string `"request"`.
 
 ## Idiom notes
 

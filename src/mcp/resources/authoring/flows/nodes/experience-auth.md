@@ -46,13 +46,13 @@ Authenticates an Experience User and issues an auth token. Four authentication m
 
 | Config field | Default | Notes |
 |---|---|---|
-| `emailTemplate` | `""` | **Required** when `meta.authMode: "emailPassword"` or `"tokenEmailPassword"`. |
+| `emailTemplate` | `""` | **Required** when `meta.authMode: "emailPassword"`, `"tokenEmail"`, or `"tokenEmailPassword"`. |
 | `passwordTemplate` | `""` | **Required** when `meta.authMode: "emailPassword"` or `"tokenEmailPassword"`. |
 | `tokenTemplate` | `""` | **Required** when `meta.authMode: "token"`, `"tokenEmail"`, or `"tokenEmailPassword"`. |
 | `invalidateExistingTokens` | `false` | When `true`, all previous tokens for this user are invalidated on successful auth. |
 | `userResultPath` | `""` | Optional. Payload path to write the authenticated user object. |
 | `tokenResultPath` | `""` | Optional. Payload path to write the generated auth token string. |
-| `ttlTemplate` | `""` | Token time-to-live in seconds. Leave empty for the experience default. Template. |
+| `ttlTemplate` | `""` | Token time-to-live in milliseconds (e.g. `3600000` for 1 hour). Leave empty for the experience default. Template. |
 | `extraDataJsonTemplate` | `""` | Optional JSON data to embed in the generated token. JSON template. |
 
 **`meta.authMode`** (required on `meta`, not `config`):
@@ -95,7 +95,7 @@ Generates an auth token for an Experience User without requiring their password.
 | `resultPath` | `""` | **Required.** Payload path to write the generated token. |
 | `invalidateExistingTokens` | `false` | When `true`, all existing tokens for this user are revoked before generating the new one. |
 | `treatAsLogin` | `false` | When `true`, updates the user's `lastLogin` timestamp. |
-| `ttlTemplate` | `""` | Token time-to-live in seconds. Leave empty for the experience's default TTL. Template. |
+| `ttlTemplate` | `""` | Token time-to-live in milliseconds (e.g. `3600000` for 1 hour). Leave empty for the experience's default TTL. Template. |
 | `extraDataJsonTemplate` | `""` | Optional JSON data to embed in the token. JSON template. |
 
 ## Experience flows

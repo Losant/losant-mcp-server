@@ -35,7 +35,7 @@ Validates a value on the flow payload against a JSON Schema (draft-04). Branches
 | `schemaType` | `"json"` | `"json"` — schema is a JSON string in `schema`. `"path"` — `schema` is a payload path pointing to the schema object. On edge, `"path"` requires GEA 1.1.0+; `"json"` works on all versions. |
 | `schema` | `""` | **Required.** The JSON Schema as a JSON-encoded string (when `schemaType: "json"`) or a payload path (when `schemaType: "path"`). |
 | `toValidatePath` | `""` | Payload path of the value to validate. If omitted, the entire flow payload is validated. |
-| `errorsPath` | `""` | Payload path to write validation errors on the invalid branch. Errors are an array of objects describing each schema violation. |
+| `errorsPath` | `""` | Payload path to write validation errors. Written on both branches — a populated array of error objects on the invalid branch, and an empty array `[]` on the valid branch. |
 
 ### Wiring
 

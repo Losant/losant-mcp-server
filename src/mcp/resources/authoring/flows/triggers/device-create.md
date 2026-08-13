@@ -23,7 +23,7 @@ Fires a flow whenever a device is created within the application. Cloud only. Do
 }
 ```
 
-- **`key`** — Required. Always send as `"/"`. This is the only valid value.
+- **`key`** — Optional. Defaults to `"/"` if omitted, which fires for any device creation in the application. `"/"` is the only valid value.
 
 **Payload at runtime:**
 ```json

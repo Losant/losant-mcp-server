@@ -115,8 +115,7 @@ Reads values from one or more OPC UA nodes. Result is an object keyed by each in
   "working": {
     "opcData": {
       "temperature": 72.4,
-      "pressure": 14.7,
-      "errors": []
+      "pressure": 14.7
     }
   }
 }
@@ -130,13 +129,13 @@ Each key corresponds to the `key` field from `readInstructions`. `errors` is onl
 |---|---|---|
 | `nameSpaceTemplate` | Yes | Namespace index (e.g. `"2"`). Template. |
 | `identifierTemplate` | Yes | Node identifier (e.g. `"i=1001"` or `"s=Main.Device"`). Template. |
-| `key` | No | Result key in the destination object. Defaults to the node's Display Name if omitted. Cannot be `"errors"`. |
+| `key` | No | Result key in the destination object. Defaults to the last segment of the identifier string if omitted (e.g. `s=Main.Device.temperature` → `temperature`). Cannot be `"errors"`. |
 
 ---
 
 ### OPC UA: Write Node (`type: "OpcUaWriteNode"`)
 
-Writes values to one or more OPC UA nodes. Values are automatically converted to each node's data type. Result is an object with a `write` key and an `errors` array.
+Writes values to one or more OPC UA nodes. Values are automatically converted to each node's data type. On full success the result is `{ "write": "success" }` with no `errors` key. If any write fails, an `errors` array is added.
 
 ```json
 {
@@ -174,7 +173,7 @@ Writes values to one or more OPC UA nodes. Values are automatically converted to
 { "working": { "writeResult": { "write": "success" } } }
 ```
 
-On full success the result is `{ "write": "success" }` with no `errors` key. If any write fails, `errors` is added as an array of per-node error strings: `{ "write": "success", "errors": ["Node ns=2;i=1001: BadNodeIdUnknown"] }`.
+On full success the result is `{ "write": "success" }` with no `errors` key. If any write fails, `errors` is added as an array of per-node error objects: `{ "write": "success", "errors": [{ "type": "BadNodeIdUnknown", "message": "Node ns=2;i=1001: BadNodeIdUnknown" }] }`.
 
 **Write instruction fields** (when `writeInstructionsType: "array"`):
 

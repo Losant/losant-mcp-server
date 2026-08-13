@@ -96,16 +96,16 @@ Fires when the configured number of bytes has been received.
 |---|---|---|---|
 | `config.path` | `""` | 1.6.0 | **Required.** Serial port path (e.g. `/dev/ttyUSB0`). |
 | `config.baudRate` | `9600` | 1.6.0 | **Required.** Communication speed. Any positive integer (GEA 1.19.2+). Pre-1.19.2: must be one of `110`, `300`, `600`, `1200`, `2400`, `4800`, `9600`, `14400`, `19200`, `38400`, `57600`, `115200`, `128000`, `256000`. |
-| `config.encoding` | `"utf8"` | 1.6.0 | **Required.** Output encoding for received data: `"utf8"`, `"ascii"`, `"utf16le"`, `"base64"`, `"binary"`, `"hex"`. |
+| `config.encoding` | `"utf8"` | 1.6.0 | **Required.** Output encoding for received data: `"utf8"`, `"ascii"`, `"utf16le"`, `"ucs2"`, `"latin1"`, `"base64"`, `"binary"`, `"hex"`. |
 | `config.delimiter` | `""` | 1.6.0 | Required in delimiter mode. Character or string that triggers the flow. |
-| `config.delimiterEncoding` | `"utf8"` | 1.19.2 | Encoding for the delimiter value: `"utf8"`, `"ascii"`, `"utf16le"`, `"base64"`, `"binary"`, `"hex"`. |
+| `config.delimiterEncoding` | `"utf8"` | 1.19.2 | Encoding for the delimiter value: `"utf8"`, `"ascii"`, `"utf16le"`, `"ucs2"`, `"latin1"`, `"base64"`, `"binary"`, `"hex"`. |
 | `config.byteLength` | `""` | 1.6.0 | Required in byte length mode. Number of bytes to accumulate before firing. |
 | `config.parity` | `"none"` | 1.19.0 | `"none"`, `"even"`, `"odd"`, `"mark"`, `"space"`. Fixed at `"none"` for GEA < 1.19.0. |
 | `config.dataBits` | `8` | 1.19.0 | Bits per character: `5`, `6`, `7`, or `8`. Fixed at `8` for GEA < 1.19.0. |
 | `config.stopBits` | `1` | 1.19.0 | Stop bits: `1` or `2`. Fixed at `1` for GEA < 1.19.0. |
 | `config.rtscts` | `false` | 1.19.0 | RTS/CTS handshaking. Fixed at `false` for GEA < 1.19.0. |
 | `config.writeOnOpen` | `""` | 1.6.0 | Optional string written to the port once when it opens. |
-| `config.writeOnOpenEncoding` | `"utf8"` | 1.19.2 | Encoding for `writeOnOpen`: `"utf8"`, `"ascii"`, `"utf16le"`, `"base64"`, `"binary"`, `"hex"`. |
+| `config.writeOnOpenEncoding` | `"utf8"` | 1.19.2 | Encoding for `writeOnOpen`: `"utf8"`, `"ascii"`, `"utf16le"`, `"ucs2"`, `"latin1"`, `"base64"`, `"binary"`, `"hex"`. |
 | `meta.parseBy` | `"delimiter"` | 1.6.0 | **Required.** Always send in `meta`. `"delimiter"` or `"byteLength"`. |
 
 ### Payload at runtime

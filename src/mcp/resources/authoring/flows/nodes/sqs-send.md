@@ -47,7 +47,7 @@ Three connection methods: integration, service credential, or direct AWS credent
 | `dataTemplate` | `""` | **Required** when `dataMethod: "stringTemplate"`. Message body. Template. |
 | `dataPayloadPath` | `""` | **Required** when `dataMethod: "payloadPath"`. Payload path to message body. |
 | `attributeMethod` | `"individualFields"` | `"individualFields"`, `"jsonTemplate"`, or `"payloadPath"`. |
-| `attributeFields` | `[]` | Array of `{ name, value }` message attribute pairs (individualFields mode). |
+| `attributeFields` | `[]` | Array of `{ keyTemplate, valueTemplate }` message attribute pairs (individualFields mode). |
 | `attributeTemplate` | `""` | JSON template for attributes (jsonTemplate mode). |
 | `attributePayloadPath` | `""` | Payload path for attributes (payloadPath mode). |
 | `messageGroupIdTemplate` | `""` | **Required** for FIFO queues. Max 128 characters. Template. |

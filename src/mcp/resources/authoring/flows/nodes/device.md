@@ -81,7 +81,7 @@ Retrieves one or more devices using one of eight query methods. The default find
 | Value | What it finds | Primary input field |
 |---|---|---|
 | `"id"` (default) | Single device by ID | `idTemplate` |
-| `"name"` | Single device by exact name | `idTemplate` (the name) |
+| `"name"` | Single device by exact name | `name` (plain string, not a template) |
 | `"findByAllTags"` | Devices matching **all** of the provided tag pairs | `tags` array |
 | `"findByAnyTags"` | Devices matching **any** of the provided tag pairs | `tags` array |
 | `"findByParentId"` | Devices whose parent System is the given ID | `parentIdTemplate` |
@@ -96,7 +96,8 @@ All methods except `"id"` and `"name"` support returning multiple devices (see `
 | Field | Default | Notes |
 |---|---|---|
 | `findMethod` | `"id"` | See table above. |
-| `idTemplate` | — | Device ID, device name, group ID, or user ID/email depending on `findMethod`. Template. |
+| `idTemplate` | — | Device ID, group ID, or user ID/email depending on `findMethod`. Template. Not used when `findMethod: "name"`. |
+| `name` | — | Plain string device name. Used **only** when `findMethod: "name"`. Not a Handlebars template. |
 | `tags` | `[]` | Array of `{ keyTemplate, valueTemplate }` — used by `findByAllTags` and `findByAnyTags`. Either key or value (or both) may be omitted. |
 | `parentIdTemplate` | — | System parent device ID. Template. Used by `findByParentId`. |
 | `queryTemplate` | — | JSON template resolving to an advanced device query object. Used by `"query"` findMethod. |

@@ -28,7 +28,7 @@ Cloud flows authenticate via a Snowflake service credential.
     "sqlSourceType": "stringTemplate",
     "sqlSourceValue": "SELECT * FROM devices WHERE device_id = '{{data.deviceId}}'",
     "timeoutTemplate": "",
-    "resultPath": "working.rows"
+    "resultPath": "working.result"
   },
   "meta": { "category": "data", "name": "snowflake", "label": "Snowflake", "x": 200, "y": 200 },
   "outputIds": [["next"]]
@@ -45,7 +45,7 @@ Cloud flows authenticate via a Snowflake service credential.
 | `sqlSourceType` | `"stringTemplate"` | `"stringTemplate"` — SQL in `sqlSourceValue`. `"payloadPath"` — payload path to SQL string in `sqlSourceValue`. |
 | `sqlSourceValue` | `""` | **Required.** The SQL query (as a template string or payload path). |
 | `timeoutTemplate` | `""` | Query timeout in seconds. Template. |
-| `resultPath` | `""` | **Required.** Payload path to write the query result rows. |
+| `resultPath` | `""` | **Required.** Payload path to write the query result. The node writes `{ rows: [{ col1: val1, ... }, ...] }` — access rows via `<resultPath>.rows` (e.g. `working.result.rows`). |
 
 ## Output
 
@@ -82,7 +82,7 @@ Edge flows authenticate directly with Snowflake credentials instead of a service
     "sqlSourceType": "stringTemplate",
     "sqlSourceValue": "SELECT * FROM sensors LIMIT 100",
     "timeoutTemplate": "",
-    "resultPath": "working.rows"
+    "resultPath": "working.result"
   },
   "meta": { "category": "data", "name": "snowflake", "label": "Snowflake", "x": 200, "y": 200 },
   "outputIds": [["next"]]

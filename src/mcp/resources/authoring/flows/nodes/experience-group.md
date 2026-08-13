@@ -116,7 +116,7 @@ Updates an Experience Group's name, description, members, or device associations
 
 ### Group: Summary Node (`type: "ExperienceGroupSummaryNode"`)
 
-Returns a summary of all Experience Groups the current user belongs to, or all groups in the application.
+Returns a summary of Experience Groups — either all groups in the application, or only the groups an experience user belongs to.
 
 ```json
 {
@@ -133,7 +133,7 @@ Returns a summary of all Experience Groups the current user belongs to, or all g
 
 | Config field | Default | Notes |
 |---|---|---|
-| `idTemplate` | `""` | Optional. User ID to get groups for. When empty, returns all application groups. Template. |
+| `idTemplate` | `""` | Optional. When provided, returns only the groups the experience user (matched by ID or email) belongs to. When omitted or empty, returns all groups in the application. Template. |
 | `resultPath` | `""` | **Required.** Payload path to write the group summary array. |
 
 ---

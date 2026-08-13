@@ -93,7 +93,9 @@ The row data source is controlled by `dataMethod`.
 
 ### Table: Update Row(s) Node (`type: "DataTableUpdateRowNode"`)
 
-Selects the row(s) to update by **ID** or **query**, then applies the update via `dataMethod`.
+Selects the row to update by **ID** or **query**, then applies the update via `dataMethod`.
+
+> **Query mode updates only the first matching row.** If the query matches multiple rows, only the first is updated. For bulk updates across many rows, use a separate flow with `updateMultiple` logic or a ResourceJob.
 
 #### Update by row ID
 
@@ -133,7 +135,7 @@ Selects the row(s) to update by **ID** or **query**, then applies the update via
 | Config field | Default | Notes |
 |---|---|---|
 | `dataTableIdTemplate` | — | **Required.** Data table ID. |
-| `rowSelectType` | `"id"` | `"id"` — target a single row by ID. `"query"` — target rows matching a query. |
+| `rowSelectType` | `"id"` | `"id"` — target a single row by ID. `"query"` — target the **first** row matching the query. |
 | `rowIdTemplate` | — | **Required** when `rowSelectType: "id"`. Row ID. Template. |
 | `queryTemplate` | — | **Required** when `rowSelectType: "query"`. LJSON query template. |
 | `upsertCheck` | `false` | When `true` and `rowSelectType: "query"`, inserts a new row if no rows match the query. |

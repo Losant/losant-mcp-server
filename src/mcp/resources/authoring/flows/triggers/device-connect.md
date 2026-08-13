@@ -39,7 +39,7 @@ Two `type` values select devices differently; both have empty config.
 }
 ```
 
-- `key` format is `"tagKey/tagValue"`. Use `"tagKey/"` (trailing slash) to match any value for a given tag key.
+- `key` format is `"tagKey/tagValue"`. Use `"tagKey/"` (trailing slash) to match any value for a given tag key. Use `"/tagValue"` (leading slash) to match any key with a given value.
 
 **Multiple devices or tags:** Each trigger targets one device ID or one tag. Add one trigger per device/tag as separate entries in the `triggers` array.
 
@@ -84,13 +84,13 @@ Edge flows use `type: "onConnect"` — fires only for the Edge Compute Device ru
 | `type` | `"onConnect"` |
 | `meta.category` | `"trigger"` |
 | `meta.name` | `"onConnect"` |
-| `meta.label` | `"On Connect"` (default) |
+| `meta.label` | `"Device: Connect"` (default) |
 
 ```json
 {
   "type": "onConnect",
   "config": {},
-  "meta": { "category": "trigger", "name": "onConnect", "label": "On Connect", "x": 60, "y": 60 },
+  "meta": { "category": "trigger", "name": "onConnect", "label": "Device: Connect", "x": 60, "y": 60 },
   "outputIds": [["first-node"]]
 }
 ```

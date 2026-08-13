@@ -35,7 +35,7 @@ Subscribe to a custom topic on Losant's MQTT broker. `key` is the topic.
 }
 ```
 
-**`key`** — Required. The MQTT topic to subscribe to. Single-level (`+`) and multi-level (`#`) wildcards are valid. The topic cannot be an MQTT system topic or a Losant device topic (e.g. `losant/<deviceId>/state`).
+**`key`** — Required. The MQTT topic to subscribe to. Single-level (`+`) and multi-level (`#`) wildcards are valid. The topic cannot be a Losant device topic (e.g. `losant/<deviceId>/state`). MQTT system topics (prefixed with `$`) are blocked in standard cloud flows but are permitted in cloud-run workflows where `allowsSys` is enabled.
 
 #### Payload at runtime
 
@@ -54,6 +54,7 @@ Subscribe to a custom topic on Losant's MQTT broker. `key` is the topic.
 ```
 
 - `data` is **always a string**. Use a JSON Decode node if the publisher sends JSON.
+- `relayType` is `"device"` when a device published the message, or `"flow"` when another flow published it.
 - `triggerId` is the actual topic the message was published on (after wildcard resolution).
 
 ---
@@ -100,12 +101,12 @@ Each event type carries different fields. `data.type` identifies the event:
 
 **`"connect"`** — client connected:
 ```json
-{ "type": "connect" }
+{ "type": "connect", "topics": ["exampleTopic"] }
 ```
 
 **`"message"`** — message received:
 ```json
-{ "type": "message", "message": "<payload as string>", "topic": "<topic>", "topics": ["exampleTopic"] }
+{ "type": "message", "message": "<payload as string>", "topic": "<topic>" }
 ```
 
 **`"disconnect"`** — client disconnected:
@@ -246,8 +247,8 @@ Fires when a message arrives from an external MQTT broker configured in the GEA 
 ## Idiom notes
 
 - **Use the Losant broker variant for device-to-flow messaging.** The MQTT integration variant is for external broker subscriptions; the Losant broker variant is the right choice when devices publish to Losant's built-in MQTT endpoint.
-- **Topic wildcards work for the Losant broker.** `losant/<applicationId>/+/state` matches state messages from any device. `#` at the end matches all subtopics. Do not use wildcards that would match unintended topics.
-- **`data` is always a string** — the raw MQTT message payload. Use a JSON Decode node if the publisher sends JSON and you need to access fields within it.
+- **Topic wildcards work for the Losant broker.** `my-sensors/+/temperature` matches temperature messages from any sensor. `#` at the end matches all subtopics. Do not use wildcards that would match unintended topics. Note: `losant/<...>` prefixed topics are private Losant system topics and are blocked by the validator — always use custom user-defined topics.
+- **`data` is always a string on the Losant broker** — the raw MQTT message payload. Use a JSON Decode node if the publisher sends JSON and you need to access fields within it. On the local GEA broker and external broker, `data` is an object (see each broker's payload shape above).
 - **On edge, the local GEA broker topic uses the raw MQTT path** — not the Losant cloud topic format. Configure the topic to match what local edge agents or peripherals actually publish.
 - **Avoid overlapping topic subscriptions in multiple flows.** Each matching flow fires independently; if two flows share the same topic, both execute on every message.
 

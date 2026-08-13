@@ -43,7 +43,7 @@ The trigger fires individually per matching device — if 10 devices match the t
 }
 ```
 
-- `key` format is `"tagKey/tagValue"`. Use `"tagKey/"` (trailing slash) to match any value for a given tag key.
+- `key` format is `"tagKey/tagValue"`. Use `"tagKey/"` (trailing slash) to match any value for a given tag key. Use `"/tagValue"` (leading slash) to match any key that has that specific value.
 
 ### Config
 

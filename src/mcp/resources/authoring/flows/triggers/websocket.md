@@ -78,7 +78,7 @@ All event types share the same envelope. `data.type` identifies which event fire
 }
 ```
 
-- `data.message.data` — the frame payload as a **string**. Binary frames are UTF-8 encoded. Always use a JSON Decode node before accessing structured fields — and make your flow resilient to cases where decoding fails.
+- `data.message.data` — the frame payload as a **string**. Binary frames are Latin-1 (binary) encoded — the runtime calls `message.toString('binary')`, not UTF-8. Always use a JSON Decode node before accessing structured fields — and make your flow resilient to cases where decoding fails.
 - `data.message.length` — byte length of the frame.
 - `data.headers` — HTTP headers from the WebSocket upgrade response, preserved on every message event.
 

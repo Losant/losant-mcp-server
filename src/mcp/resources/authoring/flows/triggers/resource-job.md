@@ -32,7 +32,7 @@ All three share the same structure. `key` is the Resource Job ID.
 {
   "time": "<ISO timestamp>",
   "data": {
-    "accumulator": "{\"example\": 900001}",
+    "accumulator": { "example": 900001 },
     "device": { "...": "the device being processed in this iteration" },
     "execution": { "status": "inProgress" },
     "iterationId": "<unique iteration ID>",
@@ -46,7 +46,7 @@ All three share the same structure. `key` is the Resource Job ID.
 }
 ```
 
-- `data.accumulator` — JSON-encoded string carrying accumulated state from previous iterations.
+- `data.accumulator` — already-parsed object carrying accumulated state from previous iterations. It is reset to `{}` at the start of each job run.
 - `data.device` — the device (or other resource) being processed.
 - `data.iterationId` — unique ID for this iteration; use with the Job: Acknowledge node.
 
@@ -56,7 +56,7 @@ All three share the same structure. `key` is the Resource Job ID.
 {
   "time": "<ISO timestamp>",
   "data": {
-    "accumulator": "{\"example\": 900001}",
+    "accumulator": { "example": 900001 },
     "execution": {
       "status": "completed",
       "executionReportUrl": "https://...",
@@ -83,7 +83,7 @@ All three share the same structure. `key` is the Resource Job ID.
 {
   "time": "<ISO timestamp>",
   "data": {
-    "accumulator": "{\"example\": 900001}",
+    "accumulator": { "example": 900001 },
     "device": { "...": "the device that timed out" },
     "execution": { "status": "inProgress" },
     "iterationId": "<unique iteration ID>",
@@ -109,6 +109,6 @@ Not available.
 ## Idiom notes
 
 - **Always acknowledge each iteration.** Use a Job: Acknowledge node on every execution path of a `resourceJobIteration` flow — including error branches. Unacknowledged iterations count against the timeout.
-- **Use the accumulator for cross-iteration state.** `data.accumulator` is a JSON-encoded string that persists between iterations. Decode it with a JSON Decode node, update the value, re-encode it, and pass it to the acknowledge node. It is reset to `{}` at the start of each job run.
+- **Use the accumulator for cross-iteration state.** `data.accumulator` is an already-parsed object that persists between iterations. Update the value and pass it to the acknowledge node. It is reset to `{}` at the start of each job run.
 - **Handle the timeout trigger separately.** Wire a `resourceJobIterationTimeout` trigger to log or alert on slow iterations. It fires when a single iteration exceeds the job's configured timeout — the iteration is then retried or marked as failed depending on the job config.
 - **Check `data.success` in the `resourceJobComplete` handler** before acting on results. A `false` value means some iterations failed — use `data.execution.executionSummary` to see counts and `data.execution.executionReportUrl` to download the full report.

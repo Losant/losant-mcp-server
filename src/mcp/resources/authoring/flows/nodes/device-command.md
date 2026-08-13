@@ -61,7 +61,7 @@ Three device selection modes controlled by `meta.deviceSelectionType`:
   "id": "send-cmd",
   "type": "DeviceSendCommandNode",
   "config": {
-    "deviceQueryJsonTemplate": "{\"tags\":{\"\":{\"key\":\"type\",\"value\":\"pump\"}}}",
+    "deviceQueryJsonTemplate": "{\"tags\":{\"$elemMatch\":{\"key\":\"type\",\"value\":\"pump\"}}}",
     "nameTemplate": "setThreshold",
     "payloadTemplate": "{\"maxTemp\":75}",
     "payloadTemplateType": "json"

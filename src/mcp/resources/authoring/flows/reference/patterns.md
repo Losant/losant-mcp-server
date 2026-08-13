@@ -24,7 +24,7 @@ Device State trigger → **Conditional** (threshold check) → **Latch** (suppre
   {
     "id": "check-threshold",
     "type": "ConditionalNode",
-    "config": { "expression": "{{data.attributes.tempC}} > 90" },
+    "config": { "expression": "{{data.tempC}} > 90" },
     "meta": { "category": "logic", "name": "conditional", "label": "Over threshold?", "x": 160, "y": 160 },
     "outputIds": [["end"], ["latch"]]
   },
@@ -32,8 +32,8 @@ Device State trigger → **Conditional** (threshold check) → **Latch** (suppre
     "id": "latch",
     "type": "LatchNode",
     "config": {
-      "latchExpression": "{{data.attributes.tempC}} > 90",
-      "resetExpression": "{{data.attributes.tempC}} < 80",
+      "latchExpression": "{{data.tempC}} > 90",
+      "resetExpression": "{{data.tempC}} < 80",
       "latchIdTemplate": "{{triggerId}}"
     },
     "meta": { "category": "logic", "name": "latch", "label": "Latch", "x": 360, "y": 160 },
@@ -51,7 +51,7 @@ Device State trigger → **Conditional** (threshold check) → **Latch** (suppre
     "type": "SlackNode",
     "config": {
       "urlPathTemplate": "{{globals.slackWebhookUrl}}",
-      "textTemplate": ":fire: *High temp* on {{data.deviceId}}: {{data.attributes.tempC}}°C"
+      "textTemplate": ":fire: *High temp* on {{triggerId}}: {{data.tempC}}°C"
     },
     "meta": { "category": "output", "name": "slack", "label": "Slack Alert", "x": 560, "y": 260 },
     "outputIds": [[]]
@@ -63,7 +63,7 @@ Device State trigger → **Conditional** (threshold check) → **Latch** (suppre
 - Conditional: `[0]` = false (under threshold), `[1]` = true (over threshold) — routes to Latch
 - Latch: `[0]` = already latched or condition false (no action), `[1]` = first-time latch fires (send notification)
 
-**Gotcha:** Without the Latch, every device state report that meets the threshold fires the notification — potentially hundreds per hour. `latchIdTemplate: "{{triggerId}}"` scopes the latch per device/trigger so devices don't share state. The `resetExpression` should use a lower threshold than `latchExpression` to create hysteresis (avoids flapping at the boundary).
+**Gotcha:** Device state attributes land directly under `data` (e.g. `{{data.tempC}}`), not under `data.attributes`. Using `data.attributes.tempC` resolves to `undefined` — the threshold check never fires. `latchIdTemplate: "{{triggerId}}"` scopes the latch per device so devices don't share state. The `resetExpression` should use a lower threshold than `latchExpression` to create hysteresis (avoids flapping at the boundary). Device ID is at `{{triggerId}}`, not `{{data.deviceId}}`.
 
 ---
 

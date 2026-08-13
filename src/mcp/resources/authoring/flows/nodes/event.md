@@ -159,7 +159,7 @@ Updates one or many events. Mode is stored in **`meta.mode`**. The data to apply
 
 **Important:** The ID field on UpdateEventNode is `targetEventIdTemplate` (NOT `eventIdTemplate`).
 
-#### Mode: update one by ID (`meta.mode: "eventIdTemplate"`) — default
+#### Mode: update one by ID (`meta.mode: "targetEventIdTemplate"`) — default
 
 ```json
 {
@@ -178,7 +178,7 @@ Updates one or many events. Mode is stored in **`meta.mode`**. The data to apply
     "dataSourcePath": "",
     "resultPath": "working.updatedEvent"
   },
-  "meta": { "category": "data", "name": "update-event", "label": "Event: Update", "mode": "eventIdTemplate", "x": 200, "y": 200 },
+  "meta": { "category": "data", "name": "update-event", "label": "Event: Update", "mode": "targetEventIdTemplate", "x": 200, "y": 200 },
   "outputIds": [["next"]]
 }
 ```

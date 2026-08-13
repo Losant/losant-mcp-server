@@ -24,13 +24,14 @@ Not available.
 ```json
 {
   "type": "onBoot",
+  "key": "onBoot",
   "config": {},
   "meta": { "category": "trigger", "name": "onBoot", "label": "Device: Startup", "x": 60, "y": 60 },
   "outputIds": [["init"]]
 }
 ```
 
-- **`key`** — Server-generated. Omit it on create.
+- **`key`** — Always set to the literal string `"onBoot"`. Required, always send it.
 
 **Payload at runtime:**
 ```json
@@ -43,4 +44,4 @@ Not available.
 }
 ```
 
-`data` is always empty. `isConnectedToLosant` indicates whether the GEA was connected to Losant at startup time.
+`data` is always empty. `isConnectedToLosant` is always `false` for this trigger — the edge agent fires the on-boot trigger before establishing a connection to Losant, so the agent is never connected at that point.

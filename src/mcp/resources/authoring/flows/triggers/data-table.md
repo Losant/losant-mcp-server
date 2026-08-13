@@ -75,6 +75,7 @@ The payload shape varies by action. `data.action` identifies which event fired.
 ```
 
 - `data.newRow` — the full new row including `id`, `createdAt`, `updatedAt`, and all column values.
+- `relayType` — identifies the type of entity that caused the change. Can be `"apiToken"`, `"flow"`, or `"user"` depending on what made the API call.
 
 #### `bulkInsert` — multiple rows inserted
 

@@ -89,8 +89,8 @@ All GPS values (`gpsCheck`, `gpsCenter`, and the coordinates in `polygonCoords`/
 | `radius` | `""` | **Required for `radius`.** Distance in meters as a template (e.g. `"500"` or `"{{data.radiusMeters}}"`). |
 | `polygonCoords` | `""` | **Required for `polygonCoords`.** A **newline-separated** string of GPS coordinate strings defining the polygon vertices. Each line is one GPS string in any accepted format. E.g. `"39.11,-84.52\n39.11,-84.50\n39.09,-84.50"`. Supports Handlebars templates. |
 | `polygonPath` | — | **Required for `polygon`.** Payload path to an array of GPS coordinate strings defining the polygon. |
-| `resultPath` | `""` | Optional. Payload path where the distance (radius mode) or boolean intersection result is written. |
-| `branchPath` | `""` | Optional. Payload path where the branch taken (`"inside"` or `"outside"`) is written as a string. |
+| `resultPath` | `""` | Optional. Payload path where the distance in meters is written in radius mode. **Silently ignored in polygon modes** (`polygonCoords`, `polygon`) — use `branchPath` or the output branch wiring to detect inside/outside. |
+| `branchPath` | `""` | Optional. Payload path where the branch result is written as a **boolean**: `true` when inside, `false` when outside. |
 
 ### Wiring
 
@@ -99,7 +99,7 @@ All GPS values (`gpsCheck`, `gpsCenter`, and the coordinates in `polygonCoords`/
 
 ## Output
 
-**Point-in-polygon and multi-polygon modes** — the node branches (`outputIds[0]` = outside, `outputIds[1]` = inside). `resultPath` receives `true` when inside or `false` when outside.
+**Point-in-polygon and multi-polygon modes** — the node branches (`outputIds[0]` = outside, `outputIds[1]` = inside). `resultPath` is silently ignored. Use `branchPath` to capture the boolean result (`true` = inside, `false` = outside).
 
 **Radius mode** — the node branches on inside/outside. `resultPath` receives the distance in meters from the center point to the input coordinate (a number).
 

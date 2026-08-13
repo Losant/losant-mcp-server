@@ -62,7 +62,7 @@ password = 'pass'
 securityPolicy = 'Basic256'
 securityMode = 'SIGNANDENCRYPT'
 samplingInterval = '60'
-eventFilter = ['Values']
+eventFilter = ['Value']
 
 [[triggers.monitoredItems]]
 nameSpace = 1
@@ -108,7 +108,7 @@ Define the connection and subscription directly in the trigger config.
 | Config field | Default | Notes |
 |---|---|---|
 | `uri` | `""` | **Required.** OPC UA server URI (e.g. `opc.tcp://host:4840/UA/Server`). |
-| `securityPolicy` | `"None"` | SSL/TLS policy: `"None"`, `"Basic128"`, `"Basic128Rsa15"`, `"Basic192"`, `"Basic192Rsa15"`, `"Basic256"`, `"Basic256Sha256"`. |
+| `securityPolicy` | `"None"` | SSL/TLS policy: `"None"`, `"Basic128"`, `"Basic192"`, `"Basic192Rsa15"`, `"Basic256"`, `"Basic256Rsa15"`, `"Basic256Sha256"`. |
 | `securityMode` | `"NONE"` | `"NONE"`, `"SIGN"`, or `"SIGNANDENCRYPT"`. Required if `securityPolicy` is not `"None"`. |
 | `username` | `""` | Optional login username. |
 | `password` | `""` | Optional login password. |

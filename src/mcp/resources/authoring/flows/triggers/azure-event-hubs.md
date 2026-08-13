@@ -94,7 +94,10 @@ All event types share the same envelope. `data.type` identifies which event fire
 ```json
 {
   "time": "<ISO timestamp>",
-  "data": { "type": "connect" },
+  "data": {
+    "type": "connect",
+    "partitionIds": ["0", "1", "2", "3"]
+  },
   "relayId": "5f1c...", "relayType": "integration",
   "triggerId": "5f1c...", "triggerType": "integration",
   "applicationId": "...", "flowId": "...", "globals": {}

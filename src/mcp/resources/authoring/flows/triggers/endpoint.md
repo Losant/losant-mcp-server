@@ -15,7 +15,7 @@ The Endpoint Trigger fires a flow when the selected Experience Endpoint receives
 
 > **Not recommended.** Endpoint triggers in cloud flows bypass Experience Version routing. Use `flowClass: "experience"` instead. Cloud support exists only for legacy reasons.
 
-Three selection modes are available in cloud flows. `config.experienceVersion` is always sent and defaults to `"develop"`.
+Three selection modes are available in cloud flows. `config.experienceVersion` is always sent and defaults to `"develop"` — except for "any endpoint in any version" mode, which uses `config: {}` with no `experienceVersion` field.
 
 ### Specific endpoint in a version
 
@@ -147,10 +147,10 @@ Fires on any request to any endpoint in the same Experience Version as the flow.
 ```
 
 - `data.body` — parsed JSON, form data, or URL-encoded body. `null` if no body. Left as a string for non-JSON/form content types.
-- `data.params` — path parameters extracted from the route definition (e.g. `/devices/:deviceId`).
+- `data.params` — path parameters extracted from the route definition (e.g. `/devices/:deviceId`). May be `null` when no route pattern is matched (e.g. for "any endpoint" triggers that fire on 404 requests).
 - `data.query` — URL query string parameters.
 - `data.replyId` — pass to an Endpoint Reply node to send a response. Every request must be replied to or the client will hang.
-- `experience.endpoint` — the full Experience Endpoint object that received the request. Always present.
+- `experience.endpoint` — the full Experience Endpoint object that received the request. May be `null` when no route matches (e.g. "any endpoint" triggers firing on 404 requests).
 - `experience.user` — authenticated Experience User, or `null` for unauthenticated requests.
 - `experience.version` — the Experience Version name that received the request.
 - `experience.authInfo` — token details (`issuedAt`, `expiresAt`, `extraData`), or `null` if no token.

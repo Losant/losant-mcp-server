@@ -75,7 +75,7 @@ Three auth methods. The direct-key methods are controlled by **`meta.authMethod`
 | `bodyTemplate` | `""` | SMS message body. Required unless `mediaUrl` is set. Template. |
 | `mediaUrl` | `""` | MMS media URL. Required unless `bodyTemplate` is set. Template. |
 | `toNumbers` | `[]` | **Required.** Array of recipient phone number strings (e.g. `["+15559876543", "{{data.phone}}"]`). At least one required. Each element is a template. |
-| `maxPrice` | `""` | Optional. Maximum price in USD per SMS message. If the message cost exceeds this amount, the message is not sent. Number. |
+| `maxPrice` | `""` | Optional. Maximum price in USD per SMS. Accepts a number or a Handlebars template. If cost exceeds this, the message is not sent. |
 | `resultsPath` | `""` | Payload path to write the array of per-recipient results. |
 
 ## Experience flows

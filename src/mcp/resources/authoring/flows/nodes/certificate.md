@@ -116,7 +116,7 @@ When provided, these override the corresponding fields from the CSR. All are Han
         "emailAddress": "certs@acme.com",
         "notValidBefore": "2024-01-01T00:00:00.000Z",
         "notValidAfter": "2025-01-01T00:00:00.000Z",
-        "issuerName": "CN=Acme CA,O=Acme Corp",
+        "issuerName": "CN=Acme CA,O=Acme Corp,C=US",
         "fingerprint": "AA:BB:CC:..."
       }
     }
@@ -176,7 +176,7 @@ Reads a PEM certificate (or PEM bundle of multiple certificates) and writes the 
         "emailAddress": "certs@acme.com",
         "notValidBefore": "2024-01-01T00:00:00.000Z",
         "notValidAfter": "2025-01-01T00:00:00.000Z",
-        "issuerName": "CN=Acme CA,O=Acme Corp",
+        "issuerName": "CN=Acme CA,O=Acme Corp,C=US",
         "fingerprint": "AA:BB:CC:..."
       }
     }

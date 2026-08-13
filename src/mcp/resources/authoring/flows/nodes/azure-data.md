@@ -129,6 +129,7 @@ Uploads content to Azure Blob Storage. Three content modes — set via **`meta.m
 | `blobContentTemplate` | `""` | Blob content as string. Used when `meta.mode: "text"`. |
 | `blobUrlTemplate` | `""` | URL to fetch content from. **Required** when `meta.mode: "url"`. Template. |
 | `encodingTemplate` | `"utf8"` | Content encoding. Used when `meta.mode` is `"text"`. Template. |
+| `diskPathTemplate` | — | **Required** (edge, `meta.mode: 'disk'`). Local file path on the GEA container to save/load the blob. |
 | `destination` | `""` | Payload path to write the upload result. |
 
 ### Blob Put output shape
@@ -257,10 +258,14 @@ Performs entity operations on an Azure Table Storage table — get, query, inser
 
 The shape at `destination` varies by operation:
 
-**`get`, `insert`, `replace`, `merge`** — the entity object:
+**`get`** — the entity object as stored in Azure Table Storage:
 ```json
 { "working": { "entity": { "partitionKey": "firstPartition", "rowKey": "5630", "temperature": 72.4 } } }
 ```
+
+**`insert`** — the entity object as stored in Azure Table Storage after the operation.
+
+**`replace`, `merge`** — returns the entity as stored in Azure Table Storage after the operation.
 
 **`query`** — array of entities plus pagination metadata:
 ```json

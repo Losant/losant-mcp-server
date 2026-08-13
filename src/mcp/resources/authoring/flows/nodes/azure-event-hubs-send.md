@@ -71,3 +71,5 @@ Same as Cloud.
 > **Minimum GEA version:** 1.39.0
 
 Same as Cloud.
+
+> **Note:** The integration-based credential path (`credentialNameTemplate` pointing to an Azure Event Hubs integration) is **not available on edge**. Use `accessKeyNameTemplate` + `accessKeyTemplate` directly instead.

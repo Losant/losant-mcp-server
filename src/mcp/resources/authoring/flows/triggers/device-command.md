@@ -62,7 +62,7 @@ No configuration. The trigger fires for **any** command sent to the device. Use 
 
 - `data.name` — the command name. Branch on this to handle different commands.
 - `data.payload` — optional value sent with the command. Can be an object, array, string, number, or boolean. May be absent if no payload was included.
-- `data.time` — when the command was sent (Date object).
+- `data.time` — when the command was sent (Date object). May be absent — `time` is an optional field in the deviceCommand payload schema.
 - `triggerId` — always the literal string `"deviceCommand"`.
 
 ### Important: commands are not queued

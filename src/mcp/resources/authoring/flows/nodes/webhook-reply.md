@@ -55,10 +55,11 @@ The Webhook: Reply Node sends a custom HTTP response to a webhook request, or se
 | Config field | Default | Notes |
 |---|---|---|
 | `replyIdPath` | `"data.replyId"` | Payload path to the reply ID. Defaults to `"data.replyId"` — the location set by the Webhook trigger. |
+| `replyType` | `"custom"` | `"custom"` — send a fully custom HTTP response (use `responseCodeTemplate`, `bodyTemplate`, `headerInfo`). `"redirect"` — send an HTTP redirect; set `responseCodeTemplate` to `301`/`302` and `bodyTemplate` to the target URL. `"page"` — render an Experience Page as the response body. `"mqtt"` — publish a message to an MQTT topic instead of replying over HTTP. |
 | `isWebsocketMessage` | `false` | When `true`, sends a WebSocket message to a connected client instead of an HTTP reply. |
 | `responseCodeTemplate` | `""` | HTTP status code. Template. Only for HTTP replies. |
 | `bodyTemplate` | `""` | Response body or WebSocket message. Template or payload path per `bodyTemplateType`. |
-| `bodyTemplateType` | `"string"` | `"string"` — string template. `"path"` — payload path. |
+| `bodyTemplateType` | `"string"` | `"string"` — string template. `"path"` — payload path. `"json"` — JSON template (auto-adds `Content-Type: application/json`). `"payload"` — serializes the entire current payload as the response body. |
 | `encodingTemplate` | `"utf8"` | Message encoding. Only when `isWebsocketMessage: true`. Template. |
 | `headerInfo` | `[]` | Array of `{ keyTemplate, valueTemplate }` response headers. Only for HTTP replies. |
 

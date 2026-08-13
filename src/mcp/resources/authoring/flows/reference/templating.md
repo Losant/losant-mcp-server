@@ -14,7 +14,7 @@ Losant flow node config fields use four distinct syntaxes depending on the field
 | **Expression** | ConditionalNode, MathNode expressions | `{{data.temp}} > 75` |
 | **JSON template** | HTTP node `bodyType: "jsonTemplate"` | `{"id": "{{data.id}}"}` |
 
-**Embedded flow restriction:** Block helpers and format helpers are NOT valid in embedded flows. Only direct payload references (`{{path.to.value}}`) are supported in embedded node template fields.
+**Embedded flow restrictions (string template fields):** The EEA precompiler supports a subset of block helpers: `{{#if}}`, `{{#unless}}`, `{{#with}}`, `{{#eq}}`, `{{#ne}}`, `{{#gt}}`, `{{#lt}}`, `{{#gte}}`, `{{#lte}}`. Format helpers, collection helpers (`{{#each}}`, `{{#match}}`, `{{#includes}}`), and most other block helpers are NOT valid in embedded flows.
 
 ---
 
@@ -81,7 +81,7 @@ No quotes needed around string template output — the expression engine treats 
 "{{data.name}}" === 'Alice'  (wrong — adds literal quotes)
 ```
 
-**Embedded flow restrictions:** `==` is always strict (`===`) and `!=` is always strict (`!==`). Collection functions (`includes`, `length`) are not available in embedded flows.
+**Embedded flow restrictions:** `==` is always strict (`===`) and `!=` is always strict (`!==`). Collection functions (`includes`, `length`) are not available in embedded flows. In embedded flow **expression fields**, the EEA uses `knownHelpersOnly: true` — only comparison helpers (`eq`, `ne`, `gt`, `gte`, `lt`, `lte`) are allowed. Format helpers such as `{{lower}}` and `{{format}}` are invalid in embedded expression fields, even though they work in embedded string template fields.
 
 For the full operator list, keywords, and math functions, see `losant://references/shared/handlebars`.
 
@@ -109,12 +109,15 @@ The entire string is processed through Handlebars first, then the result must be
 { "count": "{{data.count}}" }        ✗ (becomes a string, not a number)
 ```
 
-**Objects and arrays must use triple-brace `{{{jsonEncode ...}}}`:**
+**Objects and arrays must use `{{jsonEncode ...}}` (unquoted):**
+
+`jsonEncode` returns a `SafeString`, so HTML escaping is bypassed regardless of whether you use double or triple braces — both produce identical raw JSON output. The only requirement is that the result must **not** be wrapped in quotes.
+
 ```handlebars
-{ "device": {{{jsonEncode working.device}}} }     ✓
-{ "items": {{{jsonEncode data.itemArray}}} }       ✓
-{ "device": "{{jsonEncode working.device}}" }     ✗ (HTML-escapes the quotes)
-{ "device": {{jsonEncode working.device}} }       ✗ (HTML-escapes the quotes)
+{ "device": {{jsonEncode working.device}} }       ✓
+{ "items": {{jsonEncode data.itemArray}} }         ✓
+{ "device": {{{jsonEncode working.device}}} }     ✓ (also fine — SafeString bypasses escaping either way)
+{ "device": "{{jsonEncode working.device}}" }     ✗ (wraps JSON in a string literal — invalid JSON for objects/arrays)
 ```
 
 **Block helpers can conditionally include keys:**

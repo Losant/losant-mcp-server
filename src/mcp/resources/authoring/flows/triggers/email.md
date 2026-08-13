@@ -61,7 +61,7 @@ Your application's email address is `<applicationId>@workflows.losant.com`. The 
   },
   "relayId": "000000000000000000000000",
   "relayType": "public",
-  "triggerId": "default|imports",
+  "triggerId": "imports",
   "triggerType": "inboundEmail",
   "applicationId": "...",
   "flowId": "...",
@@ -74,7 +74,7 @@ Your application's email address is `<applicationId>@workflows.losant.com`. The 
 - `data.bcc` — only present if the trigger's own address was a BCC recipient.
 - `data.html` / `data.text` — one or both may be present depending on the sender.
 - `data.attachments` — array of attachment objects. Each `url` is a signed link valid for **7 days**. `size` is in bytes.
-- `triggerId` — `"default"` when no subaddress is set; `"default|<subaddress>"` when one is configured.
+- `triggerId` — `"default"` when no subaddress is set (empty `key`); the subaddress string (e.g. `"imports"`) when one is configured.
 
 ### Limitations
 

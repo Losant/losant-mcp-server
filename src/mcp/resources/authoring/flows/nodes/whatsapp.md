@@ -1,6 +1,6 @@
 # WhatsApp Node (`type: "WhatsAppNode"`)
 
-The WhatsApp Node sends WhatsApp messages via a WhatsApp Business account. Supports free-form text messages and WhatsApp message templates. Available in cloud, experience, and customNode flows.
+The WhatsApp Node sends WhatsApp messages via a WhatsApp Business account. Supports free-form text messages and WhatsApp message templates. Available in cloud, experience, edge, and customNode flows.
 
 ## Required Fields
 
