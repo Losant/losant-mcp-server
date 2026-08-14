@@ -1,6 +1,6 @@
 # Conditional Node (`type: "ConditionalNode"`)
 
-Branches the flow based on a Losant expression. The most common branching node — use whenever you need an if/else split. Available in all flow classes: cloud, experience, customNode, edge, and embedded.
+Branches the flow based on a Losant expression. The most common branching node — use whenever you need an if/else split. Available in all flow classes: cloud, experience, customNode, and edge.
 
 ## Required Fields
 
@@ -65,6 +65,6 @@ Supports `&&`, `||`, `!`, and parentheses. Numbers are compared numerically in c
 - Missing paths render as `""` which is falsy, not an error.
 - `outputIds` must have exactly two outer arrays — a missing second array causes a validation error.
 
-## Experience flows, Edge flows, Embedded flows, Custom Node flows
+## Experience flows, Edge flows, Custom Node flows
 
 Same as Cloud.

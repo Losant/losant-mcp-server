@@ -38,7 +38,3 @@ Same as Cloud.
 ## Edge flows
 
 Same as Cloud.
-
-## Embedded flows
-
-Same as Cloud.

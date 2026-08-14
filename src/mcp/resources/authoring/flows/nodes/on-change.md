@@ -1,6 +1,6 @@
 # On Change Node (`type: "BranchOnChangeNode"`)
 
-Branches based on whether a payload value has changed since the last execution. Available in cloud, experience, customNode, and edge flows. Not available on embedded.
+Branches based on whether a payload value has changed since the last execution. Available in cloud, experience, customNode, and edge flows.
 
 ## Required Fields
 

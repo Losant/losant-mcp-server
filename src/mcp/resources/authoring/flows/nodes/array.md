@@ -1,6 +1,6 @@
 # Array Node (`type: "ArrayNode"`)
 
-Applies one of 23 operations to an array on the flow payload — filter, sort, search, slice, push/pop, group, and more. The schema accepts up to 15 rules per node, but the UI editor manages a single rule — generate one ArrayNode per operation when authoring via the MCP.
+Applies one of 23 operations to an array on the flow payload — filter, sort, search, slice, push/pop, group, and more. The schema accepts up to 15 rules per node, but the UI editor manages a single rule — generate one ArrayNode per operation when authoring via the MCP. Available in cloud, experience, customNode, and edge flows.
 
 ## Required Fields
 
@@ -10,8 +10,6 @@ Applies one of 23 operations to an array on the flow payload — filter, sort, s
 | `meta.category` | `"logic"` |
 | `meta.name` | `"array"` |
 | `meta.label` | `"Array"` (default) |
-
-Available: cloud, experience, customNode, edge (version varies by operation), embedded (select operations only).
 
 ## Cloud (Application) flows
 

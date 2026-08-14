@@ -71,11 +71,3 @@ The platform does not queue commands or require acknowledgment. If the device is
 
 - After executing a command, publish a message on a custom MQTT topic using an MQTT node. Listen for it in a cloud flow with an MQTT Trigger to confirm receipt.
 - On device startup (Device: Startup Trigger), fetch recent command history via the Losant API node (`Device: Get Command` endpoint) and execute any commands sent while offline.
-
-## Embedded flows
-
-> **Minimum EEA version:** 1.0.0
-
-Same configuration and trigger shape as Edge. Fires when a command is delivered to the embedded device.
-
-**Payload difference from Edge:** `data.time` is a Unix timestamp **number** (milliseconds since epoch), not a Date object. All other payload fields are identical.

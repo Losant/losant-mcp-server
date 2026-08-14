@@ -1,6 +1,6 @@
 # Random Number Node (`type: "RandomNumberNode"`)
 
-Generates a random number within a configured range and writes it to the payload. Available in cloud, experience, edge, and customNode flows. Not available on embedded.
+Generates a random number within a configured range and writes it to the payload. Available in cloud, experience, edge, and customNode flows.
 
 ## Required Fields
 

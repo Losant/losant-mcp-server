@@ -56,10 +56,6 @@ Same as Cloud. In addition, the payload includes the standard experience additio
 }
 ```
 
-## Embedded flows
-
-Same as Cloud. Minimum EEA 0.0.0.
-
 ## Edge flows
 
 Same as Cloud. Minimum GEA 1.5.0.

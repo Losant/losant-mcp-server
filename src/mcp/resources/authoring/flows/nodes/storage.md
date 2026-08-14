@@ -1,6 +1,6 @@
 # Flow Storage Nodes
 
-Two nodes for reading and writing flow-scoped persistent storage. Values persist across flow executions and are shared across all instances of the same flow. Available in cloud, experience, edge, customNode, and embedded flows.
+Two nodes for reading and writing flow-scoped persistent storage. Values persist across flow executions and are shared across all instances of the same flow. Available in cloud, experience, edge, and customNode flows.
 
 ## Required Fields
 

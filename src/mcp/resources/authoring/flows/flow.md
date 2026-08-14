@@ -7,6 +7,8 @@ description: Build, edit, and publish Losant flows through the API — flow vs. 
 
 > **API naming note:** The Losant UI calls these **Workflows**. The API resource type is `flow` (plural endpoint: `/flows`), and all tool calls use `resourceType: "flow"` or `resourceType: "flowVersion"`. This guide uses **flow** throughout to match the API. The terms are interchangeable — "workflow" in UI screenshots or education docs means the same thing as "flow" in API JSON.
 
+> **Supported flow classes:** This guide and the associated node/trigger docs cover `cloud`, `experience`, `edge`, and `customNode` flows. **Embedded (`flowClass: "embedded"`) flows are not covered** — the embedded node set is highly restricted, its configuration differs significantly from other classes, and there is insufficient authoring information here to reliably create or debug embedded flows. Do not attempt to author `flowClass: "embedded"` flows using this guide.
+
 This guide is the entry point for creating and updating Losant flows through the API. The **envelope and wiring** are described here in full. The **per-type detail** — what goes in a node's or trigger's `config` — is accessed via `losant://flow/nodes/<name>` and `losant://flow/triggers/<name>`, indexed by the catalog tables below. Cross-cutting concepts that several detail docs reference are at `losant://references/flow/<name>`.
 
 **Reading order for a new authoring task:**
@@ -53,7 +55,7 @@ Required: `name`. Everything else is optional but `flowClass` controls which tri
 | `cloud` | Losant cloud workers | Default for most automation. |
 | `experience` | Cloud workers, triggered by an Experience Endpoint | Backs HTTP endpoints exposed to end users. |
 | `edge` | A Losant Gateway Edge Agent (GEA) | Versioning is mandatory — edge agents pull versions, not develop. |
-| `embedded` | The Embedded Edge Agent (EEA) | Very restricted node set. Does NOT support HTTP, custom nodes, and many others. |
+| `embedded` | The Embedded Edge Agent (EEA) | Not covered by this guide — see the disclaimer above. |
 | `customNode` | Cloud workers, as a callable sub-flow | Requires exactly one `customNodeStart` trigger and at least one `CustomNodeCapNode`. See `losant://references/flow/custom-nodes` for full authoring details. |
 
 > **Edge flow development:** To manually trigger or interact with a running edge flow, deploy the `develop` version to a test Edge Compute Device and use **Live Look** (accessible from the flow editor's Debug or Deployments tab). This applies to any trigger that requires manual interaction — virtual buttons, HTTP request triggers, etc.
@@ -266,8 +268,7 @@ When a branch merges back to a single path, resume the parent's x and continue i
 - A node cannot reference its own `id` in its `outputIds`.
 - Node IDs must be unique within the flow.
 - Inside a loop, the inside-loop branch may only reference nodes whose `meta.groupId` is the loop's ID (see Loops).
-- For embedded flows only: the graph must be acyclic; cycles are rejected.
-- For embedded flows only: node `id`s and `meta.groupId`s must match `^[_0-9a-zA-Z]+$` (alphanumerics and underscore — **no dashes or other punctuation**). Other flow classes accept any unique string, but sticking to the embedded-safe alphabet makes IDs portable.
+- Node IDs must be unique strings. Sticking to alphanumerics and underscores (`^[_0-9a-zA-Z]+$`) makes IDs portable across flow classes.
 
 ## Loops
 
@@ -377,8 +378,6 @@ See `losant://flow/nodes/loop` for the full pattern and a worked example.
 | `AzureFunctionNode` | `azure-function` | data | cloud, exp, edge, custom | `losant://flow/nodes/azure-data` |
 | `AzureTableStorageNode` | `azure-table-storage` | data | cloud, exp, edge, custom | `losant://flow/nodes/azure-data` |
 | `AzureEventHubPublishNode` | `azureEventHubPublish` | output | cloud, exp, edge, custom | `losant://flow/nodes/azure-event-hubs-send` |
-| `Base64DecodeNode` | `base64-decode` | logic | embedded | `losant://flow/nodes/base64-decode` |
-| `Base64EncodeNode` | `base64-encode` | logic | embedded | `losant://flow/nodes/base64-encode` |
 | `BranchOnChangeNode` | `onchange` | logic | cloud, exp, edge, custom | `losant://flow/nodes/on-change` |
 | `ConditionalNode` | `conditional` | logic | all | `losant://flow/nodes/conditional` |
 | `CreateDeviceNode` | `create-device` | data | cloud, exp | `losant://flow/nodes/device` |
@@ -521,14 +520,14 @@ See `losant://flow/nodes/loop` for the full pattern and a worked example.
 - `Referenced output ID <id> does not exist in the required group.` — A loop body references a node that isn't in the loop's group.
 - `A node cannot connect to itself.` — `outputIds` contains the node's own `id`.
 - `Node IDs must be unique.` — Two nodes share an `id`.
-- `<Type> is not valid for <Class> workflows.` — Wrong `flowClass` for the node/trigger type (e.g., `HttpNode` in embedded).
+- `<Type> is not valid for <Class> workflows.` — Wrong `flowClass` for the node/trigger type.
 - `<Type> requires Workflow Agent X.Y.Z or higher.` — Edge flow using a node newer than its `minimumAgentVersion`. Either bump the version or pick another node.
 
 ## Common mistakes
 
 - Sending a `nodes` array without unique `id`s, or with `outputIds` references to IDs that don't exist. The validator does not "fix" wiring — it rejects it.
 - Forgetting that **publishing a version requires `triggers` and `nodes` to already be valid in develop** (or supplied in the version POST). The version endpoint doesn't merge; it snapshots.
-- Setting `flowClass: "embedded"` and reaching for `HttpNode`, custom nodes, or most data-related nodes — embedded has a deliberately narrow node set.
+- Setting `flowClass: "embedded"` — embedded flows are not supported by this guide.
 - Editing an edge flow's develop version and expecting devices to pick up the change. Devices only run published versions.
 - Putting a node inside a loop visually (in `outputIds[1]`) but forgetting `meta.groupId` on the node — validates as "not in the required group".
 
@@ -550,7 +549,7 @@ Several detail docs reference these. Read them once and the per-node docs become
 
 - `losant://references/flow/payload` — what's on the payload at runtime: standard envelope fields (`data`, `working`, `globals`, `time`, `applicationId`, `flowId`), experience flow extras (`data.path`, `data.method`, `data.body`, etc. and `experience.user`), edge extras (`isConnectedToLosant`, `agentVersion`), and the payload-path vs. template distinction.
 - `losant://references/flow/globals` — the three globals sources (flow, experience version, application) and their override order; the JSON-encoded API format (`"json": "\"string value\""` not `"json": "string value"`); version scoping rules.
-- `losant://references/flow/templating` — all four template syntaxes: payload paths (dot-notation, static, no `{{}}`), string templates (Handlebars `{{}}` in `*Template` fields), expressions (ConditionalNode/MathNode), and JSON templates (`bodyType: "jsonTemplate"` in HTTP node). Includes embedded flow restrictions.
+- `losant://references/flow/templating` — all four template syntaxes: payload paths (dot-notation, static, no `{{}}`), string templates (Handlebars `{{}}` in `*Template` fields), expressions (ConditionalNode/MathNode), and JSON templates (`bodyType: "jsonTemplate"` in HTTP node).
 - `losant://references/flow/execution-model` — how a flow run actually executes: trigger fires and passes a payload through nodes, branches run independently with no merge, what happens when a node throws (all paths halt), how the flow Error trigger catches thrown errors, and the distinction between nodes that throw vs. write errors to the payload.
 - `losant://references/flow/patterns` — six end-to-end flow patterns with node chains and minimal JSON: device threshold alert with de-bounce, scheduled external API pull, webhook request/reply handler, experience login flow, experience authenticated data endpoint, and device provisioning via webhook.
 - `losant://guides/credentials` — how `credentialNameTemplate` resolves Losant-managed credentials and what `authMethod` each credential supports. Used by HTTP and every integration node.

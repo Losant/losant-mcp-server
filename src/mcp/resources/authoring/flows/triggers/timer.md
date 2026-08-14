@@ -111,9 +111,6 @@ Fires on an arbitrary cron schedule. Supports standard 5-field cron syntax (`min
 
 Not available.
 
-## Embedded flows
-
-Simple interval mode only (`meta.timerTypeSelect: "seconds"`). Cron modes are not supported in embedded. Minimum EEA 1.0.0. The minimum timer interval for embedded is 0.1 seconds (100 ms).
 
 ## Edge flows
 

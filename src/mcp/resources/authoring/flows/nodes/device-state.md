@@ -1,6 +1,6 @@
 # Device: State Node (`type: "DeviceChangeStateNode"`)
 
-Reports state on behalf of a device from within a flow. Useful for system-level aggregations or recording computed values. Available in cloud, experience, edge, embedded, and customNode flows.
+Reports state on behalf of a device from within a flow. Useful for system-level aggregations or recording computed values. Available in cloud, experience, edge, and customNode flows.
 
 ## Required Fields
 
@@ -79,7 +79,7 @@ Three state data modes controlled by `config.attrDataMethod`:
 | `resultPath` | — | Optional. Payload path to write `{ success: true }` on success or `{ error: { type, message } }` on failure. On edge, requires GEA **1.12.0+**. |
 | `metaTemplate` | — | Optional. JSON-string template for a meta attribute added to the state payload. |
 | `metaTemplateType` | `"stringTemplate"` | How `metaTemplate` is interpreted: `"jsonTemplate"`, `"stringTemplate"`, or `"jsonPath"`. |
-| `flowVersionTemplate` | — | Optional. Template for a `flowVersion` field embedded in the state payload. |
+| `flowVersionTemplate` | — | Optional. Template for a `flowVersion` field referenced in the state payload. |
 
 ## Experience flows
 
@@ -88,9 +88,3 @@ Same as Cloud.
 ## Edge flows
 
 Same as Cloud. Available on all GEA versions. `resultPath` requires GEA **1.12.0+** on edge.
-
-## Embedded flows
-
-In an embedded workflow the node always reports state for the **device running the workflow** — `deviceId` / `deviceIdTemplateType` are ignored and should not be set. All other config fields (`attrDataMethod`, `attrInfos`, `timeSourceType`, etc.) behave the same as Cloud.
-
-> **Minimum EEA version:** 1.0.0

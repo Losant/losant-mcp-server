@@ -1,6 +1,6 @@
 # Loop Nodes — Loop, Next, Return, Break
 
-Four nodes that work together to build loops in a Losant flow. The three `LoopCapNode` variants (`loop-next`, `loop-return`, `loop-break`) are only valid inside a loop body — they cannot be used in any other context.
+Four nodes that work together to build loops in a Losant flow. The three `LoopCapNode` variants (`loop-next`, `loop-return`, `loop-break`) are only valid inside a loop body — they cannot be used in any other context. Available in cloud, experience, edge, and customNode flow classes.
 
 ## Required Fields
 
@@ -45,7 +45,7 @@ The `LoopNode` uses a special two-output wiring model. All three `LoopCapNode` v
 |---|---|---|
 | `loopSourcePath` | — | **Required.** Payload path of the collection to iterate over (see Source types below). |
 | `currentItemPath` | — | **Required.** Payload path where each iteration's context object is written (see Current item context below). |
-| `parallel` | `false` | Optional. When `true`, all iterations run simultaneously (max ~5 concurrent). Payload mutations are not carried between iterations and break is ignored. When `false`, runs serially — one at a time, payload mutations persist across iterations and break is supported. Requires GEA 1.21.0+ on edge; not available on embedded flows. |
+| `parallel` | `false` | Optional. When `true`, all iterations run simultaneously (max ~5 concurrent). Payload mutations are not carried between iterations and break is ignored. When `false`, runs serially — one at a time, payload mutations persist across iterations and break is supported. Requires GEA 1.21.0+ on edge. |
 | `mapResultPath` | — | Optional. Payload path to write an array of per-iteration map values at the end of the loop. Works in both serial and parallel modes. When set, the loop behaves as a "map" — collecting one value per iteration. |
 | `mapValuePath` | — | Optional. Payload path read at the end of each iteration to collect the map value. Only used when `mapResultPath` is set. If omitted, defaults to `currentItemPath`. If no LoopCapNode is hit in a serial iteration, that iteration's map value is `undefined`. |
 
@@ -167,8 +167,6 @@ Commits the current payload to carry forward into the next iteration. **Required
 | `shouldBreak` | `false` | Always `false` for Next. |
 | `mapValuePath` | — | Optional. Payload path to read as this iteration's map value. Overrides the `LoopNode`'s `mapValuePath` for this iteration. Only relevant when the loop has `mapResultPath` set. |
 
-Available: cloud, experience, customNode, edge, embedded.
-
 ---
 
 ### Loop Return Node (`meta.name: "loop-return"`)
@@ -194,8 +192,6 @@ Marks the end of a loop iteration. Used primarily in **parallel loops** to signa
 | `loopNodeId` | — | **Required.** Must equal the `LoopNode`'s `id`. |
 | `shouldBreak` | `false` | Always `false` for Return. |
 | `mapValuePath` | — | Optional. Payload path to read as this iteration's map value. Overrides the `LoopNode`'s `mapValuePath` for this iteration. |
-
-Available: cloud, experience, customNode, edge (GEA 1.21.0+). **Not available on embedded.**
 
 ---
 
@@ -224,8 +220,6 @@ Stops the loop after the current iteration completes — no further iterations r
 | `mapValuePath` | — | Optional. Payload path to read as this iteration's map value. |
 
 **Break is silently ignored in parallel mode** — all iterations still run to completion. Only use Break in serial loops.
-
-Available: cloud, experience, customNode, edge, embedded.
 
 ### Worked example — process each item in an array
 
@@ -310,4 +304,4 @@ Same as Cloud.
 
 ## Edge flows
 
-Same as Cloud. `parallel` mode and `mapResultPath` require GEA **1.21.0+** and are not available on embedded flows.
+Same as Cloud. `parallel` mode and `mapResultPath` require GEA **1.21.0+**.

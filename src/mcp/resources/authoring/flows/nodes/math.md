@@ -1,6 +1,6 @@
 # Math Node (`type: "MathNode"`)
 
-Evaluates mathematical expressions against payload values and writes results to specified payload paths. Supports multiple statements in a single node. Available in all flow classes: cloud, experience, customNode, edge, and embedded.
+Evaluates mathematical expressions against payload values and writes results to specified payload paths. Supports multiple statements in a single node. Available in all flow classes: cloud, experience, customNode, and edge.
 
 ## Required Fields
 
@@ -64,9 +64,5 @@ Each statement writes its expression result to the specified `resultPath`. The r
 Same as Cloud.
 
 ## Edge flows
-
-Same as Cloud.
-
-## Embedded flows
 
 Same as Cloud.

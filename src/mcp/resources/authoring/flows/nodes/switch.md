@@ -1,6 +1,6 @@
 # Switch Node (`type: "SwitchNode"`)
 
-Branches the flow across multiple paths by evaluating a template against a set of configured case values. More expressive than a chain of Conditional nodes when there are three or more distinct branches. Available in cloud, experience, customNode, edge, and embedded flows.
+Branches the flow across multiple paths by evaluating a template against a set of configured case values. More expressive than a chain of Conditional nodes when there are three or more distinct branches. Available in cloud, experience, customNode, and edge flows.
 
 ## Required Fields
 

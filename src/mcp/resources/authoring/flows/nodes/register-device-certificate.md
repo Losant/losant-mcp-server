@@ -144,9 +144,6 @@ Same as Cloud.
 
 Not available.
 
-## Embedded flows
-
-Not available.
 
 ## Custom Node flows
 

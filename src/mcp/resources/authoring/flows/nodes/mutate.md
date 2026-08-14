@@ -1,6 +1,6 @@
 # Mutate Node (`type: "MutateNode"`)
 
-Sets, removes, copies, or moves values on the flow payload using declarative rules. The primary node for payload manipulation — prefer this over the Function node for simple read/write operations.
+Sets, removes, copies, or moves values on the flow payload using declarative rules. The primary node for payload manipulation — prefer this over the Function node for simple read/write operations. Available in all flow classes: cloud, experience, customNode, and edge.
 
 ## Required Fields
 
@@ -10,8 +10,6 @@ Sets, removes, copies, or moves values on the flow payload using declarative rul
 | `meta.category` | `"logic"` |
 | `meta.name` | `"mutate"` |
 | `meta.label` | `"Mutate"` (default) |
-
-Available: cloud, experience, customNode, edge, embedded.
 
 ## Cloud (Application) flows
 

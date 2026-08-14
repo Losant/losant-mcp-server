@@ -1,6 +1,6 @@
 ---
 name: losant-flow-templating
-description: Complete reference for all template syntaxes used in flow node config fields — payload paths (dot-notation destination fields), string templates (Handlebars {{}} in *Template fields), expressions (ConditionalNode, MathNode), and JSON templates (bodyType jsonTemplate). Covers flow-specific rules: static-only payload paths, expression quoting, embedded flow restrictions, and JSON template correctness patterns.
+description: Complete reference for all template syntaxes used in flow node config fields — payload paths (dot-notation destination fields), string templates (Handlebars {{}} in *Template fields), expressions (ConditionalNode, MathNode), and JSON templates (bodyType jsonTemplate). Covers flow-specific rules: static-only payload paths, expression quoting and JSON template correctness patterns.
 ---
 
 # Templating Reference
@@ -13,8 +13,6 @@ Losant flow node config fields use four distinct syntaxes depending on the field
 | **String template** | `*Template` fields | `{{data.deviceId}}` |
 | **Expression** | ConditionalNode, MathNode expressions | `{{data.temp}} > 75` |
 | **JSON template** | HTTP node `bodyType: "jsonTemplate"` | `{"id": "{{data.id}}"}` |
-
-**Embedded flow restrictions (string template fields):** The EEA precompiler supports a subset of block helpers: `{{#if}}`, `{{#unless}}`, `{{#with}}`, `{{#eq}}`, `{{#ne}}`, `{{#gt}}`, `{{#lt}}`, `{{#gte}}`, `{{#lte}}`. Format helpers, collection helpers (`{{#each}}`, `{{#match}}`, `{{#includes}}`), and most other block helpers are NOT valid in embedded flows.
 
 ---
 
@@ -80,8 +78,6 @@ No quotes needed around string template output — the expression engine treats 
 {{data.name}} === 'Alice'   ✓
 "{{data.name}}" === 'Alice'  (wrong — adds literal quotes)
 ```
-
-**Embedded flow restrictions:** `==` is always strict (`===`) and `!=` is always strict (`!==`). Collection functions (`includes`, `length`) are not available in embedded flows. In embedded flow **expression fields**, the EEA uses `knownHelpersOnly: true` — only comparison helpers (`eq`, `ne`, `gt`, `gte`, `lt`, `lte`) are allowed. Format helpers such as `{{lower}}` and `{{format}}` are invalid in embedded expression fields, even though they work in embedded string template fields.
 
 For the full operator list, keywords, and math functions, see `losant://references/shared/handlebars`.
 
