@@ -95,7 +95,7 @@ The row data source is controlled by `dataMethod`.
 
 Selects the row to update by **ID** or **query**, then applies the update via `dataMethod`.
 
-> **Query mode updates only the first matching row.** If the query matches multiple rows, only the first is updated. For bulk updates across many rows, use a separate flow with `updateMultiple` logic or a ResourceJob.
+> **Query mode updates only the first matching row.** If the query matches multiple rows, only the first is updated. For bulk updates across many rows, use a separate flow with a `DataTableQueryNode`, `LoopNode`, and then `DataTableUpdateRowNode` or use a ResourceJob.
 
 #### Update by row ID
 
