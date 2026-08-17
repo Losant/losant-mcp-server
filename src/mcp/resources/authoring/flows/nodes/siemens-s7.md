@@ -71,16 +71,15 @@ Reads values from Siemens S7 data blocks.
   "working": {
     "s7Data": {
       "temperature": 72.4,
-      "valve": true,
-      "errors": []
+      "valve": true
     }
   }
 }
 ```
 
-Each key corresponds to the `key` field from `readInstructions`. `errors` captures per-tag failures.
+Each key corresponds to the `key` field from `readInstructions`. The `errors` key is absent on full success — only present when at least one read fails.
 
-Read instruction fields: `dbTemplate` (data block 0–65535), `offsetTemplate` (byte offset 0–2147483646), `dataTypeTemplate` (e.g. `"INT"`, `"DINT"`, `"REAL"`, `"BOOL"`, `"STRING"`, `"BYTE"`), `key` (cannot start with `"errors"`).
+Read instruction fields: `dbTemplate` (data block 0–65535), `offsetTemplate` (byte offset 0–2147483646), `dataTypeTemplate` (e.g. `"INT"`, `"DINT"`, `"REAL"`, `"BOOL"`, `"BYTE"`), `key` (cannot be `"errors"` or start with `"errors."`).
 
 ---
 
@@ -117,19 +116,21 @@ Writes values to Siemens S7 data blocks.
 | Config field | Default | Notes |
 |---|---|---|
 | `hostTemplate` | `""` | **Required.** PLC hostname or IP. Template. |
+| `portTemplate` | `"102"` | S7 port. Template. |
 | `rackTemplate` | `"0"` | **Required.** PLC rack number. Template. |
-| `slotTemplate` | `"1"` | **Required.** PLC slot number. Template. |
-| `writeInstructionsType` | `"array"` | **Required.** `"array"` or `"payloadPath"`. |
-| `writeInstructions` | `[]` | **Required.** Array of write instruction objects. Each requires `dbTemplate`, `offsetTemplate`, `dataTypeTemplate`, `valueTemplate`, and `key`. |
+| `slotTemplate` | `"0"` | **Required.** PLC slot number. Template. |
+| `timeoutTemplate` | `"30000"` | Timeout in milliseconds. Template. |
+| `writeInstructionsType` | `"array"` | Optional. `"array"` or `"payloadPath"`. Default `"array"`. |
+| `writeInstructions` | `[]` | **Required.** Array of write instruction objects. Each requires `dbTemplate`, `offsetTemplate`, `dataTypeTemplate`, and `valueTemplate`. `key` is optional — results for instructions without a key are skipped. |
 | `destinationPath` | `""` | **Required.** Payload path to write the result. |
 
 
 ### Write output shape
 
-`destinationPath` receives a write result object:
+`destinationPath` receives a write result object. On success, each instruction's `key` maps to `true`:
 
 ```json
-{ "working": { "writeResult": { "errors": [] } } }
+{ "working": { "writeResult": { "temperature": true } } }
 ```
 
-`errors` is an array of per-tag error strings. An empty array means all writes succeeded.
+`errors` is only added when there are failures — it is absent on full success.

@@ -62,6 +62,10 @@ Three connection methods: integration, service credential, or direct AWS credent
 { "working": { "sqsResult": { "success": true, "messageId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" } } }
 ```
 
+On API error, `resultPath` receives `{ "error": { "type": "...", "message": "..." }, "success": false }`.
+
+> **Note:** AWS SQS limits message attributes to a maximum of 10. Configs with more than 10 `attributeFields` entries will always fail.
+
 ## Experience flows
 
 Same as Cloud.
@@ -70,4 +74,4 @@ Same as Cloud.
 
 > **Minimum GEA version:** 1.39.0
 
-Same as Cloud. The integration method (`integrationId`) is **not available on edge** — use credential or direct AWS keys.
+Same as Cloud with the following restrictions: The integration method (`integrationId`) is **not available on edge**. Service credentials (`credentialNameTemplate`) are also **not available on edge** — use direct AWS keys (`accessKeyIdTemplate`, `secretAccessKeyTemplate`, `regionTemplate`) only.

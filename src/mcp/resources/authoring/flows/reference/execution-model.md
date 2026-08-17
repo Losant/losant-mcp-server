@@ -35,7 +35,7 @@ The `flowError` trigger fires whenever a throw occurs. It is configured with a *
 
 | `config.scope` | Catches errors from |
 |---|---|
-| `"local"` | Only the flow this trigger lives in. **Use this inside experience and webhook flows** to guarantee a response is always sent. |
+| `"local"` | Only the flow this trigger lives in. **Use this inside experience flows and Application (cloud) flows that handle webhook requests** to guarantee a response is always sent. |
 | `"cloud"` | All cloud (Application) flows in the application. |
 | `"experience"` | All experience flows in the application. |
 | `"global"` | All flows of all classes in the application. |
@@ -52,7 +52,8 @@ The error payload delivered to the `flowError` trigger includes context about wh
 | Field | Description |
 |---|---|
 | `data.errorInfo.error.message` | The error message string |
-| `data.errorInfo.error.name` | The error category string (e.g. `"FunctionNodeTypeError"`, `"Validation"`) |
+| `data.errorInfo.error.name` | The error category string (e.g. `"FunctionNodeTypeError"`, `"ValidationError"`) |
+| `data.errorInfo.nodeType` | A string representing the type of node that threw the error (e.g. `'HttpNode'`) |
 | `data.errorInfo.nodeId` | ID of the node that threw |
 | `data.erroredPayload` | Full payload snapshot at the point of the error |
 

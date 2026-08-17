@@ -40,7 +40,7 @@ Branches the flow across multiple paths by evaluating a template against a set o
 | Field | Notes |
 |---|---|
 | `switchTemplate` | **Required.** Handlebars template whose rendered value is compared against each case. |
-| `cases` | **Required.** Array of `{ caseTemplate, caseLabel }` objects, one per branch. |
+| `cases` | Optional. Array of `{ caseTemplate, caseLabel }` objects, one per branch. Defaults to `[]` when omitted. |
 | `cases[i].caseTemplate` | The value to compare against `switchTemplate`. Strict string match. |
 | `cases[i].caseLabel` | Human-readable label displayed on the canvas for that branch. |
 | `cases[i].dontBreak` | boolean — accepted by the schema but has no effect at runtime. Omit or always set to `false`. |

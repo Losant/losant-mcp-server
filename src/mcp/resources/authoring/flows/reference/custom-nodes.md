@@ -116,7 +116,7 @@ Custom node versioning follows flow versioning rules, with important differences
 
 ### Application Custom Nodes
 
-- Any version can be set as the **default** — flows that don't pin a version run the develop version.
+- Any version can be set as the **default** — flows using the `'default'` version selector run the version marked as the application default, or `develop` if no default version is set.
 - The **develop version runs live** in any flow configured to use it. Changes to develop immediately affect all instances using it — including inside immutable flow versions.
 - **Strong recommendation:** Publish a named version and set it as default before using in production. Never rely on `develop` in production flows.
 
@@ -145,7 +145,7 @@ In the flow body, the node is represented as a `CustomNodeExecuteNode`:
       { "id": "tempF", "value": "{{data.attributes.tempF}}" }
     ]
   },
-  "meta": { "category": "logic", "name": "customNodeExecute", "label": "Convert Temp", "x": 200, "y": 200 },
+  "meta": { "category": "logic", "name": "custom-node-execute-node", "label": "Convert Temp", "x": 200, "y": 200 },
   "outputIds": [["next"]]
 }
 ```

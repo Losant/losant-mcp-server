@@ -58,7 +58,9 @@ Two ways to specify the ServiceNow instance — by instance name or by full URL.
 
 ### Output shape
 
-`resultPath` receives the ServiceNow REST API response object. The shape varies by operation — list operations return an object with a `result` array; create/update/get operations return an object with a `result` record:
+On HTTP or network error, `resultPath` receives `{ 'error': { 'statusCode', 'message', 'detail' } }`.
+
+`resultPath` receives the ServiceNow REST API response object on success. The shape varies by operation — list operations return an object with a `result` array; create/update/get operations return an object with a `result` record:
 
 ```json
 {
@@ -71,7 +73,7 @@ Two ways to specify the ServiceNow instance — by instance name or by full URL.
   }
 }
 ```
-| `params` | `[]` | Array of `{ type, name, value }` query parameter objects. `type` is **Required** and must be `"string"` or `"path"`. `name` is the parameter name; `value` is the value or payload path. |
+| `params` | `[]` | Array of `{ type, name, value }` query parameter objects. All three fields are **Required** per item. `type` must be `"string"` or `"path"`; `name` is the parameter name; `value` is the value or payload path. |
 | `bodyTemplateType` | `"individualFields"` | How the request body is provided. See below. |
 | `bodyTemplate` | `[]` | Body content — shape depends on `bodyTemplateType`. |
 
@@ -96,14 +98,17 @@ Two ways to specify the ServiceNow instance — by instance name or by full URL.
 
 ### Common query parameters (`params`)
 
-| `name` | Notes |
-|---|---|
-| `sysparmQuery` | Encoded query string (e.g. `"active=true^priority=1"`). |
-| `sysparmLimit` | Max records to return. |
-| `sysparmOffset` | Pagination offset. |
-| `sysparmFields` | Comma-separated field names to return. |
-| `sysparmDisplayValue` | Return display values instead of raw values. |
-| `sysparmView` | View name to use. |
+| `name` | Applicable actions | Notes |
+|---|---|---|
+| `sysparmQuery` | `tableGet` only | Encoded query string (e.g. `"active=true^priority=1"`). Silently dropped for other actions. |
+| `sysparmLimit` | `tableGet` only | Max records to return. Silently dropped for other actions. |
+| `sysparmOffset` | `tableGet` only | Pagination offset. Silently dropped for other actions. |
+| `sysparmFields` | All | Comma-separated field names to return. |
+| `sysparmDisplayValue` | All | Return display values instead of raw values. |
+| `sysparmView` | All | View name to use. |
+| `sysparmExcludeReferenceLink` | All | When `"true"`, omits reference link objects from the response. |
+| `sysparmSuppressPaginationHeader` | `tableGet` only | When `"true"`, suppresses the `X-Total-Count` response header. |
+| `sysparmInputDisplayValue` | `tablePost`, `tableRowPut` | When `"true"`, treats input values as display values rather than raw values. |
 
 ## Experience flows
 

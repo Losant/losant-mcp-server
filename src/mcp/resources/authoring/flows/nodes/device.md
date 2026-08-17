@@ -81,7 +81,7 @@ Retrieves one or more devices using one of eight query methods. The default find
 | Value | What it finds | Primary input field |
 |---|---|---|
 | `"id"` (default) | Single device by ID | `idTemplate` |
-| `"name"` | Single device by exact name | `name` (plain string, not a template) |
+| `"name"` | Single device by exact name | `name` (template) |
 | `"findByAllTags"` | Devices matching **all** of the provided tag pairs | `tags` array |
 | `"findByAnyTags"` | Devices matching **any** of the provided tag pairs | `tags` array |
 | `"findByParentId"` | Devices whose parent System is the given ID | `parentIdTemplate` |
@@ -89,7 +89,7 @@ Retrieves one or more devices using one of eight query methods. The default find
 | `"experienceUserIdOrEmail"` | Devices associated with the given Experience User | `idTemplate` (user ID or email) |
 | `"query"` | Devices matching an advanced MongoDB-style query | `queryTemplate` |
 
-All methods except `"id"` and `"name"` support returning multiple devices (see `findMultiple`).
+All methods except `"id"` support returning multiple devices (see `findMultiple`).
 
 #### Core config fields
 
@@ -97,7 +97,7 @@ All methods except `"id"` and `"name"` support returning multiple devices (see `
 |---|---|---|
 | `findMethod` | `"id"` | See table above. |
 | `idTemplate` | — | Device ID, group ID, or user ID/email depending on `findMethod`. Template. Not used when `findMethod: "name"`. |
-| `name` | — | Plain string device name. Used **only** when `findMethod: "name"`. Not a Handlebars template. |
+| `name` | — | Device name. Used **only** when `findMethod: "name"`. Template (rendered via `payloadHelper.renderToString`). |
 | `tags` | `[]` | Array of `{ keyTemplate, valueTemplate }` — used by `findByAllTags` and `findByAnyTags`. Either key or value (or both) may be omitted. |
 | `parentIdTemplate` | — | System parent device ID. Template. Used by `findByParentId`. |
 | `queryTemplate` | — | JSON template resolving to an advanced device query object. Used by `"query"` findMethod. |
@@ -155,9 +155,12 @@ Returns `[]` if none found.
   "perPage": 100,
   "sortField": "name",
   "sortDirection": "asc",
+  "findMethod": "findByAllTags",
   "items": [ { "id": "...", "name": "..." }, ... ]
 }
 ```
+
+- `findMethod` — the findMethod value used for the query.
 
 #### Examples
 
@@ -246,8 +249,8 @@ Patches a device record. Config structure mirrors CreateDeviceNode — use `idTe
 | `nameTemplate` | Used when `dataMethod: "individualFields"`. New device name. Template. |
 | `descriptionTemplate` | Used when `dataMethod: "individualFields"`. New description. Template. |
 | `deviceClassTemplate` | Used when `dataMethod: "individualFields"`. New device class. |
-| `deviceTags` | Used when `dataMethod: "individualFields"`. Array of `{ keyTemplate, valueTemplate }`. **Full replacement** — always read first, merge changes, then write the full array. |
-| `deviceAttributes` | Used when `dataMethod: "individualFields"`. Array of `{ nameTemplate, dataTypeTemplate }`. **Full replacement**. Do not change an existing attribute's `dataTypeTemplate` — this drops all historical state. |
+| `deviceTags` | Used when `dataMethod: "individualFields"`. Array of `{ keyTemplate, valueTemplate }`. **Selective merge** — only the listed tag keys are modified; other tags are preserved. |
+| `deviceAttributes` | Used when `dataMethod: "individualFields"`. Array of `{ nameTemplate, dataTypeTemplate }`. **Selective merge** — attributes not listed are preserved; updating an existing attribute's `dataType` is silently ignored. |
 | `tagsAsObject` | `false` | When `true`, returns tags as an object map in the result. |
 | `attributesAsObject` | `false` | When `true`, returns attributes as an object map in the result. |
 | `resultPath` | Payload path for the updated device object. |

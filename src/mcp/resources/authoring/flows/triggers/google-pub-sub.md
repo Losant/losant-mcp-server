@@ -79,11 +79,11 @@ All event types share the same envelope. `data.type` identifies which event fire
 }
 ```
 
-- `data.data` — the message payload as a string. Use a JSON Decode node if the publisher sends JSON.
+- `data.data` — the message payload. If the publisher sends valid JSON, it is auto-parsed and `data.data` arrives as a parsed object or array. Otherwise it is a string.
 - `data.attributes` — key/value map of Pub/Sub message attributes.
 - `data.id` — GCP-assigned message ID.
 - `data.timestamp` — GCP-assigned publish time as a Unix millisecond integer (e.g. `1705320000000`).
-- `data.topic` — the bare subscription name the message arrived on (e.g. `"test-prerelease"`), not a full GCP resource path.
+- `data.topic` — the topic name from Losant's integration model (e.g. `"my-gcp-topic"`), not a bare GCP subscription name or full resource path.
 
 #### `connect` — integration connected
 

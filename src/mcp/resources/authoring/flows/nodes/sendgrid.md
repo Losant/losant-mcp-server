@@ -42,11 +42,11 @@ Two auth methods: service credential or direct API key (must start with `"SG."`)
 | `fromTemplate` | `""` | **Required.** Sender email address. Template. |
 | `subjectTemplate` | `""` | **Required.** Email subject. Template. |
 | `bodyTemplate` | `""` | **Required.** Email body. Template. Supports HTML. |
-| `toAddresses` | `[]` | **Required.** Array of email address template strings (e.g. `["operator@example.com", "{{data.email}}"]`). At least one required. |
+| `toAddresses` | `[]` | Array of email address template strings (e.g. `["operator@example.com", "{{data.email}}"]`). At least one recipient across `toAddresses`, `ccAddresses`, or `bccAddresses` combined is required. |
 | `ccAddresses` | `[]` | Array of email address template strings. |
 | `bccAddresses` | `[]` | Array of email address template strings. |
 | `replyToTemplate` | `""` | Reply-to address. Template. |
-| `attachments` | `[]` | Array of attachment objects (max 10). Edge requires GEA 1.43.3+. |
+| `attachments` | `[]` | Array of attachment objects (max 10). Edge requires GEA 1.43.3+. Each entry: `{ contentTemplate` (base64-encoded content), `urlTemplate` (URL to fetch content from), `filenameTemplate` (attachment filename), `contentType` (MIME type) `}`. Use either `contentTemplate` or `urlTemplate`, not both. |
 | `resultPath` | `""` | Payload path to write the send result. |
 
 ## Output
@@ -56,6 +56,8 @@ Two auth methods: service credential or direct API key (must start with `"SG."`)
 ```json
 { "working": { "sendResult": { "message": "success" } } }
 ```
+
+On send failure, `resultPath` receives `{ 'error': <SendGrid error body or message> }`.
 
 ## Experience flows
 

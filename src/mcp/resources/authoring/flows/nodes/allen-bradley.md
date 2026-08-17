@@ -48,17 +48,17 @@ Reads tag values from an Allen-Bradley PLC.
 |---|---|---|
 | `hostTemplate` | `""` | **Required.** PLC hostname or IP. Template. |
 | `slotTemplate` | `""` | PLC slot number. Template. |
-| `keepRateTemplate` | `""` | Keep-alive interval in milliseconds. Template. |
+| `keepRateTemplate` | `""` | Keep-alive interval in seconds (0–300). Template. |
 | `timeoutTemplate` | `"30000"` | Request timeout in milliseconds. Template. |
 | `readInstructionsType` | `"array"` | `"array"` or `"payloadPath"`. |
-| `readInstructions` | `[]` | **Required.** Array of `{ tagTemplate, programTemplate?, key }` objects. Key cannot be `"errors"` or `"plcProperties"`. |
+| `readInstructions` | `[]` | **Required.** Array of `{ tagTemplate, programTemplate?, key }` objects. Key cannot be `"errors"`, `"errors.*"`, `"plcProperties"`, or `"plcProperties.*"`. |
 | `destinationPath` | `""` | **Required.** Payload path to write tag values. |
 
 `lengthTemplate` (GEA 1.54.0+) reads array elements. `dataTypeTemplate` was removed in GEA 1.54.0.
 
 ### Read output shape
 
-Each key in the result object corresponds to the `key` field in a `readInstructions` entry. The reserved keys `errors` and `plcProperties` are always present:
+Each key in the result object corresponds to the `key` field in a `readInstructions` entry. `plcProperties` is always present; `errors` is only present when at least one read fails:
 
 ```json
 {
@@ -66,21 +66,28 @@ Each key in the result object corresponds to the `key` field in a `readInstructi
     "plcData": {
       "sensorValue": 42.5,
       "errors": [
-        { "key": "tempValue", "error": { "message": "Tag not found" } }
+        { "type": "Allen-Bradley_READ_ERROR", "message": "Tag not found", "key": "tempValue", "tag": "Program:MainProgram.TempTag" }
       ],
       "plcProperties": {
-        "vendorId": 1,
-        "productCode": 65,
-        "productType": 14,
-        "revision": "20.13",
-        "serialNumber": "00A4B2C3"
+        "io_faulted": false,
+        "majorUnrecoverableFault": false,
+        "majorRecoverableFault": false,
+        "minorUnrecoverableFault": false,
+        "minorRecoverableFault": false,
+        "faulted": false,
+        "status": 12345,
+        "version": "20.13",
+        "time": 1000,
+        "slot": 0,
+        "serial_number": "00A4B2C3",
+        "name": "1756-L71"
       }
     }
   }
 }
 ```
 
-`errors` is an array of per-tag error objects `{ key, error: { message } }` for any tags that failed to read (empty array when all tags succeed). `plcProperties` contains PLC identity information. Successfully read tags appear as top-level keys using the `key` value from `readInstructions`. The `destinationPath` can point to an existing payload path to overwrite it.
+`errors` is an array of per-tag error objects `{ type, message, key?, tag? }` for any tags that failed to read. The `errors` key is absent on full success — only present when at least one read fails. `plcProperties` contains PLC identity information. Successfully read tags appear as top-level keys using the `key` value from `readInstructions`. The `destinationPath` can point to an existing payload path to overwrite it.
 
 ---
 
@@ -110,7 +117,7 @@ Writes tag values to an Allen-Bradley PLC.
 |---|---|---|
 | `hostTemplate` | `""` | **Required.** PLC hostname or IP. Template. |
 | `slotTemplate` | `""` | PLC slot number. Template. |
-| `keepRateTemplate` | `""` | Keep-alive interval in milliseconds. Template. |
+| `keepRateTemplate` | `""` | Keep-alive interval in seconds (0–300). Template. |
 | `timeoutTemplate` | `"30000"` | Request timeout in milliseconds. Template. |
 | `writeInstructionsType` | `"array"` | `"array"` — use `writeInstructions` array. `"payloadPath"` — read instructions from a payload path. |
 | `writeInstructions` | `[]` | **Required.** Array of objects with `tagTemplate` (required), `valueTemplate` (required), and `programTemplate` (optional). `dataTypeTemplate` was removed in GEA 1.54.0. |
@@ -118,16 +125,46 @@ Writes tag values to an Allen-Bradley PLC.
 
 ### Write output shape
 
+On success:
+
 ```json
 {
   "working": {
     "writeResult": {
+      "plcProperties": {
+        "io_faulted": false,
+        "majorUnrecoverableFault": false,
+        "majorRecoverableFault": false,
+        "minorUnrecoverableFault": false,
+        "minorRecoverableFault": false,
+        "faulted": false,
+        "status": 12345,
+        "version": "20.13",
+        "time": 1000,
+        "slot": 0,
+        "serial_number": "00A4B2C3",
+        "name": "1756-L71"
+      },
+      "write": "success"
+    }
+  }
+}
+```
+
+On failure:
+
+```json
+{
+  "working": {
+    "writeResult": {
+      "plcProperties": { "...": "..." },
+      "write": "fail",
       "errors": [
-        { "key": "SetPoint", "error": { "message": "Write failed: tag does not exist" } }
+        { "type": "Allen-Bradley_WRITE_ERROR", "message": "Write failed: tag does not exist", "tag": "Program:MainProgram.SetPoint" }
       ]
     }
   }
 }
 ```
 
-`errors` is an array of per-tag error objects `{ key, error: { message } }` for any tags that failed to write (empty array means all writes succeeded). The `destinationPath` can point to an existing payload path to overwrite it.
+`plcProperties` and `write` are always present. `errors` is an array of per-tag error objects `{ type, message, tag? }` and is only present when at least one write fails. The `destinationPath` can point to an existing payload path to overwrite it.

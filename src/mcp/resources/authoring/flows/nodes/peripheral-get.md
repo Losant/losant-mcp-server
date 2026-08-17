@@ -107,8 +107,8 @@ Returns peripherals that match all (or any) of the provided tags.
 | Config field | Default | Notes |
 |---|---|---|
 | `findMultiple` | `false` | When `false`, returns the first matching peripheral or `null`. When `true`, returns an array of matching peripherals (empty array if none found). |
-| `sortField` | `"name"` | Sort field: `"name"` or `"id"`. Template from GEA 1.21.0+. |
-| `sortDirection` | `"asc"` | `"asc"` or `"desc"`. Template from GEA 1.21.0+. |
+| `sortField` | `"name"` | Sort field: `"name"` or `"id"`. Template from GEA 1.22.0+. |
+| `sortDirection` | `"asc"` | `"asc"` or `"desc"`. Template from GEA 1.22.0+. |
 
 ---
 
@@ -116,7 +116,7 @@ Returns peripherals that match all (or any) of the provided tags.
 
 | Config field | Default | Notes |
 |---|---|---|
-| `tagsAsObject` | `true` | When `true`, `tags` in the result is an object map (`{ key: value }`). When `false`, `tags` is an array of `{ key, value }` objects. |
+| `tagsAsObject` | `true` | When `true`, `tags` in the result is an object map (`{ key: [values] }`) — each tag key maps to an array of values. When `false`, `tags` is an array of `{ key, value }` objects. |
 | `attributesAsObject` | `false` | When `true`, `attributes` in the result is an object map keyed by attribute name. When `false`, `attributes` is an array. |
 
 ---

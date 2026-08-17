@@ -47,3 +47,5 @@ Not available.
 | `encodingTemplate` | `"utf8"` | Optional. Message encoding. Defaults to `'utf8'` when absent. Template. |
 | `broadcastTemplate` | `false` | When `true`, allows sending to broadcast addresses. GEA 1.19.2+. |
 | `resultPath` | `""` | Payload path to write `{ success: true }` or `{ error }`. |
+
+> **Broadcast note:** For broadcast addresses, the Gateway Edge Agent must be started in host network mode — otherwise the broadcast packet is dropped.

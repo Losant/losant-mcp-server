@@ -57,6 +57,9 @@ Two `type` values select devices differently; both have empty config.
   "relayType": "apiToken",
   "triggerId": "<trigger key>",
   "triggerType": "deviceIdConnect",
+  "deviceName": "<name of the connecting device>",
+  "deviceTags": { "<tagKey>": ["<tagValue>"] },
+  "device": { "<full device JSON including attributes, tags, name, etc.>" },
   "applicationId": "...",
   "flowId": "...",
   "globals": {}
@@ -67,7 +70,8 @@ Two `type` values select devices differently; both have empty config.
 - `data.method` — `"mqtt"` or `"rest"`.
 - `data.secure` — `true` if MQTT over TLS.
 - `triggerId` — the connecting device's ID (same as the `key` field for `deviceIdConnect`; the device ID for `deviceTagConnect`).
-- `relayId` / `relayType` — at the envelope level, not inside `data`.
+- `relayId` / `relayType` — at the envelope level, not inside `data`. `relayType` can be `"apiToken"`, `"device"`, `"flow"`, or `"user"` depending on what authorized the connection.
+- `deviceName` / `deviceTags` / `device` — the connecting device's name, tags, and full device JSON.
 
 ## Experience flows
 

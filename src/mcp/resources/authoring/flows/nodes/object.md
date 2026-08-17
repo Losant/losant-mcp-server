@@ -40,7 +40,7 @@ Available: cloud, experience, customNode, edge (GEA 1.20.0+).
 |---|---|
 | `sourcePath` | Payload path of the source object or array to operate on. If omitted or path resolves to `undefined`, the source defaults to `{}`. |
 | `destPath` | Payload path where the **final mutated source** is written after all operations complete. **Required when any operation in the chain is `assign`, `mergeDeep`, `omit`, `pick`, or `zipObject`** — without it, the mutated object is discarded and the node is invalid in the UI. Optional when all operations only produce secondary `outputPath` results (`entries`, `keys`, `values`, `fromPairs`). |
-| `operations` | **Required.** Array of up to **10** operation objects applied in sequence. Each operation receives the mutated source from the previous one. |
+| `operations` | Optional. Array of up to **10** operation objects applied in sequence. Each operation receives the mutated source from the previous one. When absent, treated as `[]` (no operations). |
 
 ### Config — per-operation fields
 

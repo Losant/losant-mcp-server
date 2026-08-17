@@ -116,7 +116,7 @@ When provided, these override the corresponding fields from the CSR. All are Han
         "emailAddress": "certs@acme.com",
         "notValidBefore": "2024-01-01T00:00:00.000Z",
         "notValidAfter": "2025-01-01T00:00:00.000Z",
-        "issuerName": "CN=Acme CA,O=Acme Corp,C=US",
+        "issuerName": "Acme CA",
         "fingerprint": "AA:BB:CC:..."
       }
     }
@@ -176,7 +176,7 @@ Reads a PEM certificate (or PEM bundle of multiple certificates) and writes the 
         "emailAddress": "certs@acme.com",
         "notValidBefore": "2024-01-01T00:00:00.000Z",
         "notValidAfter": "2025-01-01T00:00:00.000Z",
-        "issuerName": "CN=Acme CA,O=Acme Corp,C=US",
+        "issuerName": "Acme CA",
         "fingerprint": "AA:BB:CC:..."
       }
     }
@@ -224,16 +224,20 @@ On edge, the CA key and certificate are provided directly via template or disk p
 
 | Config field | Default | Notes |
 |---|---|---|
-| `caKeyTemplateType` | `"diskPath"` | **Required** (edge). How the CA private key is provided: `"diskPath"`, `"stringTemplate"`, or `"payloadPath"`. |
+| `caKeyTemplateType` | `"stringTemplate"`* | **Required** (edge). How the CA private key is provided: `"diskPath"`, `"stringTemplate"`, or `"payloadPath"`. |
 | `caKeyTemplate` | `""` | **Required** (edge). The CA private key, per `caKeyTemplateType`. |
-| `caCrtTemplateType` | `"diskPath"` | **Required** (edge). How the CA certificate is provided: `"diskPath"`, `"stringTemplate"`, or `"payloadPath"`. |
+| `caCrtTemplateType` | `"stringTemplate"`* | **Required** (edge). How the CA certificate is provided: `"diskPath"`, `"stringTemplate"`, or `"payloadPath"`. |
 | `caCrtTemplate` | `""` | **Required** (edge). The CA certificate PEM, per `caCrtTemplateType`. |
+
+*Backend default is `"stringTemplate"` (`config.caKeyTemplateType || 'stringTemplate'`). The UI pre-populates `"diskPath"` for edge and always writes it explicitly.
 
 The subject override fields, Subject Alternative Names, key usages, extended key usages, `serialNumberTemplate`, `notBeforeTemplate`, and `SHA512` algorithm all require GEA **2.4.0+** on edge.
 
+> **Note:** Using a raw public/private key PEM as input (instead of a CSR) on edge requires GEA **2.4.0+**. On GEA 2.3.0, the required subject fields (commonName/SAN) are stripped before signing, making raw-key input non-functional. Use a proper CSR on GEA 2.3.0.
+
 ### Certificate: Read — edge differences
 
-`crtTemplateType` defaults to `"diskPath"` on edge (vs. `"stringTemplate"` on cloud). The `"diskPath"` option is only valid on edge — switching to a cloud flow class resets the type to `"stringTemplate"`.
+The backend default for `crtTemplateType` is `"stringTemplate"` (`config.crtTemplateType || 'stringTemplate'`). The UI pre-populates `"diskPath"` for edge and always writes it explicitly — so in practice edge configs will have `"diskPath"`, but the backend fallback is `"stringTemplate"`. The `"diskPath"` option is only valid on edge — switching to a cloud flow class resets the type to `"stringTemplate"`.
 
 ## Custom Node flows
 

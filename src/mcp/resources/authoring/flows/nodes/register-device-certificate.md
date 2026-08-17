@@ -14,7 +14,7 @@ Registers a new X.509 device certificate for authenticating against the Losant M
 | `type` | `"RegisterDeviceCertificateNode"` |
 | `meta.category` | `"data"` |
 | `meta.name` | `"register-device-certificate"` |
-| `meta.label` | `"Device Certificate: Register"` (default) |
+| `meta.label` | `"Device Cert: Register"` (default) |
 
 ## Cloud (Application) flows
 

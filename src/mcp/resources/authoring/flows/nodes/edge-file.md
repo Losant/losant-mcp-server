@@ -46,7 +46,7 @@ Reads content from a file on the GEA container file system.
 | Config field | Default | Notes |
 |---|---|---|
 | `pathTemplate` | `""` | **Required.** File path on the container file system. Template. |
-| `encodingTemplate` | `"utf8"` | **Required.** Content encoding: `"utf8"`, `"base64"`, `"binary"`, `"hex"`. Template. |
+| `encodingTemplate` | `"utf8"` | Optional. Content encoding: `"ascii"`, `"utf8"`, `"utf16le"`, `"ucs2"`, `"base64"`, `"latin1"`, `"binary"`, `"hex"`. Defaults to `"utf8"`. Template. |
 | `startTemplate` | `""` | Byte offset to start reading. Negative values read from end of file. Template. |
 | `lengthTemplate` | `""` | Number of bytes to read. Leave empty to read to end of file. Template. |
 | `resultPath` | `""` | **Required.** Payload path to write `{ bytesRead, value }`. On error: `{ error: { type, message } }`. |
@@ -80,9 +80,9 @@ Writes content to a file on the GEA container file system.
 |---|---|---|
 | `pathTemplate` | `""` | **Required.** File path on the container file system. Template. |
 | `fileContentsTemplate` | `""` | **Required.** Content to write. Template. |
-| `encodingTemplate` | `"utf8"` | **Required.** Content encoding. Template. |
+| `encodingTemplate` | `"utf8"` | Optional. Content encoding: `"ascii"`, `"utf8"`, `"utf16le"`, `"ucs2"`, `"base64"`, `"latin1"`, `"binary"`, `"hex"`. Defaults to `"utf8"`. Template. |
 | `shouldAppend` | `false` | When `true`, appends content to the file instead of overwriting. |
 | `errorIfFileExists` | `false` | When `true`, returns an error if the file already exists. |
 | `resultPath` | `""` | Payload path to write `{ value: true }` on success, or `{ value: false, error: { type, message } }`. |
 
-`shouldAppend` and `errorIfFileExists` are mutually exclusive — only one should be `true`.
+`shouldAppend` and `errorIfFileExists` can both be `true` simultaneously. The combination uses the `'ax'` file flag (append-only, fail if file does not exist — which is inverted from the flag name). In practice, when both are `true` and the file already exists, the write silently fails.

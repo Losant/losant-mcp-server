@@ -51,7 +51,7 @@ The UDP port to listen on is stored as `key` — not in `config`. `config` is al
   "data": {
     "message": "Hello, World!",
     "sourceAddress": "192.168.1.204",
-    "sourcePort": "12345"
+    "sourcePort": 12345
   },
   "triggerId": "45678",
   "triggerType": "udp",
@@ -63,7 +63,7 @@ The UDP port to listen on is stored as `key` — not in `config`. `config` is al
 
 - `data.message` — the contents of the received datagram.
 - `data.sourceAddress` — IP address the datagram was sent from.
-- `data.sourcePort` — port the datagram was sent from (string).
+- `data.sourcePort` — port the datagram was sent from (number).
 - `triggerId` — the configured UDP port (mirrors `key`).
 
 > **Note:** SNMP traps and inform requests received on the same port will also fire this trigger. See `triggers/snmp-trap.md` if you need to distinguish SNMP traffic from other UDP datagrams.

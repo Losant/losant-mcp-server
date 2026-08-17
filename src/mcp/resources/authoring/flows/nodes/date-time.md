@@ -37,8 +37,8 @@ Parses, manipulates, and formats date/time values using Moment.js operations —
 | `operation` | `"add"` | **Required.** The operation to perform (see table below). |
 | `sourcePath` | `""` | Payload path of the input date value. If empty, uses the current time. |
 | `sourceFormatString` | `""` | Moment.js format string for parsing the source. Leave empty for ISO 8601 / Unix timestamps. |
-| `resultPath` | `""` | **Required.** Payload path to write the result. |
-| `resultFormatString` | `""` | Moment.js format string for the output (e.g. `"YYYY-MM-DD"`). Used by the `format`, `changeTimezone`, and `durationToString` operations (and any other operation that produces a formatted string output). Leave empty to use ISO 8601 output. |
+| `resultPath` | `""` | Optional. Payload path to write the result. When omitted, result is discarded. |
+| `resultFormatString` | `""` | Moment.js format string for the output (e.g. `"YYYY-MM-DD"`). Used by the `format`, `add`, `subtract`, `getDatePart`, `setDatePart`, and `startOfTime` operations. Leave empty to use ISO 8601 output. |
 | `timezone` | `""` | IANA timezone (e.g. `"America/Chicago"`). Applied to the operation. |
 | `numberValue` | `""` | Amount for add/subtract/set operations. Template. |
 | `unit` | `"year"` | Time unit for add/subtract/set/start-of: `"year"`, `"quarter"`, `"month"`, `"week"`, `"dayOfYear"`, `"day"`, `"dayOfWeek"`, `"hour"`, `"minute"`, `"second"`, `"millisecond"`. |

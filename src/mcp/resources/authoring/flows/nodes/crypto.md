@@ -39,9 +39,9 @@ Creates a cryptographic hash (or HMAC with a secret) of a value.
 | `dataTemplate` | `""` | **Required.** Template resolving to the data to hash. |
 | `algorithmTemplate` | `"SHA256"` | **Required.** Hash algorithm: `"MD5"`, `"SHA1"`, `"SHA256"`, `"SHA512"`, `"RIPEMD"`, `"Whirlpool"`. Template. |
 | `secretTemplate` | `""` | Optional HMAC secret. When set, produces an HMAC instead of a plain hash. |
-| `encodingTemplate` | `"hex"` | **Required.** Output encoding: `"hex"`, `"base64"`, `"latin1"`. |
-| `dataEncodingTemplate` | `"utf8"` | **Required.** Input data encoding. GEA 1.32.0+ on edge. |
-| `secretEncodingTemplate` | `"utf8"` | **Required.** Secret encoding. GEA 1.32.0+ on edge. |
+| `encodingTemplate` | `"hex"` | Optional. Output encoding: `"hex"`, `"base64"`, `"latin1"`. Defaults to `"hex"`. |
+| `dataEncodingTemplate` | `"utf8"` | Optional. Input data encoding. Defaults to `"utf8"`. GEA 1.32.0+ on edge. |
+| `secretEncodingTemplate` | `"utf8"` | Optional. Secret encoding. Defaults to `"utf8"`. GEA 1.32.0+ on edge. |
 | `destinationPath` | `""` | **Required.** Payload path to write the hash string. |
 
 ---
@@ -131,3 +131,5 @@ Same as Cloud.
 **Crypto: Hash** — minimum GEA 1.1.0. `dataEncodingTemplate` and `secretEncodingTemplate` available on GEA 1.32.0+.
 
 **Crypto: Sign / Crypto: Verify** — minimum GEA 2.3.0. `keyTemplateType: "diskPath"` is only available on edge (load key from local file).
+
+> **Note:** `credentialNameTemplate` (service credential lookup) is not available on edge for HashNode or CryptoSignNode. On edge, supply the key or secret directly via `keyTemplate`/`keyTemplateType` (Sign) or `secretTemplate` (Hash).

@@ -95,4 +95,4 @@ Updates one or more GEA runtime configuration values. Changes take effect after 
 { "working": { "setResult": { "success": true } } }
 ```
 
-On failure, `resultPath` receives `{ "success": false, "error": "..." }`. Check this value downstream if your flow needs to react to a failed set.
+On failure, `resultPath` receives `{ "success": false, "error": { "type": "...", "message": "..." } }`. Check this value downstream if your flow needs to react to a failed set.

@@ -44,7 +44,7 @@ Retrieves device state data across a time range, aggregated to a configurable re
 |---|---|---|
 | `findMethod` | — | **Required.** Device selection method (see Device selection below). |
 | `attribute` | `[]` | **Required.** Array of attribute names to query. Single attribute returns simpler result shape. |
-| `duration` | — | **Required when `aggregation` is not `"NONE"`.** Query time range in milliseconds (e.g. `86400000` = last 24 hours). Do not pass `null` — it produces a 1 ms window. When `aggregation: "NONE"`, `duration` may be omitted; the query returns raw data points without a fixed time window. |
+| `duration` | — | **Required.** Query time range in milliseconds (e.g. `86400000` = last 24 hours). Must be ≥ 1 — the implementation enforces a minimum of 1 ms (`if (!Number.isFinite(duration) \|\| duration < 1) { duration = 1; }`). Do not pass `null` or omit this field. |
 | `end` | — | Optional. Custom end time as a Unix timestamp in milliseconds. Defaults to now. Used with non-null `duration` to query a historical window ending at a specific time. |
 | `resolution` | — | **Required.** Aggregation time bucket in milliseconds (e.g. `3600000` = 1-hour buckets). `null` for custom. Must be ≤ `duration`. |
 | `aggregation` | — | **Required.** Aggregation method: `"MEAN"`, `"MIN"`, `"MAX"`, `"SUM"`, `"COUNT"`, `"FIRST"`, `"LAST"`, `"NONE"`, `"MEDIAN"`, `"STD_DEV"`, `"TIMEATVALUE"`. |
@@ -85,15 +85,14 @@ Retrieves the most recent (or recent period's aggregated) state value for one or
 Same config fields as Time Series except:
 - No `resolution` — gauge always returns a single aggregated value per attribute.
 - No `orderTemplate` or `limitTemplate`.
-- `duration: null` produces a 1 ms query window, which is effectively useless. Omit `duration` or use a small positive value to get recent data.
-- `aggregation` cannot be `"NONE"`.
+- When `aggregation: "NONE"` and `duration` is `null` or omitted, the Gauge node operates in last-value query mode and returns the most recently received data point per device — it does not produce a fixed time window.
+- `aggregation` cannot be `"NONE"` with a non-null `duration`.
 
 ### Device selection (`findMethod`)
 
 | `findMethod` value | Required config field | Notes |
 |---|---|---|
-| `"tagsIds"` | `deviceIds` (string[]) | Specific device IDs. |
-| `"tags"` | `deviceTags` (array of `{ key, value }`) | Devices matching tag key/value pairs. |
+| `"tagsIds"` | `deviceIds` (string[]) and/or `deviceTags` (array of `{ key, value }`) | Specific device IDs and/or devices matching tag key/value pairs. |
 | `"payloadPath"` | `deviceIdsPath` (string) | Payload path to an array of device IDs. |
 | `"query"` | `queryTemplate` (string) | Advanced device query as a JSON template. |
 | `"expUser"` | `expUserTemplate` (string) | Experience user ID or email. Template. |

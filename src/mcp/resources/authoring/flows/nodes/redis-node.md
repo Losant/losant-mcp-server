@@ -74,6 +74,7 @@ Two connection modes: standalone (single server) or cluster (multiple nodes).
 | `password` | `""` | Redis password. |
 | `username` | `""` | Redis username. GEA 1.23.0+ on edge. |
 | `tlsOn` | `false` | Enable TLS encryption. |
+| `timeoutTemplate` | `""` | Optional. Connect/command timeout in milliseconds. Template. |
 | `caCertTemplate` | `""` | Custom CA certificate for TLS. GEA 1.41.0+ on edge. Template. |
 | `command` | `"get"` | **Required.** Redis command to execute (e.g. `"get"`, `"set"`, `"hget"`, `"zadd"`). |
 | `arguments` | `[]` | Array of string arguments for the command. |

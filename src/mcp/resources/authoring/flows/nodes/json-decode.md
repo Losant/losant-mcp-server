@@ -9,7 +9,7 @@ Parses a JSON string at a payload path into a structured value. Available in all
 | `type` | `"JsonDecodeNode"` |
 | `meta.category` | `"logic"` |
 | `meta.name` | `"json-decode"` |
-| `meta.label` | `"JSON Decode"` (default) |
+| `meta.label` | `"JSON: Decode"` (default) |
 
 ## Cloud (Application) flows
 
@@ -18,7 +18,7 @@ Parses a JSON string at a payload path into a structured value. Available in all
   "id": "decode",
   "type": "JsonDecodeNode",
   "config": { "source": "working.rawJson", "destination": "working.parsed" },
-  "meta": { "category": "logic", "name": "json-decode", "label": "JSON Decode", "x": 0, "y": 0 },
+  "meta": { "category": "logic", "name": "json-decode", "label": "JSON: Decode", "x": 0, "y": 0 },
   "outputIds": [["next"]]
 }
 ```

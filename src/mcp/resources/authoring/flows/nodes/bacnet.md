@@ -69,15 +69,14 @@ Reads property values from BACnet device objects.
 {
   "working": {
     "bacnetData": {
-      "temperature": 72.4,
-      "occupancy": true,
-      "errors": []
+      "temperature": [{"id": 85, "index": 4294967295, "value": [{"value": 72.4, "type": 4}]}],
+      "occupancy": [{"id": 85, "index": 4294967295, "value": [{"value": true, "type": 1}]}]
     }
   }
 }
 ```
 
-Each key corresponds to the `key` field from `readInstructions`. `errors` captures per-property failures.
+Each key corresponds to the `key` field from `readInstructions`. The value for each key is an array of BACnet property result objects. The `errors` key is absent on full success — only present when at least one read fails.
 
 Read instruction fields — all are **Required**:
 
@@ -86,7 +85,7 @@ Read instruction fields — all are **Required**:
 | `typeTemplate` | BACnet object type as an **integer string** (or a template resolving to one). Common values: `"0"` (Analog Input), `"1"` (Analog Output), `"2"` (Analog Value), `"3"` (Binary Input), `"4"` (Binary Output), `"5"` (Binary Value), `"8"` (Device), `"13"` (Multi-State Input), `"14"` (Multi-State Output), `"19"` (Multi-State Value). Named strings like `"analogInput"` are UI labels only — always pass the integer string. |
 | `instanceTemplate` | Object instance number (0–4194302) as a string template. |
 | `propertyIdTemplate` | BACnet property ID as an **integer string**. Common values: `"85"` (Present Value), `"77"` (Object Name), `"79"` (Object Type), `"28"` (Description), `"111"` (Status Flags), `"103"` (Reliability), `"117"` (Units), `"87"` (Priority Array), `"104"` (Relinquish Default). Full list: 455 BACnet property identifiers. |
-| `key` | Result key in the destination object. Cannot be `"errors"`. |
+| `key` | Result key in the destination object. Cannot be `"errors"` or start with `"errors."`. |
 
 ---
 
@@ -167,7 +166,7 @@ Writes property values to BACnet device objects.
         "typeTemplate": "1",
         "instanceTemplate": "1",
         "propertyIdTemplate": "85",
-        "propertyIndexTemplate": "-1",
+        "propertyIndexTemplate": "4294967295",
         "writeValueTypeTemplate": "4",
         "writeValueTemplate": "{{working.setpoint}}",
         "writePriorityTemplate": "16"
@@ -187,17 +186,23 @@ Writes property values to BACnet device objects.
 | `portTemplate` | `""` | Legacy alias for `incomingPortTemplate` — the editor writes to `incomingPortTemplate`. Prefer `incomingPortTemplate`. |
 | `incomingPortTemplate` | `""` | Local incoming port. Template. |
 | `apduTimeout` | `""` | APDU request timeout in milliseconds. Template. |
-| `writeInstructionsType` | `"array"` | `"array"` or `"payloadPath"`. |
+| `writeInstructionsType` | `"array"` | **Required.** `"array"` or `"payloadPath"`. |
 | `writeInstructions` | `[]` | **Required.** Array of write instruction objects. |
 | `destinationPath` | `""` | Optional. Payload path to write result metadata. |
 
 ### Write output shape
 
+On success:
+
 ```json
-{ "working": { "writeResult": { "errors": [] } } }
+{ "working": { "writeResult": { "write": "success" } } }
 ```
 
-`errors` is an array of per-property error strings. An empty array means all writes succeeded.
+On failure:
+
+```json
+{ "working": { "writeResult": { "write": "fail", "error": { "type": "BACNET_WRITE_ERROR", "message": "..." } } } }
+```
 
 Write instruction fields:
 
@@ -206,7 +211,7 @@ Write instruction fields:
 | `typeTemplate` | Yes | BACnet object type as an **integer string** — same values as Read (e.g. `"1"` = Analog Output, `"4"` = Binary Output). |
 | `instanceTemplate` | Yes | Object instance number (0–4194302) as a string template. |
 | `propertyIdTemplate` | Yes | BACnet property ID as an **integer string** (e.g. `"85"` = Present Value). |
-| `propertyIndexTemplate` | Yes | Array property index as a string. Use `"-1"` for non-array properties (most common). |
+| `propertyIndexTemplate` | Yes | Array property index as a string (≥ 1). Use `"4294967295"` for non-indexed properties (most common). |
 | `writeValueTypeTemplate` | Yes | BACnet application tag as an **integer string**: `"0"` Null, `"1"` Boolean, `"2"` Unsigned Integer, `"3"` Signed Integer, `"4"` Real, `"5"` Double, `"6"` Octet String, `"7"` Character String, `"8"` Bit String, `"9"` Enumerated, `"10"` Date, `"11"` Time, `"12"` Object Identifier. |
 | `writeValueTemplate` | Yes | Value to write, rendered as a template. |
 | `writePriorityTemplate` | No | Write priority 1–16. Default 16 (lowest). |

@@ -38,15 +38,14 @@ An Amazon SQS integration resource must exist in the application before this tri
 
 **`key`** — Required. The integration resource ID. Always send this field.
 
-**`config.message`** — Required. Defaults to `true`. Fire when an SQS message is received.
+None of the four config booleans are schema-required, but always send all four (the UI always includes them). Their default behaviors differ:
 
-**`config.connect`** — Required. Defaults to `false`. Fire when the integration connects.
+- **`config.message`** — Fire when an SQS message is received. Defaults to firing when absent (behaves as `true` if omitted). Set explicitly to `false` to suppress.
+- **`config.connect`** — Fire when the integration connects. Does **not** fire when absent — requires explicit `true`.
+- **`config.disconnect`** — Fire when the integration disconnects. Does **not** fire when absent — requires explicit `true`.
+- **`config.failure`** — Fire when the integration fails to connect. Does **not** fire when absent — requires explicit `true`.
 
-**`config.disconnect`** — Required. Defaults to `false`. Fire when the integration disconnects.
-
-**`config.failure`** — Required. Defaults to `false`. Fire when the integration fails to connect.
-
-All four config booleans are always sent. At least one should be `true`. When multiple are enabled, use `data.type` in a Conditional Node to branch per event.
+At least one should be `true`. When multiple are enabled, use `data.type` in a Conditional Node to branch per event.
 
 ### Payload at runtime
 

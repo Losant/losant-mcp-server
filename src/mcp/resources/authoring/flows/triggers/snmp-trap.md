@@ -129,7 +129,7 @@ Two SNMP version modes are available. `config.udpPort` defaults to `162` and is 
 }
 ```
 
-- `data.sourcePort` — port the message was received on.
+- `data.sourcePort` — the sender's source port (the port on the remote host the message was sent from, not the local listening port).
 - `data.sourceAddress` — IP address the message originated from.
 - `data.message.community` — community string. Present for v1/2c only; absent for v3.
 - `data.message.username` — username. Present for v3 only; absent for v1/2c.

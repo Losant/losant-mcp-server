@@ -136,7 +136,7 @@ Not available.
 ## Idiom notes
 
 - **Use `deviceId` variant for per-device flows, `deviceTag` variant for fleet-wide flows.** The tag variant fires once per reporting device, not once per tag group.
-- **`batchBehavior: "once"` fires once across all matching devices.** Use it for fleet aggregations (e.g. "when any truck reports, compute the fleet average"). Use individual (no `batchBehavior`) when you need to act on each device's data separately.
+- **`batchBehavior: "once"` controls how a single device's batch state report is handled.** When a device sends a batch of state items, `"once"` fires the trigger once with all batch items collected in `data` as an array, rather than firing once per item. Each device still fires its own independent execution — `batchBehavior` does not aggregate across multiple devices.
 - **Filter by specific attributes using `attributeWhitelist` or `attributeBlacklist`.** Without a filter the trigger fires on any state report, even if the attributes you care about haven't changed. Narrowing the filter reduces unnecessary executions.
 - **`triggerId` is the reporting device's ID.** Reference it as `{{triggerId}}` in templates or as the payload path `triggerId` in payload path fields. The full device object is also available at `device` (root level) — use `device.deviceId` or `triggerId` interchangeably for the device ID. `triggerType` is always `"deviceId"` regardless of whether the `deviceId` or `deviceTag` trigger variant fired.
 - **`time` in the payload is the state report's own timestamp**, not the flow execution time and not the server arrival time. If the device embeds a separate measurement timestamp in a state attribute, use that for sensor-time-accurate processing.

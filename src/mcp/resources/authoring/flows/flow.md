@@ -62,7 +62,7 @@ Required: `name`. Everything else is optional but `flowClass` controls which tri
 
 ## Flow version body (POST `/versions`)
 
-Required: `version` (the name). The `triggers` / `nodes` you send become the immutable snapshot. If you omit them, the current develop version is snapshotted as-is.
+Required: `version` (the name). The `triggers` / `nodes` you send become the immutable snapshot. **If you omit `triggers` and `nodes`, the version is created with empty arrays — the develop version is NOT automatically snapshotted.** Always supply the triggers and nodes you want in the version.
 
 ```json
 {
@@ -380,7 +380,7 @@ See `losant://flow/nodes/loop` for the full pattern and a worked example.
 | `AzureEventHubPublishNode` | `azureEventHubPublish` | output | cloud, exp, edge, custom | `losant://flow/nodes/azure-event-hubs-send` |
 | `BranchOnChangeNode` | `onchange` | logic | cloud, exp, edge, custom | `losant://flow/nodes/on-change` |
 | `ConditionalNode` | `conditional` | logic | all | `losant://flow/nodes/conditional` |
-| `CreateDeviceNode` | `create-device` | data | cloud, exp | `losant://flow/nodes/device` |
+| `CreateDeviceNode` | `create-device` | data | cloud, exp, custom | `losant://flow/nodes/device` |
 | `CSVDecodeNode` | `csv-decode` | logic | cloud, exp, edge, custom | `losant://flow/nodes/csv` |
 | `CSVEncodeNode` | `csv-encode` | logic | cloud, exp, edge, custom | `losant://flow/nodes/csv` |
 | `CryptoSignNode` | `crypto-sign` | logic | cloud, exp, edge, custom | `losant://flow/nodes/crypto` |
@@ -393,12 +393,12 @@ See `losant://flow/nodes/loop` for the full pattern and a worked example.
 | `DebugNode` | `debug` | debug | all | `losant://flow/nodes/debug` |
 | `DelayNode` | `delay` | logic | cloud, exp, edge, custom | `losant://flow/nodes/delay` |
 | `DeviceSendCommandNode` | `device-command` | output | cloud, exp, custom | `losant://flow/nodes/device-command` |
-| `DeviceDeleteWorkflowNode` | `delete-device` | data | cloud, exp | `losant://flow/nodes/device` |
+| `DeviceDeleteWorkflowNode` | `delete-device` | data | cloud, exp, custom | `losant://flow/nodes/device` |
 | `GetDeviceNode` | `get-device` | data | cloud, exp, custom | `losant://flow/nodes/device` |
 | `DeviceChangeStateNode` | `device-state` | output | cloud, exp, edge, custom | `losant://flow/nodes/device-state` |
 | `EdgeDeployNode` | `edge-deploy` | data | cloud, exp, custom | `losant://flow/nodes/edge-deploy` |
 | `StructureEmailNode` | `structure-email` | output | cloud, exp, custom | `losant://flow/nodes/email` |
-| `EndpointReplyNode` | `endpoint-reply` | output | cloud, exp | `losant://flow/nodes/endpoint-reply` |
+| `EndpointReplyNode` | `endpoint-reply` | output | cloud, exp, custom | `losant://flow/nodes/endpoint-reply` |
 | `EventCreateNode` | `create-event` | data | cloud, exp, custom | `losant://flow/nodes/event` |
 | `DeleteEventNode` | `delete-event` | data | cloud, exp, custom | `losant://flow/nodes/event` |
 | `EventGetNode` | `get-event` | data | cloud, exp, custom | `losant://flow/nodes/event` |
@@ -441,10 +441,10 @@ See `losant://flow/nodes/loop` for the full pattern and a worked example.
 | `RedisNode` | `redis` | data | cloud, exp, edge, custom | `losant://flow/nodes/redis-node` |
 | `ResourceJobAcknowledgeNode` | `resource-job-acknowledge` | output | cloud, exp, custom | `losant://flow/nodes/job` |
 | `ResourceJobExecuteNode` | `resource-job-execute` | output | cloud, exp, custom | `losant://flow/nodes/job` |
-| `SalesforceNode` | `salesforce-service` | data | cloud, exp, custom | `losant://flow/nodes/salesforce` |
+| `SalesforceNode` | `salesforce-service` | data | cloud, exp, edge, custom | `losant://flow/nodes/salesforce` |
 | `SendgridEmailNode` | `sendgrid` | output | cloud, exp, edge, custom | `losant://flow/nodes/sendgrid` |
 | `ServiceNowNode` | `service-now` | data | cloud, exp, edge, custom | `losant://flow/nodes/service-now` |
-| `SlackNode` | `slack` | output | cloud, exp, custom | `losant://flow/nodes/slack` |
+| `SlackNode` | `slack` | output | cloud, exp, edge, custom | `losant://flow/nodes/slack` |
 | `SnowflakeNode` | `snowflake` | data | cloud, exp, edge, custom | `losant://flow/nodes/snowflake` |
 | `SqlNode` | `sql` | data | cloud, exp, edge, custom | `losant://flow/nodes/sql` |
 | `SqsSendNode` | `sqs-send` | output | cloud, exp, edge, custom | `losant://flow/nodes/sqs-send` |
@@ -459,7 +459,7 @@ See `losant://flow/nodes/loop` for the full pattern and a worked example.
 | `UdpSendNode` | `udp-send` | output | edge | `losant://flow/nodes/udp-send` |
 | `UpdateDeviceNode` | `update-device` | data | cloud, exp, custom | `losant://flow/nodes/device` |
 | `ValidatePayloadNode` | `validate-payload` | logic | cloud, exp, edge, custom | `losant://flow/nodes/validate-payload` |
-| `WebhookReplyNode` | `webhook-reply` | output | cloud, custom | `losant://flow/nodes/webhook-reply` |
+| `WebhookReplyNode` | `webhook-reply` | output | cloud, exp, custom | `losant://flow/nodes/webhook-reply` |
 | `WebsocketMessageNode` | `websocket` | output | cloud, exp, custom | `losant://flow/nodes/websocket-message` |
 | `WhatsAppNode` | `whatsapp` | output | cloud, exp, edge, custom | `losant://flow/nodes/whatsapp` |
 | `WorkflowTriggerNode` | `workflow-trigger` | output | cloud, exp, custom | `losant://flow/nodes/workflow-trigger` |

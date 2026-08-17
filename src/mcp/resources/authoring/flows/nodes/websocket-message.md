@@ -31,7 +31,7 @@ The WebSocket Message Node publishes a message to a WebSocket integration. The i
 |---|---|---|
 | `integrationId` | `""` | **Required.** WebSocket integration resource ID. |
 | `messageTemplate` | `""` | **Required.** Message to send. Template. Always a string — use JSON template syntax for structured data. |
-| `encodingTemplate` | `"utf8"` | **Required.** Message encoding. Template. |
+| `encodingTemplate` | `"utf8"` | Optional. Message encoding. Defaults to `'utf8'` when absent. Template. |
 
 ## Experience flows
 

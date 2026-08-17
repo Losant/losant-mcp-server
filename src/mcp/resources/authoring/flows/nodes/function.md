@@ -30,7 +30,7 @@ Executes arbitrary JavaScript against the flow payload. Use when built-in nodes 
 
 | Field | Default | Notes |
 |---|---|---|
-| `script` | `""` | **Required.** JavaScript code to execute. Mutate the `payload` object directly (`payload.working.x = 42`). If your script returns a non-undefined value, that return value **replaces** the entire payload object. **Never call `callback()` — it is not available in the RawFunctionNode and will throw a runtime error.** |
+| `script` | `""` | Optional. JavaScript code to execute. When absent, the node is a pass-through — no transformation is applied. Mutate the `payload` object directly (`payload.working.x = 42`). If your script returns a non-undefined value, that return value replaces the entire payload object when `scopePath` is empty, or replaces only the sub-object at `scopePath` when `scopePath` is set. **Never call `callback()` — it is not available in the RawFunctionNode and will throw a runtime error.** |
 | `scopePath` | `""` | Optional payload path. When set, `payload` inside the function refers to that sub-object rather than the full payload. |
 
 ### Script environment

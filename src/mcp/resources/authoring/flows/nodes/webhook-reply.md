@@ -55,13 +55,18 @@ The Webhook: Reply Node sends a custom HTTP response to a webhook request, or se
 | Config field | Default | Notes |
 |---|---|---|
 | `replyIdPath` | `"data.replyId"` | Payload path to the reply ID. Defaults to `"data.replyId"` — the location set by the Webhook trigger. |
-| `replyType` | `"custom"` | `"custom"` — send a fully custom HTTP response (use `responseCodeTemplate`, `bodyTemplate`, `headerInfo`). `"redirect"` — send an HTTP redirect; set `responseCodeTemplate` to `301`/`302` and `bodyTemplate` to the target URL. `"page"` — render an Experience Page as the response body. `"mqtt"` — publish a message to an MQTT topic instead of replying over HTTP. |
+| `replyType` | `"custom"` | `"custom"` — send a fully custom HTTP response (use `responseCodeTemplate`, `bodyTemplate`, `headerInfo`). `"redirect"` — send an HTTP redirect; set `responseCodeTemplate` to `301`/`302` and `bodyTemplate` to the target URL. `"page"` — render an Experience View as the response body; set `pageIdTemplate` to the view ID. `"mqtt"` — opens a Server-Sent Events (SSE) stream; the client response stays open and events are pushed from Losant's internal MQTT broker based on the subscribed topics. |
+| `pageIdTemplate` | `""` | **Required** when `replyType: 'page'`. The ID of the Experience View to render. Template. |
+| `mqttTopicsTemplate` | `""` | **Required** when `replyType: 'mqtt'`. Array of MQTT topic strings to subscribe to, as a JSON template. |
+| `mqttTopicsPath` | `""` | **Required** when `replyType: 'mqtt'` (alternative to `mqttTopicsTemplate`). Payload path to an array of MQTT topic strings. |
 | `isWebsocketMessage` | `false` | When `true`, sends a WebSocket message to a connected client instead of an HTTP reply. |
 | `responseCodeTemplate` | `""` | HTTP status code. Template. Only for HTTP replies. |
 | `bodyTemplate` | `""` | Response body or WebSocket message. Template or payload path per `bodyTemplateType`. |
-| `bodyTemplateType` | `"string"` | `"string"` — string template. `"path"` — payload path. `"json"` — JSON template (auto-adds `Content-Type: application/json`). `"payload"` — serializes the entire current payload as the response body. |
+| `bodyTemplateType` | `"string"` | `"string"` — string template. `"path"` — payload path. `"json"` — JSON template (no automatic `Content-Type` header is added). `"payload"` — serializes the entire current payload as the response body. |
 | `encodingTemplate` | `"utf8"` | Message encoding. Only when `isWebsocketMessage: true`. Template. |
 | `headerInfo` | `[]` | Array of `{ keyTemplate, valueTemplate }` response headers. Only for HTTP replies. |
+| `cookieInfo` | `[]` | Array of `{ nameTemplate, valueTemplate, maxAgeTemplate, pathTemplate }` cookie objects to set on the response. |
+| `sameSiteTemplate` | `""` | SameSite policy string for cookies (e.g. `"Strict"`, `"Lax"`, `"None"`). Template. |
 
 ## Experience flows
 

@@ -47,7 +47,7 @@ Creates a signed JWT from a payload. Two signing methods: service credential (re
 | `expiresIn` | `86400` | Expiry in seconds. Stored in `meta.timeUnit` for display. |
 | `headerTemplateType` | `"json"` | How the JWT header is provided. `"json"` — header is a JSON template string. `"path"` — header is a payload path to an object. |
 | `headerTemplate` | `""` | Custom JWT header fields as a JSON template or payload path. Optional — omit to use the default header (`{ "alg": "<algorithm>", "typ": "JWT" }`). |
-| `destinationPath` | `""` | **Required.** Payload path to write the signed token string. On error, writes `{ error: { type, message } }` and the flow continues. |
+| `destinationPath` | `""` | **Required.** Payload path to write the signed token string. On template or algorithm validation errors, writes `{ error: { type, message } }` and the flow continues. On JWT signing errors, the error is thrown and the flow halts. |
 
 **`meta.timeUnit`** and **`meta.isExpRequired`** are always sent by the UI — include them. Valid `meta.timeUnit` values: `"Seconds"`, `"Minutes"`, `"Hours"`, `"Days"`.
 
@@ -113,5 +113,5 @@ Same as Cloud.
 
 Same as Cloud with the following restrictions and version gates:
 - `credentialNameTemplate` is **not available on edge** — use direct signing (`secretTemplate` + `algorithmTemplate`) only.
-- The no-expiration option (omitting `expiresIn`) requires GEA **1.2.1+**.
+- Setting `expiresIn` at all requires GEA **1.2.1+** — before 1.2.1, the expiration setting was unavailable entirely.
 - `headerTemplate` / `headerTemplateType` require GEA **1.31.0+** — omit on older agents.

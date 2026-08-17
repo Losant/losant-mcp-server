@@ -36,7 +36,7 @@ Sets, removes, copies, or moves values on the flow payload using declarative rul
 | Field | Required | Notes |
 |---|---|---|
 | `valueTemplate` | Yes | Handlebars string template. Rendered result is written to `destination`. Max 32,768 characters. |
-| `valueTemplateType` | No | Controls how the rendered `valueTemplate` output is treated before storing. `"string"` (default) — stores the rendered output as a string value. `"json"` — parses the rendered output as a JSON value before storing; use this when the template produces a number, boolean, object, or array and you want the destination path to hold that type, not a string. |
+| `valueTemplateType` | No | Controls how the rendered `valueTemplate` output is treated before storing. `"string"` (default) — when the template contains surrounding text or multiple references, the result is always a string. However, for a bare `{{ref}}` template where the referenced value is an object, array, or number, `payloadHelper.render()` preserves the raw value rather than coercing to a string. `"json"` — parses the rendered output as a JSON value before storing; use this when the template produces a number, boolean, object, or array and you want the destination path to hold that type, not a string. |
 | `destination` | Yes | Payload path to write to. Created if it doesn't exist. |
 
 **`valueTemplateType` examples:**
@@ -121,7 +121,7 @@ Equivalent to `copy` + `remove` in a single operation.
 - **`set` vs `copy` for objects/arrays:** Use `copy` to transfer an object or array unchanged. Use `set` with `valueTemplateType: "json"` only if the template output is valid JSON (e.g. a `jsonEncode` expression). Using `set` without `"json"` on an object will store the string `"[object Object]"`.
 - **Rules run in order** — a later rule can reference a value written by an earlier rule in the same node.
 - The `working` namespace is the idiomatic scratchpad for intermediate values.
-- Setting `valueTemplateType: "json"` on a template that doesn't produce valid JSON will store `undefined`.
+- Setting `valueTemplateType: "json"` on a template that doesn't produce valid JSON throws `errors.InvalidJsonTemplate` — the flow halts.
 
 ## Experience flows
 

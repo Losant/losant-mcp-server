@@ -18,7 +18,7 @@ Posts a message to a Slack channel via an incoming webhook URL. Available in clo
   "id": "slack-alert",
   "type": "SlackNode",
   "config": {
-    "urlPathTemplate": "{{globals.slackWebhookUrl}}",
+    "urlPathTemplate": "{{globals.slackWebhookToken}}",
     "textTemplate": ":warning: *Alert* on {{data.deviceId}}: temp {{data.attributes.tempC}}°C"
   },
   "meta": { "category": "output", "name": "slack", "label": "Slack", "x": 200, "y": 200 },
@@ -28,8 +28,8 @@ Posts a message to a Slack channel via an incoming webhook URL. Available in clo
 
 | Config field | Notes |
 |---|---|
-| `urlPathTemplate` | **Required.** Path segment of the Slack incoming webhook URL (e.g. `/services/T00000000/B00000000/xxxx`). The `https://hooks.slack.com` base URL is prepended automatically — do not include it. Store the path in a flow global — do not hardcode. |
-| `textTemplate` | **Required.** Message text. Supports Slack mrkdwn: `*bold*`, `_italic_`, `:emoji:`. |
+| `urlPathTemplate` | **Required.** The token portion of the Slack incoming webhook URL — just the path after `/services/`, e.g. `T00000000/B00000000/xxxx` (no leading slash, no `/services/` prefix). The implementation prepends `https://hooks.slack.com/services/` automatically. Including `/services/` in the value will double it and break the request. Store the token in a flow global — do not hardcode. |
+| `textTemplate` | Optional. Message text. Supports Slack mrkdwn: `*bold*`, `_italic_`, `:emoji:`. When omitted, the node sends a JSON dump of the full payload. |
 | `channelTemplate` | Optional. Slack channel to publish to. Overrides the webhook's default channel. |
 | `resultPath` | Optional. Payload path to write the result. On success: `{ "success": true, "sent": 1 }`. On failure: `{ "success": false, "sent": 0, "error": { "message": "..." } }`. On failure without `resultPath`, the node throws. |
 

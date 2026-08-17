@@ -27,8 +27,8 @@ Branches based on a boolean condition that only transitions when the condition c
 }
 ```
 
-- `outputIds[0]` — fires when `latchExpression` is false, or when true but the latch is already set.
-- `outputIds[1]` — fires the first time `latchExpression` becomes true, then latches until `resetExpression` is true.
+- `outputIds[0]` — fires when `latchExpression` is false, or when `latchExpression` is true but the latch is already set AND `resetExpression` is false.
+- `outputIds[1]` — fires the first time `latchExpression` becomes true (latching), and also fires when `latchExpression` is true, the latch is already set, AND `resetExpression` is true (unlatches and re-latches).
 
 | Config field | Default | Notes |
 |---|---|---|

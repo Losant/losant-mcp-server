@@ -48,7 +48,7 @@ Not available.
 | `cwdTemplate` | `""` | Working directory for the command. Template. |
 | `encodingTemplate` | `"utf8"` | Output encoding. Template. |
 | `envsTemplate` | `[]` | Array of `{ keyTemplate, valueTemplate }` environment variables to set. |
-| `detached` | `false` | When `true`, runs the process detached from the GEA (fire-and-forget). GEA 1.42.0+. In detached mode the node does not wait for the process to finish; `resultPath` receives `{ pid: <number> }` immediately (no `stdout`, `stderr`, or `exitCode`). |
-| `resultPath` | `""` | Payload path to write the result. Normal mode: `{ stdout, stderr, exitCode, signal }`. On error: `{ stdout, stderr, exitCode, signal, error: { type: "EXECUTE_ERROR", message } }`. Detached mode: `{ pid: <number> }`. |
+| `detached` | `false` | When `true`, runs the process detached from the GEA. GEA 1.2.3+. The node waits up to 1 second before proceeding. If the process is still running after 1 second, `resultPath` receives `{}`. If it exits within 1 second, `resultPath` receives `{ exitCode, signal }`. If it errors within 1 second, `resultPath` receives `{ error }`. |
+| `resultPath` | `""` | Payload path to write the result. Normal mode: `{ stdout, stderr, exitCode, signal }`. On error: `{ stdout, stderr, exitCode, signal, error: { type: "EXECUTE_ERROR", message } }`. Detached mode: see `detached` above. |
 
 Default timeout: 30 seconds. Long-running processes should use `detached: true`.

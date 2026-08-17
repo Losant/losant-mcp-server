@@ -1,6 +1,6 @@
 # Random Number Node (`type: "RandomNumberNode"`)
 
-Generates a random number within a configured range and writes it to the payload. Available in cloud, experience, edge, and customNode flows.
+Generates a random integer within a configured range and writes it to the payload. Available in cloud, experience, edge, and customNode flows.
 
 ## Required Fields
 
@@ -10,6 +10,7 @@ Generates a random number within a configured range and writes it to the payload
 | `meta.category` | `"logic"` |
 | `meta.name` | `"random-number"` |
 | `meta.label` | `"Random Number"` (default) |
+
 
 ## Cloud (Application) flows
 
@@ -25,9 +26,11 @@ Generates a random number within a configured range and writes it to the payload
 
 | Config field | Default | Notes |
 |---|---|---|
-| `min` | `0` | **Required.** Minimum value (inclusive). Number or template string (e.g. `"{{data.min}}"`). |
-| `max` | `100` | **Required.** Maximum value (inclusive). Number or template string (e.g. `"{{data.max}}"`). |
+| `min` | — | **Required.** Minimum value (inclusive). Number or template string (e.g. `"{{data.min}}"`). No schema default. |
+| `max` | — | **Required.** Maximum value (inclusive). Number or template string (e.g. `"{{data.max}}"`). No schema default. |
 | `resultPath` | — | **Required.** Payload path to write the result. |
+
+> **Note:** The implementation applies `Math.ceil`/`Math.floor` and always produces integers. Returns `NaN` when `min` or `max` are non-finite, or when the resulting integer range is empty.
 
 ## Experience flows
 

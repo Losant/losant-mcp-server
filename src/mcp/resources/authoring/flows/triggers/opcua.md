@@ -60,7 +60,7 @@ uri = 'opc.tcp://localhost:4335/UA/Server'
 username = 'me'
 password = 'pass'
 securityPolicy = 'Basic256'
-securityMode = 'SIGNANDENCRYPT'
+securityMode = 'SignAndEncrypt'
 samplingInterval = '60'
 eventFilter = ['Value']
 
@@ -71,6 +71,8 @@ identifier = 'i=2254'
 [[triggers.monitoredItems]]
 identifier = 's=myNode'
 ```
+
+> **Note:** When `securityPolicy` is not `None` (as in the example above), `cert` and `privateKey` must also be present in the named config entry.
 
 ---
 
@@ -84,7 +86,7 @@ Define the connection and subscription directly in the trigger config.
   "config": {
     "uri": "opc.tcp://192.168.1.100:4840/UA/Server",
     "securityPolicy": "None",
-    "securityMode": "NONE",
+    "securityMode": "None",
     "username": "",
     "password": "",
     "cert": "",
@@ -109,7 +111,7 @@ Define the connection and subscription directly in the trigger config.
 |---|---|---|
 | `uri` | `""` | **Required.** OPC UA server URI (e.g. `opc.tcp://host:4840/UA/Server`). |
 | `securityPolicy` | `"None"` | SSL/TLS policy: `"None"`, `"Basic128"`, `"Basic192"`, `"Basic192Rsa15"`, `"Basic256"`, `"Basic256Rsa15"`, `"Basic256Sha256"`. |
-| `securityMode` | `"NONE"` | `"NONE"`, `"SIGN"`, or `"SIGNANDENCRYPT"`. Required if `securityPolicy` is not `"None"`. |
+| `securityMode` | `"None"` | `"None"`, `"Sign"`, or `"SignAndEncrypt"`. Required if `securityPolicy` is not `"None"`. |
 | `username` | `""` | Optional login username. |
 | `password` | `""` | Optional login password. |
 | `cert` | `""` | PEM client certificate. Required when `securityPolicy` is not `"None"`. |

@@ -34,8 +34,8 @@ Available: cloud, experience, customNode, edge.
 
 | Field | Notes |
 |---|---|
-| `sourceData` | **Required.** Handlebars template resolving to the string to operate on. |
-| `method` | **Required.** The operation to perform (see table below). |
+| `sourceData` | Optional. Handlebars template resolving to the string to operate on. |
+| `method` | Optional. The operation to perform (see table below). |
 | `methodArgs` | Array of arguments for the operation. Each element is a Handlebars template rendered before use — you can pass static values (`","`, `"30"`) or payload references (`"{{data.delimiter}}"`). Content depends on `method`. |
 | `resultPath` | **Required.** Payload path to write the result. |
 
@@ -48,7 +48,7 @@ Available: cloud, experience, customNode, edge.
 | `split` | `[delimiter]` | Splits the string on `delimiter`. Result is an array of strings. |
 | `replaceFirst` | `[search, replacement]` | Replace the first occurrence of `search` with `replacement`. |
 | `replaceAll` | `[search, replacement]` | Replace all occurrences of `search` with `replacement`. |
-| `indexOf` | `[search]` or `[search, fromIndex]` | Returns the index of the first occurrence of `search`, or `-1` if not found. Optional `fromIndex` (integer 0–1000) sets the starting position for the search. Edge 1.15.0+. |
+| `indexOf` | `[search, fromIndex]` | Returns the index of the first occurrence of `search`, or `-1` if not found. `fromIndex` (integer 0–1000) is **required** — pass `0` when not offsetting. Exactly 2 arguments are required. Edge 1.15.0+. |
 | `toUpper` | `[]` | Convert to uppercase. |
 | `toLower` | `[]` | Convert to lowercase. |
 | `trim` | `[]` | Remove leading and trailing whitespace. |
@@ -60,7 +60,7 @@ Available: cloud, experience, customNode, edge.
 | `pad` | `[length, fillChar]` | Pad to `length` characters, centered (fill added to both sides). `fillChar` defaults to a space. `length` must be 0–1000. |
 | `padStart` | `[length, fillChar]` | Pad to `length` characters by prepending `fillChar` on the left. `fillChar` defaults to a space. `length` must be 0–1000. |
 | `padEnd` | `[length, fillChar]` | Pad to `length` characters by appending `fillChar` on the right. `fillChar` defaults to a space. `length` must be 0–1000. |
-| `truncate` | `[length]` or `[length, omission]` | Truncate to `length` characters. Optional `omission` string (e.g. `"..."`) is appended when truncated — its length counts against `length`. `length` must be 0–1000; if `0` or negative, defaults to 30. |
+| `truncate` | `[length]` or `[length, omission]` | Truncate to `length` characters. Optional `omission` string (e.g. `"..."`) is appended when truncated — its length counts against `length`. `length` must be 0–1000; negative values cause a Validation error (minimum enforced at 0 by `toConstrainedInteger`). |
 
 ## Output
 

@@ -141,7 +141,7 @@ Simple schedule and advanced cron modes are configured identically to Cloud. The
 ## Idiom notes
 
 - **Prefer `cron` mode for production schedules.** Simple interval and cronWeekly are convenience wrappers; `cron` gives full control and makes intent explicit in the JSON.
-- **Cron runs in UTC.** If the user describes a schedule in local time, convert it before writing the expression.
+- **Cron defaults to UTC when `config.tz` is omitted.** For local-time schedules, set `config.tz` to an IANA timezone (e.g. `'America/Chicago'`).
 - **Multiple timers in one flow.** Add multiple entries to the `triggers` array to fire the same flow on different schedules — e.g. one hourly summary and one daily report.
 - **Timer drift.** Losant does not guarantee sub-second accuracy. For flows that must execute at an exact wall-clock time, build in a small tolerance window in any downstream time comparisons.
 - **Cloud timers are paused when a flow is disabled.** Missed firings are not backfilled — the timer simply resumes on re-enable.

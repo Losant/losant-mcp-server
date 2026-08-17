@@ -38,7 +38,7 @@ A button in the Losant UI that manually fires the flow on demand. Available in c
   "time": "<ISO timestamp when the button was pressed>",
   "data": {},
   "relayId": "<ID of the actor who pressed the button — user ID, flow ID, API token, etc.>",
-  "relayType": "<type of actor — e.g. 'user', 'flow', 'accessKey'>",
+  "relayType": "<type of actor — e.g. 'user', 'flow', 'apiToken'>",
   "triggerId": "<unique trigger ID>",
   "triggerType": "virtualButton"
 }
@@ -48,7 +48,7 @@ A button in the Losant UI that manually fires the flow on demand. Available in c
 
 ## Experience flows
 
-Same as Cloud. In addition, the payload includes the standard experience additions (`experience.user`, `experience.endpoint`, etc.), including:
+Same as Cloud. In addition, the payload includes:
 
 ```json
 "experience": {
@@ -56,9 +56,11 @@ Same as Cloud. In addition, the payload includes the standard experience additio
 }
 ```
 
+Note: for virtual button in experience flows, only `experience.version` is added — `experience.user` and `experience.endpoint` are not present.
+
 ## Edge flows
 
-Same as Cloud. Minimum GEA 1.5.0.
+Same as Cloud, with one difference: edge virtual button payloads omit `relayId` and `relayType`. Minimum GEA 1.5.0.
 
 ## Idiom notes
 

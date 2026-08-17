@@ -39,7 +39,7 @@ Downloads a file from an FTP/FTPS/SFTP server.
 
 | Config field | Default | Notes |
 |---|---|---|
-| `method` | `""` | **Required.** `"sftp"`, `"ftps"`, or `"ftp"`. Template. |
+| `method` | `"ftp"` | Optional. `"sftp"`, `"ftps"`, or `"ftp"`. Template. |
 | `hostTemplate` | `""` | **Required.** Server hostname or IP. Template. |
 | `portTemplate` | `""` | Port. Default 22 (SFTP) or 21 (FTPS/FTP). Template. |
 | `userTemplate` | `""` | **Required** (SFTP). Username. Template. |
@@ -48,6 +48,12 @@ Downloads a file from an FTP/FTPS/SFTP server.
 | `fileNameTemplate` | `""` | **Required.** File name on the server. Template. |
 | `directoryTemplate` | `""` | **Required.** Directory path on the server. Template. |
 | `encoding` | `"utf8"` | Content encoding. Template. |
+| `clientKeyTemplate` | `""` | Optional. Client private key for FTPS mutual TLS. Template. |
+| `clientCertTemplate` | `""` | Optional. Client certificate for FTPS mutual TLS. Template. |
+| `caCertTemplate` | `""` | Optional. Custom CA certificate for FTPS TLS verification. Template. |
+| `disableSSLVerification` | `false` | Optional. When `true`, skips FTPS server certificate verification. |
+| `shouldAppend` | `false` | Optional. When `true`, appends downloaded content to an existing local file rather than overwriting. |
+| `errorIfFileExists` | `false` | Optional. When `true`, returns an error if the destination file already exists instead of overwriting. |
 | `resultPath` | `""` | **Required.** Payload path to write `{ value: <contents> }` or error. |
 
 Max file size: 5 MB (except when writing to disk via `diskPathTemplate` on edge, GEA 2.1.0+).
@@ -81,7 +87,7 @@ Uploads content to an FTP/FTPS/SFTP server.
 
 | Config field | Default | Notes |
 |---|---|---|
-| `method` | `""` | **Required.** `"sftp"`, `"ftps"`, or `"ftp"`. Template. |
+| `method` | `"ftp"` | Optional. `"sftp"`, `"ftps"`, or `"ftp"`. Template. |
 | `hostTemplate` | `""` | **Required.** Server hostname. Template. |
 | `portTemplate` | `""` | Port. Template. |
 | `userTemplate` | `""` | Username. Template. |
@@ -89,6 +95,10 @@ Uploads content to an FTP/FTPS/SFTP server.
 | `fileNameTemplate` | `""` | **Required.** File name on the server. Template. |
 | `directoryTemplate` | `""` | **Required.** Directory path. Template. |
 | `encoding` | `"utf8"` | Content encoding. Template. |
+| `clientKeyTemplate` | `""` | Optional. Client private key for FTPS mutual TLS. Template. |
+| `clientCertTemplate` | `""` | Optional. Client certificate for FTPS mutual TLS. Template. |
+| `caCertTemplate` | `""` | Optional. Custom CA certificate for FTPS TLS verification. Template. |
+| `disableSSLVerification` | `false` | Optional. When `true`, skips FTPS server certificate verification. |
 | `fileContentTemplate` | `""` | **Required** (text mode). Content to upload. Template. |
 | `fileUrlTemplate` | `""` | **Required** (url mode). URL to fetch and stream to server. Template. |
 | `resultPath` | `""` | Payload path to write `{ success: true }` or error. |

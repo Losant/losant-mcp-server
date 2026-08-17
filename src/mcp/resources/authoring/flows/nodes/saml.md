@@ -37,6 +37,8 @@ Generates a SAML login redirect URL that sends the user to the Identity Provider
 
 Pass `resultPath.redirectUrl` to an Endpoint Reply node to redirect the user's browser to the IdP.
 
+On failure, `resultPath` receives `{ 'error': { 'type': '...', 'message': '...' } }` and the node still continues through its single output — it does not halt.
+
 ---
 
 ### SAML: Verify Node (`type: "SamlVerifyNode"`)

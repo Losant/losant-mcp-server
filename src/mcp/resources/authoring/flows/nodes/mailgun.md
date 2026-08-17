@@ -40,7 +40,7 @@ Two auth methods: service credential or direct API key.
 |---|---|---|
 | `credentialNameTemplate` | `""` | **Required** (credential method). Mailgun credential name. |
 | `mailgunApiKey` | `""` | **Required** (direct method). Mailgun API key (Account API Key or Domain Sending Key). Template. |
-| `mailgunRegion` | `"us"` | **Required.** `"us"` or `"eu"`. Not a template — must be a static string. |
+| `mailgunRegion` | `"us"` | Optional. `"us"` or `"eu"`. Defaults to US endpoint when absent. Not a template — must be a static string. |
 | `fromTemplate` | `""` | **Required.** Sender email address. Template. |
 | `subjectTemplate` | `""` | **Required.** Email subject. Template. |
 | `bodyTemplate` | `""` | **Required.** Email body. Template. |

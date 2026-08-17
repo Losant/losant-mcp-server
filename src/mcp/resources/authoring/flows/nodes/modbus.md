@@ -43,7 +43,7 @@ Both nodes support TCP, RTU serial, and ASCII serial connection types.
 | `pathTemplate` | `""` | **Required.** Serial port path (e.g. `"/dev/ttyS0"`). Template. |
 | `baudRateTemplate` | `"9600"` | Baud rate. Template. |
 | `parityTemplate` | `"none"` | `"none"`, `"even"`, `"odd"`, `"mark"`, or `"space"`. Template. Requires GEA **1.11.0+** on edge. |
-| `dataBitsTemplate` | `"8"` | Data bits (`7` or `8`). Template. Requires GEA 1.11.0+ on edge. |
+| `dataBitsTemplate` | `"8"` | Data bits (`5`, `6`, `7`, or `8`). Template. Requires GEA 1.11.0+ on edge. |
 | `stopBitsTemplate` | `"1"` | Stop bits (`1` or `2`). Template. Requires GEA 1.11.0+ on edge. |
 
 #### ASCII Serial (`connectionTypeTemplate: "asciiSerial"`)
@@ -142,7 +142,7 @@ The `typeTemplate` field selects the Modbus function code. Valid values:
 | `typeTemplate` | Yes | One of the four standard types above. |
 | `addressTemplate` | Yes | Register/coil address (0–65535). Template. |
 | `lengthTemplate` | No | Number of addresses to read. Defaults to 1. Template. |
-| `key` | Yes | Result key in the destination object. Cannot be `"errors"`. |
+| `key` | Yes | Result key in the destination object. Cannot be `"errors"` or any key starting with `"errors."`. |
 
 **For `typeTemplate: "read-device-identification"` (GEA 1.16.0+):**
 
@@ -151,7 +151,7 @@ The `typeTemplate` field selects the Modbus function code. Valid values:
 | `typeTemplate` | Yes | `"read-device-identification"` |
 | `deviceIdCodeTemplate` | Yes | Read class: `1` (Basic), `2` (Regular), `3` (Individual), `4` (Individual stream). Template. |
 | `objectIdTemplate` | Yes | Object ID to read (0–255). Template. |
-| `key` | Yes | Result key in the destination object. Cannot be `"errors"`. |
+| `key` | Yes | Result key in the destination object. Cannot be `"errors"` or any key starting with `"errors."`. |
 
 ---
 
@@ -190,19 +190,18 @@ Writes values to Modbus registers or coils.
 | Connection fields | — | See connection tables above. |
 | `writeInstructionsType` | `"array"` | `"array"` or `"payloadPath"`. |
 | `writeInstructions` | `[]` | **Required.** Array of write instruction objects (see below). |
-| `areUnsignedInts` | `false` | When `true`, treat integer register values as unsigned. GEA 1.2.6+. |
 | `unitIdAllowZeros` | `false` | When `true`, allows unit IDs of 0. GEA 1.28.0+. |
 | `destinationPath` | `""` | Payload path to write per-register results. |
 
 ### Write output shape
 
-If `destinationPath` is set, the result contains a per-register entry for each write instruction, keyed by register address:
+If `destinationPath` is set, the result contains a boolean entry for each successful write instruction (keyed by `key` or `addr-{address}`) plus an `errors` array for any failures:
 
 ```json
-{ "working": { "writeResult": { "errors": [] } } }
+{ "working": { "writeResult": { "setpoint": true, "addr-1": true, "errors": [] } } }
 ```
 
-`errors` is an array of error strings for any registers that failed to write.
+`errors` is an array of error strings for any registers that failed to write. Each successful write produces a `true` boolean entry at its key.
 
 #### Write instruction types
 

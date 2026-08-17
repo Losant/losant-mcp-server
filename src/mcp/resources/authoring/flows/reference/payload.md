@@ -67,12 +67,13 @@ Experience flows (backed by Experience Endpoints) receive additional fields on e
 | `experience.endpoint` | The endpoint configuration object |
 | `experience.version` | The experience version name serving this request |
 | `experience.device` | Device object if `access: "device"` authorization, else `null` |
+| `experience.authInfo` | Token details (`issuedAt`, `expiresAt`, `extraData`), or `null` if no auth token. |
 
 **Responding to requests:** Experience flows must use an Endpoint Reply node to send an HTTP response. If the flow finishes without sending a reply, the client hangs until timeout. Always add a `scope: "local"` Workflow Error trigger to send a reply on error.
 
 ## Webhook trigger additions
 
-Webhook triggers (cloud flows with `waitForReply: true`) also populate request fields under `data.*`:
+Webhook triggers populate request fields under `data.*`. All fields below are always present; `data.replyId` is only populated when the webhook resource has `waitForReply: true`:
 
 | Field | Description |
 |---|---|
@@ -81,7 +82,7 @@ Webhook triggers (cloud flows with `waitForReply: true`) also populate request f
 | `data.headers` | Object of request headers |
 | `data.query` | Object of query string parameters |
 | `data.body` | Parsed request body |
-| `data.replyId` | Opaque reply ID — must be passed to the Webhook Reply node |
+| `data.replyId` | Opaque reply ID — must be passed to the Webhook Reply node. Only present when `waitForReply: true`. |
 
 ## Device and device-tag trigger additions (cloud)
 

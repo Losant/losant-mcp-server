@@ -35,7 +35,7 @@ Two connection methods: integration or direct access token.
 
 | Config field | Default | Notes |
 |---|---|---|
-| `integrationId` | `""` | **Required** (integration method). Particle integration resource ID. |
+| `integrationId` | `""` | **Required** (integration method). Particle integration resource ID. Template. |
 | `accessToken` | `""` | **Required** (direct method). Particle access token. Template. |
 | `nameTemplate` | `""` | **Required.** Name of the function to call on the Particle device. Template. |
 | `deviceTemplate` | `""` | **Required** (direct method). Device name or ID. Template. |

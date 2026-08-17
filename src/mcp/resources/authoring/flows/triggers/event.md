@@ -102,9 +102,9 @@ At least one of `config.new`, `config.acknowledged`, or `config.resolved` should
 - `data.deviceId` / `data.deviceName` — only present if a device is associated with the event.
 - `data.data` — additional structured data attached to the event at creation. `undefined` if none.
 - `data.latestUpdate` — the most recent update to the event. `undefined` for newly created events with no updates.
-- `data.allUpdates` — full history of updates. Each update may include `stateChange`, `levelChange`, `subjectChange`, `deviceIdChange`, `tagsChange` — only the changes that occurred are present.
+- `data.allUpdates` — full history of updates. Each update may include `stateChange`, `levelChange`, `subjectChange`, `deviceIdChange`, `tagsChange` — only the changes that occurred are present. Can be `null` (not an array) when the payload is too large to include the full history — in that case `data.updatesTruncated: true` is also set.
 - `triggerId` — the event level the trigger is configured for (`"any"`, `"info"`, `"warning"`, `"error"`, `"critical"`).
-- `data.sourceType` / `data.latestUpdate.sourceType` — one of `"apiToken"`, `"flow"`, `"user"`, `"experienceUser"`, `"public"`.
+- `data.sourceType` / `data.latestUpdate.sourceType` — one of `"apiToken"`, `"device"`, `"flow"`, `"user"`, `"experienceUser"`, `"public"`.
 - `relayId` / `relayType` — matches `data.latestUpdate.sourceId/Type`, or `data.sourceId/Type` if the event has no updates. A `relayType` of `"public"` means the event was created or updated by an unauthenticated Experience User or via a public dashboard.
 
 ## Experience flows

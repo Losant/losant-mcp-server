@@ -58,7 +58,7 @@ When set, `resultPath` receives the notebook execution object:
 
 Use the `executionId` with a Losant API Node to poll for completion if needed.
 
-On error (e.g. notebook not found, execution limit exceeded), an error object is placed at `resultPath` or the flow halts depending on error handling.
+On error (e.g. notebook not found, execution limit exceeded), an error object is placed at `resultPath` and execution continues through the node's output. The node never halts — it always writes either a success or error object to `resultPath` and proceeds.
 
 ## Experience flows
 

@@ -83,7 +83,7 @@ All GPS values (`gpsCheck`, `gpsCenter`, and the coordinates in `polygonCoords`/
 
 | Config field | Default | Notes |
 |---|---|---|
-| `checkType` | `"radius"` | **Required.** `"radius"`, `"polygonCoords"`, or `"polygon"`. |
+| `checkType` | `"radius"` | Optional. `"radius"`, `"polygonCoords"`, or `"polygon"`. Defaults to `"radius"` when absent. |
 | `gpsCheck` | `""` | **Required.** Handlebars **template** resolving to the GPS coordinate string to test. E.g. `"{{data.location}}"` where `data.location` is a GPS-formatted string. Do NOT use a bare payload path — it must be wrapped in `{{}}`. |
 | `gpsCenter` | `""` | **Required for `radius`.** Template resolving to the center GPS coordinate string. Can be a literal decimal-degrees string like `"39.1031,-84.512"` or a template like `"{{working.center}}"`. |
 | `radius` | `""` | **Required for `radius`.** Distance in meters as a template (e.g. `"500"` or `"{{data.radiusMeters}}"`). |
@@ -94,8 +94,10 @@ All GPS values (`gpsCheck`, `gpsCenter`, and the coordinates in `polygonCoords`/
 
 ### Wiring
 
-`outputIds[0]` — fires when the coordinate is **outside** the geofence, or when the input is invalid (bad GPS format, missing polygon).
+`outputIds[0]` — fires when the coordinate is **outside** the geofence, or when the radius mode receives an empty or non-finite radius value (silent pass-through).
 `outputIds[1]` — fires when the coordinate is **inside** the geofence.
+
+**Invalid GPS coordinates** (unrecognized format or missing value) throw a `GeoError` — the flow halts and does not route to any output. Only an empty or non-finite radius value silently routes to `outputIds[0]`.
 
 ## Output
 

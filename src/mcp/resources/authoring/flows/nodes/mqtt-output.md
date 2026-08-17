@@ -29,7 +29,7 @@ The MQTT Node publishes a message to the Losant MQTT Broker, the Gateway Edge Ag
 
 | Config field | Default | Notes |
 |---|---|---|
-| `integrationId` | `"losant"` | **Required.** `"losant"` — Losant cloud broker. Cloud also supports MQTT integration IDs. |
+| `integrationId` | `"losant"` | Optional. Defaults to `"losant"` (Losant cloud broker) when absent. Cloud also supports MQTT integration IDs. |
 | `topicTemplate` | `""` | **Required.** MQTT topic. Template. Must not be a Losant system or device state topic. |
 | `messageTemplate` | `""` | Message payload as a string template. |
 

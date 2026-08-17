@@ -66,7 +66,7 @@ Creates a file in the application's file storage. Supports two content modes: in
 | `contentTypeTemplate` | `""` | MIME type of the file (e.g. `"text/plain"`, `"image/png"`). Template. |
 | `fileContentsTemplate` | `""` | File content as a string. Use this **or** `fileUrlTemplate`, not both. Template. |
 | `fileUrlTemplate` | `""` | URL to fetch content from. Use this **or** `fileContentsTemplate`, not both. **Required** when using URL mode. Template. |
-| `encodingTemplate` | `"utf8"` | Content encoding: `"utf8"`, `"base64"`, `"binary"`, `"hex"`. Template. |
+| `encodingTemplate` | `"utf8"` | Content encoding: `"ascii"`, `"utf8"`, `"utf16le"`, `"ucs2"`, `"base64"`, `"latin1"`, `"binary"`, `"hex"`. Template. |
 | `shouldOverwrite` | `false` | When `true`, overwrites an existing file at the same path. When `false`, returns an error if the file already exists. |
 | `private` | `false` | When `true`, creates a private file accessible only via signed URL. |
 | `urlTTLTemplate` | `""` | Signed URL time-to-live in seconds. Only used when `private: true` and a `resultPath` is set. Template. |
@@ -113,6 +113,8 @@ Retrieves a file from the application's file storage — either its contents as 
     "id": "...",
     "name": "report.csv",
     "type": "file",
+    "_type": "file",
+    "s3etag": "...",
     "parentDirectory": "/uploads/",
     "contentType": "text/csv",
     "fileSize": 12345,
@@ -127,7 +129,7 @@ Retrieves a file from the application's file storage — either its contents as 
 }
 ```
 
-On failure, `destination` receives `{ "error": { "type": "<type>", "message": "<description>" } }` instead of the result object. Common error types: `"NotFound"` (file doesn't exist), `"ValidationError"` (file status not completed, file too large, or invalid encoding).
+On failure, `destination` receives `{ "error": { "type": "<type>", "message": "<description>" } }` instead of the result object. Common error types: `"NotFound"` (file doesn't exist), `"Validation"` (file status not completed, file too large, or invalid encoding).
 
 ## Experience flows
 

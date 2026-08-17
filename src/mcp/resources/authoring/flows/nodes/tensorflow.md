@@ -44,7 +44,7 @@ Not available.
     "modelTemplate": "/data/models/sensor-model/model.json",
     "dataPath": "working.inputTensor",
     "shapePath": "",
-    "dataTypeTemplate": "autodetect",
+    "dataTypeTemplate": "",
     "resultPath": "working.predictions"
   },
   "meta": { "category": "data", "name": "tensorflow-predict", "label": "TensorFlow: Predict", "x": 200, "y": 200 },
@@ -58,5 +58,5 @@ Not available.
 | `modelTemplate` | `""` | **Required.** Full path to the `model.json` file on the GEA file system (e.g. `/data/models/my-model/model.json`), not the directory. Template. |
 | `dataPath` | `""` | **Required.** Payload path containing the input tensor data (array or nested arrays). |
 | `shapePath` | `""` | Optional payload path to an array specifying the input tensor shape. |
-| `dataTypeTemplate` | `"autodetect"` | Input data type: `"autodetect"`, `"float32"`, `"int32"`, `"bool"`, `"string"`. When `"autodetect"`, omitted from config. Template. **Caution:** `"autodetect"` requires the model's `input_shape` to be present; if it is absent the node will throw at runtime. Prefer an explicit type when the shape is unknown. |
+| `dataTypeTemplate` | `""` | Input data type: `"float32"`, `"int32"`, `"bool"`, `"string"`. Omit `dataTypeTemplate` (or set to `''`) to use autodetect mode. Template. `"autodetect"` is a UI-only label and must not be sent — passing `"autodetect"` as the value will cause a runtime validation error. |
 | `resultPath` | `""` | Payload path to write the prediction results. |

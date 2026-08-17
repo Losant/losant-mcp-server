@@ -52,7 +52,7 @@ Authenticates an Experience User and issues an auth token. Four authentication m
 | `invalidateExistingTokens` | `false` | When `true`, all previous tokens for this user are invalidated on successful auth. |
 | `userResultPath` | `""` | Optional. Payload path to write the authenticated user object. |
 | `tokenResultPath` | `""` | Optional. Payload path to write the generated auth token string. |
-| `ttlTemplate` | `""` | Token time-to-live in milliseconds (e.g. `3600000` for 1 hour). Leave empty for the experience default. Template. |
+| `ttlTemplate` | `""` | Token time-to-live in milliseconds (e.g. `3600000` for 1 hour). Leave empty to produce a token with NO expiration. Template. |
 | `extraDataJsonTemplate` | `""` | Optional JSON data to embed in the generated token. JSON template. |
 
 **`meta.authMode`** (required on `meta`, not `config`):
@@ -62,9 +62,9 @@ Authenticates an Experience User and issues an auth token. Four authentication m
 | `"emailPassword"` | Email + password. |
 | `"token"` | Existing auth token. |
 | `"tokenEmail"` | Token AND verifies it matches the given email. |
-| `"tokenEmailPassword"` | Token OR email+password (whichever is provided). |
+| `"tokenEmailPassword"` | (1) Attempt token auth; (2) if token fails, fall back to email+password auth; (3) if token succeeds AND an email is provided, also verify the email matches; AND if a password is provided, verify the password matches the token's user. When the token is valid, all three checks may be applied. |
 
-On success, the authenticated user object is written to `userResultPath` and the new auth token string to `tokenResultPath` (if configured). `experience.user` is populated by the Endpoint Trigger from the auth cookie — this node does not update it.
+On success, the authenticated user object is written to `userResultPath` and the auth token string to `tokenResultPath` (if configured). For token-based auth modes (`"token"`, `"tokenEmail"`, `"tokenEmailPassword"`) without `invalidateExistingTokens: true`, the original token is reused rather than generating a new one; a new token is only generated when `invalidateExistingTokens` is `true` or email+password auth is used. `experience.user` is populated by the Endpoint Trigger from the auth cookie — this node does not update it.
 
 ---
 
@@ -95,7 +95,7 @@ Generates an auth token for an Experience User without requiring their password.
 | `resultPath` | `""` | **Required.** Payload path to write the generated token. |
 | `invalidateExistingTokens` | `false` | When `true`, all existing tokens for this user are revoked before generating the new one. |
 | `treatAsLogin` | `false` | When `true`, updates the user's `lastLogin` timestamp. |
-| `ttlTemplate` | `""` | Token time-to-live in milliseconds (e.g. `3600000` for 1 hour). Leave empty for the experience's default TTL. Template. |
+| `ttlTemplate` | `""` | Token time-to-live in milliseconds (e.g. `3600000` for 1 hour). Leave empty to produce a token with NO expiration. Template. |
 | `extraDataJsonTemplate` | `""` | Optional JSON data to embed in the token. JSON template. |
 
 ## Experience flows

@@ -56,7 +56,7 @@ Four auth methods: integration, service credential, JSON template, or payload pa
 `resultPath` receives a confirmation object with the Pub/Sub message ID:
 
 ```json
-{ "working": { "pubsubResult": { "success": true, "messageId": "1234567890" } } }
+{ "working": { "pubsubResult": { "messageId": "1234567890" } } }
 ```
 
 ## Experience flows
@@ -67,4 +67,4 @@ Same as Cloud.
 
 > **Minimum GEA version:** 1.39.0
 
-Same as Cloud. Integration method (`integrationId`) and credential method (`credentialNameTemplate`) are **not available on edge** — use direct JWT (`jwtDataMethod` + `jwtDataTemplate`) only. `projectIdTemplate` requires GEA **1.42.0+**.
+Same as Cloud. Integration method (`integrationId`) and credential method (`credentialNameTemplate`) are **not available on edge** — use direct JWT (`jwtDataMethod` + `jwtDataTemplate`). `projectIdTemplate` requires GEA **1.42.0+**.

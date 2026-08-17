@@ -50,7 +50,7 @@ Device State trigger → **Conditional** (threshold check) → **Latch** (suppre
     "id": "notify",
     "type": "SlackNode",
     "config": {
-      "urlPathTemplate": "{{globals.slackWebhookUrl}}",
+      "urlPathTemplate": "{{globals.slackWebhookPath}}",
       "textTemplate": ":fire: *High temp* on {{triggerId}}: {{data.tempC}}°C"
     },
     "meta": { "category": "output", "name": "slack", "label": "Slack Alert", "x": 560, "y": 260 },

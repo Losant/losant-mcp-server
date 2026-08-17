@@ -30,7 +30,7 @@ See `losant://references/flow/templating` for the Handlebars dialect. For `authT
     "responsePath": "working.httpResponse",
     "errorBehavior": "payloadPath",
     "errorPath": "working.httpError",
-    "timeoutTemplate": "10"
+    "timeoutTemplate": "30"
   },
   "outputIds": [["next-node-id"]]
 }
@@ -67,7 +67,7 @@ See `losant://references/flow/templating` for the Handlebars dialect. For `authT
 |---|---|
 | `responsePath` | Payload path for the response object. Shape: `{ statusCode, headers, body, requestDuration, request }`. Body is auto-parsed as JSON if possible; otherwise left as a string. |
 | `encodingTemplate` | Response encoding. Default `"utf8"`. |
-| `timeoutTemplate` | Default `"10"`. Per-request timeout in seconds. Max 30 — values above 30 are clamped to 30. |
+| `timeoutTemplate` | Default `"30"`. Per-request timeout in seconds. Max 30 — values above 30 are clamped to 30. |
 | `disableSSLVerification` | Default `false`. Skip TLS verification. Prefer `caCertTemplate` instead. |
 | `disableRedirects` | Default `false`. When `true`, 3xx responses are returned as-is instead of followed. |
 | `caCertTemplate` | PEM CA certificate for private-PKI servers. |
@@ -100,6 +100,6 @@ Same as Cloud, with the following additional options available on **GEA 2.1.0+**
 | `bodyType: "diskPath"` | Stream a local file on the agent as the request body. `bodyTemplate` is the file path. Falls back to `"string"` on cloud. |
 | `diskPathTemplate` | Stream the response body to a local file instead of storing it on the payload. Bypasses the 5 MB response size cap. |
 | `shouldAppend` | When writing to disk, append instead of overwrite. Default `false`. |
-| `errorIfFileExists` | When `true` (default), throws an error if the disk target file already exists. Set to `false` to overwrite. |
+| `errorIfFileExists` | Runtime default `false` (overwrite mode). When `true`, throws an error if the disk target file already exists. Note: the schema defines a default of `true`, but the constructor overrides it with `config.errorIfFileExists \|\| false`, so omitting the field results in overwrite behavior. |
 
 `authType: "credential"` is not supported in edge flows — use `authType: "none"` with a header template, `"basic"`, or `"clientCert"` instead.

@@ -23,7 +23,7 @@ Not available.
 
 Both nodes share the same ADS connection config. Defaults: `targetAdsPortTemplate: "851"`, `routerTcpPortTemplate: "48898"`.
 
-**ADS connection limitation:** Only one ADS connection per GEA device per Target AMS Net ID. Multiple nodes targeting the same router with different Target AMS Net IDs will conflict — only one connects.
+**ADS connection limitation:** A connection error occurs when a Beckhoff Trigger subscription is already active on the client. When no subscriptions exist, the node resets and reconnects normally.
 
 ### Beckhoff: Read Node (`type: "BeckhoffReadNode"`)
 
@@ -71,15 +71,27 @@ Reads current symbol values from a Beckhoff TwinCAT PLC.
 {
   "working": {
     "plcData": {
-      "temperature": 72.4,
-      "setPoint": 75.0,
-      "errors": []
+      "temperature": {
+        "value": 72.4,
+        "symbol": {
+          "name": "GVL_Var.TestDint1",
+          "comment": "",
+          "type": "DINT",
+          "size": 4,
+          "indexOffset": 123456,
+          "indexGroup": 16448
+        }
+      },
+      "setPoint": {
+        "value": 75.0,
+        "symbol": { "name": "GVL_Var.SetPoint", "comment": "", "type": "REAL", "size": 4, "indexOffset": 123460, "indexGroup": 16448 }
+      }
     }
   }
 }
 ```
 
-Each key corresponds to the `key` field from `readInstructions`. `errors` captures per-symbol failures.
+Each key corresponds to the `key` field from `readInstructions`. Each value is an object with `value` (the symbol's current value) and `symbol` (symbol metadata). The `errors` key is absent on full success — only present when at least one read fails.
 
 ---
 
@@ -118,12 +130,12 @@ Write instructions require `type: "symbol"`, `nameTemplate` (symbol name), `data
 
 ### Write output shape
 
-`destinationPath` receives a write result object:
+`destinationPath` receives a write result object. On success, each instruction's `key` is written with `{ "success": true }`:
 
 ```json
-{ "working": { "writeResult": { "errors": [] } } }
+{ "working": { "writeResult": { "GVL_Var.SetPoint": { "success": true } } } }
 ```
 
-`errors` is an array of per-symbol error strings for any symbols that failed to write.
+On failure, error information is added per key for any symbols that failed to write.
 
 

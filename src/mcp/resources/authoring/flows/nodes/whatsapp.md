@@ -50,7 +50,7 @@ Two auth methods: service credential or direct (From Number ID + Access Token).
 ```json
 { "working": { "results": [
   { "success": true, "number": "+15551234567", "messageId": "wamid.xxx" },
-  { "error": true, "number": "+15559876543", "message": "Invalid phone number" }
+  { "error": true, "number": "+15559876543", "message": "Phone number invalid" }
 ] } }
 ```
 
@@ -62,4 +62,4 @@ Same as Cloud.
 
 > **Minimum GEA version:** 1.45.0
 
-Same as Cloud.
+Same as Cloud, with one difference: the service credential method (`credentialNameTemplate`) is **not available on edge**. Use the direct access token method (`accessTokenTemplate` + `fromNumberIdTemplate`) instead.

@@ -73,6 +73,12 @@ Fetches one or more Experience Groups.
 | `name` | `""` | **Required** when `findMethod: "name"`. Group name to search for. Template. |
 | `tags` | `[]` | Array of `{ keyTemplate, valueTemplate }` — used by `findByAllTags` / `findByAnyTags`. |
 | `queryTemplate` | `""` | Advanced query LJSON template — for `findMethod: "query"`. |
+| `findMultiple` | `false` | When `true`, always returns an array (empty if no results). When `false`, returns the first match or `null`. Not applicable to `findMethod: "id"`. |
+| `findMetadata` | `false` | When `true` and `findMultiple` is also `true`, wraps results in a metadata envelope `{ items, count, totalCount, page, perPage }`. |
+| `resultsPerPage` | `100` | Max groups per page. Template. |
+| `resultsPage` | `0` | Zero-based page offset. Template. |
+| `sortField` | `"name"` | Field to sort results by. |
+| `sortDirection` | `"asc"` | `"asc"` or `"desc"`. |
 | `resultPath` | `""` | **Required.** Payload path to write the result. |
 
 ---
@@ -133,14 +139,14 @@ Returns a summary of Experience Groups — either all groups in the application,
 
 | Config field | Default | Notes |
 |---|---|---|
-| `idTemplate` | `""` | Optional. When provided, returns only the groups the experience user (matched by ID or email) belongs to. When omitted or empty, returns all groups in the application. Template. |
+| `idTemplate` | `""` | Optional. When provided, used as the root group ID for the hierarchy tree — the node roots the summary tree at that group ID rather than filtering by user membership. When omitted or empty, returns all groups in the application. Template. |
 | `resultPath` | `""` | **Required.** Payload path to write the group summary array. |
 
 ---
 
 ### Group: Verify Node (`type: "VerifyExperienceGroupNode"`)
 
-Verifies that an Experience User is a member of a specific group. Branches — `outputIds[0]` = not a member (false/left path), `outputIds[1]` = member (true/right path).
+Verifies that an Experience User is a member of a specific group. Membership in any ancestor group of the target group also passes verification. Branches — `outputIds[0]` = not a member (false/left path), `outputIds[1]` = member (true/right path).
 
 ```json
 {

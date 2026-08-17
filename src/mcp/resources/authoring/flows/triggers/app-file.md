@@ -95,7 +95,7 @@ At least one action (`create`, `update`, or `delete`) and at least one file type
 - `data.action` — `"create"`, `"update"`, or `"delete"`. Branch on this when multiple actions are enabled.
 - `data.file._type` — `"file"` for public files, `"privateFile"` for private files.
 - `data.file.fileDimensions` — `{ width, height }` in pixels. Present only for image files.
-- `data.file.url` — direct URL to the file. Available immediately — the file is fully written before the trigger fires.
+- `data.file.url` — direct URL to the file. Available immediately — the file is fully written before the trigger fires. **Absent for delete events.**
 - `triggerId` — the full path of the file that changed.
 
 ### Rename behavior

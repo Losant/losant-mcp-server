@@ -21,11 +21,19 @@ Three methods. Credential (recommended) or inline key JSON.
 { "credentialNameTemplate": "my-gcp-credential" }
 ```
 
-**Direct JWT (GCS Get/Put and GCP Function only):**
+**Direct JWT (GCS Get/Put only):**
 ```json
 {
   "jwtDataMethod": "jsonTemplate",
   "jwtData": "{{globals.gcpKeyJson}}"
+}
+```
+
+**Direct JWT (GCP Function only):**
+```json
+{
+  "jwtDataMethod": "jsonTemplate",
+  "jwtDataTemplate": "{{globals.gcpKeyJson}}"
 }
 ```
 
@@ -115,6 +123,9 @@ Downloads a file from a Google Cloud Storage bucket — either its contents or a
 | `destination` | `""` | **Required.** Payload path to write the result. |
 | `isDownloadURL` | `false` | When `false`, writes file contents (max 5 MB). When `true`, writes a pre-signed download URL (7-day expiry). |
 | `encodingTemplate` | `"utf8"` | Encoding for returned file contents. Only used when `isDownloadURL: false`. Template. |
+| `diskPathTemplate` | `""` | Optional. Local disk path to write the file contents to (edge only, GEA 2.1.0+). Template. |
+| `errorIfFileExists` | `false` | Optional. When `true`, returns an error if the local disk file at `diskPathTemplate` already exists. |
+| `shouldAppend` | `false` | Optional. When `true`, appends to the local disk file at `diskPathTemplate` instead of overwriting. |
 
 Result shape: `{ value: <contents or URL>, metadata: { fileSize, contentType, etag } }`. On error: `{ error: "..." }`.
 
@@ -158,6 +169,7 @@ Uploads content to a Google Cloud Storage bucket. Three content modes — set vi
 | `fileContentTemplate` | `""` | File content as string. Used when `meta.mode: "text"`. |
 | `fileUrlTemplate` | `""` | URL to fetch content from. **Required** when `meta.mode: "url"`. Template. |
 | `encodingTemplate` | `"utf8"` | Content encoding. Used when `meta.mode` is `"text"`. Template. |
+| `diskPathTemplate` | `""` | Optional. Local disk path to read file contents from. Used when `meta.mode: "disk"` (edge GEA 2.1.0+). Template. |
 | `destination` | `""` | Payload path to write `{ success: true }` or `{ success: false, error: "..." }`. |
 
 **`meta.mode`** (required on `meta`, not `config`):
@@ -269,4 +281,4 @@ Same as Cloud for all five nodes.
 
 **GCP Storage: Get / Put** — minimum GEA 1.33.0. Disk mode (`diskPathTemplate` for Get; `meta.mode: "disk"` for Put) requires GEA 2.1.0+. Project ID (`projectIdTemplate`) available on GEA 1.42.0+.
 
-**GCP: Function** — minimum GEA 1.10.0. API trigger project ID available on GEA 1.42.0+.
+**GCP: Function** — minimum GEA 1.10.0. API trigger project ID available on GEA 1.42.0+. HTTP trigger mode requires GEA 1.22.0+.

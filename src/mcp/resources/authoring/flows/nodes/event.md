@@ -115,7 +115,7 @@ Retrieves one or more events. The retrieval mode is stored in **`meta.mode`** (n
 | Config field | Notes |
 |---|---|
 | `queryTemplate` | Advanced query JSON template. See `losant://guides/advanced-queries`. |
-| `sortField` | **Required.** Sort field: `"creationDate"`, `"level"`, `"state"`, `"subject"`. Default `"creationDate"`. |
+| `sortField` | **Required.** Sort field: `"creationDate"`, `"id"`, `"lastUpdated"`, `"level"`, `"state"`, `"subject"`. Default `"creationDate"`. |
 | `sortDirection` | **Required.** `"asc"` or `"desc"`. Default `"desc"`. |
 | `resultPath` | **Required.** Payload path for the first matching event (or `null`). |
 
@@ -143,12 +143,12 @@ Retrieves one or more events. The retrieval mode is stored in **`meta.mode`** (n
 | Config field | Notes |
 |---|---|
 | `queryTemplate` | Advanced query JSON template. |
-| `sortField` | **Required.** Same options as single-query mode. |
+| `sortField` | **Required.** `"creationDate"`, `"id"`, `"lastUpdated"`, `"level"`, `"state"`, `"subject"`. Same options as single-query mode. |
 | `sortDirection` | **Required.** `"asc"` or `"desc"`. |
 | `resultsPage` | Page number (0-based). Template. |
 | `resultsPerPage` | Page size. Template. |
 | `findMultiple` | Always `true` for this mode. |
-| `findMetadata` | `false` (default) — result is an array. `true` — result is `{ items: [...], count, totalCount, page, perPage }`. |
+| `findMetadata` | `false` (default) — result is an array. `true` — result is `{ items: [...], count, totalCount, page, perPage, sortField, sortDirection, findMethod, query }`. |
 | `resultPath` | **Required.** Payload path for the results array or metadata object. |
 
 ---
@@ -320,9 +320,9 @@ Deletes one or more events. Mode is stored in **`meta.mode`**.
 | Config field | Notes |
 |---|---|
 | `queryTemplate` | Advanced query JSON template. Deletes the first matching event. |
-| `sortField` | Controls which event is deleted when multiple match: `"creationDate"`, `"level"`, `"state"`, `"subject"`. |
+| `sortField` | Controls which event is deleted when multiple match: `"creationDate"`, `"id"`, `"lastUpdated"`, `"level"`, `"state"`, `"subject"`. |
 | `sortDirection` | `"asc"` or `"desc"`. |
-| `resultPath` | Payload path to write `{ "success": true, "count": 1 }` or error. |
+| `resultPath` | Payload path to write `{ "success": true, "count": 1 }` when a matching event is deleted, `{ "success": true, "count": 0 }` when no event matches, or an error object on API failure. |
 
 #### Mode: delete many by query (`meta.mode: "queryTemplateMultiple"`)
 

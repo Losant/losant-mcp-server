@@ -38,16 +38,16 @@ Not recommended — use `flowClass: "experience"` for endpoint-handling flows. C
 | `replyType` | Reply type. `"custom"` (default) — full control via `responseCodeTemplate`/`bodyTemplate`/`headerInfo`. `"page"` — render an experience page (`pageIdTemplate`). `"redirect"` — HTTP redirect; the redirect URL goes in `bodyTemplate`. `"mqtt"` — Server-Sent Events stream; the response stays open and pushes events from the MQTT topics in `mqttTopicsTemplate`. |
 | `responseCodeTemplate` | HTTP status code as a template string. Typically `"200"`, `"201"`, `"400"`, `"404"`, `"500"`. Used with `replyType: "custom"`. |
 | `bodyTemplate` | Response body as a template. For JSON, use a JSON template and set `Content-Type: application/json`. Used with `replyType: "custom"`. |
-| `bodyTemplateType` | Body mode. `"string"` — Handlebars template. `"path"` — payload path to the body value. `"json"` — JSON template. `"payload"` — send the full payload. `"none"` — empty body. |
+| `bodyTemplateType` | Body mode. `"string"` — Handlebars template. `"path"` — payload path to the body value. `"json"` — JSON template. `"payload"` — send the full payload. |
 | `headerInfo` | Array of `{ keyTemplate, valueTemplate }` response headers. Used with `replyType: "custom"`. |
 | `pageIdTemplate` | Experience view ID to render. **Required** when `replyType: "page"`. Template. |
 | `layoutIdTemplate` | Optional layout ID override. Used with `replyType: "page"`. Template. |
 | `bodyTemplate` (redirect) | For `replyType: "redirect"` — the redirect URL or path goes here. **Required** when `replyType: "redirect"`. Template. |
 | `mqttTopicsTemplate` | Array of MQTT topic strings to subscribe to. **Required** when `replyType: "mqtt"` unless using `mqttTopicsPath`. |
 | `mqttTopicsPath` | Payload path to an array of MQTT topic strings. Alternative to `mqttTopicsTemplate` for `replyType: "mqtt"`. |
-| `cookieInfo` | Array of `{ nameTemplate, valueTemplate, maxAgeTemplate }` objects. Sets HTTP cookies on the reply. |
+| `cookieInfo` | Array of `{ nameTemplate, valueTemplate, maxAgeTemplate, pathTemplate }` objects. Sets HTTP cookies on the reply. |
 | `sameSiteTemplate` | SameSite policy for reply cookies: `"none"`, `"lax"`, or `"strict"`. Template. |
-| `experienceVersion` | Cloud flows only. Experience version to use when rendering the page (e.g. `"develop"`). Used with `replyType: "page"`. |
+| `experienceVersion` | Cloud flows only. Experience version to use when rendering the page (e.g. `"develop"`). Used with `replyType: "page"`. Note: `experienceVersion` is silently ignored by the implementation and has no effect. |
 
 > Always wire both success and error branches to an EndpointReplyNode — every request must receive exactly one response.
 

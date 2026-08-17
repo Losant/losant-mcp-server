@@ -66,7 +66,7 @@ The Workflow Trigger Node triggers another flow's Virtual Button — immediately
 | Config field | Default | Notes |
 |---|---|---|
 | `behavior` | `"immediate"` | **Required.** `"immediate"`, `"schedule"`, or `"cancel"`. |
-| `triggerWorkflowId` | `""` | **Required** (not cancel). Template. The ID of the target flow. |
+| `triggerWorkflowId` | `""` | **Required** (not cancel). Template. The ID of the target flow. **Must reference a cloud (Application) flow** — experience, edge, and custom node flow IDs always throw `NotFound`. |
 | `flowVersionTemplate` | `""` | **Required** (not cancel). Flow version (e.g. `"develop"`, `"v1"`, or `"default"` to run whichever version is marked as the application default). Template. |
 | `triggerVirtualButtonId` | `""` | **Required** (not cancel). The value of `meta.uiId` set on the Virtual Button trigger in the target flow. This is a stable identifier you set when creating the Virtual Button trigger; the server does not generate it. |
 | `payloadTemplateType` | `"json"` | `"json"`, `"string"`, or `"path"`. |
@@ -85,7 +85,7 @@ The Workflow Trigger Node triggers another flow's Virtual Button — immediately
 
 **`schedule`:** `{ "runId": "...", "runAt": "...", "flowId": "...", "flowVersion": "...", "virtualButtonId": "...", "payload": {...}, "success": true, "newOrUpdate": "new" }` — `newOrUpdate` is `"update"` when replacing an existing scheduled run.
 
-**`cancel`:** confirms the scheduled run was cancelled.
+**`cancel`:** `{ "runId": "...", "success": true }` when the run was found and cancelled. When the run ID is not found, `resultPath` receives `{ "runId": "...", "success": false, "error": { "type": "...", "message": "..." } }` — the node does **not** throw; execution continues through the output.
 ### Setting `triggerVirtualButtonId` — pre-assign a `uiId`
 
 `triggerVirtualButtonId` matches on `meta.uiId` of the Virtual Button trigger, which is a value **you choose** — the server does not generate it. To wire a WorkflowTriggerNode correctly:

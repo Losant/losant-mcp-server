@@ -49,7 +49,7 @@ Authentication uses Salesforce username, password, and optional security token d
 | `username` | `""` | **Required.** Salesforce username. Template. |
 | `password` | `""` | **Required.** Salesforce password. Template. |
 | `token` | `""` | Salesforce security token (appended to password for non-trusted IP ranges). Template. |
-| `sobjectType` | `"Case"` | Always `"Case"` — this node is Case-specific. |
+| `sobjectType` | `"Case"` | **Required.** Always `"Case"` — this node is Case-specific. |
 | `action` | `""` | **Required.** Operation: `"create"`, `"update"`, `"find"`, `"count"`, or `"destroy"`. |
 | `params` | `[]` | Array of parameter objects for the action (see below). |
 | `resultPath` | `""` | Payload path to write the result. |
@@ -62,7 +62,7 @@ Authentication uses Salesforce username, password, and optional security token d
 
 **`destroy`** — `params` contains `recordId` (the Case ID to delete).
 
-**`find`** — `params` contains a `conditions` object with field filters.
+**`find`** — `params` contains a `conditions` object with field filters, plus optional `fields` (array of field names to return), `limit` (max number of records), and `offset` (pagination offset).
 
 **`count`** — `params` contains a `conditions` object; result is the count of matching records.
 
@@ -74,6 +74,7 @@ Authentication uses Salesforce username, password, and optional security token d
 - **`update`**: `{ success: true }` or `{ success: false, errors: [...] }`
 - **`find`**: `{ success: true, errors: [], items: [...] }`
 - **`count`**: `{ success: true, errors: [], count: <number> }`
+- **`destroy`**: `{ id: "<recordId>", success: true, errors: [] }`
 - **Error**: `{ success: false, errors: ["Error: <message>"] }`
 
 ## Experience flows

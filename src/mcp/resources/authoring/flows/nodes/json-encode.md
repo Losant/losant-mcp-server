@@ -9,7 +9,7 @@ Serializes a value on the payload into a JSON string. Available in all flow clas
 | `type` | `"JsonEncodeNode"` |
 | `meta.category` | `"logic"` |
 | `meta.name` | `"json-encode"` |
-| `meta.label` | `"JSON Encode"` (default) |
+| `meta.label` | `"JSON: Encode"` (default) |
 
 ## Cloud (Application) flows
 
@@ -18,7 +18,7 @@ Serializes a value on the payload into a JSON string. Available in all flow clas
   "id": "encode",
   "type": "JsonEncodeNode",
   "config": { "source": "data.user", "destination": "working.userJson" },
-  "meta": { "category": "logic", "name": "json-encode", "label": "JSON Encode", "x": 0, "y": 0 },
+  "meta": { "category": "logic", "name": "json-encode", "label": "JSON: Encode", "x": 0, "y": 0 },
   "outputIds": [["next"]]
 }
 ```

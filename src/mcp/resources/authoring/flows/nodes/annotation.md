@@ -21,7 +21,7 @@ A visual-only node that displays a text label on the flow canvas. Has no runtime
   "meta": {
     "category": "annotation",
     "name": "note",
-    "label": "Annotation",
+    "label": "Note",
     "x": 60,
     "y": 60,
     "annotationText": "This section handles error recovery",

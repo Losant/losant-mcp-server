@@ -101,7 +101,7 @@ Fetches one or more Experience Users. Three find methods available via `findMeth
 |---|---|---|
 | `userTags` | `[]` | Array of `{ keyTemplate, valueTemplate }` tag pairs to match. |
 | `findMultiple` | `false` | `false` — return first match or `null`. `true` — return array. |
-| `findMetadata` | `false` | When `true` and `findMultiple: true`, wraps result as `{ items, count, totalCount, page, perPage }`. |
+| `findMetadata` | `false` | When `true` and `findMultiple: true`, wraps result as `{ items, count, totalCount, page, perPage, sortField, sortDirection, findMethod }`. |
 | `resultsPerPage` | `"100"` | Page size. Template. |
 | `resultsPage` | `"0"` | Zero-based page. Template. |
 | `sortField` | `"email"` | `"email"`, `"id"`, `"firstName"`, `"lastName"`, `"creationDate"`, `"lastUpdated"`. |
@@ -171,7 +171,7 @@ Updates an existing Experience User's fields. Optionally invalidates existing au
 | `groupIdTemplates` | — | Array of Experience Group ID strings. When present (even as `[]`), replaces the user's group memberships entirely. Omit to leave groups unchanged. |
 | `userTags` | `[]` | Array of `{ keyTemplate, valueTemplate }` pairs. Sets or deletes individual user tags. Empty `valueTemplate` deletes the tag. |
 | `invalidateExistingTokens` | `false` | When `true`, all existing auth tokens for this user are invalidated. |
-| `resultPath` | `""` | **Required.** Payload path to write the updated user object. |
+| `resultPath` | `""` | Optional. Payload path to write the updated user object. |
 
 ---
 

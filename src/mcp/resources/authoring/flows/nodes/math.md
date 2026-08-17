@@ -32,7 +32,7 @@ Evaluates mathematical expressions against payload values and writes results to 
 
 | Field | Notes |
 |---|---|
-| `statements` | **Required.** Array of `{ expression, resultPath }` objects. Evaluated in order; later statements can reference values written by earlier ones. |
+| `statements` | Optional. Array of `{ expression, resultPath }` objects. Evaluated in order; later statements can reference values written by earlier ones. Defaults to `[]` when omitted. |
 | `statements[i].expression` | Handlebars template that renders to a Losant expression. Template values are substituted before evaluation. |
 | `statements[i].resultPath` | Payload path where the expression result is written. |
 
@@ -48,7 +48,7 @@ floor({{data.value}} / 10) * 10            → Round down to nearest 10
 
 ## Output
 
-Each statement writes its expression result to the specified `resultPath`. The result is a number (integer or float depending on the expression). You can set `resultPath` to an existing payload path to overwrite it in place — for example, `data.attributes.tempC` to transform a sensor reading before further processing.
+Each statement writes its expression result to the specified `resultPath`. The result is always a number (integer or float depending on the expression). If an expression references a non-existent payload path, the result is NaN. The flow continues normally in all cases. You can set `resultPath` to an existing payload path to overwrite it in place — for example, `data.attributes.tempC` to transform a sensor reading before further processing.
 
 ```json
 {

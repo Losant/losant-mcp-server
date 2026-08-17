@@ -19,7 +19,7 @@ Aborts the current flow execution with a specified error message. The error is r
   "type": "ThrowErrorNode",
   "config": { "messageTemplate": "no row found for id {{data.id}}" },
   "meta": { "category": "debug", "name": "throw-error", "label": "Throw Error", "x": 0, "y": 0 },
-  "outputIds": [[]]
+  "outputIds": []
 }
 ```
 
@@ -27,7 +27,7 @@ Aborts the current flow execution with a specified error message. The error is r
 |---|---|
 | `messageTemplate` | **Required.** Handlebars template that renders to the error message string. |
 
-`outputIds` must be `[[]]` — this node never continues execution.
+`outputIds` must be `[]` — this node has `outputCount: 0` and never continues execution.
 
 ## Experience flows
 

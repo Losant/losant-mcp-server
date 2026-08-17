@@ -39,12 +39,12 @@ Cloud flows authenticate via a Snowflake service credential.
 |---|---|---|
 | `credentialNameTemplate` | `""` | **Required** (cloud). Snowflake service credential name. |
 | `databaseTemplate` | `""` | **Required.** Snowflake database name. Template. |
-| `schemaTemplate` | `""` | **Required.** Snowflake schema name. Template. |
+| `schemaTemplate` | `""` | Optional. Snowflake schema name. Falls back to session default schema when omitted. Template. |
 | `warehouseTemplate` | `""` | Warehouse to use. Template. |
 | `roleTemplate` | `""` | Role to assume. Template. |
 | `sqlSourceType` | `"stringTemplate"` | `"stringTemplate"` — SQL in `sqlSourceValue`. `"payloadPath"` — payload path to SQL string in `sqlSourceValue`. |
 | `sqlSourceValue` | `""` | **Required.** The SQL query (as a template string or payload path). |
-| `timeoutTemplate` | `""` | Query timeout in seconds. Template. |
+| `timeoutTemplate` | `""` | Query timeout in milliseconds. Template. |
 | `resultPath` | `""` | **Required.** Payload path to write the query result. The node writes `{ rows: [{ col1: val1, ... }, ...] }` — access rows via `<resultPath>.rows` (e.g. `working.result.rows`). |
 
 ## Output

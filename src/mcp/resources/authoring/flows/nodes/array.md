@@ -19,7 +19,6 @@ Applies one of 23 operations to an array on the flow payload — filter, sort, s
   "type": "ArrayNode",
   "config": {
     "sourceArrayPath": "working.devices",
-    "destArrayPath": "working.activeDevices",
     "rules": [
       {
         "type": "filter",
@@ -33,11 +32,13 @@ Applies one of 23 operations to an array on the flow payload — filter, sort, s
 }
 ```
 
+> **Note:** Do not set `destArrayPath` when using `filter` — the filter result goes to `outputPath`, not `destArrayPath`. Setting both causes `destArrayPath` to receive the original unfiltered array, overwriting the filtered result.
+
 ### Config — top-level fields
 
 | Field | Notes |
 |---|---|
-| `sourceArrayPath` | **Required.** Payload path of the source array to operate on. |
+| `sourceArrayPath` | Optional. Payload path of the source array to operate on. When omitted, starts from an empty array. |
 | `destArrayPath` | Optional. Payload path to write the **modified array** after all rules run. If omitted, the modified array overwrites `sourceArrayPath`. Only relevant for operations that mutate the array (see Operations table). |
 | `rules` | **Required.** Array of up to **15** rule objects, applied in order. |
 
@@ -68,7 +69,7 @@ The table columns mean:
 | `deduplicate` | — | — | — | — | ✓ | Remove duplicate primitive values. |
 | `deduplicateBy` | **path** (property name in each element) | — | — | req | — | Remove duplicates comparing elements by a property. `outputPath` receives the deduplicated array. |
 | `filter` | **expression** — wrap variables in `{{}}`: `{{value}}`, `{{index}}`, `{{array}}`, `{{payload}}` | — | — | req | — | Keep items where expression is truthy. `outputPath` receives the filtered array. |
-| `flatten` | — | — | — | — | ✓ | Flatten one level of nesting. |
+| `flatten` | — | — | — | — | ✓ | Recursively flattens all nested arrays. |
 | `groupBy` | **path** (property name in each element) | — | — | req | — | Group items into an object keyed by the property value. `outputPath` receives the grouped object. |
 | `indexOf` | template (value to find) | — | — | req | — | Find index of first occurrence. `outputPath` receives the index (`-1` if not found). |
 | `insertAt` | template (value to insert) | **req** (insert position) | — | — | ✓ | Insert a value at the specified index. |
@@ -82,8 +83,8 @@ The table columns mean:
 | `reverse` | — | — | — | — | ✓ | Reverse the array order. |
 | `shift` | — | — | — | opt | ✓ | Remove first element. `outputPath` optionally receives the removed item. |
 | `slice` | template (start index, optional) | opt (end index, excluded, optional) | — | — | ✓ | Extract a subarray from start to end. |
-| `sort` | — | — | req | req | — | Sort by primitive value. `outputPath` receives the sorted array. |
-| `sortBy` | **path** (property name in each element) | — | req | req | — | Sort objects by property. `outputPath` receives the sorted array. |
+| `sort` | — | — | opt (default `ascending`) | req | — | Sort by primitive value. `outputPath` receives the sorted array. |
+| `sortBy` | **path** (property name in each element) | — | opt (default `ascending`) | req | — | Sort objects by property. `outputPath` receives the sorted array. |
 | `sum` | — | — | — | req | — | `outputPath` receives the sum of all numeric values. |
 | `unshift` | template (value to prepend) | — | — | — | ✓ | Prepend a value to the start. |
 

@@ -33,9 +33,9 @@ Requests execution of a Resource Job. Does not wait for the job to complete — 
 | Config field | Default | Notes |
 |---|---|---|
 | `resourceJobIdTemplate` | `""` | **Required.** Resource Job ID or a template resolving to one. |
-| `contextTemplateType` | `"none"` | `"none"` — no context. `"jsonTemplate"` — context from `contextTemplate` as JSON. `"payloadPath"` — context from `contextTemplate` as a payload path. `"workflowPayload"` — send the full flow payload as context. |
+| `contextTemplateType` | `"none"` | `"none"` — uses the Resource Job's default context (not "no context"). `"jsonTemplate"` — context from `contextTemplate` as JSON. `"payloadPath"` — context from `contextTemplate` as a payload path. `"workflowPayload"` — send the full flow payload as context. |
 | `contextTemplate` | `""` | **Required** when `contextTemplateType` is `"jsonTemplate"` or `"payloadPath"`. |
-| `resultPath` | `""` | Payload path to write `{ "executionId": "..." }` on success or `{ "error": { "type", "message" } }` on failure. |
+| `resultPath` | `""` | Payload path to write `{ "executionId": "...", "success": true }` on success or `{ "error": { "type", "message" } }` on failure. |
 
 ---
 
@@ -63,7 +63,7 @@ Marks an iteration of a Resource Job as succeeded or failed. This node is used i
 | Config field | Default | Notes |
 |---|---|---|
 | `successExpression` | `""` | **Required.** Handlebars expression evaluating to `true` (success) or `false` (failure) for this iteration. |
-| `messageTemplate` | `""` | Optional message to log for this iteration (max 255 characters). Template. |
+| `messageTemplate` | `""` | Optional message to log for this iteration (max 256 characters). Template. |
 | `iterationIdPath` | `""` | Payload path to the iteration ID. Defaults to `data.iterationId` when empty. |
 | `accumulatorMethod` | `"payloadPath"` | How to provide the accumulator value passed to the next iteration. `"payloadPath"` — path to value. `"jsonTemplate"` — JSON template. `"stringTemplate"` — string template. |
 | `accumulatorValue` | `""` | The accumulator value (payload path, JSON, or string depending on `accumulatorMethod`). Ignored in parallel execution mode. |

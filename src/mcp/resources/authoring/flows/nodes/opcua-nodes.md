@@ -71,7 +71,7 @@ Browses the OPC UA server's node hierarchy starting from a given node ID or brow
 | Field | Required | Notes |
 |---|---|---|
 | `nameSpaceTemplate` | No | Namespace index (e.g. `"2"`). If omitted, defaults to the server root folder unless `identifierTemplate` is a browse name. Template. |
-| `identifierTemplate` | Yes | Node identifier (e.g. `"i=1001"` or `"s=Main.Device"`) or browse name. Template. |
+| `identifierTemplate` | No | Node identifier (e.g. `"i=1001"` or `"s=Main.Device"`) or browse name. Template. When both `nameSpaceTemplate` and `identifierTemplate` are omitted or empty, defaults to `'RootFolder'`. |
 
 ---
 
@@ -129,13 +129,13 @@ Each key corresponds to the `key` field from `readInstructions`. `errors` is onl
 |---|---|---|
 | `nameSpaceTemplate` | Yes | Namespace index (e.g. `"2"`). Template. |
 | `identifierTemplate` | Yes | Node identifier (e.g. `"i=1001"` or `"s=Main.Device"`). Template. |
-| `key` | No | Result key in the destination object. Defaults to the last segment of the identifier string if omitted (e.g. `s=Main.Device.temperature` → `temperature`). Cannot be `"errors"`. |
+| `key` | No | Result key in the destination object. Defaults to the last segment of the identifier string if omitted (e.g. `s=Main.Device.temperature` → `temperature`). Cannot be `"errors"` or any key starting with `"errors."`. |
 
 ---
 
 ### OPC UA: Write Node (`type: "OpcUaWriteNode"`)
 
-Writes values to one or more OPC UA nodes. Values are automatically converted to each node's data type. On full success the result is `{ "write": "success" }` with no `errors` key. If any write fails, an `errors` array is added.
+Writes values to one or more OPC UA nodes. Values are automatically converted to each node's data type. On full success the result is `{ "write": "success" }` with no `errors` key. If any individual write fails, an `errors` array is added; `write: "success"` is only set after a successful individual write — if ALL writes fail, the result contains only `errors`.
 
 ```json
 {
@@ -173,7 +173,7 @@ Writes values to one or more OPC UA nodes. Values are automatically converted to
 { "working": { "writeResult": { "write": "success" } } }
 ```
 
-On full success the result is `{ "write": "success" }` with no `errors` key. If any write fails, `errors` is added as an array of per-node error objects: `{ "write": "success", "errors": [{ "type": "BadNodeIdUnknown", "message": "Node ns=2;i=1001: BadNodeIdUnknown" }] }`.
+On full success the result is `{ "write": "success" }` with no `errors` key. If any individual write fails, an `errors` array is added. Each error entry has the shape `{ "type": "OPC-UA_WRITE_ERROR", "message": "<err.message>" }`. When ALL writes fail, the result contains only `errors` — `write: "success"` is only present after at least one successful individual write.
 
 **Write instruction fields** (when `writeInstructionsType: "array"`):
 
@@ -234,7 +234,7 @@ Calls a method on an OPC UA object node. Result is an object with a `result` key
 | `identifierTemplate` | Yes | Object node identifier. Template. |
 | `methodNsTemplate` | Yes | Method namespace index. Template. |
 | `methodIdTemplate` | Yes | Method node identifier. Template. |
-| `methodArguments` | No | Array of argument objects (see below). May be empty or omitted if the method takes no arguments. |
+| `methodArguments` | Yes | Array of argument objects (see below). Must be present as at least `[]` — omitting it throws a validation error. Use `[]` if the method takes no arguments. |
 
 **`methodArguments` item fields:**
 
