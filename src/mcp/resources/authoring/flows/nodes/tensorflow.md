@@ -60,3 +60,7 @@ Not available.
 | `shapePath` | `""` | Optional payload path to an array specifying the input tensor shape. |
 | `dataTypeTemplate` | `""` | Input data type: `"float32"`, `"int32"`, `"bool"`, `"string"`. Omit `dataTypeTemplate` (or set to `''`) to use autodetect mode. Template. `"autodetect"` is a UI-only label and must not be sent — passing `"autodetect"` as the value will cause a runtime validation error. |
 | `resultPath` | `""` | Payload path to write the prediction results. |
+
+## Custom Node workflows
+
+Not available.

@@ -77,3 +77,7 @@ Same as Cloud.
 ## Edge flows
 
 Same as Cloud. `indexOf` requires GEA 1.15.0+.
+
+## Custom Node workflows
+
+Same as Cloud.

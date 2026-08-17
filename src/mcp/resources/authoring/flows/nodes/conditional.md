@@ -65,6 +65,18 @@ Supports `&&`, `||`, `!`, and parentheses. Numbers are compared numerically in c
 - Missing paths render as `""` which is falsy, not an error.
 - `outputIds` must have exactly two outer arrays — a missing second array causes a validation error.
 
-## Experience flows, Edge flows, Custom Node flows
+## Experience flows
+
+Same as Cloud.
+
+## Edge flows
+
+Same as Cloud.
+
+## Embedded workflows
+
+Same as Cloud.
+
+## Custom Node workflows
 
 Same as Cloud.

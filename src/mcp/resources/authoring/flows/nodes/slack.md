@@ -40,3 +40,7 @@ Same as Cloud.
 ## Edge flows
 
 Same as Cloud (no minimum GEA version).
+
+## Custom Node workflows
+
+Same as Cloud.

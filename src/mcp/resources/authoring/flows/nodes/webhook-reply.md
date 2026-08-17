@@ -68,6 +68,10 @@ The Webhook: Reply Node sends a custom HTTP response to a webhook request, or se
 | `cookieInfo` | `[]` | Array of `{ nameTemplate, valueTemplate, maxAgeTemplate, pathTemplate }` cookie objects to set on the response. |
 | `sameSiteTemplate` | `""` | SameSite policy string for cookies (e.g. `"Strict"`, `"Lax"`, `"None"`). Template. |
 
+## Output
+
+The Webhook Reply node does not write to a result path. After sending the reply, execution continues through `outputIds[0]`.
+
 ## Experience flows
 
 Not available.
@@ -77,3 +81,7 @@ Not available.
 Not available.
 
 > **Note:** The response body has a maximum size of **256 KB**.
+
+## Custom Node workflows
+
+Same as Cloud.

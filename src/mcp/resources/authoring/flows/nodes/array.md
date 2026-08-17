@@ -173,3 +173,7 @@ Same as Cloud.
 ## Edge flows
 
 Same as Cloud (edge availability varies by operation and GEA version).
+
+## Custom Node workflows
+
+Same as Cloud.

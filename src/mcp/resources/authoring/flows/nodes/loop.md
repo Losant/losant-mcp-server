@@ -305,3 +305,7 @@ Same as Cloud.
 ## Edge flows
 
 Same as Cloud. `parallel` mode and `mapResultPath` require GEA **1.21.0+**.
+
+## Custom Node workflows
+
+Same as Cloud.

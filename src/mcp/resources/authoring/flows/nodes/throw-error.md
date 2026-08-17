@@ -29,6 +29,10 @@ Aborts the current flow execution with a specified error message. The error is r
 
 `outputIds` must be `[]` — this node has `outputCount: 0` and never continues execution.
 
+## Output
+
+The Throw Error Node has no outputs (`outputIds: []`). It always halts the flow by throwing an error — execution never continues past it.
+
 ## Experience flows
 
 Same as Cloud.
@@ -36,3 +40,7 @@ Same as Cloud.
 ## Edge flows
 
 Minimum GEA version: **1.48.0**.
+
+## Custom Node workflows
+
+Same as Cloud.

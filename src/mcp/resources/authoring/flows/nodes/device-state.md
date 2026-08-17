@@ -88,3 +88,7 @@ Same as Cloud.
 ## Edge flows
 
 Same as Cloud. Available on all GEA versions. `resultPath` requires GEA **1.12.0+** on edge.
+
+## Custom Node workflows
+
+Same as Cloud.

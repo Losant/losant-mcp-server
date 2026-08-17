@@ -34,3 +34,7 @@ Same as Cloud. Max 59 seconds.
 ## Edge flows
 
 Same as Cloud. No maximum duration restriction on edge.
+
+## Custom Node workflows
+
+Same as Cloud.

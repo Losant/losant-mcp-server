@@ -1,8 +1,3 @@
----
-name: losant-register-device-certificate
-description: Registers a new device certificate for MQTT broker authentication within the current Losant application. Available in cloud and experience flows.
----
-
 # Device Certificate: Register Node (`type: "RegisterDeviceCertificateNode"`)
 
 Registers a new X.509 device certificate for authenticating against the Losant MQTT Broker. The certificate must be signed by an application Certificate Authority already registered in the application. Optionally associates the certificate with a specific device and configures connection restrictions (IP allowlist and MQTT topic filter). Available in cloud (Application) and experience flows.

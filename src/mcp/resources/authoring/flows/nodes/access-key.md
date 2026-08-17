@@ -125,3 +125,7 @@ Same as Cloud.
 ## Edge flows
 
 Not available.
+
+## Custom Node workflows
+
+Same as Cloud.

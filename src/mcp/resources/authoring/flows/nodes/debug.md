@@ -31,10 +31,18 @@ Surfaces the current payload (or a specific property of it) to the flow's debug 
 | `property` | string | — | Optional payload path. When set, shows only the value at that path instead of the full payload. |
 | `level` | enum | `"verbose"` | `verbose`, `info`, `warn`, `error`. Filters the debug panel by severity. On edge, level selection requires GEA 1.38.0+. |
 
+## Output
+
+The Debug Node does not modify the payload. All values are passed through unchanged to `outputIds[0]`.
+
 ## Experience flows
 
 Same as Cloud.
 
 ## Edge flows
+
+Same as Cloud.
+
+## Custom Node workflows
 
 Same as Cloud.

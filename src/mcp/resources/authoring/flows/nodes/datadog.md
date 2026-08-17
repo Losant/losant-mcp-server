@@ -52,3 +52,7 @@ Same as Cloud.
 > **Minimum GEA version:** 2.2.0
 
 Same as Cloud but uses direct auth (`apiKeyTemplate` + `siteTemplate`) instead of credential.
+
+## Custom Node workflows
+
+Same as Cloud.

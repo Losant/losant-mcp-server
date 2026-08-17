@@ -33,6 +33,10 @@ The MQTT Node publishes a message to the Losant MQTT Broker, the Gateway Edge Ag
 | `topicTemplate` | `""` | **Required.** MQTT topic. Template. Must not be a Losant system or device state topic. |
 | `messageTemplate` | `""` | Message payload as a string template. |
 
+## Output
+
+The MQTT Output Node does not write to a result path. If the message cannot be published, the node throws (halting the flow). Successful publish continues through `outputIds[0]`.
+
 ## Experience flows
 
 Same as Cloud.
@@ -48,4 +52,8 @@ Same as Cloud. Additional `integrationId` values on edge:
 | `"external"` | External broker via config name | 1.42.0 |
 
 When `integrationId: "external"`, also set `configNameTemplate` to the name of the MQTT client configuration in the GEA config file.
+
+## Custom Node workflows
+
+Same as Cloud.
 

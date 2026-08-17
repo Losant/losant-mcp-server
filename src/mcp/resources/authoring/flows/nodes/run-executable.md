@@ -52,3 +52,7 @@ Not available.
 | `resultPath` | `""` | Payload path to write the result. Normal mode: `{ stdout, stderr, exitCode, signal }`. On error: `{ stdout, stderr, exitCode, signal, error: { type: "EXECUTE_ERROR", message } }`. Detached mode: see `detached` above. |
 
 Default timeout: 30 seconds. Long-running processes should use `detached: true`.
+
+## Custom Node workflows
+
+Not available.

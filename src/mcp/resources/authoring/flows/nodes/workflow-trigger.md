@@ -77,15 +77,6 @@ The Workflow Trigger Node triggers another flow's Virtual Button — immediately
 | `runIdTemplate` | `""` | **Required** when `behavior: "cancel"`. The run ID from when the execution was scheduled. Template. Also used with `behavior: "schedule"` to set the run ID for the scheduled execution. |
 | `resultPath` | `""` | Payload path to write the result. |
 
-### Output
-
-`resultPath` shape varies by `behavior`:
-
-**`immediate`:** `{ "flowId": "...", "flowVersion": "...", "virtualButtonId": "...", "payload": {...}, "success": true }`
-
-**`schedule`:** `{ "runId": "...", "runAt": "...", "flowId": "...", "flowVersion": "...", "virtualButtonId": "...", "payload": {...}, "success": true, "newOrUpdate": "new" }` — `newOrUpdate` is `"update"` when replacing an existing scheduled run.
-
-**`cancel`:** `{ "runId": "...", "success": true }` when the run was found and cancelled. When the run ID is not found, `resultPath` receives `{ "runId": "...", "success": false, "error": { "type": "...", "message": "..." } }` — the node does **not** throw; execution continues through the output.
 ### Setting `triggerVirtualButtonId` — pre-assign a `uiId`
 
 `triggerVirtualButtonId` matches on `meta.uiId` of the Virtual Button trigger, which is a value **you choose** — the server does not generate it. To wire a WorkflowTriggerNode correctly:
@@ -94,6 +85,16 @@ The Workflow Trigger Node triggers another flow's Virtual Button — immediately
 2. **Set `meta.uiId`** on the Virtual Button trigger when POSTing the target flow.
 3. **Use that same value** as `triggerVirtualButtonId` in the WorkflowTriggerNode config.
 
+## Output
+
+`resultPath` shape varies by `behavior`:
+
+**`immediate`:** `{ "flowId": "...", "flowVersion": "...", "virtualButtonId": "...", "payload": {...}, "success": true }`
+
+**`schedule`:** `{ "runId": "...", "runAt": "...", "flowId": "...", "flowVersion": "...", "virtualButtonId": "...", "payload": {...}, "success": true, "newOrUpdate": "new" }` — `newOrUpdate` is `"update"` when replacing an existing scheduled run.
+
+**`cancel`:** `{ "runId": "...", "success": true }` when the run was found and cancelled. When the run ID is not found, `resultPath` receives `{ "runId": "...", "success": false, "error": { "type": "...", "message": "..." } }` — the node does **not** throw; execution continues through the output.
+
 ## Experience flows
 
 Same as Cloud.
@@ -101,3 +102,7 @@ Same as Cloud.
 ## Edge flows
 
 Not available.
+
+## Custom Node workflows
+
+Same as Cloud.

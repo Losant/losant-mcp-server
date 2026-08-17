@@ -61,3 +61,7 @@ Same as Cloud.
 > **Minimum GEA version:** 1.38.0
 
 Same as Cloud. The credential method (`credentialNameTemplate`) is **not available on edge** — use `apiTokenTemplate` directly.
+
+## Custom Node workflows
+
+Same as Cloud.

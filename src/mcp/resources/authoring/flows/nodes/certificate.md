@@ -1,8 +1,3 @@
----
-name: losant-certificate-nodes
-description: CertificateCreateNode signs a CSR (or raw public/private key) with a CA key+cert pair to issue a new leaf X.509 certificate. CertificateReadNode reads a certificate's public key and metadata without the private key. Both available in cloud, experience, edge (GEA 2.3.0+), and custom node flows.
----
-
 # Certificate Nodes — Create, Read
 
 Two nodes for working with X.509 certificates in flows.

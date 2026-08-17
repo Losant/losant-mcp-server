@@ -1,8 +1,3 @@
----
-name: losant-edge-deploy
-description: Schedules deployment of one or more edge flow versions to edge compute devices, or schedules their removal. Available in cloud, experience, and custom node flows.
----
-
 # Edge: Deploy Node (`type: "EdgeDeployNode"`)
 
 Schedules deployment of one or more edge flow versions to one or more edge compute devices, or schedules their removal. Deployments are queued asynchronously — the node does not wait for the GEA to pull and apply the version. Available in cloud (Application), experience, and custom node flows.

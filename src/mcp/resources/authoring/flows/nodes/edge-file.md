@@ -86,3 +86,7 @@ Writes content to a file on the GEA container file system.
 | `resultPath` | `""` | Payload path to write `{ value: true }` on success, or `{ value: false, error: { type, message } }`. |
 
 `shouldAppend` and `errorIfFileExists` can both be `true` simultaneously. The combination uses the `'ax'` file flag (append-only, fail if file does not exist — which is inverted from the flag name). In practice, when both are `true` and the file already exists, the write silently fails.
+
+## Custom Node workflows
+
+Not available.

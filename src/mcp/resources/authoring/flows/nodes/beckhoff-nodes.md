@@ -138,4 +138,8 @@ Write instructions require `type: "symbol"`, `nameTemplate` (symbol name), `data
 
 On failure, error information is added per key for any symbols that failed to write.
 
+## Custom Node workflows
+
+Not available.
+
 

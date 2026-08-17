@@ -134,3 +134,7 @@ Writes values to Siemens S7 data blocks.
 ```
 
 `errors` is only added when there are failures — it is absent on full success.
+
+## Custom Node workflows
+
+Not available.

@@ -40,10 +40,18 @@ A visual-only node that displays a text label on the flow canvas. Has no runtime
 | `width` | `260` | Width in pixels. Must be a multiple of 20. UI range: 100–600. |
 | `height` | `220` | Height in pixels. Must be a multiple of 20. UI range: 100–600. |
 
+## Output
+
+The Annotation Node has no runtime outputs and does not affect the payload. `outputIds` must be `[]` (empty — zero outputs).
+
 ## Experience flows
 
 Same as Cloud.
 
 ## Edge flows
+
+Same as Cloud.
+
+## Custom Node workflows
 
 Same as Cloud.

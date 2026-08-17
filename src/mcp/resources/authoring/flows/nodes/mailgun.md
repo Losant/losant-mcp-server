@@ -68,3 +68,7 @@ Same as Cloud.
 > **Minimum GEA version:** 1.48.0
 
 Same as Cloud. The credential method (`credentialNameTemplate`) is **not available on edge** — use `mailgunApiKey` directly.
+
+## Custom Node workflows
+
+Same as Cloud.
