@@ -158,7 +158,7 @@ See `losant://references/experience/context-configuration` for the full render c
 ## Other constraints
 
 - **Rate limit**: 50 requests/sec sustained, 500 burst — applied per slug or domain (effectively per experience version), not per individual endpoint
-- **`enabled`**: boolean — set `false` to disable an endpoint without deleting it (disabled endpoints return 404)
+- **`enabled`**: boolean — set `false` to disable an endpoint without deleting it. Disabled endpoints are excluded from the router entirely — the request falls through to the next-best matching route or the version's `notFoundReply`. They do not unconditionally return 404.
 - **`endpointTags`**: plain object `{ "key": "value" }` for arbitrary metadata
 - **`description`**: optional, for documentation purposes
 

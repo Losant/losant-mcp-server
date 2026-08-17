@@ -16,7 +16,7 @@ This guide covers everything needed to create and update experience views via `l
 
 ## The three view types
 
-`viewType` is **required and cannot be changed after creation.** If the wrong type is created, delete and recreate.
+`viewType` and `name` are **both required on POST creation.** `viewType` cannot be changed after creation — if the wrong type is created, delete and recreate.
 
 The right type depends on what the endpoint is serving and how you want to structure the code:
 
@@ -197,7 +197,8 @@ The full shared helper catalog (format helpers, block helpers, expressions, JSON
 | Helper | Available in | Purpose |
 |---|---|---|
 | `{{page}}` | layouts only | Injects the page body at this location — required in every layout |
-| `{{#section "name"}}` / `{{#fillSection "name"}}` | layouts + pages | Named content slots — layout defines slots, pages fill them |
+| `{{section "name"}}` | layouts only | Renders the content filled into the named slot by the page; use `{{#section "name"}}default{{/section}}` block form to supply fallback content |
+| `{{#fillSection "name"}}` | pages + components | Fills a named slot defined by `{{section}}` in the layout |
 | `{{component "name" [context] [args]}}` | all view types | Renders another component view by name |
 | `{{element 'dashboard' ...}}` | pages + layouts | Embeds a Losant dashboard inline with `ctx` wiring |
 | `{{file "path"}}` | all view types | Returns the URL for a Losant application file |

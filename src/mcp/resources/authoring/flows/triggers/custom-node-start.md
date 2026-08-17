@@ -35,7 +35,7 @@ Not available.
 }
 ```
 
-- **`key`** — Always set to the literal string `"customNodeStart"`. Required, always send it.
+- **`key`** — Server-set — omit on create. The server always sets `key` to `'customNodeStart'`. (In `SAME_KEY_AS_TYPE` mode the server unconditionally overwrites `trigger.key` with `trigger.type`, so any value you send is ignored.)
 
 ### Payload at runtime
 

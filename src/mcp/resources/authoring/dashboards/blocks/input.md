@@ -90,8 +90,8 @@ Buttons are what actually send commands or trigger flows when clicked. A block w
 |---|---|---|
 | `type` | `"button"` | |
 | `action` | `"command"` \| `"workflow"` | What the button does when clicked. |
-| `id` / `templateId` / `label` / `color` / `grid` | — | Standard. |
-| `payload` | string | JSON template for the payload. Reference control values via `{{templateId}}`. |
+| `id` / `templateId` / `label` / `color` / `grid` | — | Standard. Note: `templateId` has no functional effect for buttons — buttons do not contribute a value that other controls can reference. The editor sets `hasTemplateId: false` for buttons; any `templateId` value on a button is stored but ignored. |
+| `payload` | string | For `action: "workflow"` buttons: must be a valid JSON template — the rendered string is parsed as JSON before being sent, so invalid JSON causes the trigger to fail. Reference control values via `{{templateId}}`. For `action: "command"` buttons: any valid Handlebars string is accepted (the rendered string is sent as-is to the device). |
 | `workflowId` | string \| null | ID of the flow to trigger (when `action: "workflow"`). |
 | `buttonId` | string | The UI ID of the Virtual Button trigger node inside the flow (`meta.uiId`). Not an arbitrary string — you must read the flow's trigger nodes to find the correct value. Max 255 chars. |
 | `deviceIds` | string[] | Device IDs to send the command to (when `action: "command"`). |
@@ -124,7 +124,7 @@ Each control's `grid` defines its position and size within the block's internal 
 | `x` | integer | Starting column (0-based). Range: 0–3. |
 | `y` | integer | Starting row (0-based). No upper limit — the block scrolls if controls extend past the visible height. |
 | `w` | integer | Width in columns. Range: 1–4. `x + w` must not exceed 4. |
-| `h` | integer | Height in rows. Most controls: always `1`. Help blocks: 1–4. |
+| `h` | integer | Height in rows. Integer; no API-level constraint on value. |
 
 ---
 

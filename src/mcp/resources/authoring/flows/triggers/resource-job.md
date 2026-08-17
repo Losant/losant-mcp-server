@@ -33,9 +33,10 @@ All three share the same structure. `key` is the Resource Job ID.
   "time": "<ISO timestamp>",
   "data": {
     "accumulator": { "example": 900001 },
-    "device": { "...": "the device being processed in this iteration" },
+    "[resourceType]": { "...": "the resource being processed in this iteration" },
     "execution": { "status": "inProgress" },
     "iterationId": "<unique iteration ID>",
+    "attemptNumber": 1,
     "willRetryOnFailure": true,
     "willRetryOnTimeout": true
   },
@@ -46,9 +47,10 @@ All three share the same structure. `key` is the Resource Job ID.
 }
 ```
 
-- `data.accumulator` — already-parsed object carrying accumulated state from previous iterations. It is reset to `{}` at the start of each job run.
-- `data.device` — the device (or other resource) being processed.
+- `data.accumulator` — already-parsed object carrying accumulated state from previous iterations. It is reset to `{}` at the start of each job run. **Only present when `maxIterationConcurrency === 1`** — parallel jobs do not accumulate state.
+- `data[resourceType]` — the resource being processed, keyed by the job's `resourceType`. The key is dynamic and equals the resource job's `resourceType` field — it can be `device`, `dataTableRow`, `experienceGroup`, or `experienceUser`. To confirm the key for a specific trigger, call `losant_query` with `resourceType=resourceJob` and the job ID from the trigger's `key` field, then inspect `resourceType` on the returned job.
 - `data.iterationId` — unique ID for this iteration; use with the Job: Acknowledge node.
+- `data.attemptNumber`, `data.willRetryOnFailure`, `data.willRetryOnTimeout` — only present when retries are enabled on the resource job.
 
 ### Payload — `resourceJobComplete`
 
@@ -73,6 +75,7 @@ All three share the same structure. `key` is the Resource Job ID.
 }
 ```
 
+- `data.accumulator` — only present when `maxIterationConcurrency === 1`.
 - `data.execution.executionSummary` — counts of succeeded, failed, timedOut, inProgress, and remaining iterations.
 - `data.execution.executionReportUrl` — URL to download a CSV execution report.
 - `data.success` — `true` if the job completed without failures or timeouts.
@@ -84,10 +87,13 @@ All three share the same structure. `key` is the Resource Job ID.
   "time": "<ISO timestamp>",
   "data": {
     "accumulator": { "example": 900001 },
-    "device": { "...": "the device that timed out" },
+    "[resourceType]": { "...": "the resource that timed out" },
     "execution": { "status": "inProgress" },
     "iterationId": "<unique iteration ID>",
-    "iterationStartedAt": "<ISO timestamp>"
+    "iterationStartedAt": "<ISO timestamp>",
+    "attemptNumber": 1,
+    "willRetryOnTimeout": true,
+    "willRetryOnFailure": true
   },
   "relayId": "<resource job ID>",
   "relayType": "resourceJob",
@@ -96,7 +102,10 @@ All three share the same structure. `key` is the Resource Job ID.
 }
 ```
 
+- `data.accumulator` — only present when `maxIterationConcurrency === 1`.
+- `data[resourceType]` — the resource that timed out, keyed by the job's `resourceType` (see iteration payload notes above).
 - `data.iterationStartedAt` — when this iteration began; useful for calculating elapsed time before timeout.
+- `data.attemptNumber`, `data.willRetryOnTimeout`, `data.willRetryOnFailure` — only present when retries are enabled on the resource job.
 
 ## Experience flows
 
@@ -109,6 +118,6 @@ Not available.
 ## Idiom notes
 
 - **Always acknowledge each iteration.** Use a Job: Acknowledge node on every execution path of a `resourceJobIteration` flow — including error branches. Unacknowledged iterations count against the timeout.
-- **Use the accumulator for cross-iteration state.** `data.accumulator` is an already-parsed object that persists between iterations. Update the value and pass it to the acknowledge node. It is reset to `{}` at the start of each job run.
+- **Use the accumulator for cross-iteration state.** `data.accumulator` is an already-parsed object that persists between iterations. Update the value and pass it to the acknowledge node. It is reset to `{}` at the start of each job run. The accumulator is only available when `maxIterationConcurrency === 1` — it is absent for parallel jobs.
 - **Handle the timeout trigger separately.** Wire a `resourceJobIterationTimeout` trigger to log or alert on slow iterations. It fires when a single iteration exceeds the job's configured timeout — the iteration is then retried or marked as failed depending on the job config.
 - **Check `data.success` in the `resourceJobComplete` handler** before acting on results. A `false` value means some iterations failed — use `data.execution.executionSummary` to see counts and `data.execution.executionReportUrl` to download the full report.

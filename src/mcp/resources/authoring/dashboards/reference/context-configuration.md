@@ -82,8 +82,8 @@ Resolves to a single device-tag key/value pair. Useful for "show this dashboard 
 |---|---|---|
 | `name` | yes | Reference as `{{ctx.<name>}}` — resolves to a `{ key, value }` object. |
 | `type` | yes | `"deviceTag"`. |
-| `defaultValue` | yes | Object: `{ "key": "...", "value": "..." }`. To match any value for a key, omit the `value` field entirely (`{ "key": "fleet" }`) — empty string causes a 400 (both fields have minLength: 1). |
-| `validationConfig.deviceTags` | optional | Whitelist of allowed tags. To wildcard the value, omit the `value` field; to wildcard the key, omit the `key` field — blank strings cause a 400. |
+| `defaultValue` | yes | Object: `{ "key": "...", "value": "..." }`. To match any value for a key, omit the `value` field entirely (`{ "key": "fleet" }`) — empty string causes a 400. The `key` field must match `^[0-9a-zA-Z_-]{1,255}$`. |
+| `validationConfig.deviceTags` | optional | Whitelist of allowed tags. To wildcard the value, omit the `value` field; to wildcard the key, omit the `key` field — blank strings cause a 400. The `key` field must match `^[0-9a-zA-Z_-]{1,255}$` when present. |
 
 **Using a `deviceTag` variable in blocks:**
 
@@ -159,7 +159,7 @@ Resolves to an Experience User ID. Only meaningful when the dashboard renders in
 |---|---|---|
 | `type` | yes | `"experienceUser"`. |
 | `defaultValue` | yes | An Experience-user ID string. |
-| `validationConfig.experienceGroupIds` | optional | Restrict to users in these Experience Groups (or their descendants). |
+| `validationConfig.experienceGroupIds` | optional | Restrict to users who are members of an ancestor (parent or grandparent) of one of the specified Experience Groups — that is, validation passes when the specified group is a descendant of a group the user belongs to. |
 
 ---
 
@@ -305,6 +305,6 @@ To confirm `contextConfiguration` and block configs are saved correctly, call `l
 
 - **Referencing a context variable without defining it in `contextConfiguration`.** Blocks render with the literal `{{ctx.foo}}` string and queries fail silently.
 - **Using `includeFullDevice: true` and then referencing `{{ctx.deviceId}}` as a plain ID in a URL or non-device-selector field.** Use `{{ctx.deviceId.id}}` explicitly in those contexts.
-- **Setting `deviceTag.defaultValue` or `validationConfig.deviceTags` with empty strings.** Both the `key` and `value` fields have minLength: 1 — omit the field entirely to express a wildcard.
+- **Setting `deviceTag.defaultValue` or `validationConfig.deviceTags` with empty strings.** The `key` field must match `^[0-9a-zA-Z_-]{1,255}$` (letters, digits, underscores, hyphens; 1–255 chars); omit the `value` field entirely to express a wildcard rather than passing an empty string.
 - **Naming variables with characters outside `^[0-9a-zA-Z_-]{1,255}$`.** Letters, digits, hyphens, and underscores are valid; spaces and slashes are not.
 - **Forgetting that variable order determines toolbar order.** If a variable isn't visible in the toolbar, it may be off-screen due to its position in the array.

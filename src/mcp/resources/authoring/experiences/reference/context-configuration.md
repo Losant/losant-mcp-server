@@ -11,10 +11,10 @@ Every experience view — layout, page, and component — receives the same root
   time,           // Unix timestamp (ms) of the request
   application,    // { name, id }
   experience,     // { version, endpoint, page, layout, user, authInfo, device? }
-  globals,        // key/value map from the version's globals config
+  globals,        // merged app globals + version globals (version overrides app)
   pageData,       // data passed by the backing flow via the Endpoint Reply node
   request,        // { path, method, params, query, body, headers, cookies }
-  flow            // { name, id, version } — the backing flow
+  flow            // { name, id, version } — absent for static-page endpoints (no backing workflow)
 }
 ```
 
@@ -95,14 +95,14 @@ Authentication metadata for the request. Rarely needed in templates.
 
 ## `globals`
 
-Key/value pairs configured on the experience version under "version globals." Available in all views and flows.
+Key/value pairs from both **application globals** and **experience-version globals**, merged together. Application globals are the base layer; experience-version globals override any keys they share. Both are available in all views and flows.
 
 ```handlebars
 {{globals.supportEmail}}
 {{globals.apiBaseUrl}}
 ```
 
-Globals are set via `losant_write` `operation=updateOne` `resourceType=experienceVersion` — the `globals` field is an array of `{ "key": "...", "json": "..." }` objects.
+Application globals are configured on the application itself. Experience-version globals are set via `losant_write` `operation=updateOne` `resourceType=experienceVersion` — the `globals` field is an array of `{ "key": "...", "json": "..." }` objects. When both define the same key, the version-level value wins.
 
 ---
 
@@ -159,12 +159,14 @@ Unix timestamp in milliseconds for the request. Use with format helpers for disp
 
 ## `flow`
 
-The experience flow that handled the request.
+The experience flow that handled the request. **Not always present** — `flow` is absent when the endpoint is configured with a direct static page reply (no backing workflow). Always guard with `{{#if flow}}` before referencing flow properties in shared layouts or components.
 
 ```handlebars
-{{flow.name}}
-{{flow.id}}
-{{flow.version}}
+{{#if flow}}
+  {{flow.name}}
+  {{flow.id}}
+  {{flow.version}}
+{{/if}}
 ```
 
 ---
