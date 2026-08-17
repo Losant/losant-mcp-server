@@ -72,6 +72,7 @@ All four config fields are always sent. `host` and `topic` are required.
 }
 ```
 
+- `triggerId` — the server-generated node key assigned when this trigger was saved.
 - `data.message` — the contents of the Redis message.
 - `data.channel` — the specific channel the message arrived on.
 - `data.pattern` — the channel or pattern the trigger is subscribed to. When subscribing to a specific channel, `channel` and `pattern` are identical. When using a pattern (e.g. `sensor.*`), `pattern` is the configured pattern and `channel` is the actual channel the message arrived on.

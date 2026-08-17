@@ -37,7 +37,7 @@ Subscribe to a custom topic on Losant's MQTT broker. `key` is the topic.
 
 **`key`** — Required. The MQTT topic to subscribe to. Single-level (`+`) and multi-level (`#`) wildcards are valid. The topic cannot be a Losant device topic (e.g. `losant/<deviceId>/state`). MQTT system topics (prefixed with `$`) are blocked in standard cloud flows but are permitted in cloud-run workflows where `allowsSys` is enabled.
 
-#### Payload at runtime
+### Payload at runtime
 
 ```json
 {
@@ -95,7 +95,7 @@ When triggering from an MQTT integration, the trigger type changes to `"integrat
 
 All four config booleans are always sent. `message` defaults to `true`, the rest to `false`.
 
-#### Payload at runtime
+### Payload at runtime
 
 Each event type carries different fields. `data.type` identifies the event:
 
@@ -177,7 +177,7 @@ Fires when a message is published to the GEA's local MQTT broker. `key` is the t
 }
 ```
 
-#### Payload at runtime
+### Payload at runtime
 
 ```json
 {
@@ -223,7 +223,7 @@ Fires when a message arrives from an external MQTT broker configured in the GEA 
 }
 ```
 
-#### Payload at runtime
+### Payload at runtime
 
 ```json
 {

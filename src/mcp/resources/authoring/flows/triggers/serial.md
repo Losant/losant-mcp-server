@@ -125,5 +125,6 @@ Fires when the configured number of bytes has been received.
 }
 ```
 
+- `triggerId` — the server-generated node key assigned when this trigger was saved.
 - `data.path` — the serial port path the data was received on.
 - `data.serial` — the received data, encoded per `config.encoding`. For binary data use `"base64"` encoding and parse with `Buffer.from(payload.data.serial, 'base64')` in a Function node.

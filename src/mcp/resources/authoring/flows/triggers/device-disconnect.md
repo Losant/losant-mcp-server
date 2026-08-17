@@ -91,13 +91,13 @@ Edge flows use `type: "onDisconnect"` — fires only for the Edge Compute Device
 | `type` | `"onDisconnect"` |
 | `meta.category` | `"trigger"` |
 | `meta.name` | `"onDisconnect"` |
-| `meta.label` | `"On Disconnect"` (default) |
+| `meta.label` | `"Device: Disconnect"` (default) |
 
 ```json
 {
   "type": "onDisconnect",
   "config": {},
-  "meta": { "category": "trigger", "name": "onDisconnect", "label": "On Disconnect", "x": 60, "y": 60 },
+  "meta": { "category": "trigger", "name": "onDisconnect", "label": "Device: Disconnect", "x": 60, "y": 60 },
   "outputIds": [["first-node"]]
 }
 ```

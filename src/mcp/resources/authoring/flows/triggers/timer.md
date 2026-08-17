@@ -107,10 +107,11 @@ Fires on an arbitrary cron schedule. Supports standard 5-field cron syntax (`min
 }
 ```
 
+- `triggerId` — the server-generated node key assigned when this trigger was saved.
+
 ## Experience flows
 
 Not available.
-
 
 ## Edge flows
 

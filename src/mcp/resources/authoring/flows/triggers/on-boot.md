@@ -33,7 +33,7 @@ Not available.
 
 - **`key`** — Always set to the literal string `"onBoot"`. Required, always send it.
 
-**Payload at runtime:**
+### Payload at runtime
 ```json
 {
   "time": "<ISO timestamp of agent startup>",
@@ -43,5 +43,7 @@ Not available.
   "triggerType": "onBoot"
 }
 ```
+
+- `triggerId` — the server-generated node key assigned when this trigger was saved.
 
 `data` is always empty. `isConnectedToLosant` is always `false` for this trigger — the edge agent fires the on-boot trigger before establishing a connection to Losant, so the agent is never connected at that point.

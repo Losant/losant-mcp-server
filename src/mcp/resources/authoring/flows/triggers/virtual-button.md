@@ -32,7 +32,7 @@ A button in the Losant UI that manually fires the flow on demand. Available in c
 - **`key`** — Server-generated. Omit it on create.
 - **`meta.payload`** — Optional JSON-encoded object string that becomes `data` on the flow payload. Omit or set to `""` for an empty `data: {}`. Must be a valid JSON object (not a primitive or array) if set.
 
-**Payload at runtime:**
+### Payload at runtime
 ```json
 {
   "time": "<ISO timestamp when the button was pressed>",
@@ -43,6 +43,8 @@ A button in the Losant UI that manually fires the flow on demand. Available in c
   "triggerType": "virtualButton"
 }
 ```
+
+- `triggerId` — the server-generated node key assigned when this trigger was saved (stable across deploys).
 
 `data` is the parsed value of `meta.payload`, or `{}` if not set.
 

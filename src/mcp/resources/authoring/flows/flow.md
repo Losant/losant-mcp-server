@@ -259,7 +259,7 @@ When a branch merges back to a single path, resume the parent's x and continue i
 | `TimeRangeNode` | `[[outOfRangeIds], [inRangeIds]]` — two outer entries | Index 0 = current time is **outside** the configured range; index 1 = current time is **inside** the range. |
 | `VerifyDeviceNode` | `[[notVerifiedIds], [verifiedIds]]` — two outer entries | Index 0 = device is **not associated** with the user/group; index 1 = device **is associated**. |
 | `LoopNode` | `[[afterLoopIds], [insideLoopIds]]` | Index 0 = nodes that fire when the loop finishes; index 1 = nodes inside the loop body. |
-| `SwitchNode` | `[[case0Ids], [case1Ids], ...]` | One outer entry per configured case, in order. |
+| `SwitchNode` | `[[defaultIds], [case0Ids], [case1Ids], ...]` | Index 0 fires when **no case matches** (default/fallthrough). Index 1 fires when `cases[0]` matches. Index N+1 fires when `cases[N]` matches. There is always one more outer entry than the number of configured cases. |
 | Triggers | `[[firstNodeIds]]` — one outer entry | Same as a regular node. |
 
 ### Wiring rules enforced on save

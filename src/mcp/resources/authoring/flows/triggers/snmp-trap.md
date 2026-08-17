@@ -129,6 +129,7 @@ Two SNMP version modes are available. `config.udpPort` defaults to `162` and is 
 }
 ```
 
+- `triggerId` — the server-generated node key assigned when this trigger was saved.
 - `data.sourcePort` — the sender's source port (the port on the remote host the message was sent from, not the local listening port).
 - `data.sourceAddress` — IP address the message originated from.
 - `data.message.community` — community string. Present for v1/2c only; absent for v3.

@@ -25,7 +25,7 @@ Fires a flow whenever the selected Losant Notebook completes an execution, wheth
 
 - **`key`** — Required. The Notebook resource ID. Use `losant_query` with `resourceType=notebook` to find it.
 
-**Payload at runtime:**
+### Payload at runtime
 ```json
 {
   "time": "<ISO timestamp>",
@@ -47,6 +47,7 @@ Fires a flow whenever the selected Losant Notebook completes an execution, wheth
 }
 ```
 
+- `triggerId` — the ID of the Notebook resource that completed.
 - `data.success` — `true` if execution succeeded, `false` if it failed.
 - `data.execution.inputInfo` — map of input filenames to objects containing all stored input configuration fields. All entries include at minimum `inputType`. Depending on the input type, entries may also include `queryJson`, `dataTableId`, `url`, `size`, and other fields.
 - `data.execution.outputInfo` — map of output filenames to `{ url, size }`.

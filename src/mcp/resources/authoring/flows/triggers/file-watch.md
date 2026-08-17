@@ -98,6 +98,7 @@ The GEA runs in a Docker container — `config.path` is a container path. To wat
 }
 ```
 
+- `triggerId` — the path being watched (from `config.path`).
 - `data.event` — `"fileAdded"`, `"fileChanged"`, `"fileRemoved"`, `"directoryAdded"`, or `"directoryRemoved"`. Use a Conditional or Switch node to branch by event type when multiple are enabled.
 - `data.fullPath` — full path of the file or directory that changed.
 - `data.pathParts.dir` — directory portion of the path.
