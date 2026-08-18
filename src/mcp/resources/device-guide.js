@@ -5,7 +5,7 @@ Devices are the backbone concept of Losant. Almost everything in the platform ex
 
 ## Device Classes
 
-Six distinct classes, set via \`deviceClass\` at creation. **A device's class cannot be changed to or from \`system\` after creation.**
+Seven distinct classes, set via \`deviceClass\` at creation. **A device's class cannot be changed to or from \`system\` after creation.**
 
 | Class | Connects directly | Reports own state | Can be a gateway |
 |---|---|---|---|
@@ -13,12 +13,15 @@ Six distinct classes, set via \`deviceClass\` at creation. **A device's class ca
 | \`gateway\` | ✓ | ✓ | ✓ |
 | \`edgeCompute\` | ✓ | ✓ | ✓ (runs Edge Agent) |
 | \`embedded\` | ✓ | ✓ | ✗ (runs Embedded Agent) |
-| \`peripheral\` | ✗ | Via gateway only | ✗ |
+| \`peripheral\` | ✗ | Via a specific gateway only | ✗ |
+| \`floating\` | ✗ | Via any gateway in the application | ✗ |
 | \`system\` | ✗ | Aggregated from children | ✗ |
 
 Default when not specified: \`standalone\`. For most IoT use cases, \`standalone\` is correct.
 
-**Peripheral devices** require a \`gatewayId\` pointing to a device of class \`gateway\` or \`edgeCompute\`. Confirm the gateway device exists before creating a peripheral.
+**Peripheral vs. floating:** Both are gateway-reported peripherals that do not connect to Losant directly. The difference is which gateway is allowed to report for them:
+- \`peripheral\` — state may only be reported by one specific gateway. Requires \`gatewayId\` pointing to a \`gateway\` or \`edgeCompute\` device. Confirm the gateway device exists before creating. The peripheral appears in that gateway's "Peripherals" tab.
+- \`floating\` — state may be reported by **any** gateway in the application. No \`gatewayId\` is set. Use for devices that physically move between multiple gateway locations. Floating peripherals do **not** appear in any gateway's "Peripherals" tab.
 
 **System devices** are grouping mechanisms — their state is calculated as an aggregation of child device states, not reported directly. System attributes define which aggregation method to use (FIRST, LAST, COUNT, MAX, MIN, MEDIAN, MEAN, SUM, STD_DEV).
 
