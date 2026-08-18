@@ -77,7 +77,7 @@ losant_query:
   query: { "deviceId": { "$eq": "abc123" } }
 \`\`\`
 
-See \`losant://guides/advanced-queries\` for query syntax and \`losant://schemas/dataTableRowQuery\` for the row query schema.
+See \`losant://guides/advanced-queries\` for query syntax and \`losant://schemas/advancedQuery\` for the row query schema.
 
 ## Common LLM Procedures
 

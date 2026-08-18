@@ -50,15 +50,20 @@ For the wiring model, trigger configuration, and per-node config details read:
 
 ## Flow Versions
 
-Use \`resourceType=flowVersion\` with \`operation=createOne\` to snapshot the current develop version:
+A \`flowVersion\` is a named, frozen snapshot of a flow's triggers and nodes. Creating one does **not** automatically copy the develop version — you must supply \`triggers\` and \`nodes\` explicitly. Omitting them produces an empty version, not a snapshot.
+
+To snapshot the current develop version:
+1. Call \`losant_query\` \`operation=get\` \`resourceType=flow\` \`resourceId=<flowId>\` to retrieve the current develop \`triggers\` and \`nodes\` arrays.
+2. Call \`losant_write\` \`operation=createOne\` \`resourceType=flowVersion\` \`parentResourceId=<flowId>\` with the retrieved arrays plus version metadata:
 \`\`\`json
 {
   "version": "1.0.0",
   "notes": "Initial stable release",
-  "enabled": true
+  "enabled": true,
+  "triggers": [ /* copied from the flow's develop triggers */ ],
+  "nodes": [ /* copied from the flow's develop nodes */ ]
 }
 \`\`\`
-Requires \`parentResourceId\` = the \`flowId\`.
 
 > **flowVersion triggers and nodes are frozen.** Once a version is created, its trigger and node configuration cannot be changed. \`updateOne\` on a \`flowVersion\` only allows patching \`notes\` and \`enabled\` — nothing structural. To revise the logic, make changes on the develop version (the \`flow\` itself via \`updateOne\`) and then snapshot a new \`flowVersion\`.
 
@@ -76,7 +81,8 @@ Requires \`parentResourceId\` = the \`flowId\`.
 4. Read \`losant://authoring/flow\` before constructing trigger/node JSON — the wiring model requires \`outputIds\` to be correct
 
 ### Snapshot a version
-After the develop version is stable, call \`losant_write\` \`operation=createOne\` \`resourceType=flowVersion\` with \`parentResourceId\` = flowId.
+1. Use \`losant_query\` \`operation=get\` \`resourceType=flow\` to retrieve the develop version's \`triggers\` and \`nodes\` arrays
+2. Call \`losant_write\` \`operation=createOne\` \`resourceType=flowVersion\` \`parentResourceId=<flowId>\` with \`version\`, \`notes\`, \`enabled\`, and the retrieved \`triggers\` and \`nodes\`
 
 ### Revise a published version's logic
 Triggers and nodes in a \`flowVersion\` cannot be edited. To revise:
