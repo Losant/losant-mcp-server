@@ -132,4 +132,8 @@ Same as Cloud.
 
 **Crypto: Sign / Crypto: Verify** — minimum GEA 2.3.0. `keyTemplateType: "diskPath"` is only available on edge (load key from local file).
 
-> **Note:** `credentialNameTemplate` (service credential lookup) is not available on edge for HashNode or CryptoSignNode. On edge, supply the key or secret directly via `keyTemplate`/`keyTemplateType` (Sign) or `secretTemplate` (Hash).
+> **Note:** `credentialNameTemplate` (service credential lookup) is not available on edge for HashNode, CryptoSignNode, or CryptoVerifyNode. On edge, supply the key or secret directly via `keyTemplate`/`keyTemplateType` (Sign/Verify) or `secretTemplate` (Hash).
+
+## Custom Node flows
+
+For edge custom node flows, same configuration as Edge. For all other custom node flows, same as Cloud.

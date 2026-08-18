@@ -103,6 +103,6 @@ Same as Cloud.
 
 Not available.
 
-## Custom Node workflows
+## Custom Node flows
 
 Same as Cloud.

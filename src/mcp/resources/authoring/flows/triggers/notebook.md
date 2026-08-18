@@ -34,7 +34,7 @@ Fires a flow whenever the selected Losant Notebook completes an execution, wheth
     "notebook": { "...": "full notebook object" },
     "execution": {
       "status": "completed",
-      "inputInfo": { "input.csv": { "inputType": "file", "url": "...", "size": 4096 } },
+      "inputInfo": { "input.csv": { "inputType": "applicationFile", "url": "...", "size": 4096 } },
       "outputInfo": { "report.pdf": { "url": "...", "size": 8192 } },
       "executionErrors": [],
       "templateContext": "{\"deviceCount\": 42}"

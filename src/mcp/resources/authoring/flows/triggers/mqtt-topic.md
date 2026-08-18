@@ -54,7 +54,7 @@ Subscribe to a custom topic on Losant's MQTT broker. `key` is the topic.
 ```
 
 - `data` is **always a string**. Use a JSON Decode node if the publisher sends JSON.
-- `relayType` is `"device"` when a device published the message, or `"flow"` when another flow published it.
+- `relayType` is `"device"` when a device published the message, `"flow"` when another flow published it, `"apiToken"` when an API token was used, or `"user"` when a user published it.
 - `triggerId` is the actual topic the message was published on (after wildcard resolution).
 
 ---

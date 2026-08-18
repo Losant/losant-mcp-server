@@ -54,3 +54,7 @@ Same as Cloud.
 > **Minimum GEA version:** 1.39.0
 
 Same as Cloud. The integration method (`integrationId`) is **not available on edge** — use direct credentials (`accessToken` + `deviceTemplate`) only.
+
+## Custom Node flows
+
+For edge custom node flows, same configuration as Edge. For all other custom node flows, same as Cloud.

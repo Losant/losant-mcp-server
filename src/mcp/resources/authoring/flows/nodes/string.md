@@ -60,7 +60,7 @@ Available: cloud, experience, customNode, edge.
 | `pad` | `[length, fillChar]` | Pad to `length` characters, centered (fill added to both sides). `fillChar` defaults to a space. `length` must be 0–1000. |
 | `padStart` | `[length, fillChar]` | Pad to `length` characters by prepending `fillChar` on the left. `fillChar` defaults to a space. `length` must be 0–1000. |
 | `padEnd` | `[length, fillChar]` | Pad to `length` characters by appending `fillChar` on the right. `fillChar` defaults to a space. `length` must be 0–1000. |
-| `truncate` | `[length]` or `[length, omission]` | Truncate to `length` characters. Optional `omission` string (e.g. `"..."`) is appended when truncated — its length counts against `length`. `length` must be 0–1000; negative values cause a Validation error (minimum enforced at 0 by `toConstrainedInteger`). |
+| `truncate` | `[length]` or `[length, omission]` | Truncate to `length` characters. Optional `omission` string (e.g. `"..."`) is appended when truncated — its length counts against `length`. `length` must be 0–1000; negative values cause a Validation error (minimum enforced at 0 by `toConstrainedInteger`). When no ellipsis is wanted, pass `""` as the second argument — omitting it entirely throws. |
 
 ## Output
 
@@ -78,6 +78,6 @@ Same as Cloud.
 
 Same as Cloud. `indexOf` requires GEA 1.15.0+.
 
-## Custom Node workflows
+## Custom Node flows
 
-Same as Cloud.
+For edge custom node flows, same configuration as Edge. For all other custom node flows, same as Cloud.

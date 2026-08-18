@@ -37,3 +37,7 @@ Same as Cloud.
 ## Edge flows
 
 Same as Cloud. Error handling via `errorBehavior` requires GEA 1.14.0+.
+
+## Custom Node flows
+
+For edge custom node flows, same configuration as Edge. For all other custom node flows, same as Cloud.

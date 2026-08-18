@@ -72,4 +72,8 @@ Same as Cloud.
 
 Same as Cloud.
 
-> **Note:** The integration-based credential path (`credentialNameTemplate` pointing to an Azure Event Hubs integration) is **not available on edge**. Use `accessKeyNameTemplate` + `accessKeyTemplate` directly instead.
+> **Note:** On edge, only `connectionString` and `hubName` are supported — integrations (`integrationId`) and service credentials (`credentialNameTemplate`) are not available on edge.
+
+## Custom Node flows
+
+For edge custom node flows, same configuration as Edge. For all other custom node flows, same as Cloud.

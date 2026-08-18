@@ -73,7 +73,7 @@ On HTTP or network error, `resultPath` receives `{ 'error': { 'statusCode', 'mes
   }
 }
 ```
-| `params` | `[]` | Array of `{ type, name, value }` query parameter objects. All three fields are **Required** per item. `type` must be `"string"` or `"path"`; `name` is the parameter name; `value` is the value or payload path. |
+| `params` | `[]` | Array of `{ type, name, value }` query parameter objects. All three fields are **Required** per item. `type` must be `"string"` or `"path"`; `name` is the parameter name; `value` is the value or payload path. For boolean parameter values (`true`/`false`), use `type: "path"` pointing to a payload path that contains the boolean, rather than `type: "string"` which always delivers a string. |
 | `bodyTemplateType` | `"individualFields"` | How the request body is provided. See below. |
 | `bodyTemplate` | `[]` | Body content — shape depends on `bodyTemplateType`. |
 
@@ -119,3 +119,7 @@ Same as Cloud.
 > **Minimum GEA version:** 1.2.0
 
 Same as Cloud.
+
+## Custom Node flows
+
+For edge custom node flows, same configuration as Edge. For all other custom node flows, same as Cloud.

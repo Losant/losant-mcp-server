@@ -103,3 +103,7 @@ Same as Cloud, with the following additional options available on **GEA 2.1.0+**
 | `errorIfFileExists` | Runtime default `false` (overwrite mode). When `true`, throws an error if the disk target file already exists. Note: the schema defines a default of `true`, but the constructor overrides it with `config.errorIfFileExists \|\| false`, so omitting the field results in overwrite behavior. |
 
 `authType: "credential"` is not supported in edge flows — use `authType: "none"` with a header template, `"basic"`, or `"clientCert"` instead.
+
+## Custom Node flows
+
+For edge custom node flows, same configuration as Edge. For all other custom node flows, same as Cloud.

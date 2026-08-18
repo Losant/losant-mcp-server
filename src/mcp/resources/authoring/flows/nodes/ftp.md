@@ -92,6 +92,7 @@ Uploads content to an FTP/FTPS/SFTP server.
 | `portTemplate` | `""` | Port. Template. |
 | `userTemplate` | `""` | Username. Template. |
 | `passwordTemplate` | `""` | Password. Template. |
+| `privateKeyTemplate` | `""` | Private key for SFTP key-based authentication. Template. |
 | `fileNameTemplate` | `""` | **Required.** File name on the server. Template. |
 | `directoryTemplate` | `""` | **Required.** Directory path. Template. |
 | `encoding` | `"utf8"` | Content encoding. Template. |
@@ -114,3 +115,7 @@ Same as Cloud.
 > **Minimum GEA version:** 1.27.0
 
 Same as Cloud, with disk streaming mode available on GEA 2.1.0+.
+
+## Custom Node flows
+
+For edge custom node flows, same configuration as Edge. For all other custom node flows, same as Cloud.

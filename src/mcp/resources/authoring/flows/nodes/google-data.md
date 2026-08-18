@@ -282,3 +282,7 @@ Same as Cloud for all five nodes.
 **GCP Storage: Get / Put** — minimum GEA 1.33.0. Disk mode (`diskPathTemplate` for Get; `meta.mode: "disk"` for Put) requires GEA 2.1.0+. Project ID (`projectIdTemplate`) available on GEA 1.42.0+.
 
 **GCP: Function** — minimum GEA 1.10.0. API trigger project ID available on GEA 1.42.0+. HTTP trigger mode requires GEA 1.22.0+.
+
+## Custom Node flows
+
+For edge custom node flows, same configuration as Edge. For all other custom node flows, same as Cloud.

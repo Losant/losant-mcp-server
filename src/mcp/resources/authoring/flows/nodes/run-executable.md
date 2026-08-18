@@ -53,6 +53,6 @@ Not available.
 
 Default timeout: 30 seconds. Long-running processes should use `detached: true`.
 
-## Custom Node workflows
+## Custom Node flows
 
-Not available.
+Available as part of edge custom node flows. Same configuration as Edge.

@@ -135,6 +135,6 @@ Writes values to Siemens S7 data blocks.
 
 `errors` is only added when there are failures — it is absent on full success.
 
-## Custom Node workflows
+## Custom Node flows
 
-Not available.
+Available as part of edge custom node flows. Same configuration as Edge.

@@ -63,3 +63,7 @@ Same as Cloud.
 > **Minimum GEA version:** 1.45.0
 
 Same as Cloud, with one difference: the service credential method (`credentialNameTemplate`) is **not available on edge**. Use the direct access token method (`accessTokenTemplate` + `fromNumberIdTemplate`) instead.
+
+## Custom Node flows
+
+For edge custom node flows, same configuration as Edge. For all other custom node flows, same as Cloud.

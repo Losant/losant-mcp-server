@@ -109,3 +109,7 @@ Same as Cloud with the following version gates:
 | `errorBehavior` / `errorPath` | 1.35.0 |
 | `caCertTemplate` (custom CA cert for TLS) | 1.41.0 |
 | `isCluster` (cluster mode) | 1.38.0 |
+
+## Custom Node flows
+
+For edge custom node flows, same configuration as Edge. For all other custom node flows, same as Cloud.

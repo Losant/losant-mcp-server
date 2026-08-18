@@ -55,7 +55,7 @@ The Webhook: Reply Node sends a custom HTTP response to a webhook request, or se
 | Config field | Default | Notes |
 |---|---|---|
 | `replyIdPath` | `"data.replyId"` | Payload path to the reply ID. Defaults to `"data.replyId"` — the location set by the Webhook trigger. |
-| `replyType` | `"custom"` | `"custom"` — send a fully custom HTTP response (use `responseCodeTemplate`, `bodyTemplate`, `headerInfo`). `"redirect"` — send an HTTP redirect; set `responseCodeTemplate` to `301`/`302` and `bodyTemplate` to the target URL. `"page"` — render an Experience View as the response body; set `pageIdTemplate` to the view ID. `"mqtt"` — opens a Server-Sent Events (SSE) stream; the client response stays open and events are pushed from Losant's internal MQTT broker based on the subscribed topics. |
+| `replyType` | `"custom"` | `"custom"` — send a fully custom HTTP response (use `responseCodeTemplate`, `bodyTemplate`, `headerInfo`). `"redirect"` — send an HTTP redirect; set `responseCodeTemplate` to `301`/`302` and `bodyTemplate` to the target URL. `"page"` — render an Experience View as the response body; set `pageIdTemplate` to the view ID. `"mqtt"` — opens a Server-Sent Events (SSE) stream; the client response stays open and events are pushed from Losant's internal MQTT broker based on the subscribed topics. Note: `replyType: 'mqtt'` (SSE stream) is only valid when responding to an Experience Endpoint trigger — using it with a Webhook trigger causes a runtime error. |
 | `pageIdTemplate` | `""` | **Required** when `replyType: 'page'`. The ID of the Experience View to render. Template. |
 | `mqttTopicsTemplate` | `""` | **Required** when `replyType: 'mqtt'`. Array of MQTT topic strings to subscribe to, as a JSON template. |
 | `mqttTopicsPath` | `""` | **Required** when `replyType: 'mqtt'` (alternative to `mqttTopicsTemplate`). Payload path to an array of MQTT topic strings. |
@@ -74,7 +74,7 @@ The Webhook Reply node does not write to a result path. After sending the reply,
 
 ## Experience flows
 
-Not available.
+Same as Cloud.
 
 ## Edge flows
 
@@ -82,6 +82,6 @@ Not available.
 
 > **Note:** The response body has a maximum size of **256 KB**.
 
-## Custom Node workflows
+## Custom Node flows
 
 Same as Cloud.

@@ -38,7 +38,7 @@ Two auth methods: service credential (cloud/experience) or direct API key + site
 | `apiKeyTemplate` | `""` | **Required** (direct method, edge). Datadog API key. Template. |
 | `siteTemplate` | `""` | **Required** (direct method, edge). Datadog site hostname (e.g. `"datadoghq.com"`). Template. |
 | `writeMethod` | `"individualFields"` | **Required.** `"individualFields"`, `"jsonTemplate"`, or `"payloadPath"`. |
-| `writeFields` | `[]` | **Required** (individualFields). Array of log entry objects — each entry can include: `messageTemplate` (log message), `sourceTemplate`, `hostnameTemplate`, `serviceTemplate`, `tagsTemplate` (comma-separated tags), `attributesTemplate` (JSON template for structured attributes). All fields are optional except that at least `messageTemplate` is typically set. |
+| `writeFields` | `[]` | **Required** (individualFields). Array of log entry objects — each entry can include: `messageTemplate` (log message), `sourceTemplate`, `hostnameTemplate`, `serviceTemplate`, `tagsTemplate` (comma-separated tags), `attributesTemplate` (JSON template for structured attributes). All fields are optional except that `messageTemplate` is **Required.** Must not be empty or omitted. |
 | `writeJsonTemplate` | `""` | **Required** (jsonTemplate). Log entries as a JSON template. |
 | `writePayloadPath` | `""` | **Required** (payloadPath). Payload path to log entries. |
 | `resultPath` | `""` | Payload path to write the send result. |
@@ -53,6 +53,6 @@ Same as Cloud.
 
 Same as Cloud but uses direct auth (`apiKeyTemplate` + `siteTemplate`) instead of credential.
 
-## Custom Node workflows
+## Custom Node flows
 
-Same as Cloud.
+For edge custom node flows, same configuration as Edge. For all other custom node flows, same as Cloud.

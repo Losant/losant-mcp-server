@@ -50,6 +50,6 @@ Same as Cloud.
 
 Same as Cloud.
 
-## Custom Node workflows
+## Custom Node flows
 
 Same as Cloud.

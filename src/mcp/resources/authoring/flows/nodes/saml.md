@@ -76,3 +76,7 @@ Same as Cloud.
 ## Edge flows
 
 Not available.
+
+## Custom Node flows
+
+Same as Cloud.

@@ -115,3 +115,7 @@ Same as Cloud with the following restrictions and version gates:
 - `credentialNameTemplate` is **not available on edge** — use direct signing (`secretTemplate` + `algorithmTemplate`) only.
 - Setting `expiresIn` at all requires GEA **1.2.1+** — before 1.2.1, the expiration setting was unavailable entirely.
 - `headerTemplate` / `headerTemplateType` require GEA **1.31.0+** — omit on older agents.
+
+## Custom Node flows
+
+For edge custom node flows, same configuration as Edge. For all other custom node flows, same as Cloud.

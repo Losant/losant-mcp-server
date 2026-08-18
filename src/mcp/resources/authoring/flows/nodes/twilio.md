@@ -13,7 +13,7 @@ The Twilio Node sends SMS messages via a configured Twilio account. Returns a re
 
 ## Cloud (Application) flows
 
-Three auth methods. The direct-key methods are controlled by **`meta.authMethod`**: `"apiKey"` or `"token"`. Credential mode is detected by the presence of `credentialNameTemplate` in `config` — `meta.authMethod` is not set for credential mode (`"credential"` is not a valid schema value). On edge, only `"apiKey"` and `"token"` are available.
+Three auth methods. Auth mode is determined by which config fields are present: `credentialNameTemplate` = credential mode; `accountSid` + `username` + `authToken` = API Key mode; `accountSid` + `authToken` (no `username`) = Token mode. `meta.authMethod` (`"apiKey"` or `"token"`) is a UI hint used by the editor — the backend determines mode solely from the config fields. Do not set `meta.authMethod` for credential mode (`"credential"` is not a valid schema value). On edge, only API Key and Token modes are available.
 
 ### Credential method (set `credentialNameTemplate` in config; no `meta.authMethod`)
 
@@ -85,3 +85,7 @@ Same as Cloud.
 ## Edge flows
 
 Same as Cloud. The credential method (`credentialNameTemplate`) is not available on edge — use `meta.authMethod: "apiKey"` or `"token"` with direct credentials instead.
+
+## Custom Node flows
+
+For edge custom node flows, same configuration as Edge. For all other custom node flows, same as Cloud.

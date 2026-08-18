@@ -60,7 +60,7 @@ Writes a value to a storage key.
 |---|---|---|
 | `keyName` | — | **Required** for most value types. Storage key as a template. Omit only when `valueType: 'clear'` and you intend to clear ALL flow storage. Providing `keyName` with `valueType: 'clear'` clears only that key. |
 | `valueType` | — | **Required.** How to interpret the value. Options: `"template"` (render `value` as Handlebars), `"json"` (parse `value` as JSON), `"number"` (coerce `value` to a number), `"path"` (read from `valuePath` on the payload), `"incr"` (atomically increment the stored number by the amount in `value`), `"decr"` (atomically decrement the stored number by the amount in `value`), `"clear"` (delete the key). |
-| `value` | — | The value to store or operate with. **Required** when `valueType` is `"template"`, `"json"`, `"number"`, `"incr"`, `"decr"`, or `"path"`. For `"incr"` and `"decr"` this is the amount to increment/decrement by (template resolving to a number). For `"path"`, this is the primary field containing the payload path to read from. |
+| `value` | — | The value to store or operate with. **Required** when `valueType` is `"template"`, `"json"`, `"number"`, `"incr"`, `"decr"`, or `"path"`. For `"incr"` and `"decr"` this is the amount to increment/decrement by (template resolving to a number). For `"path"`, `value` is the primary field — it holds the payload path to read from. |
 | `valuePath` | — | Legacy fallback for `valueType: "path"` on cloud and edge when `value` is absent. Use `value` as the primary field for new configs. |
 | `resultPath` | — | Optional. Payload path to write the stored value back onto the payload after storing. |
 
@@ -80,3 +80,7 @@ Same as Cloud.
 Same as Cloud. Storage values are **per-device** on edge — each deployed device has its own isolated storage namespace, and values cannot be read from the Losant cloud console.
 
 > **Note:** `StoreValueNode` with `valueType: 'clear'` and no `keyName` (clear all flow storage) requires GEA 1.22.0+ on edge.
+
+## Custom Node flows
+
+For edge custom node flows, same configuration as Edge. For all other custom node flows, same as Cloud.

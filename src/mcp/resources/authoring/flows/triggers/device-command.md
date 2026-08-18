@@ -61,7 +61,7 @@ No configuration. The trigger fires for **any** command sent to the device. Use 
 ```
 
 - `data.name` — the command name. Branch on this to handle different commands.
-- `data.payload` — value sent with the command. Can be an object, array, string, number, or boolean. Always present (defaults to `{}` when no payload was included).
+- `data.payload` — value sent with the command. Can be an object, array, string, number, or boolean. On cloud, or experience flows this field is always present and defaults to `{}` when no payload was included. On edge, `data.payload` may be absent — always null-check before accessing nested properties.
 - `data.time` — when the command was sent (Date object). Always present.
 - `triggerId` — always the literal string `"deviceCommand"`.
 

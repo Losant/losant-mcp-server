@@ -115,13 +115,15 @@ Each entry in the result is keyed by the `key` field from `readInstructions`. An
 {
   "working": {
     "modbusData": {
-      "temperature": 72.4,
-      "pressure": 14.7,
+      "temperature": [72.4],
+      "pressure": [14.7],
       "errors": []
     }
   }
 }
 ```
+
+All register and coil reads return arrays; device identification reads may return scalars.
 
 #### Read instruction types
 
@@ -228,3 +230,7 @@ If `destinationPath` is set, the result contains a boolean entry for each succes
 | `addressTemplate` | Yes | Starting register address (0–65535). Template. |
 | `valueTemplate` | Yes | **Payload path** (not a template string) pointing to an array of values to write to consecutive registers. |
 | `key` | No | Result key in destination. Defaults to `"addr-{address}"`. |
+
+## Custom Node flows
+
+Available as part of edge custom node flows. Same configuration as Edge.

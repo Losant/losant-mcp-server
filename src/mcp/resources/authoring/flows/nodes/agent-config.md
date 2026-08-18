@@ -97,6 +97,6 @@ Updates one or more GEA runtime configuration values. Changes take effect after 
 
 On failure, `resultPath` receives `{ "success": false, "error": { "type": "...", "message": "..." } }`. Check this value downstream if your flow needs to react to a failed set.
 
-## Custom Node workflows
+## Custom Node flows
 
-Not available.
+Available as part of edge custom node flows. Same configuration as Edge.

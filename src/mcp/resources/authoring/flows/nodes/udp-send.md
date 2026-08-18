@@ -50,6 +50,6 @@ Not available.
 
 > **Broadcast note:** For broadcast addresses, the Gateway Edge Agent must be started in host network mode — otherwise the broadcast packet is dropped.
 
-## Custom Node workflows
+## Custom Node flows
 
 Not available.

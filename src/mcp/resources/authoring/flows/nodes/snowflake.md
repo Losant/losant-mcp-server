@@ -1,6 +1,6 @@
 # Snowflake Node (`type: "SnowflakeNode"`)
 
-The Snowflake Node allows a flow to execute SQL queries against a Snowflake data warehouse and return the results on the payload. Available in cloud, experience, and customNode flows.
+The Snowflake Node allows a flow to execute SQL queries against a Snowflake data warehouse and return the results on the payload. Available in cloud, experience, customNode, and edge flows (GEA 1.52.0+).
 
 ## Required Fields
 
@@ -96,3 +96,7 @@ Edge flows authenticate directly with Snowflake credentials instead of a service
 | `privateKeyTemplate` | `""` | **Required** (edge). RSA private key for key-pair authentication. Template. |
 
 All other fields (`databaseTemplate`, `schemaTemplate`, etc.) are identical to Cloud.
+
+## Custom Node flows
+
+For edge custom node flows, same configuration as Edge. For all other custom node flows, same as Cloud.

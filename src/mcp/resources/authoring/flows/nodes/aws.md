@@ -218,6 +218,10 @@ Same as Cloud for all three nodes.
 
 **AWS Lambda** — available on all GEA versions. `timeoutTemplate` (per-invocation timeout in **milliseconds**, not seconds) requires GEA 1.47.0+. `errorBehavior`/`errorPath` require GEA **1.18.1+** on edge. The **credential method** (`credentialNameTemplate`) is not available on edge — use `awsAccessKeyId`/`awsSecretAccessKey`/`awsRegion` directly.
 
-**AWS S3: Get** and **AWS S3: Put** — minimum GEA 1.8.0.
+**AWS S3: Get** and **AWS S3: Put** — minimum GEA 1.8.0. The credential method (`credentialNameTemplate`) is **not available on edge** for S3 Get/Put — use `accessKeyIdTemplate`, `secretAccessKeyTemplate`, and `regionTemplate` directly.
 
 For S3: Get on edge (GEA **2.0.0+**), `diskPathTemplate` mode streams the S3 object directly to a local file (bypassing the payload size limit). For S3: Put on edge (GEA **2.0.0+**), `meta.mode: "disk"` streams a local file directly to S3.
+
+## Custom Node flows
+
+For edge custom node flows, same configuration as Edge. For all other custom node flows, same as Cloud.

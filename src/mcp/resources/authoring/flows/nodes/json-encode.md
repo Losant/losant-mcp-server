@@ -35,3 +35,7 @@ Same as Cloud.
 ## Edge flows
 
 Same as Cloud.
+
+## Custom Node flows
+
+For edge custom node flows, same configuration as Edge. For all other custom node flows, same as Cloud.

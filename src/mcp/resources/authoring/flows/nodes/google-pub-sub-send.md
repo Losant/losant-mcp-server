@@ -68,3 +68,7 @@ Same as Cloud.
 > **Minimum GEA version:** 1.39.0
 
 Same as Cloud. Integration method (`integrationId`) and credential method (`credentialNameTemplate`) are **not available on edge** — use direct JWT (`jwtDataMethod` + `jwtDataTemplate`). `projectIdTemplate` requires GEA **1.42.0+**.
+
+## Custom Node flows
+
+For edge custom node flows, same configuration as Edge. For all other custom node flows, same as Cloud.

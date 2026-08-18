@@ -84,7 +84,7 @@ All event types share the same envelope. `data.type` identifies which event fire
 - `data.message` — the SQS message body as a string.
 - `data.messageId` — the SQS-assigned message ID.
 - `data.messageAttributes` — custom attributes attached to the message.
-- `data.systemAttributes` — SQS system metadata.
+- `data.systemAttributes` — SQS system metadata. For FIFO queues, the payload also includes `MessageDeduplicationId`, `MessageGroupId`, and `SequenceNumber` in `systemAttributes`.
 
 #### `connect` — integration connected
 

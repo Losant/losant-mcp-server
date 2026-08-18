@@ -78,7 +78,7 @@ All three share the same structure. `key` is the Resource Job ID.
 - `data.accumulator` — only present when `maxIterationConcurrency === 1`.
 - `data.execution.executionSummary` — counts of succeeded, failed, timedOut, inProgress, and remaining iterations.
 - `data.execution.executionReportUrl` — URL to download a CSV execution report.
-- `data.success` — `true` if the job completed without failures or timeouts.
+- `data.success` — `true` when the job's overall status is `'completed'`; `false` for `'errored'`, `'timeout'`, or other terminal statuses. Iteration-level failures (individual items that failed) are tracked separately in `executionSummary.failed` — a job can have `success: true` with non-zero `failed` count.
 
 ### Payload — `resourceJobIterationTimeout`
 
@@ -120,4 +120,4 @@ Not available.
 - **Always acknowledge each iteration.** Use a Job: Acknowledge node on every execution path of a `resourceJobIteration` flow — including error branches. Unacknowledged iterations count against the timeout.
 - **Use the accumulator for cross-iteration state.** `data.accumulator` is an already-parsed object that persists between iterations. Update the value and pass it to the acknowledge node. It is reset to `{}` at the start of each job run. The accumulator is only available when `maxIterationConcurrency === 1` — it is absent for parallel jobs.
 - **Handle the timeout trigger separately.** Wire a `resourceJobIterationTimeout` trigger to log or alert on slow iterations. It fires when a single iteration exceeds the job's configured timeout — the iteration is then retried or marked as failed depending on the job config.
-- **Check `data.success` in the `resourceJobComplete` handler** before acting on results. A `false` value means some iterations failed — use `data.execution.executionSummary` to see counts and `data.execution.executionReportUrl` to download the full report.
+- **Check `data.success` in the `resourceJobComplete` handler** before acting on results. `false` means the overall job status was not `'completed'` (e.g. `'errored'` or `'timeout'`). Note that `data.success` can be `true` even when individual iterations failed — always check `data.execution.executionSummary.failed` for the count of failed iterations, and use `data.execution.executionReportUrl` to download the full report.

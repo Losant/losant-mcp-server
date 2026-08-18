@@ -168,3 +168,7 @@ On failure:
 ```
 
 `plcProperties` and `write` are always present. `errors` is an array of per-tag error objects `{ type, message, tag? }` and is only present when at least one write fails. The `destinationPath` can point to an existing payload path to overwrite it.
+
+## Custom Node flows
+
+Available as part of edge custom node flows. Same configuration as Edge.

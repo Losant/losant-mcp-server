@@ -216,6 +216,6 @@ Write instruction fields:
 | `writeValueTemplate` | Yes | Value to write, rendered as a template. |
 | `writePriorityTemplate` | No | Write priority 1–16. Default 16 (lowest). |
 
-## Custom Node workflows
+## Custom Node flows
 
-Not available.
+Available as part of edge custom node flows. Same configuration as Edge.

@@ -311,6 +311,7 @@ Deletes one or more events. Mode is stored in **`meta.mode`**.
     "queryTemplate": "{\"state\": {\"$eq\": \"resolved\"}}",
     "sortField": "creationDate",
     "sortDirection": "asc",
+    "deleteMultiple": false,
     "resultPath": "working.deleteResult"
   },
   "meta": { "...", "mode": "queryTemplateSingle" }
@@ -322,6 +323,7 @@ Deletes one or more events. Mode is stored in **`meta.mode`**.
 | `queryTemplate` | Advanced query JSON template. Deletes the first matching event. |
 | `sortField` | Controls which event is deleted when multiple match: `"creationDate"`, `"id"`, `"lastUpdated"`, `"level"`, `"state"`, `"subject"`. |
 | `sortDirection` | `"asc"` or `"desc"`. |
+| `deleteMultiple` | Set to `false` to delete only the first matching event. When set to `true`, deletes ALL matching events. |
 | `resultPath` | Payload path to write `{ "success": true, "count": 1 }` when a matching event is deleted, `{ "success": true, "count": 0 }` when no event matches, or an error object on API failure. |
 
 #### Mode: delete many by query (`meta.mode: "queryTemplateMultiple"`)
@@ -357,3 +359,7 @@ Same as Cloud.
 ## Edge flows
 
 Not available.
+
+## Custom Node flows
+
+Same as Cloud.

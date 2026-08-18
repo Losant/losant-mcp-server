@@ -99,12 +99,12 @@ If multiple triggers have routes that both match a request, **all matching trigg
 - `data.params` — path parameters extracted from the route pattern.
 - `data.path` — actual request path.
 - `data.query` — URL query parameters.
-- `data.replyId` — unique request identifier. Pass to an HTTP Response node to send a reply. If no HTTP Response node fires, the GEA waits 1 second then automatically sends a default HTTP 200 response `{ "success": true }` — the client always receives a response.
+- `data.replyId` — unique request identifier. Pass to an HTTP Response node to send a reply. If no HTTP Response node fires, the GEA waits 1 second then automatically sends a default HTTP 204 response with an empty body — the client always receives a response.
 - `triggerId` — for the configured trigger (GEA 1.24.0+ with `method`/`route`), this is the server-generated node key assigned when the trigger was created. For legacy triggers (GEA < 1.24.0, no config), it is the literal string `"request"`.
 
 ## Idiom notes
 
 - **Edge only — this is not an Experience endpoint.** The HTTP Request trigger opens a local HTTP server on the edge device, not a Losant cloud route. Use it for local integrations (Modbus gateways, SCADA systems, local tooling) not for serving end users.
-- **Always wire an HTTP Response node on every path.** If no HTTP Response node fires, the GEA waits 1 second then sends a default HTTP 200 `{ "success": true }` automatically — but relying on this default means the client gets no useful data and no errors are surfaced.
+- **Always wire an HTTP Response node on every path.** If no HTTP Response node fires, the GEA waits 1 second then sends a default HTTP 204 with an empty body automatically — but relying on this default means the client gets no useful data and no errors are surfaced.
 - **`data.params` contains path parameters from the configured route.** If the route is `/sensors/{sensorId}`, the sensor ID is at `data.params.sensorId`.
 - **Keep response latency low.** The HTTP client is typically a local device or service expecting a fast reply. Avoid long-running operations (external API calls, heavy computation) in the hot path.

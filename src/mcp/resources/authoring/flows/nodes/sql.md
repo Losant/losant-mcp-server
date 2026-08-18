@@ -1,6 +1,6 @@
 # SQL Node (`type: "SqlNode"`)
 
-The SQL Node allows a flow to query or update values in a SQL database. Supports MSSQL, MySQL, PostgreSQL, and SQLite 3 (edge only for SQLite). Available in cloud, experience, and customNode flows.
+The SQL Node allows a flow to query or update values in a SQL database. Supports MSSQL, MySQL, PostgreSQL, and SQLite 3 (edge only for SQLite). Available in cloud, experience, edge (GEA 1.5.0+), and customNode flows.
 
 ## Required Fields
 
@@ -78,3 +78,7 @@ Same as Cloud.
 Same as Cloud with one addition: **SQLite 3** is supported on edge (`systemTemplate: "sqlite3"`). Set `hostTemplate` to the local file path of the SQLite database file (e.g. `"/data/mydb.sqlite"`). For SQLite, `hostTemplate` is the path to the database file. Port, user, password, and SSL fields are not used.
 
 > **Note:** Credential method (`credentialNameTemplate`) is not available on edge — use direct connection fields (`host`, `user`, `password`, etc.) only.
+
+## Custom Node flows
+
+For edge custom node flows, same configuration as Edge. For all other custom node flows, same as Cloud.

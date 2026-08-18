@@ -18,7 +18,7 @@ Your application's email address is `<applicationId>@workflows.losant.com`. The 
 ```json
 {
   "type": "inboundEmail",
-  "key": "",
+  "key": "default",
   "config": {},
   "meta": {
     "category": "trigger",
@@ -31,7 +31,7 @@ Your application's email address is `<applicationId>@workflows.losant.com`. The 
 }
 ```
 
-**`key`** — Required. The subaddress filter. Defaults to `""` (empty string), which fires for any email sent to the application address. When set to a non-empty string (e.g. `"imports"`), the trigger fires only when that value appears as a plus-subaddress in the recipient address: `<applicationId>+imports@workflows.losant.com`. Always send this field.
+**`key`** — **Required.** Use `"default"` to match emails sent without a subaddress, or a specific subaddress string (e.g. `"support"`). An empty string `""` never matches — the backend normalizes missing subaddresses to `"default"`. When set to a subaddress (e.g. `"imports"`), the trigger fires only when that value appears as a plus-subaddress in the recipient address: `<applicationId>+imports@workflows.losant.com`. Always send this field.
 
 ### Payload at runtime
 

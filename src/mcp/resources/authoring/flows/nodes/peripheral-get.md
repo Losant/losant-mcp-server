@@ -126,3 +126,7 @@ Returns peripherals that match all (or any) of the provided tags.
 | Config field | Notes |
 |---|---|
 | `resultPath` | **Required.** Payload path to write the result. |
+
+## Custom Node flows
+
+Available as part of edge custom node flows. Same configuration as Edge.

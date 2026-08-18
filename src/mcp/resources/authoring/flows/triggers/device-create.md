@@ -33,7 +33,7 @@ Fires a flow whenever a device is created within the application. Cloud only. Do
     "device": { "...": "full newly created device object" }
   },
   "relayId": "<ID of the user, API token, or flow that created the device>",
-  "relayType": "user",
+  "relayType": "<'apiToken', 'flow', or 'user' — depends on what created the device>",
   "triggerId": "<new device ID>",
   "triggerType": "deviceCreate",
   "applicationId": "...",

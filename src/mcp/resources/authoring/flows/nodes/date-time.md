@@ -73,3 +73,7 @@ Same as Cloud.
 > **GEA 1.13.0+:** Output Timezone, Result Format Template, and the `"dayOfYear"` / `"dayOfWeek"` unit values are only available from GEA 1.13.0 onwards.
 
 Same as Cloud.
+
+## Custom Node flows
+
+For edge custom node flows, same configuration as Edge. For all other custom node flows, same as Cloud.

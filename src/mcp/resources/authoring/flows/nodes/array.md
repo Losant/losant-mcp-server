@@ -39,7 +39,7 @@ Applies one of 23 operations to an array on the flow payload — filter, sort, s
 | Field | Notes |
 |---|---|
 | `sourceArrayPath` | Optional. Payload path of the source array to operate on. When omitted, starts from an empty array. |
-| `destArrayPath` | Optional. Payload path to write the **modified array** after all rules run. If omitted, the modified array overwrites `sourceArrayPath`. Only relevant for operations that mutate the array (see Operations table). |
+| `destArrayPath` | Optional. Payload path to write the **modified array** after all rules run. If omitted, the mutation result is silently discarded — `sourceArrayPath` is left unchanged. Only relevant for operations that mutate the array (see Operations table). |
 | `rules` | **Required.** Array of up to **15** rule objects, applied in order. |
 
 ### Config — per-rule fields
@@ -146,7 +146,7 @@ Group by status property, write result to a path:
 
 Results land in two places depending on the operation:
 
-**`destArrayPath`** — the modified array after all rules run. Used by operations that mutate the source array in place (`push`, `pop`, `compact`, `concat`, `flatten`, `sort`, etc.). If `destArrayPath` is omitted the modified array overwrites `sourceArrayPath`. Can be set to any existing payload path to overwrite it. Operations like `filter`, `deduplicateBy`, and `groupBy` produce their result via `rules[n].outputPath` instead and do **not** use `destArrayPath`.
+**`destArrayPath`** — the modified array after all rules run. Used by operations that mutate the source array in place (`push`, `pop`, `compact`, `concat`, `flatten`, etc.). If `destArrayPath` is omitted the mutation result is silently discarded — `sourceArrayPath` is left unchanged. Can be set to any existing payload path to overwrite it. Operations like `filter`, `sort`, `deduplicateBy`, and `groupBy` produce their result via `rules[n].outputPath` instead and do **not** use `destArrayPath`.
 
 **`rules[n].outputPath`** — a per-rule secondary result written for operations that produce a non-array value or a separate result: the filtered array (`filter`), sorted array (`sort`, `sortBy`), found index (`indexOf`), element at index (`lookupAt`), removed item (`pop`, `shift`, `removeAt`), grouped object (`groupBy`), keyed object (`keyBy`), deduplicated array (`deduplicateBy`), or sum (`sum`). Multiple rules in a single node can each write to their own `outputPath`.
 
@@ -174,6 +174,6 @@ Same as Cloud.
 
 Same as Cloud (edge availability varies by operation and GEA version).
 
-## Custom Node workflows
+## Custom Node flows
 
-Same as Cloud.
+For edge custom node flows, same configuration as Edge. For all other custom node flows, same as Cloud.

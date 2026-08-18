@@ -59,7 +59,7 @@ Not available.
     "syncType": "device"
   },
   "triggerType": "onSync",
-  "triggerId": "<flowId>-<randomAlphanumericString>",
+  "triggerId": "<deviceId>-<randomAlphanumericString>",
   "agentVersion": "1.39.0",
   "applicationId": "...",
   "flowId": "...",

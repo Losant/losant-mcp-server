@@ -56,3 +56,7 @@ Same as Cloud. `scopePath` requires GEA **1.30.0+**. Async/await requires GEA **
 
 - **`require()`** gives access to Node.js built-in modules (`fs`, `path`, `crypto`, etc.) and any modules bundled with the GEA.
 - **Async/await and Promises** are supported from GEA 1.43.2+. Before 1.43.2, all logic must be synchronous.
+
+## Custom Node flows
+
+For edge custom node flows, same configuration as Edge. For all other custom node flows, same as Cloud.

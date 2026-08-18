@@ -91,3 +91,7 @@ Same as Cloud.
 > **Minimum GEA version:** 1.23.0
 
 Same configuration as Cloud with one restriction: only endpoints that the Edge Compute Device is permitted to call are available. The node authenticates as the device itself — manual auth with an `apiTokenTemplate` is not available on edge.
+
+## Custom Node flows
+
+For edge custom node flows, same configuration as Edge. For all other custom node flows, same as Cloud.

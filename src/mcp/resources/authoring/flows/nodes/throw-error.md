@@ -41,6 +41,6 @@ Same as Cloud.
 
 Minimum GEA version: **1.48.0**.
 
-## Custom Node workflows
+## Custom Node flows
 
-Same as Cloud.
+For edge custom node flows, same configuration as Edge. For all other custom node flows, same as Cloud.

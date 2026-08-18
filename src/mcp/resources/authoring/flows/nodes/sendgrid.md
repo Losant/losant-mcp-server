@@ -46,7 +46,7 @@ Two auth methods: service credential or direct API key (must start with `"SG."`)
 | `ccAddresses` | `[]` | Array of email address template strings. |
 | `bccAddresses` | `[]` | Array of email address template strings. |
 | `replyToTemplate` | `""` | Reply-to address. Template. |
-| `attachments` | `[]` | Array of attachment objects (max 10). Edge requires GEA 1.43.3+. Each entry: `{ contentTemplate` (base64-encoded content), `urlTemplate` (URL to fetch content from), `filenameTemplate` (attachment filename), `contentType` (MIME type) `}`. Use either `contentTemplate` or `urlTemplate`, not both. |
+| `attachments` | `[]` | Array of attachment objects (max 10). Edge requires GEA 1.43.3+. Each entry: `{ contentTemplate` (base64-encoded content), `urlTemplate` (URL to fetch content from), `filenameTemplate` (attachment filename) `}`. Use either `contentTemplate` or `urlTemplate`, not both. |
 | `resultPath` | `""` | Payload path to write the send result. |
 
 ## Output
@@ -68,3 +68,7 @@ Same as Cloud.
 Same as Cloud. Attachments require GEA 1.43.3+.
 
 > **Note:** `credentialNameTemplate` is **not available on edge**. Use the direct API key field (`sendgridApiKey`) instead.
+
+## Custom Node flows
+
+For edge custom node flows, same configuration as Edge. For all other custom node flows, same as Cloud.

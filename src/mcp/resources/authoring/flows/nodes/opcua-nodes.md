@@ -63,7 +63,7 @@ Browses the OPC UA server's node hierarchy starting from a given node ID or brow
 | Config field | Default | Notes |
 |---|---|---|
 | `browseInstructionsType` | `"array"` | `"array"` or `"payloadPath"` (GEA 1.18.0+). |
-| `browseInstructions` | — | When `"array"`: exactly one `{ nameSpaceTemplate, identifierTemplate }` object in an array. When `"payloadPath"`: payload path string resolving to an object with `nameSpace` and `identifier` keys. |
+| `browseInstructions` | — | When `"array"`: exactly one `{ nameSpaceTemplate, identifierTemplate }` object in an array. When `"payloadPath"`: payload path string resolving to an array of instruction objects (each with `nameSpace` and `identifier` keys), even for a single node. |
 | `destinationPath` | `""` | **Required.** Payload path to write browse results. |
 
 **Browse instruction fields** (when `browseInstructionsType: "array"`):
@@ -244,3 +244,7 @@ Calls a method on an OPC UA object node. Result is an object with a `result` key
 | `arrayTypeTemplate` | `"Scalar"` | `"Scalar"`, `"Array"`, or `"Matrix"`. |
 | `sourceTypeTemplate` | `"string"` | `"string"` — `valueTemplate` is a Handlebars template. `"path"` — `valueTemplate` is a payload path. |
 | `valueTemplate` | `""` | Argument value — template string or payload path per `sourceTypeTemplate`. |
+
+## Custom Node flows
+
+Available as part of edge custom node flows. Same configuration as Edge.

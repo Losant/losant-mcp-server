@@ -298,4 +298,8 @@ Same as Cloud for all four nodes.
 
 **Azure: Function** — minimum GEA 1.10.0. Credential method is not available on edge — use API key or no auth.
 
-**Azure: Table Storage** — minimum GEA 1.42.0.
+**Azure: Table Storage** — minimum GEA 1.42.0. The credential method (`credentialNameTemplate`) is **not available on edge** — use direct connection fields (`accountTemplate` + `accountKeyTemplate`).
+
+## Custom Node flows
+
+For edge custom node flows, same configuration as Edge. For all other custom node flows, same as Cloud.

@@ -41,7 +41,7 @@ Four nodes for querying, inserting, updating, and deleting rows in Losant Data T
 | `offsetTemplate` | Pagination offset. Default `"0"`. |
 | `sortColumnTemplate` | Column name to sort by. |
 | `sortDirectionTemplate` | `"asc"` or `"desc"`. |
-| `includeFieldsTemplate` | Optional. LJSON array of column names to include in results — omit to return all columns. |
+| `includeFieldsTemplate` | Optional. Comma-delimited string template of column names to include in results, e.g. `'col1, col2'` — omit to return all columns. |
 | `resultPath` | Payload path for the result. Shape: `{ items: [...rows], count, totalCount }`. |
 
 ---
@@ -185,3 +185,7 @@ Same as Cloud.
 ## Edge flows
 
 Not available.
+
+## Custom Node flows
+
+Same as Cloud.

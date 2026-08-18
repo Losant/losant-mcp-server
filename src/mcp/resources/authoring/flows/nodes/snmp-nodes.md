@@ -144,3 +144,7 @@ Performs an SNMP walk starting from a root OID, returning all OIDs in that subtr
 |---|---|
 | `rootOidTemplate` | **Required.** Root OID to walk from. Must be a valid OID format or template. |
 | `resultPath` | **Required.** Payload path to write the subtree results (object of OID → value pairs). |
+
+## Custom Node flows
+
+Available as part of edge custom node flows. Same configuration as Edge.

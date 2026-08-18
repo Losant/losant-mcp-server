@@ -40,7 +40,7 @@ Branches the flow based on whether the current time (or a specified time) falls 
 | `timeZoneTemplate` | — | **Required.** IANA timezone name (e.g. `"America/Chicago"`, `"UTC"`). Template. |
 | `daysType` | `"array"` | `"array"` — use `days` boolean array. `"path"` — use `daysPath` payload path. |
 | `days` | `[true×7]` | 7-element boolean array: `[Sun, Mon, Tue, Wed, Thu, Fri, Sat]`. Only used when `daysType: "array"`. |
-| `daysPath` | `""` | Payload path to an array of day numbers (0=Sun…6=Sat). Only used when `daysType: "path"`. |
+| `daysPath` | `""` | Payload path resolving to a 7-element boolean array, starting with Sunday. Example: `[false, true, true, true, true, false, false]` enables Monday–Friday. The array must be exactly 7 elements. Only used when `daysType: "path"`. |
 | `sourcePath` | `""` | Payload path of the time to test. Leave empty to use the current time (`payload.time`). |
 | `branchPath` | `""` | Optional. Payload path to write `true` (in range) or `false` (out of range). |
 
@@ -56,3 +56,7 @@ Same as Cloud.
 ## Edge flows
 
 Same as Cloud.
+
+## Custom Node flows
+
+For edge custom node flows, same configuration as Edge. For all other custom node flows, same as Cloud.

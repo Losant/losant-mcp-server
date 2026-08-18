@@ -71,7 +71,7 @@ Authentication uses Salesforce username, password, and optional security token d
 `resultPath` receives the Salesforce API response. Shape varies by action:
 
 - **`create`**: `{ id: "<recordId>", success: true, errors: [] }`
-- **`update`**: `{ success: true }` or `{ success: false, errors: [...] }`
+- **`update`**: `{ id: "<recordId>", success: true, errors: [] }` or `{ id: "<recordId>", success: false, errors: [...] }`
 - **`find`**: `{ success: true, errors: [], items: [...] }`
 - **`count`**: `{ success: true, errors: [], count: <number> }`
 - **`destroy`**: `{ id: "<recordId>", success: true, errors: [] }`
@@ -84,3 +84,7 @@ Same as Cloud.
 ## Edge flows
 
 Same as Cloud (no minimum GEA version).
+
+## Custom Node flows
+
+For edge custom node flows, same configuration as Edge. For all other custom node flows, same as Cloud.

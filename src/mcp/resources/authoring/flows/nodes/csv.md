@@ -87,3 +87,7 @@ Same as Cloud.
 > **Minimum GEA version:** 1.6.0
 
 Same as Cloud.
+
+## Custom Node flows
+
+For edge custom node flows, same configuration as Edge. For all other custom node flows, same as Cloud.

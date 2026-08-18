@@ -85,8 +85,8 @@ Writes content to a file on the GEA container file system.
 | `errorIfFileExists` | `false` | When `true`, returns an error if the file already exists. |
 | `resultPath` | `""` | Payload path to write `{ value: true }` on success, or `{ value: false, error: { type, message } }`. |
 
-`shouldAppend` and `errorIfFileExists` can both be `true` simultaneously. The combination uses the `'ax'` file flag (append-only, fail if file does not exist — which is inverted from the flag name). In practice, when both are `true` and the file already exists, the write silently fails.
+`shouldAppend` and `errorIfFileExists` can both be `true` simultaneously. The combination uses the POSIX `'ax'` file flag: open for appending, but fail (error) if the file already exists. Use this combination to create a new file in append mode while preventing overwrites of existing files.
 
-## Custom Node workflows
+## Custom Node flows
 
-Not available.
+Available as part of edge custom node flows. Same configuration as Edge.

@@ -23,7 +23,7 @@ Not available.
 
 Both nodes share the same ADS connection config. Defaults: `targetAdsPortTemplate: "851"`, `routerTcpPortTemplate: "48898"`.
 
-**ADS connection limitation:** A connection error occurs when a Beckhoff Trigger subscription is already active on the client. When no subscriptions exist, the node resets and reconnects normally.
+**ADS connection limitation:** A connection error occurs when the read/write node uses different connection parameters (e.g. a different `targetAmsNetId`) than those used by an active Beckhoff Trigger subscription. When no subscriptions exist, or when the connection parameters match, the node resets and reconnects normally.
 
 ### Beckhoff: Read Node (`type: "BeckhoffReadNode"`)
 
@@ -138,7 +138,7 @@ Write instructions require `type: "symbol"`, `nameTemplate` (symbol name), `data
 
 On failure, error information is added per key for any symbols that failed to write.
 
-## Custom Node workflows
+## Custom Node flows
 
 Not available.
 
