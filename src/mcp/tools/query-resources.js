@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { NESTED_RESOURCES, RESOURCE_TYPES, APPLICATION_RESOURCES, ALLOWS_ADVANCED_QUERIES_SET } from '../../constants.js';
 import debug from 'debug';
 import { restToMCPError, invalidRequestError } from '../../helpers/errors.js';
+import { getResourceFieldId, getPluralResourceName } from './helpers.js';
 const log = debug('losant-mcp-server:tools:query-resources');
 
 const omittedFieldsByResourceType = {
@@ -9,9 +10,16 @@ const omittedFieldsByResourceType = {
   flow: ['nodes', 'triggers', 'iconData' ],
   experienceView: ['body'],
   experienceDomain: [ 'sslCert', 'sslBundle' ],
-  application: ['globals', 'archiveConfig' ]
+  application: ['globals', 'archiveConfig', 'readme'],
+  embeddedDeployment: ['logs'],
+  device: ['attributes.description', 'attributes.contentType', 'attributes.attributeTags', 'attributes.system']
 };
+omittedFieldsByResourceType.edgeDeployment = omittedFieldsByResourceType.embeddedDeployment; // same structure for edge and embedded deployments
 omittedFieldsByResourceType.flowVersion = omittedFieldsByResourceType.flow; // same structure for flow and flowVersion
+
+const omittedFieldHint = {
+  device: 'Attributes include name and dataType only. Use operation:get with the deviceId to retrieve full attribute details including description, contentType, attributeTags, and system configuration.'
+};
 
 const omitFieldByResourceType = {
   applicationDashboard: (items) => {
@@ -65,33 +73,35 @@ const omitFieldByResourceType = {
   },
   application: (items) => {
     items.forEach((item) => {
-      item._omittedCounts = {};
+      item._availableViaGet = { readme: true };
       if (item.globals?.length) {
-        item._omittedCounts.globals = item.globals.length;
+        item._availableViaGet.globals = true;
       }
       if (item.archiveConfig) {
-        item._omittedCounts.archiveConfig = 1;
+        item._availableViaGet.archiveConfig = true;
       }
       delete item.globals;
       delete item.archiveConfig;
     });
+  },
+  embeddedDeployment: (items) => {
+    items.forEach((item) => {
+      if (item.logs?.length) {
+        item._omittedCounts = { logs: item.logs.length };
+      }
+      delete item.logs;
+    });
+  },
+  device: (items) => {
+    items.forEach((item) => {
+      if (item.attributes?.length) {
+        item.attributes = item.attributes.map(({ name, dataType }) => ({ name, dataType }));
+      }
+    });
   }
 };
+omitFieldByResourceType.edgeDeployment = omitFieldByResourceType.embeddedDeployment; // same structure for edge and embedded deployments
 omitFieldByResourceType.flowVersion = omitFieldByResourceType.flow; // same structure as flow
-
-const getResourceFieldId = (resourceType) => {
-  if (resourceType === 'dataTableRow') {
-    return 'rowId';
-  }
-  if (resourceType === 'experienceVersion') {
-    return 'experienceVersionIdOrName';
-  }
-  if (resourceType === 'applicationDashboard') {
-    return 'dashboardId';
-  }
-  // Default to resourceType + 'Id', e.g. deviceId, flowId, etc.
-  return `${resourceType}Id`;
-};
 
 const checkForUnexpectedPageOps = (listInput, errors, resourceType, operation) => {
   ['page', 'perPage'].forEach((param) => {
@@ -101,12 +111,21 @@ const checkForUnexpectedPageOps = (listInput, errors, resourceType, operation) =
   });
 };
 
-const checkForUnexpectedListOptions = (listInput, errors, resourceType, operation) => {
-  ['sortField', 'sortDirection', 'filterField', 'filter', 'query'].forEach((param) => {
+const checkForUnexpectedFilterOptions = (listInput, errors, resourceType, operation) => {
+  ['filterField', 'filter'].forEach((param) => {
     if (listInput[param] !== undefined) {
       errors.push({ fieldName: param, details: `The '${operation}' operation on '${resourceType}' does not support the '${param}' parameter.` });
     }
   });
+};
+
+const checkForUnexpectedListOptions = (listInput, errors, resourceType, operation) => {
+  ['sortField', 'sortDirection', 'query'].forEach((param) => {
+    if (listInput[param] !== undefined) {
+      errors.push({ fieldName: param, details: `The '${operation}' operation on '${resourceType}' does not support the '${param}' parameter.` });
+    }
+  });
+  checkForUnexpectedFilterOptions(listInput, errors, resourceType, operation);
   checkForUnexpectedPageOps(listInput, errors, resourceType, operation);
 };
 
@@ -187,11 +206,28 @@ const getResourceTool = async (losantClient, { resourceType, resourceId }, reque
   }
 
   requestParams[getResourceFieldId(resourceType)] = resourceId;
-  const response = await losantClient[resourceType].get(requestParams);
-  return [{
-    type: 'text',
-    text: JSON.stringify(response, null, 2)
-  }];
+  const responseContext = [];
+  if (resourceType === 'application') {
+    let readmeTxt = 'No readme content found for this application.';
+    const [response, readmeResponse] = await Promise.all([
+      losantClient.application.get(requestParams),
+      losantClient.application.readme(requestParams).catch(() => {
+        readmeTxt = 'Readme failed to load.';
+      })
+    ]);
+    response.readme = readmeResponse?.content || '';
+    responseContext.push({ type: 'text', text: JSON.stringify(response, null, 2) });
+    if (!readmeResponse?.lastUpdated) {
+      responseContext.push({ type: 'text', text: readmeTxt });
+    }
+  } else {
+    const response = await losantClient[resourceType].get(requestParams);
+    responseContext.push({
+      type: 'text',
+      text: JSON.stringify(response, null, 2)
+    });
+  }
+  return responseContext;
 };
 
 const listResourceTool = async (losantClient, { resourceType }, requestParams, listInput, errors) => {
@@ -200,6 +236,9 @@ const listResourceTool = async (losantClient, { resourceType }, requestParams, l
   } else if (resourceType === 'experienceEndpoint') {
     checkForUnexpectedPageOps(listInput, errors, resourceType, 'list');
   } else {
+    if (resourceType === 'applicationJobLog') {
+      checkForUnexpectedFilterOptions(listInput, errors, resourceType, 'list');
+    }
     if (listInput.perPage !== undefined && (listInput.perPage > 100 || listInput.perPage < 1)) {
       errors.push({
         fieldName: 'perPage',
@@ -229,7 +268,7 @@ const listResourceTool = async (losantClient, { resourceType }, requestParams, l
         details: `The resource type '${resourceType}' does not support advanced queries. Remove the 'query' parameter and use 'filterField' and 'filter' for simple filtering instead.`
       });
     }
-    if (listInput.filterField) {
+    if (listInput.filterField && resourceType !== 'applicationJobLog') {
       errors.push({
         fieldName: 'filterField',
         details: 'The \'filterField\' parameter cannot be used together with the \'query\' parameter. The \'query\' parameter overrides simple filters. Remove the \'filterField\' parameter and include any filtering logic in the \'query\' object instead.'
@@ -242,7 +281,7 @@ const listResourceTool = async (losantClient, { resourceType }, requestParams, l
       });
     }
     requestParams.query = listInput.query;
-  } else {
+  } else if (resourceType !== 'applicationJobLog') {
     // Use simple filter only if query not provided
     if (listInput.filterField) { requestParams.filterField = listInput.filterField; }
     if (listInput.filter) { requestParams.filter = listInput.filter; }
@@ -255,7 +294,7 @@ const listResourceTool = async (losantClient, { resourceType }, requestParams, l
   if (resourceType === 'dataTableRow') {
     listResponse = await queryDataTableRows(losantClient, requestParams);
   } else {
-    listResponse = await losantClient[`${resourceType}s`].get(requestParams);
+    listResponse = await losantClient[getPluralResourceName(resourceType)].get(requestParams);
   }
   const responseContent = [];
   if (omitFieldByResourceType[resourceType]) {
@@ -266,7 +305,7 @@ const listResourceTool = async (losantClient, { resourceType }, requestParams, l
         _projection: {
           mode: 'summary',
           omittedFields: omittedFieldsByResourceType[resourceType] || [],
-          hint: 'Summary fields only. Use operation:get with an id to retrieve full content.'
+          hint: omittedFieldHint[resourceType] || 'Summary fields only. Use operation:get with an id to retrieve full content.'
         }
       }, null, 2)
     });
@@ -301,7 +340,7 @@ export default {
   name: 'losant_query',
   inputInfo: {
     title: 'Query Losant Resources',
-    description: `List or get Losant resources: ${RESOURCE_TYPES.join(', ')}. See losant://guides/losant-resources-query for the full workflow, including how to select an application, handle nested resources, and links to per-resource documentation. For advanced MongoDB-style queries, see losant://guides/advanced-queries.`,
+    description: `List or get Losant resources: ${RESOURCE_TYPES.join(', ')}. See losant://guides/losant-query-tool for the step by step procedures, including how to select an application, handle nested resources, and links to per-resource documentation. For advanced MongoDB-style queries, see losant://guides/advanced-queries.`,
     inputSchema: z.fromJSONSchema({
       type: 'object',
       properties: {
@@ -325,7 +364,7 @@ export default {
         },
         resourceId: {
           type: 'string',
-          description: 'Resource ID (required for "get" operation, 24-character hex string)'
+          description: 'Resource ID (required for "get" operation, 24-character hex string) OR if the resourceType is experienceVersion or flowVersion this could be a string name or an ID'
         },
         page: {
           type: 'number',

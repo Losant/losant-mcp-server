@@ -18,7 +18,8 @@ Users may belong to thousands of applications. **Never auto-select or assume an 
 2. Query \`resourceType='application'\` with \`filterField='name'\` and \`filter='UserProvidedName*'\` (use \`perPage<=100\`).
 3. Application names are **not unique** — if multiple match, show the user the name and id for each and ask them to confirm.
 4. Extract the \`id\` field (NOT \`ownerId\`) from the chosen application and use it as \`applicationId\`.
-5. Use \`applicationId\` for all subsequent application-scoped resource queries.
+5. Query \`resourceType='application'\` with \`operation='get'\` and \`resourceId\` set to the chosen application's id. This loads the full application details and its README as context — the README often contains important domain knowledge left by the application's developers that informs all subsequent work within this application.
+6. Use \`applicationId\` for all subsequent application-scoped resource queries.
 
 > Always query the API even if an application's summary counts show 0 — summary counts are informational only, not the source of truth.
 
@@ -33,7 +34,7 @@ Some resources require a parent resource ID via the \`parentResourceId\` paramet
 
 ${nestedNote}
 
-For a complete index of all available documentation and schemas, see [losant://docs/index](losant://docs/index).
+For a complete index of all available documentation and schemas, and environment info (API URL, MQTT broker host), see [losant://info](losant://info).
 
 ## Advanced Queries
 
@@ -41,11 +42,11 @@ For MongoDB-style filtering, use the \`query\` parameter instead of \`filterFiel
 `;
 
 export default {
-  name: 'losant-query-resources-guide',
-  uriName: 'losant://guides/losant-resources-query',
+  name: 'losant-query-tool-guide',
+  uriName: 'losant://guides/losant-query-tool',
   resourceConfig: {
     title: 'Losant Query Tool Guide',
-    description: 'Workflow guide for the losant_query tool — application selection, nested resources, and resource documentation links',
+    description: 'READ THIS BEFORE USING: losant_query tool - This includes procedural guide for the losant_query tool: application selection, nested resources, resource documentation links, and resource-specific query documentation links.',
     mimeType: 'text/markdown'
   },
   getContent: async (uri) => {

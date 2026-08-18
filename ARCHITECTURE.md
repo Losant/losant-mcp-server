@@ -177,7 +177,7 @@ Creates per-request MCP server instances:
 - **API Docs** (`losant://docs/{name}`) - From losant-rest package
 - **Query Schemas** (`losant://schemas/{name}`) - JSON schemas
 - **Advanced Query Guide** (`losant://guides/advanced-queries`) - Details on querying appication reosurces with an advanced query
-- **Query Tool Guide** (`losant://guides/losant-resources-query`) - Details on querying application resources
+- **Query Tool Guide** (`losant://guides/losant-query-tool`) - Details on querying application resources
 - **API Index** (`losant://docs/index`) - Auto-generated index
 
 **Loading:**
