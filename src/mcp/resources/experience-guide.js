@@ -58,16 +58,16 @@ Experience-specific Handlebars helpers (\`{{page}}\`, \`{{component}}\`, \`{{ele
 4. Call \`losant_write\` \`operation=createOne\` \`resourceType=experienceView\` — do **not** include a \`versions\` field (views land in develop automatically)
 5. Check \`losant://schemas/experienceViewPost\` for the full body schema
 
-### Common Procedure: Build a static page (no workflow required)
+### Common Procedure: Build a static page (no flow required)
 
-A static page renders a view directly from an endpoint with no backing workflow — useful for login pages, home pages, error pages, and simple informational content.
+A static page renders a view directly from an endpoint with no backing flow — useful for login pages, home pages, error pages, and simple informational content.
 
 1. Create the view: \`losant_write\` \`operation=createOne\` \`resourceType=experienceView\` with \`viewType: "page"\`, a layout, and a \`body\`. Note the returned \`id\`.
 2. Create the endpoint: \`losant_write\` \`operation=createOne\` \`resourceType=experienceEndpoint\` with \`method\`, \`route\`, \`access\`, and \`staticReply: { "type": "page", "value": "<viewId from step 1>", "statusCode": 200 }\`
 
 Alternatively, create the endpoint first (omitting \`staticReply\` or setting it to \`null\`) and wire the view later with \`losant_write\` \`operation=updateOne\` \`resourceType=experienceEndpoint\`.
 
-The page body has access to the standard render context (\`request\`, \`experience.user\`, etc.) but \`pageData\` will be empty — there is no workflow to populate it.
+The page body has access to the standard render context (\`request\`, \`experience.user\`, etc.) but \`pageData\` will be empty — there is no flow to populate it.
 
 **Context always available**: \`time\`, \`application\`, \`experience.user\`, \`experience.endpoint\`, \`experience.page\`, \`experience.version\`, \`request\`.
 
@@ -119,7 +119,7 @@ Key fields for \`experienceEndpoint\`:
 
 Rate limit: 50 requests/sec sustained, 500 burst — applied **per slug or domain** (effectively per experience version), not per individual endpoint.
 
-For deep authoring detail — route syntax, \`deviceIdTemplate\`, reply type shapes, the endpoint → workflow → view loop, and common procedures — read \`losant://authoring/experience-endpoint\`.
+For deep authoring detail — route syntax, \`deviceIdTemplate\`, reply type shapes, the endpoint → flow → view loop, and common procedures — read \`losant://authoring/experience-endpoint\`.
 
 ### Common Procedure: Create an endpoint
 
@@ -128,7 +128,7 @@ For deep authoring detail — route syntax, \`deviceIdTemplate\`, reply type sha
 3. For static page reply: get the experience view ID first (\`losant_query\` \`resourceType=experienceView\`)
 4. Call \`losant_write\` \`operation=createOne\` \`resourceType=experienceEndpoint\`
 5. Check \`losant://schemas/experienceEndpointPost\` for the full body schema
-6. If using flow-driven reply: create or update an experience-type flow with an Endpoint Trigger matching this endpoint's method and route
+6. If using flow-driven reply: create or update an experience-type flow with an Endpoint Trigger matching this endpoint's method and route. See \`losant://flow/triggers/endpoint\` for the trigger configuration, the \`data.replyId\` path, and the Endpoint Reply node pattern.
 
 ## Experience Users
 
@@ -177,7 +177,7 @@ losant_query operation=list resourceType=device query={ "experienceGroupId": { "
 
 ### Access control
 
-Set \`access: "group"\` on an endpoint and supply \`experienceGroupIds\` to restrict the endpoint to members of those groups (or their ancestors). Non-members receive the endpoint's \`unauthorizedReply\` instead of reaching the backing workflow.
+Set \`access: "group"\` on an endpoint and supply \`experienceGroupIds\` to restrict the endpoint to members of those groups (or their ancestors). Non-members receive the endpoint's \`unauthorizedReply\` instead of reaching the backing flow.
 
 ## Experience Domains & Slugs
 

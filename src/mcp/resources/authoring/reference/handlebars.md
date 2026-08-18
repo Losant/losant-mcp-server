@@ -1,6 +1,6 @@
 # Losant Handlebars Reference
 
-Losant uses a Handlebars-based templating dialect across dashboards, experience views, and workflows. This reference covers the full language — syntax modes, block helpers, every format helper, expression operators, and JSON templates.
+Losant uses a Handlebars-based templating dialect across dashboards, experience views, and flows. This reference covers the full language — syntax modes, block helpers, every format helper, expression operators, and JSON templates.
 
 **Context-specific variables** (what data is available in each authoring area) are documented separately:
 - Dashboard render context → `losant://references/dashboard/templates`
@@ -13,7 +13,7 @@ Losant uses a Handlebars-based templating dialect across dashboards, experience 
 | Mode | Syntax | Where used | Returns |
 |---|---|---|---|
 | **String template** | `{{...}}` | Almost everywhere — block configs, view bodies, row templates, condition labels | Always a string |
-| **Expression** | Evaluated formula | Fields explicitly labelled "expression" — graph/gauge segment `expression`, indicator/gauge/device-count conditions, workflow Conditional and Math nodes | Number, boolean, or string |
+| **Expression** | Evaluated formula | Fields explicitly labelled "expression" — graph/gauge segment `expression`, indicator/gauge/device-count conditions, flow Conditional and Math nodes | Number, boolean, or string |
 | **JSON template** | Full Handlebars string that must evaluate to valid JSON | Input Controls button payloads, Losant API node | JSON value |
 
 ---
@@ -22,7 +22,7 @@ Losant uses a Handlebars-based templating dialect across dashboards, experience 
 
 1. **String templates always render to strings.** Even `{{someNumber}}` produces `"42"`, not `42`. In JSON templates this matters — numbers and booleans must be unquoted in the template so the rendered result is valid JSON.
 
-2. **`{{value}}` HTML-escapes output; `{{{value}}}` does not.** Double braces are safe everywhere — `<` becomes `&lt;`, `&` becomes `&amp;`, etc. Triple braces render raw HTML exactly as-is. Triple braces are intended for experience view HTML bodies when you want to inject HTML stored in a variable (e.g. Markdown converted to HTML via `{{{toHtml content}}}`). In workflow node string fields, dashboard block configs, and JSON templates, triple braces are almost never needed and will produce literal HTML tags in the output.
+2. **`{{value}}` HTML-escapes output; `{{{value}}}` does not.** Double braces are safe everywhere — `<` becomes `&lt;`, `&` becomes `&amp;`, etc. Triple braces render raw HTML exactly as-is. Triple braces are intended for experience view HTML bodies when you want to inject HTML stored in a variable (e.g. HTML Parser Node output converted to an HTML string via `{{{toHtml content}}}`). In flow node string fields, dashboard block configs, and JSON templates, triple braces are almost never needed and will produce literal HTML tags in the output.
 
 3. **Block helpers produce text output.** `{{#if condition}}...{{/if}}` produces the text between the tags when truthy. In HTML contexts this is exactly what you want. In a JSON template, blocks can break JSON validity if they produce whitespace or text in the wrong place — plan structure accordingly.
 
@@ -157,7 +157,7 @@ Inline (non-block) helpers that transform values. Syntax: `{{helperName arg1 arg
 | `floor` | `{{floor value}}` | Round down to nearest integer |
 | `max` | `{{max a b}}` | Larger of two values |
 | `min` | `{{min a b}}` | Smaller of two values |
-| `scaleLinear` | `{{scaleLinear value inMin inMax outMin outMax}}` | Map a value from one numeric range to another (e.g. 0–100 sensor reading to 0–255 display range) |
+| `scaleLinear` | `{{scaleLinear fromLow fromHigh toLow toHigh value}}` | Scales the given value from the domain defined by fromLow and fromHigh to the range defined by toLow and toHigh. Similar to the Arduino Map function. |
 
 Nesting example:
 ```handlebars
@@ -175,10 +175,9 @@ Nesting example:
 | `trim` | `{{trim value}}` | Remove leading/trailing whitespace |
 | `substring` | `{{substring value start end}}` | Slice a string (`end` is optional) |
 | `length` | `{{length value}}` | Character count for strings, item count for arrays |
-| `join` | `{{join array separator}}` | Join array items into a string |
-| `concat` | `{{concat a b ...}}` | Concatenate strings |
+| `join` | `{{join array separator}}` | Join array items into a string with the given separator. Note: using `{{array}}` directly in a string template also produces a comma-separated string. |
 | `defaultTo` | `{{defaultTo value fallback}}` | Return `value` unless it is null/undefined/empty, then return `fallback` |
-| `typeof` | `{{typeof value}}` | Returns `"string"`, `"number"`, `"boolean"`, `"object"`, `"array"`, `"null"`, or `"undefined"` |
+| `typeof` | `{{typeof value}}` | Returns `"string"`, `"number"`, `"boolean"`, `"object"`, `"array"`, `"date"`, `"null"`, or `"undefined"` |
 
 ### Encoding / Decoding
 
@@ -195,9 +194,9 @@ Nesting example:
 | Helper | Signature | Notes |
 |---|---|---|
 | `format` | `{{format value "formatString"}}` | Losant's general formatter. Without a format string, applies sensible defaults per type (numbers → locale, timestamps → human-readable). With a format string: D3 number format (e.g. `".2f"`, `"$,.0f"`), moment.js date format (e.g. `"YYYY-MM-DD"`), or presets like `"date-time-local"`. |
-| `formatDate` | `{{formatDate value "format" "timezone"}}` | Format a Unix ms timestamp in a specific timezone (e.g. `"America/Chicago"`). Format uses moment.js tokens. |
-| `formatDateRelative` | `{{formatDateRelative value}}` | Human-relative time: "3 minutes ago", "in 2 hours" |
-| `currentDateTime` | `{{currentDateTime "format" "timezone"}}` | Current time, formatted and optionally timezone-converted |
+| `formatDate` | `{{formatDate value "formatStr" tz="America/Chicago"}}` | Format a Unix ms timestamp in a specific timezone (e.g. `"America/Chicago"`). Format uses moment.js tokens. |
+| `formatDateRelative` | `{{formatDateRelative date relativeTo locale="en"}}` | Human-relative time: "3 minutes ago", "in 2 hours". `relativeTo` is an optional reference time (defaults to now). |
+| `currentDateTime` | `{{currentDateTime "format" tz="America/Chicago"}}` | Current time, formatted and optionally timezone-converted |
 
 ### JSON
 
@@ -215,22 +214,22 @@ Nesting example:
 | `merge` | `{{merge obj1 obj2}}` | Shallow-merge two objects |
 | `lookup` | `{{lookup object key}}` | Access `object[key]` where `key` is a dynamic value (use when the key isn't known at template-write time) |
 | `last` | `{{last array}}` | Last element of an array |
-| `indexByKey` | `{{indexByKey array "keyField"}}` | Convert array to object keyed by a field value |
-| `valueByKey` | `{{valueByKey array "keyField" keyValue}}` | Find the first array item where `item[keyField] === keyValue` |
+| `indexByKey` | `{{indexByKey array keyValue "keyPath"}}` | Returns the 0-based index of the first element where `element[keyPath] === keyValue`. Returns -1 if not found. |
+| `valueByKey` | `{{valueByKey array keyValue "keyPath" "valuePath"}}` | Find the first array item where `item[keyPath] === keyValue` and return `item[valuePath]` |
 
 ### GPS
 
 | Helper | Signature | Notes |
 |---|---|---|
 | `formatGps` | `{{formatGps value}}` | Format a GPS string (`"lat,lon"`) for display |
-| `gpsDistance` | `{{gpsDistance gps1 gps2 "unit"}}` | Distance between two GPS points. Unit: `"km"`, `"mi"`, `"m"` |
+| `gpsDistance` | `{{gpsDistance point1 point2}}` | Distance between two GPS points in meters |
 | `gpsIsPointInside` | `{{gpsIsPointInside point polygon}}` | Boolean — is the GPS point inside the polygon |
 
 ### Rendering and advanced
 
 | Helper | Signature | Context |
 |---|---|---|
-| `{{{toHtml markdownString}}}` | — | Renders Markdown to HTML. **Always use triple braces** — double braces would HTML-escape the output and display literal HTML tags. Only meaningful inside experience view HTML bodies and layouts. |
+| `{{{toHtml htmlParserJson}}}` | — | Converts HTML Parser Node JSON output to an HTML string. **Always use triple braces** — double braces would HTML-escape the output and display literal HTML tags. Only meaningful inside experience view HTML bodies and layouts. |
 | `colorMarker` | `{{colorMarker "#hexColor"}}` | Generates a colored map pin URL for dashboard GPS History blocks. Argument must be a literal hex string, not a sub-expression: `{{#if isLastPoint}}{{colorMarker '#27AE60'}}{{else}}{{colorMarker '#E74C3C'}}{{/if}}` |
 | `template` | `{{template "{{value}} units"}}` | Evaluate a string as a Handlebars template at render time (deferred evaluation) |
 | `evalExpression` | `{{evalExpression "expression"}}` | Evaluate a Losant expression string and return the result |
@@ -334,6 +333,6 @@ With values `brightness=80`, `enabled=true`, `label="Night mode"`, `r=0`, `g=154
 |---|---|---|
 | `{{value}}` | HTML-escapes: `<` → `&lt;`, `&` → `&amp;`, `"` → `&quot;` | Default — safe everywhere |
 | `{{{value}}}` | Raw output, no escaping | Experience view HTML bodies only, when the value is already safe HTML |
-| `{{{toHtml markdownValue}}}` | Converts Markdown to HTML, rendered raw | The only correct way to use `toHtml` — always triple braces |
+| `{{{toHtml htmlParserJson}}}` | Converts HTML Parser Node JSON output to an HTML string, rendered raw | The only correct way to use `toHtml` — always triple braces |
 
 If you use `{{{value}}}` with user-controlled input, you are responsible for sanitizing that input before it reaches the template — Losant does not sanitize raw output automatically.

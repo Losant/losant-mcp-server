@@ -115,6 +115,14 @@ The access secret is returned **once** on \`createOne applicationKey\` and is ne
 ### Edge Compute devices (\`edgeCompute\` class)
 Edge Compute devices run the Losant Gateway Edge Agent (GEA), which supports both auth methods. Access key auth uses \`DEVICE_ID\` / \`ACCESS_KEY\` / \`ACCESS_SECRET\` environment variables; certificate auth requires configuring the GEA's TLS client certificate settings. Refer to the Losant Edge Agent documentation for GEA-specific configuration details.
 
+## Reacting to device events with flows
+
+Device activity fires flows automatically — no polling required:
+
+- **State reports** → \`losant://flow/triggers/device-state\` — fires when a device reports attributes. Filter by specific attributes using \`attributeWhitelist\`. \`data.*\` contains the reported attributes; \`triggerId\` is the reporting device's ID.
+- **Connection events** → \`losant://flow/triggers/device-connect\` and \`losant://flow/triggers/device-disconnect\` — fire when a device connects or disconnects from the MQTT broker.
+- **Inactivity** → \`losant://flow/triggers/device-inactive\` — fires when a device has not reported state within a configured window.
+
 ${buildReferenceSection(['device', 'deviceRecipe'])}
 `;
 

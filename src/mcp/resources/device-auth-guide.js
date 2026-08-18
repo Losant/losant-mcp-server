@@ -193,7 +193,7 @@ export default {
   uriName: 'losant://guides/device-auth',
   resourceConfig: {
     title: 'Device Authentication Guide',
-    description: 'Access keys and device certificates for MQTT broker authentication — API/UI naming differences, setup workflows, and edge compute notes',
+    description: 'Access keys and device certificates for MQTT broker authentication — API/UI naming differences, setup procedures, and edge compute notes',
     mimeType: 'text/markdown'
   },
   getContent: async (uri) => {

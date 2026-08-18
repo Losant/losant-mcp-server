@@ -1,6 +1,6 @@
 ---
 name: losant-dashboard-authoring
-description: Build, edit, and update Losant application dashboards through the API — dashboard envelope, the 4-column layout grid, the block object shape, the 24 block types and where their detail docs live, the context-variable system that lets one dashboard render against different inputs, refresh / duration / resolution semantics, public-vs-private access controls, and report configuration. Includes a catalog of every block type with pointers to detail docs. Use whenever you are creating or modifying a dashboard body (the `blocks` or `contextConfiguration` arrays) via the Losant REST API.
+description: Build, edit, and update Losant application dashboards through the API — dashboard envelope, the 4-column layout grid, the block object shape, the 25 block types and where their detail docs live, the context-variable system that lets one dashboard render against different inputs, refresh / duration / resolution semantics, public-vs-private access controls, and report configuration. Includes a catalog of every block type with pointers to detail docs. Use whenever you are creating or modifying a dashboard body (the `blocks` or `contextConfiguration` arrays) via the Losant REST API.
 ---
 
 # Losant Dashboard Authoring
@@ -20,7 +20,7 @@ The **envelope, layout grid, and shared block shape** are described here in full
 
 ## One resource, no versioning
 
-Unlike workflows, a dashboard has **no version model**. There is one mutable document per dashboard. PATCH edits go live immediately for everyone viewing the dashboard on next refresh.
+Unlike flows, a dashboard has **no version model**. There is one mutable document per dashboard. PATCH edits go live immediately for everyone viewing the dashboard on next refresh.
 
 - `POST /applications/{appId}/dashboards` to create.
 - `PATCH /applications/{appId}/dashboards/{dashboardId}` to update name, blocks, context, refresh rate, access, etc.
@@ -61,8 +61,8 @@ Required: `name`. POST to `/applications/{appId}/dashboards`.
 | `description` | string | — | Optional. Visible on public dashboards too. |
 | `defaultTheme` | `"dark"` \| `"light"` | `"light"` | The theme a new viewer sees; individual users can override and the preference sticks per-user. |
 | `refreshRate` | number (seconds) | `60` | How often data-bearing blocks re-query. Range: 5–600. |
-| `duration` | integer (ms) | — | Dashboard-level time window for time-series blocks that reference `{{dashboard.duration}}`. |
-| `resolution` | integer (ms) | — | Dashboard-level aggregation bucket size. Must be **≤ `duration`** or the save will fail. |
+| `duration` | integer (ms) | `3600000` (1 hour) | Dashboard-level time window for time-series blocks that reference `{{dashboard.duration}}`. Server applies this default after creation if not specified. |
+| `resolution` | integer (ms) | `60000` (1 minute) | Dashboard-level aggregation bucket size. Must be **≤ `duration`** or the save will fail. Server applies this default after creation if not specified. |
 | `public` | boolean | `false` | When `true`, the dashboard is reachable without a Losant session. **Any data shown in a public dashboard is public.** |
 | `password` | string \| `null` | `null` | When set, the dashboard requires this password in addition to the URL. Not compatible with `public: false`. |
 | `reportConfigs` | object[] | `[]` | Up to 10 recurring email reports. Each entry: `{ "toEmail": string[], "cron": string, "timezone": "America/Chicago", "subject": string, "message": string, "theme": "light"\|"dark", "ctx": object }`. `cron` is a standard 5-field cron expression (e.g. `"0 10 * * 1"` for every Monday at 10am). `ctx` overrides dashboard context variable defaults for the report render. Reports are PDF snapshots of the dashboard rendered at the scheduled time. |
@@ -171,7 +171,7 @@ Use this to pick the right block before looking up its spec.
 | **Device & fleet tables** | `device-state-table`, `device-list`, `device-count`, `device-log` | Showing device metadata, attribute state, or connectivity across a fleet |
 | **Location** | `map`, `heatmap`, `position-chart` | Visualizing where devices are or have been (GPS or image-coordinate) |
 | **Events & status** | `event-list`, `open-event-indicator`, `indicator` | Surfacing alerts, event state, or computed go/no-go status |
-| **Control & interaction** | `input` | Letting viewers send device commands or trigger workflows |
+| **Control & interaction** | `input` | Letting viewers send device commands or trigger flows |
 | **Visual & layout** | `image`, `image-overlay`, `section-header`, `iframe` | SCADA panels, background images, dividers, embedded external pages |
 | **Custom rendering** | `custom-chart`, `custom-html` | Vega/Vega-Lite visualizations or arbitrary HTML/JS |
 | **Administrative lists** | `application-list`, `dashboard-list`, `workflow-list`, `data-table` | Showing platform resources, not device telemetry |

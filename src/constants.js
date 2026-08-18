@@ -70,9 +70,9 @@ export const WRITABLE_RESOURCE_TYPES = [
   'applicationReadme',
   'applicationCertificate',
   'applicationCertificateAuthority',
-  'applicationDashboard'
-  // 'flow', will be added in another branch
-  // 'flowVersion', will be added in another branch
+  'applicationDashboard',
+  'flow',
+  'flowVersion'
 ];
 
 // events created by devices/flows, not the LLM
@@ -151,10 +151,23 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const AUTHORING_PATH = path.join(__dirname, 'mcp/resources/authoring');
 
 export const AUTHORING_HUB_TO_FILE = {
+  'flow': path.join(AUTHORING_PATH, 'flows/flow.md'),
   'dashboard': path.join(AUTHORING_PATH, 'dashboards/dashboard-guide.md'),
   'experience-view': path.join(AUTHORING_PATH, 'experiences/experience-view.md'),
   'experience-endpoint': path.join(AUTHORING_PATH, 'experiences/experience-endpoint.md')
 };
+
+const flowNodesDir = path.join(AUTHORING_PATH, 'flows/nodes');
+export const FLOW_NODE_TO_FILE = Object.fromEntries(
+  readdirSync(flowNodesDir).filter((f) => f.endsWith('.md'))
+    .map((f) => [f.replace('.md', ''), path.join(flowNodesDir, f)])
+);
+
+const flowTriggersDir = path.join(AUTHORING_PATH, 'flows/triggers');
+export const FLOW_TRIGGER_TO_FILE = Object.fromEntries(
+  readdirSync(flowTriggersDir).filter((f) => f.endsWith('.md'))
+    .map((f) => [f.replace('.md', ''), path.join(flowTriggersDir, f)])
+);
 
 const dashboardBlocksDir = path.join(AUTHORING_PATH, 'dashboards/blocks');
 export const DASHBOARD_BLOCK_TO_FILE = Object.fromEntries(
@@ -164,6 +177,12 @@ export const DASHBOARD_BLOCK_TO_FILE = Object.fromEntries(
 
 export const REFERENCES_TO_FILE = {
   'shared/handlebars': path.join(AUTHORING_PATH, 'reference/handlebars.md'),
+  'flow/custom-nodes': path.join(AUTHORING_PATH, 'flows/reference/custom-nodes.md'),
+  'flow/payload': path.join(AUTHORING_PATH, 'flows/reference/payload.md'),
+  'flow/globals': path.join(AUTHORING_PATH, 'flows/reference/globals.md'),
+  'flow/templating': path.join(AUTHORING_PATH, 'flows/reference/templating.md'),
+  'flow/execution-model': path.join(AUTHORING_PATH, 'flows/reference/execution-model.md'),
+  'flow/patterns': path.join(AUTHORING_PATH, 'flows/reference/patterns.md'),
   'experience/context-configuration': path.join(AUTHORING_PATH, 'experiences/reference/context-configuration.md'),
   'dashboard/context-configuration': path.join(AUTHORING_PATH, 'dashboards/reference/context-configuration.md'),
   'dashboard/templates': path.join(AUTHORING_PATH, 'dashboards/reference/templates.md'),

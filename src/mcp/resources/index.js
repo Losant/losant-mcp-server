@@ -14,13 +14,15 @@ import notebookGuide from './notebook-guide.js';
 import experienceGuide from './experience-guide.js';
 import deviceAuthGuide from './device-auth-guide.js';
 import dashboardGuide from './dashboard-guide.js';
+import flowGuide from './flow-guide.js';
 import indexContent from './build-api-index-content.js';
 import conf from '../../config.js';
 import memoizee from 'memoizee';
 import { SCHEMA_NAME_TO_FILE, DOC_NAME_TO_FILE,
   DOCS_PATH, RESOURCE_TYPE_SET, SCHEMAS_PATH,
-  WRITABLE_RESOURCE_TYPES, NO_CREATE_TYPES,
-  AUTHORING_HUB_TO_FILE, DASHBOARD_BLOCK_TO_FILE, REFERENCES_TO_FILE } from '../../constants.js';
+  WRITABLE_RESOURCE_TYPES, NO_CREATE_TYPES, AUTHORING_HUB_TO_FILE,
+  FLOW_NODE_TO_FILE, FLOW_TRIGGER_TO_FILE, DASHBOARD_BLOCK_TO_FILE,
+  REFERENCES_TO_FILE } from '../../constants.js';
 import { getPluralResourceName } from '../tools/helpers.js';
 import debug from 'debug';
 
@@ -30,7 +32,7 @@ const brokerHost = apiHost.replace(/^api\./, 'broker.');
 const infoPreamble = `# Losant MCP Server — Info
 
 ## About Losant
-Losant is an IoT application enablement platform for building, connecting, and managing IoT solutions at scale. It provides connected devices via MQTT and REST, a visual workflow engine for device automation and business logic, real-time dashboards for data visualization, Experience Builder for custom end-user web interfaces and APIs, and Edge Compute for running workflows locally on gateway devices without cloud dependency.
+Losant is an IoT application enablement platform for building, connecting, and managing IoT solutions at scale. It provides connected devices via MQTT and REST, a visual flow engine for device automation and business logic, real-time dashboards for data visualization, Experience Builder for custom end-user web interfaces and APIs, and Edge Compute for running flows locally on gateway devices without cloud dependency.
 
 ## Environment
 - **API URL**: ${apiUrl}
@@ -60,6 +62,7 @@ const GUIDES_TO_REGISTER = [
   dashboardGuide,
   experienceGuide,
   fileGuide,
+  flowGuide,
   integrationGuide,
   notebookGuide,
   resourceJobGuide
@@ -98,13 +101,16 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
       disclaimerLines.push('\nSee [losant://guides/experiences](losant://guides/experiences) for the versioning model, view sub-types, endpoint access control, and common procedures.');
     }
     if (filePath.endsWith('applicationDashboard.md') || filePath.endsWith('applicationDashboards.md')) {
-      disclaimerLines.push('\nSee [losant://guides/dashboards](losant://guides/dashboards) for the block catalog, layout rules, context variables, and common workflows.');
+      disclaimerLines.push('\nSee [losant://guides/dashboards](losant://guides/dashboards) for the block catalog, layout rules, context variables, and common flows.');
     }
     if (filePath.includes('applicationCertificate') || filePath.includes('applicationCertificateAuthority')) {
-      disclaimerLines.push('\nSee [losant://guides/device-auth](losant://guides/device-auth) for the API/UI naming difference (Device Certificate vs. applicationCertificate), certificate authority setup, and MQTT mutual TLS authentication workflow.');
+      disclaimerLines.push('\nSee [losant://guides/device-auth](losant://guides/device-auth) for the API/UI naming difference (Device Certificate vs. applicationCertificate), certificate authority setup, and MQTT mutual TLS authentication flow.');
     }
     if (filePath.endsWith('applicationKey.md') || filePath.endsWith('applicationKeys.md')) {
       disclaimerLines.push('\nSee [losant://guides/device-auth](losant://guides/device-auth) for MQTT credential fields, device restriction options, and the access secret one-time return behavior.');
+    }
+    if (filePath.endsWith('flow.md') || filePath.endsWith('flows.md') || filePath.endsWith('flowVersion.md') || filePath.endsWith('flowVersions.md')) {
+      disclaimerLines.push('\nSee [losant://guides/flows](losant://guides/flows) for the full flow authoring guide — trigger catalog, node catalog, wiring model, payload reference, and templating.');
     }
     if (filePath.endsWith('data.md')) {
       disclaimerLines.push('- endpoint "timeSeriesQuery" used by tool `losant_timeseries` as operation "timeSeriesQuery"');
@@ -148,8 +154,8 @@ const readAuthoringContent = memoizee(async (filePath, href) => {
 }, { maxAge: 1000 * 60 * 60, primitive: true });
 
 export default (server) => {
-  // +6 = losant://info, doc template, schema template, authoring-hub template, dashboard-block template, reference template
-  log(`Registering ${GUIDES_TO_REGISTER.length + 6} resources...`);
+  // +8 = losant://info, doc template, schema template, authoring-hub template, flow-node template, flow-trigger template, dashboard-block template, reference template
+  log(`Registering ${GUIDES_TO_REGISTER.length + 8} resources...`);
   server.registerResource(
     'info',
     'losant://info',
@@ -168,6 +174,7 @@ export default (server) => {
       };
     }
   );
+  log('Registering resource templates...');
   server.registerResource(
     'doc',
     new ResourceTemplate('losant://docs/{docName}', { list: undefined }),
@@ -216,6 +223,36 @@ export default (server) => {
     async (uri, { resourceType }) => {
       const filePath = AUTHORING_HUB_TO_FILE[resourceType];
       if (!filePath) { throw new Error(`Authoring hub not found: ${resourceType}`); }
+      return readAuthoringContent(filePath, uri.href);
+    }
+  );
+
+  server.registerResource(
+    'flow-node',
+    new ResourceTemplate('losant://flow/nodes/{nodeName}', { list: undefined }),
+    {
+      title: 'Losant Flow Node',
+      description: 'Per-node authoring detail for Losant flow nodes — discovered via losant://authoring/flow',
+      mimeType: 'text/markdown'
+    },
+    async (uri, { nodeName }) => {
+      const filePath = FLOW_NODE_TO_FILE[nodeName];
+      if (!filePath) { throw new Error(`Flow node not found: ${nodeName}`); }
+      return readAuthoringContent(filePath, uri.href);
+    }
+  );
+
+  server.registerResource(
+    'flow-trigger',
+    new ResourceTemplate('losant://flow/triggers/{triggerName}', { list: undefined }),
+    {
+      title: 'Losant Flow Trigger',
+      description: 'Per-trigger authoring detail for Losant flow triggers — discovered via losant://authoring/flow',
+      mimeType: 'text/markdown'
+    },
+    async (uri, { triggerName }) => {
+      const filePath = FLOW_TRIGGER_TO_FILE[triggerName];
+      if (!filePath) { throw new Error(`Flow trigger not found: ${triggerName}`); }
       return readAuthoringContent(filePath, uri.href);
     }
   );

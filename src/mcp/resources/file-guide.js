@@ -107,6 +107,12 @@ No upload step needed — directories are pure metadata.
 ### Check for an existing file before uploading
 Use \`losant_query\` \`operation=list\` \`resourceType=file\` with \`filterField=name\` and \`filter=filename\` to check if the file already exists.
 
+## Reacting to file operations with flows
+
+File create, update, and delete operations can fire cloud flows automatically:
+
+- **File events** → \`losant://flow/triggers/app-file\` — fires when a file is created, updated, or deleted. Useful for post-upload processing pipelines (e.g. parse a CSV on upload, generate a thumbnail, or validate a file before making it available).
+
 ${buildReferenceSection(['file', 'privateFile'])}
 `;
 

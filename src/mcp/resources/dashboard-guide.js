@@ -49,7 +49,7 @@ Every block requires at minimum \`blockType\`, \`startX\`, \`startY\`, \`width\`
 \`\`\`
 The \`config\` object is block-type-specific — read the per-block guide file before constructing it.
 
-## Common LLM Workflows
+## Common LLM Procedures
 
 ### Create an empty dashboard, then add blocks
 1. **Discover device attributes first** — call \`losant_query\` \`operation=get\` \`resourceType=device\` on the target device and inspect its \`attributes\` array. Each entry has a \`name\` (use this as the \`attribute\` field in block configs — it must match exactly) and a \`dataType\` (\`number\`, \`string\`, \`boolean\`, \`gps\`, \`blob\`). Only \`number\` attributes work in time-series blocks; \`gps\` for map blocks; \`blob\` or \`string\` for the image block's attribute source.
@@ -95,7 +95,7 @@ export default {
   uriName: 'losant://guides/dashboards',
   resourceConfig: {
     title: 'Dashboards Guide',
-    description: 'Domain guide for Losant application dashboards — blocks, layout grid, context variables, and common workflows',
+    description: 'Domain guide for Losant application dashboards — blocks, layout grid, context variables, and common procedures',
     mimeType: 'text/markdown'
   },
   getContent: async (uri) => {

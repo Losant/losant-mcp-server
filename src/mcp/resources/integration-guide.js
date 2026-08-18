@@ -130,7 +130,7 @@ Requires a stored GCP service account credential. Do not embed credentials inlin
 4. Check \`losant://schemas/integrationPost\` for the full body schema
 
 ### After creating an integration
-The integration alone does nothing. To process incoming messages, a flow must be configured with an **Integration Trigger** node that references this integration's ID. This is done through the Losant UI or flow API — it cannot be configured via \`losant_write\`.
+The integration alone does nothing. To process incoming messages, a flow must be configured with an **Integration Trigger** node that references this integration's ID. Create a flow with \`losant_write\` \`operation=createOne\` \`resourceType=flow\` and add an Integration Trigger node referencing this integration's ID. See \`losant://authoring/flow\` for the flow create body shape. Trigger docs by integration type: MQTT → \`losant://flow/triggers/mqtt-topic\`, SQS → \`losant://flow/triggers/amazon-sqs\`, Azure Event Hubs → \`losant://flow/triggers/azure-event-hubs\`, Google Pub/Sub → \`losant://flow/triggers/google-pub-sub\`, Particle → \`losant://flow/triggers/particle\`, WebSocket → \`losant://flow/triggers/websocket\`.
 
 
 ${buildReferenceSection(['integration'])}

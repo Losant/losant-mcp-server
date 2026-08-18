@@ -1,0 +1,58 @@
+# Email Node (`type: "StructureEmailNode"`)
+
+Sends an email using Losant's built-in email delivery. No credential required. **Rate limited to 1 send per minute per flow.** (Sandbox accounts: 1 per 5 minutes, burst 5.) For production use, prefer SendGrid or Mailgun nodes. The From address is auto-generated from the flow ID and cannot be customized. Available in cloud, experience, and customNode flows.
+
+## Required Fields
+
+| Field | Value |
+|---|---|
+| `type` | `"StructureEmailNode"` |
+| `meta.category` | `"output"` |
+| `meta.name` | `"structure-email"` |
+| `meta.label` | `"Email"` (default) |
+
+## Cloud (Application) flows
+
+```json
+{
+  "id": "send-email",
+  "type": "StructureEmailNode",
+  "config": {
+    "toAddresses": ["operator@example.com"],
+    "subjectTemplate": "Alert: {{working.alertSubject}}",
+    "bodyTemplate": "<h2>Alert</h2><p>Temperature on {{data.deviceId}} reached {{data.attributes.tempC}}°C.</p>",
+    "resultPath": "working.emailResult"
+  },
+  "meta": { "category": "output", "name": "structure-email", "label": "Email", "x": 200, "y": 200 },
+  "outputIds": [["next"]]
+}
+```
+
+| Config field | Notes |
+|---|---|
+| `toAddresses` | **Required.** Array of recipient email strings. Up to 5 recipients. Each element is a static address or a Handlebars template. |
+| `subjectTemplate` | **Required.** Email subject as a Handlebars template. |
+| `bodyTemplate` | **Required.** Email body as an HTML template. Always rendered as HTML. |
+| `resultPath` | Optional. Payload path to write the send result object. |
+
+## Output
+
+`resultPath` receives a confirmation object:
+
+```json
+{ "working": { "emailResult": { "message": "success" } } }
+```
+
+On error (throttled or send failure), `resultPath` receives `{ "error": { "type": "...", "message": "..." } }`.
+
+## Experience flows
+
+Same as Cloud.
+
+## Edge flows
+
+Not available. Use SendGrid or Mailgun nodes for email from edge flows.
+
+## Custom Node flows
+
+Same as Cloud.
