@@ -151,7 +151,7 @@ In the view body:
 
 See `losant://references/experience/context-configuration` for the full render context available in views.
 
-> **Note:** Flow authoring (Endpoint Trigger node, Endpoint Reply node, experience-type flow creation) is covered in `losant://authoring/flow` once that guide is available.
+See `losant://authoring/flow` for Endpoint Trigger node, Endpoint Reply node, and experience-type flow creation.
 
 ---
 

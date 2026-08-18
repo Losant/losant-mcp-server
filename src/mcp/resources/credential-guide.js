@@ -33,6 +33,47 @@ See [credentialPost](losant://schemas/credentialPost) for the full body schema a
 | \`datadog\` | \`datadogConfig\` |
 | \`certificateKeyPair\` | \`certificateKeyPairConfig\` |
 
+## HTTP Credential (\`type: "http"\`)
+
+HTTP credentials attach secrets to HTTP node requests. The node validates the request URL against \`uriMatch\` before injecting any secret.
+
+### \`uriMatch\` — URL prefix, not a glob
+
+\`uriMatch\` is a **plain URL prefix**. No wildcards, no \`*\`. The HTTP node checks that the request URL has:
+- the same **protocol** (e.g., \`https\`)
+- the same **hostname** (e.g., \`api.example.com\`)
+- the same **port** (explicit or implied: 80 for http, 443 for https)
+- a **pathname that starts with** the credential's pathname
+
+So \`"https://api.example.com/v2/"\` matches any URL on that host whose path begins with \`/v2/\` — no trailing \`*\` needed or accepted. To allow the entire host, use just the root path: \`"https://api.example.com/"\`.
+
+### \`authMethod\` and the role of \`publicValue\` / \`secretValue\`
+
+| \`authMethod\` | \`publicValue\` | \`secretValue\` |
+|---|---|---|
+| \`header\` | Header name (e.g., \`"X-API-Key"\`) | Header value (the secret) |
+| \`queryParam\` | Query parameter name (e.g., \`"api_key"\`) | Query parameter value (the secret) |
+| \`basicAuth\` | Username (may be empty string \`""\`) | Password |
+| \`clientCertificate\` | Client certificate PEM | Private key PEM |
+
+For \`basicAuth\`, the node encodes \`publicValue:secretValue\` as a Base64 \`Authorization: Basic …\` header automatically. For \`header\`, if the secret is a Bearer token set \`publicValue: "Authorization"\` and \`secretValue: "Bearer <token>"\`.
+
+\`publicValue\` is required for all auth methods except \`basicAuth\` where it may be an empty string \`""\`.
+
+**Example — API key in a header:**
+\`\`\`json
+{
+  "name": "Example API",
+  "type": "http",
+  "httpConfig": {
+    "uriMatch": "https://api.example.com/",
+    "authMethod": "header",
+    "publicValue": "Authorization",
+    "secretValue": "Bearer my-token-here"
+  }
+}
+\`\`\`
+
 ## Common LLM Procedures
 
 ### Check if a credential already exists
