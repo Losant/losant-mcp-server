@@ -52,6 +52,18 @@ Use \`losant_write\` to create or update Losant resources.
 2. Read the domain guide for the resource type (Guide column below) for constraints and common patterns.
 3. Check \`losant://schemas/{resourceType}Post\` (createOne) or \`losant://schemas/{resourceType}Patch\` (updateOne) for the exact body shape before constructing the \`body\` parameter. Schema links are in the table below.
 
+## Authoring Guides
+
+For resource types with complex internal structure, read the relevant authoring guide before constructing the \`body\`:
+
+| Guide | When to use it |
+|---|---|
+| \`losant://authoring/flow\` | Building flows — node JSON, trigger config, wiring model |
+| \`losant://authoring/dashboards/dashboard\` | Dashboard block types and config |
+| \`losant://authoring/experiences/experience-view\` | Experience view types, layout/page/component structure |
+| \`losant://authoring/experiences/experience-endpoint\` | Endpoint routing, static vs. flow-driven reply |
+| \`losant://references/shared/handlebars\` | Handlebars template helpers — usable in flows, dashboards, and experiences |
+
 ## Operations
 
 | Operation | Description | Required Parameters |
