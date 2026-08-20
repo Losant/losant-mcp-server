@@ -40,7 +40,7 @@ Authenticates an Experience User and issues an auth token. Four authentication m
 ```json
 {
   "config": { "tokenTemplate": "{{data.request.headers.authorization}}", "invalidateExistingTokens": false },
-  "meta": { "...", "authMode": "token" }
+  "meta": { "category": "experience", "name": "experience-user-auth", "label": "Authenticate", "authMode": "token", "x": 200, "y": 200 }
 }
 ```
 
