@@ -71,7 +71,7 @@ For resource types with complex internal structure, read the relevant authoring 
 | \`createOne\` | POST a new resource | \`resourceType\`, \`applicationId\`, \`body\` |
 | \`updateOne\` | PATCH an existing resource | \`resourceType\`, \`applicationId\`, \`resourceId\`, \`body\` |
 
-> **PATCH is partial**: send only the fields you want to change — omitted fields are left unchanged. Do not send an empty body assuming it is safe; send only the delta.
+> **PATCH is partial for top-level scalar fields**: send only the fields you want to change — omitted top-level fields (e.g. \`name\`, \`enabled\`, \`description\`) are left unchanged. **Exception: array fields are replaced wholesale.** For \`flow\` resources, sending a \`triggers\` or \`nodes\` array in a PATCH replaces the entire array — it is not merged with the existing one. Always read the current \`triggers\` and \`nodes\` first, apply your changes, then send the complete updated arrays.
 
 > \`application\` and \`applicationReadme\` do not require \`resourceId\` for \`updateOne\` — they are identified by \`applicationId\` alone.
 

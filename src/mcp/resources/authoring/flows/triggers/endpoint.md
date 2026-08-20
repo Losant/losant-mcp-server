@@ -17,6 +17,10 @@ The Endpoint Trigger fires a flow when the selected Experience Endpoint receives
 
 Three selection modes are available in cloud flows. `config.experienceVersion` is always sent and defaults to `"develop"` — except for "any endpoint in any version" mode, which uses `config: {}` with no `experienceVersion` field.
 
+**`key`** — Required. Always send this field. Specific endpoint ID, or `"000000000000000000000000"` to match any endpoint in the version. If targeting a specific endpoint and you don't know its ID, use `losant_query` `operation=list` `resourceType=experienceEndpoint` with `filterField=route` to find it before constructing the trigger.
+
+**`config.experienceVersion`** — Required for "specific endpoint" and "any endpoint in a specific version" modes. Defaults to `"develop"`. Omit only for "any endpoint in any version".
+
 ### Specific endpoint in a version
 
 ```json
@@ -58,8 +62,6 @@ Three selection modes are available in cloud flows. `config.experienceVersion` i
   "outputIds": [["log-request"]]
 }
 ```
-
-**`config.experienceVersion`** — Required for "specific endpoint" and "any endpoint in a specific version" modes. Defaults to `"develop"`. Omit only for "any endpoint in any version".
 
 The payload shape is identical to experience flows.
 
@@ -108,8 +110,6 @@ Fires on any request to any endpoint in the same Experience Version as the flow.
   "outputIds": [["log-request"]]
 }
 ```
-
-**`key`** — Required. Always send this field. Specific endpoint ID, or `"000000000000000000000000"` to match any endpoint in the version.
 
 ### Payload at runtime
 

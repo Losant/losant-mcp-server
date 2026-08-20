@@ -13,6 +13,8 @@ Fires a flow whenever the selected webhook resource receives an HTTP request or 
 
 ## Cloud (Application) flows
 
+- **`key`** — Required. The webhook resource ID. Use `losant_query` with `resourceType=webhook` to find it.
+
 ```json
 {
   "type": "webhook",
@@ -23,9 +25,13 @@ Fires a flow whenever the selected webhook resource receives an HTTP request or 
 }
 ```
 
-- **`key`** — Required. The webhook resource ID. Use `losant_query` with `resourceType=webhook` to find it.
-
 ### HTTP webhook payload
+
+- `data.body` — parsed body. `null` for methods without a body. Auto-parsed for JSON, multipart, and URL-encoded; other content types are a raw string.
+- `data.headers` — all request headers, keys lowercased. The `Cookie` header is stripped.
+- `data.path` — characters after the webhook URL, always begins with `/`.
+- `data.replyId` — present only when the webhook is configured to wait for a reply. Pass to a Webhook Reply node.
+- Max payload size: 256 KB.
 
 ```json
 {
@@ -44,12 +50,6 @@ Fires a flow whenever the selected webhook resource receives an HTTP request or 
   "triggerType": "webhook"
 }
 ```
-
-- `data.body` — parsed body. `null` for methods without a body. Auto-parsed for JSON, multipart, and URL-encoded; other content types are a raw string.
-- `data.headers` — all request headers, keys lowercased. The `Cookie` header is stripped.
-- `data.path` — characters after the webhook URL, always begins with `/`.
-- `data.replyId` — present only when the webhook is configured to wait for a reply. Pass to a Webhook Reply node.
-- Max payload size: 256 KB.
 
 ### WebSocket webhook payload
 

@@ -55,7 +55,7 @@ The error payload delivered to the `flowError` trigger includes context about wh
 | `data.errorInfo.error.name` | The error category string (e.g. `"FunctionNodeTypeError"`, `"ValidationError"`) |
 | `data.errorInfo.nodeType` | A string representing the type of node that threw the error (e.g. `'HttpNode'`) |
 | `data.errorInfo.nodeId` | ID of the node that threw |
-| `data.erroredPayload` | Full payload snapshot at the point of the error |
+| `data.erroredPayload` | Full payload snapshot at the point of the error — **only when the payload is under 256 KB**. If the payload exceeds that limit, `data.erroredPayload` is the string `"Payload data omitted due to size"` rather than an object. Always guard with `typeof data.erroredPayload === 'object'` before accessing properties — code that assumes it is always an object will throw a runtime error on large payloads. |
 
 ---
 

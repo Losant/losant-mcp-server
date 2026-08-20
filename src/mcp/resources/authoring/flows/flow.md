@@ -523,9 +523,21 @@ See `losant://flow/nodes/loop` for the full pattern and a worked example.
 - `<Type> is not valid for <Class> workflows.` — Wrong `flowClass` for the node/trigger type.
 - `<Type> requires Workflow Agent X.Y.Z or higher.` — Edge flow using a node newer than its `minimumAgentVersion`. Either bump the version or pick another node.
 
+## PATCH array replacement — `triggers` and `nodes`
+
+PATCH on a `flow` resource is **partial for top-level scalar fields** (`name`, `enabled`, `description`, `globals`, `defaultVersionId`, etc.) — omitted scalar fields are left unchanged.
+
+**`triggers` and `nodes` are replaced wholesale.** If you include either array in a PATCH, the entire array is overwritten — the API does not merge or append. Sending only the node you changed will delete every other node in the flow.
+
+**Always read before you write:**
+1. `losant_query` `operation=get` `resourceType=flow` to retrieve the current `triggers` and `nodes`
+2. Apply your changes to the in-memory arrays
+3. Send the complete updated arrays in the PATCH body
+
 ## Common mistakes
 
 - Sending a `nodes` array without unique `id`s, or with `outputIds` references to IDs that don't exist. The validator does not "fix" wiring — it rejects it.
+- Sending a partial `nodes` or `triggers` array in a PATCH — the array is replaced wholesale and all omitted nodes or triggers are deleted.
 - Forgetting that **publishing a version requires `triggers` and `nodes` to already be valid in develop** (or supplied in the version POST). The version endpoint doesn't merge; it snapshots.
 - Setting `flowClass: "embedded"` — embedded flows are not supported by this guide.
 - Editing an edge flow's develop version and expecting devices to pick up the change. Devices only run published versions.

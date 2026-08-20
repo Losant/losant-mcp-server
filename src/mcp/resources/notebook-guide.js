@@ -25,7 +25,7 @@ losant_write:
 
 **Required:** \`name\` only. \`inputs\`, \`outputs\`, and \`imageVersion\` are optional.
 
-**imageVersion**: Python/library version for the runtime — \`v1\`, \`v2\`, \`v3\`, \`v4\` (use \`v4\` unless the user specifies otherwise).
+**imageVersion**: Python/library version for the runtime — \`v1\`, \`v2\`, \`v3\`, \`v4\`. **Always set this explicitly.** If omitted, the platform defaults to \`v3\` on create. Omitting it will never give you the latest runtime. Always specify \`v4\` (the current largest version) unless the user requests a specific version.
 
 ## Inputs
 

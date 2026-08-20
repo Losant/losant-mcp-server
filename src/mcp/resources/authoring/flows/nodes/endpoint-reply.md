@@ -47,7 +47,7 @@ Not recommended — use `flowClass: "experience"` for endpoint-handling flows. C
 | `mqttTopicsPath` | Payload path to an array of MQTT topic strings. Alternative to `mqttTopicsTemplate` for `replyType: "mqtt"`. |
 | `cookieInfo` | Array of `{ nameTemplate, valueTemplate, maxAgeTemplate, pathTemplate }` objects. Sets HTTP cookies on the reply. |
 | `sameSiteTemplate` | SameSite policy for reply cookies: `"none"`, `"lax"`, or `"strict"`. Template. |
-| `experienceVersion` | Cloud flows only. Experience version to use when rendering the page (e.g. `"develop"`). Used with `replyType: "page"`. Note: `experienceVersion` is silently ignored by the implementation and has no effect. |
+| `experienceVersion` | In experience flows, has no effect — the experience version is encoded in the reply ID and used automatically. In cloud flows backing an endpoint, overrides the version derived from the reply ID. Omit unless you are in a cloud flow and need to target a specific experience version. |
 
 > Always wire both success and error branches to an EndpointReplyNode — every request must receive exactly one response.
 
