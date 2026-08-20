@@ -1,6 +1,6 @@
 ---
 name: losant-flow-patterns
-description: Six common flow patterns with concrete node chains and minimal JSON examples — device threshold alert with de-bounce, scheduled external API pull, webhook request/reply handler, experience login flow, experience authenticated data endpoint, and device provisioning via webhook.
+description: Seven common flow patterns with concrete node chains and minimal JSON examples — debug/local testing with virtual button, device threshold alert with de-bounce, scheduled external API pull, webhook request/reply handler, experience login flow, experience authenticated data endpoint, and device provisioning via webhook.
 ---
 
 # Common Flow Patterns
@@ -9,7 +9,133 @@ Grounded examples of the most frequent real-world flow shapes. Each pattern show
 
 ---
 
-## 1. Device Threshold Alert with De-bounce
+## 1. Debug / Local Testing with Virtual Button
+
+**Test a flow on demand without waiting for a real event — disconnect production triggers, add a Virtual Button that injects a realistic test payload, and cap every terminal path with a Debug node.**
+
+### The approach
+
+1. **Disconnect** production triggers by setting their `outputIds` to `[[]]` — they remain in the `triggers` array so they can be reconnected later, but they no longer route into the flow.
+2. **Add** one or more Virtual Button triggers, setting `meta.payload` to a JSON object string that matches the `data` structure the real trigger would produce. Wire each button's `outputIds` to the first real node.
+3. **Add a Debug node** at every terminal node — any node whose `outputIds` is `[[]]` during normal execution — so you can inspect the payload at each dead end in the debug log.
+4. **Press** the button in the Losant UI to fire the flow immediately.
+5. **Restore** when done: remove the Virtual Button(s) and Debug nodes, and reconnect the production trigger `outputIds`.
+
+### Two variants
+
+**A — Virtual Button alone** (when `meta.payload` fully covers what your flow reads from `data`):
+
+```json
+{
+  "triggers": [
+    {
+      "type": "deviceState",
+      "config": { "attributeWhitelist": [] },
+      "meta": { "category": "trigger", "name": "deviceState", "label": "Device State", "x": 60, "y": 60 },
+      "outputIds": [[]]
+    },
+    {
+      "type": "virtualButton",
+      "config": {},
+      "meta": {
+        "category": "trigger",
+        "name": "virtualButton",
+        "label": "Test: hot + humid",
+        "payload": "{\"tempC\": 95, \"humidity\": 82}",
+        "x": 60, "y": 160
+      },
+      "outputIds": [["check-threshold"]]
+    }
+  ]
+}
+```
+
+This produces `data.tempC = 95`, `data.humidity = 82` — matching what the Device State trigger delivers. The Device State trigger is still in the array with `outputIds: [[]]`, ready to be reconnected.
+
+**B — Virtual Button + Mutate node** (when the real trigger places fields at the root of the payload rather than under `data`, or when you need to seed `working.*` paths):
+
+`meta.payload` only controls `data`. Some triggers place additional fields at the root level of the payload that your flow may read — for example, the Device Connect trigger populates `deviceName`, `deviceTags`, and `device` at the root, not under `data`. Since a Virtual Button cannot set those fields, add a Mutate node immediately after the button to inject them:
+
+```json
+[
+  {
+    "type": "virtualButton",
+    "config": {},
+    "meta": {
+      "category": "trigger",
+      "name": "virtualButton",
+      "label": "Test: device connect",
+      "payload": "{}",
+      "x": 60, "y": 160
+    },
+    "outputIds": [["seed-root"]]
+  },
+  {
+    "id": "seed-root",
+    "type": "MutateNode",
+    "config": {
+      "rules": [
+        { "type": "set", "path": "deviceName", "value": "Test Sensor 1" },
+        { "type": "set", "path": "deviceTags", "value": { "location": ["warehouse-a"] } },
+        { "type": "set", "path": "triggerId", "value": "abc123deviceid" }
+      ]
+    },
+    "meta": { "category": "logic", "name": "mutate", "label": "Seed root fields", "x": 260, "y": 160 },
+    "outputIds": [["first-real-node"]]
+  }
+]
+```
+
+Check `losant://flow/triggers/<name>` for the exact payload shape of the trigger you are replacing — specifically which fields are at the root vs. under `data`.
+
+### Multiple buttons for multiple code paths
+
+Add several Virtual Button triggers with different `meta.payload` values to exercise different branches without deploying separate test flows:
+
+```json
+[
+  {
+    "type": "virtualButton", "config": {},
+    "meta": { "name": "virtualButton", "category": "trigger", "label": "Test: over threshold", "payload": "{\"tempC\": 95}", "x": 60, "y": 160 },
+    "outputIds": [["check-threshold"]]
+  },
+  {
+    "type": "virtualButton", "config": {},
+    "meta": { "name": "virtualButton", "category": "trigger", "label": "Test: under threshold", "payload": "{\"tempC\": 55}", "x": 60, "y": 260 },
+    "outputIds": [["check-threshold"]]
+  }
+]
+```
+
+Both buttons wire to the same first node — pressing each one exercises a different branch.
+
+### Debug nodes at terminal ends
+
+Every node that would normally have `outputIds: [[]]` should get a Debug node appended during testing:
+
+```json
+{
+  "id": "debug-end",
+  "type": "DebugNode",
+  "config": { "message": "Terminal: {{working | json}}", "level": "verbose" },
+  "meta": { "category": "debug", "name": "debug", "label": "Debug end", "x": 560, "y": 360 },
+  "outputIds": [[]]
+}
+```
+
+Wire each previously-terminal node's `outputIds` to this debug node instead of `[[]]`. The debug log in the Losant UI will show the full payload at that point. Add a separate Debug node per terminal path to distinguish which branch was reached.
+
+### Reference
+
+| Resource | Link |
+|---|---|
+| Virtual Button trigger | `losant://flow/triggers/virtual-button` |
+| Mutate node | `losant://flow/nodes/mutate` |
+| Debug node | `losant://flow/nodes/debug` |
+
+---
+
+## 2. Device Threshold Alert with De-bounce
 
 **Send a notification when a sensor reading crosses a threshold — once per event, not on every reading.**
 
@@ -54,6 +180,13 @@ Device State trigger → **Conditional** (threshold check) → **Latch** (suppre
       "textTemplate": ":fire: *High temp* on {{triggerId}}: {{data.tempC}}°C"
     },
     "meta": { "category": "output", "name": "slack", "label": "Slack Alert", "x": 560, "y": 260 },
+    "outputIds": [["debug-sent"]]
+  },
+  {
+    "id": "debug-sent",
+    "type": "DebugNode",
+    "config": { "message": "Alert sent for {{triggerId}}", "level": "verbose" },
+    "meta": { "category": "debug", "name": "debug", "label": "Alert sent", "x": 760, "y": 260 },
     "outputIds": [[]]
   }
 ]
@@ -65,9 +198,19 @@ Device State trigger → **Conditional** (threshold check) → **Latch** (suppre
 
 **Gotcha:** Device state attributes land directly under `data` (e.g. `{{data.tempC}}`), not under `data.attributes`. Using `data.attributes.tempC` resolves to `undefined` — the threshold check never fires. `latchIdTemplate: "{{triggerId}}"` scopes the latch per device so devices don't share state. The `resetExpression` should use a lower threshold than `latchExpression` to create hysteresis (avoids flapping at the boundary). Device ID is at `{{triggerId}}`, not `{{data.deviceId}}`.
 
+### Reference
+
+| Resource | Link |
+|---|---|
+| Device State trigger | `losant://flow/triggers/device-state` |
+| Conditional node | `losant://flow/nodes/conditional` |
+| Latch node | `losant://flow/nodes/latch` |
+| Slack node | `losant://flow/nodes/slack` |
+| Debug node | `losant://flow/nodes/debug` |
+
 ---
 
-## 2. Scheduled External API Pull
+## 3. Scheduled External API Pull
 
 **Periodically fetch data from a third-party REST API and store it in Losant device state for dashboards and time-series queries.**
 
@@ -118,6 +261,13 @@ Timer trigger → **HTTP** (call external API) → **Conditional** (status 200?)
       "timeSourceType": "now"
     },
     "meta": { "category": "output", "name": "device-state", "label": "Store State", "x": 360, "y": 360 },
+    "outputIds": [["debug-stored"]]
+  },
+  {
+    "id": "debug-stored",
+    "type": "DebugNode",
+    "config": { "message": "State stored: {{working.result.body | json}}", "level": "verbose" },
+    "meta": { "category": "debug", "name": "debug", "label": "State stored", "x": 560, "y": 360 },
     "outputIds": [[]]
   }
 ]
@@ -125,9 +275,19 @@ Timer trigger → **HTTP** (call external API) → **Conditional** (status 200?)
 
 **Gotcha:** The HTTP node writes `{ statusCode, headers, body, requestDuration, request }` to `responsePath`. The API response body is at `working.result.body` — not `working.result`. If the body is a JSON string (some APIs return it that way), add a JSON Decode node before the Conditional. Store the API key in flow globals, not hardcoded in the template.
 
+### Reference
+
+| Resource | Link |
+|---|---|
+| Timer trigger | `losant://flow/triggers/timer` |
+| HTTP node | `losant://flow/nodes/http` |
+| Conditional node | `losant://flow/nodes/conditional` |
+| Device State node | `losant://flow/nodes/device-state` |
+| Debug node | `losant://flow/nodes/debug` |
+
 ---
 
-## 3. Webhook Request/Reply Handler
+## 4. Webhook Request/Reply Handler
 
 **Receive an HTTP POST from an external system (Stripe, GitHub, Twilio, etc.), process the payload, and send a synchronous JSON reply.**
 
@@ -149,7 +309,7 @@ Webhook trigger (wait-for-reply) → process nodes → **Webhook Reply** (succes
       "errorsPath": "working.validationErrors"
     },
     "meta": { "category": "logic", "name": "validate-payload", "label": "Validate Body", "x": 160, "y": 160 },
-    "outputIds": [["reply-400"], ["process"]]
+    "outputIds": [["reply-400"], ["reply-200"]]
   },
   {
     "id": "reply-400",
@@ -162,14 +322,14 @@ Webhook trigger (wait-for-reply) → process nodes → **Webhook Reply** (succes
       "headerInfo": [{ "keyTemplate": "Content-Type", "valueTemplate": "application/json" }]
     },
     "meta": { "category": "output", "name": "webhook-reply", "label": "Reply 400", "x": 60, "y": 260 },
-    "outputIds": [[]]
+    "outputIds": [["debug-400"]]
   },
   {
-    "id": "process",
+    "id": "debug-400",
     "type": "DebugNode",
-    "config": { "message": "Processing validated payload", "level": "verbose" },
-    "meta": { "category": "debug", "name": "debug", "label": "Process (add nodes here)", "x": 360, "y": 260 },
-    "outputIds": [["reply-200"]]
+    "config": { "message": "Replied 400: invalid payload", "level": "verbose" },
+    "meta": { "category": "debug", "name": "debug", "label": "Debug 400", "x": 60, "y": 360 },
+    "outputIds": [[]]
   },
   {
     "id": "reply-200",
@@ -182,6 +342,13 @@ Webhook trigger (wait-for-reply) → process nodes → **Webhook Reply** (succes
       "headerInfo": [{ "keyTemplate": "Content-Type", "valueTemplate": "application/json" }]
     },
     "meta": { "category": "output", "name": "webhook-reply", "label": "Reply 200", "x": 360, "y": 360 },
+    "outputIds": [["debug-200"]]
+  },
+  {
+    "id": "debug-200",
+    "type": "DebugNode",
+    "config": { "message": "Replied 200: request processed", "level": "verbose" },
+    "meta": { "category": "debug", "name": "debug", "label": "Debug 200", "x": 560, "y": 360 },
     "outputIds": [[]]
   }
 ]
@@ -193,9 +360,19 @@ Webhook trigger (wait-for-reply) → process nodes → **Webhook Reply** (succes
 
 **Gotcha:** `data.replyId` is the opaque reply ID set by the Webhook trigger. Always pass it through to Webhook Reply unchanged. The webhook `key` in the trigger object is the UUID that appears in the webhook URL — the server assigns it on create; omit it when creating the flow.
 
+### Reference
+
+| Resource | Link |
+|---|---|
+| Webhook trigger | `losant://flow/triggers/webhook` |
+| Flow Error trigger | `losant://flow/triggers/flow-error` |
+| Validate Payload node | `losant://flow/nodes/validate-payload` |
+| Webhook Reply node | `losant://flow/nodes/webhook-reply` |
+| Debug node | `losant://flow/nodes/debug` |
+
 ---
 
-## 4. Experience Login Flow
+## 5. Experience Login Flow
 
 **Serve a login page on GET and authenticate credentials on POST, then issue an auth cookie and redirect into the application.**
 
@@ -252,6 +429,13 @@ POST /login ──┘                                     ──► false: Condi
       "cookieInfo": [{ "nameTemplate": "authorization", "valueTemplate": "{{working.token}}", "maxAgeTemplate": "" }]
     },
     "meta": { "category": "output", "name": "endpoint-reply", "label": "Set cookie + redirect", "x": 560, "y": 460 },
+    "outputIds": [["debug-login-success"]]
+  },
+  {
+    "id": "debug-login-success",
+    "type": "DebugNode",
+    "config": { "message": "Login success — cookie set, redirecting to /", "level": "verbose" },
+    "meta": { "category": "debug", "name": "debug", "label": "Login success", "x": 760, "y": 460 },
     "outputIds": [[]]
   },
   {
@@ -265,6 +449,13 @@ POST /login ──┘                                     ──► false: Condi
       "responseCodeTemplate": "401"
     },
     "meta": { "category": "output", "name": "endpoint-reply", "label": "Login failure", "x": 260, "y": 460 },
+    "outputIds": [["debug-login-failure"]]
+  },
+  {
+    "id": "debug-login-failure",
+    "type": "DebugNode",
+    "config": { "message": "Login failed for {{data.body.email}}", "level": "verbose" },
+    "meta": { "category": "debug", "name": "debug", "label": "Login failure", "x": 460, "y": 460 },
     "outputIds": [[]]
   },
   {
@@ -278,6 +469,13 @@ POST /login ──┘                                     ──► false: Condi
       "responseCodeTemplate": "200"
     },
     "meta": { "category": "output", "name": "endpoint-reply", "label": "Render login", "x": 60, "y": 360 },
+    "outputIds": [["debug-login-page"]]
+  },
+  {
+    "id": "debug-login-page",
+    "type": "DebugNode",
+    "config": { "message": "Rendered login page (GET)", "level": "verbose" },
+    "meta": { "category": "debug", "name": "debug", "label": "Login page", "x": 60, "y": 460 },
     "outputIds": [[]]
   },
   {
@@ -290,6 +488,13 @@ POST /login ──┘                                     ──► false: Condi
       "responseCodeTemplate": "302"
     },
     "meta": { "category": "output", "name": "endpoint-reply", "label": "Redirect to home", "x": 460, "y": 260 },
+    "outputIds": [["debug-already-logged-in"]]
+  },
+  {
+    "id": "debug-already-logged-in",
+    "type": "DebugNode",
+    "config": { "message": "Already logged in — redirected to /", "level": "verbose" },
+    "meta": { "category": "debug", "name": "debug", "label": "Already logged in", "x": 660, "y": 260 },
     "outputIds": [[]]
   }
 ]
@@ -299,9 +504,20 @@ POST /login ──┘                                     ──► false: Condi
 
 **Critical:** Add a `scope: "local"` Flow Error trigger (`flowError`) to the experience flow with its own EndpointReplyNode sending a 500. Without it, any unhandled error (e.g., a required template field resolves to nothing) leaves the browser request hanging until timeout.
 
+### Reference
+
+| Resource | Link |
+|---|---|
+| Endpoint trigger | `losant://flow/triggers/endpoint` |
+| Flow Error trigger | `losant://flow/triggers/flow-error` |
+| Conditional node | `losant://flow/nodes/conditional` |
+| Experience Auth node | `losant://flow/nodes/experience-auth` |
+| Endpoint Reply node | `losant://flow/nodes/endpoint-reply` |
+| Debug node | `losant://flow/nodes/debug` |
+
 ---
 
-## 5. Experience Authenticated Data Endpoint
+## 6. Experience Authenticated Data Endpoint
 
 **Serve JSON data from a protected GET endpoint — return 401 if not logged in, fetch and return data if authenticated.**
 
@@ -331,6 +547,13 @@ Endpoint trigger (GET `/api/devices`) → **Conditional** (`{{experience.user}}`
       "headerInfo": [{ "keyTemplate": "Content-Type", "valueTemplate": "application/json" }]
     },
     "meta": { "category": "output", "name": "endpoint-reply", "label": "401", "x": 60, "y": 260 },
+    "outputIds": [["debug-401"]]
+  },
+  {
+    "id": "debug-401",
+    "type": "DebugNode",
+    "config": { "message": "Replied 401: not authenticated", "level": "verbose" },
+    "meta": { "category": "debug", "name": "debug", "label": "Debug 401", "x": 60, "y": 360 },
     "outputIds": [[]]
   },
   {
@@ -358,6 +581,13 @@ Endpoint trigger (GET `/api/devices`) → **Conditional** (`{{experience.user}}`
       "headerInfo": [{ "keyTemplate": "Content-Type", "valueTemplate": "application/json" }]
     },
     "meta": { "category": "output", "name": "endpoint-reply", "label": "200 devices", "x": 560, "y": 360 },
+    "outputIds": [["debug-200-devices"]]
+  },
+  {
+    "id": "debug-200-devices",
+    "type": "DebugNode",
+    "config": { "message": "Replied 200: {{working.devices | json}}", "level": "verbose" },
+    "meta": { "category": "debug", "name": "debug", "label": "Debug 200", "x": 760, "y": 360 },
     "outputIds": [[]]
   }
 ]
@@ -367,9 +597,20 @@ Endpoint trigger (GET `/api/devices`) → **Conditional** (`{{experience.user}}`
 
 **Gotcha:** Every code path must reach an EndpointReplyNode. A flow that throws (e.g., GetDeviceNode fails) before sending a reply leaves the client hanging. Scope a Flow Error trigger (`flowError`) to this flow that sends a 500 reply as a safety net.
 
+### Reference
+
+| Resource | Link |
+|---|---|
+| Endpoint trigger | `losant://flow/triggers/endpoint` |
+| Flow Error trigger | `losant://flow/triggers/flow-error` |
+| Conditional node | `losant://flow/nodes/conditional` |
+| Device node | `losant://flow/nodes/device` |
+| Endpoint Reply node | `losant://flow/nodes/endpoint-reply` |
+| Debug node | `losant://flow/nodes/debug` |
+
 ---
 
-## 6. Device Provisioning via Webhook
+## 7. Device Provisioning via Webhook
 
 **Register a new Losant device when an external system POSTs device info, and reply with the assigned device ID.**
 
@@ -419,6 +660,13 @@ Webhook trigger → **Validate Payload** (schema check) → false: 400 reply; tr
       "headerInfo": [{ "keyTemplate": "Content-Type", "valueTemplate": "application/json" }]
     },
     "meta": { "category": "output", "name": "webhook-reply", "label": "Reply 201", "x": 560, "y": 360 },
+    "outputIds": [["debug-201"]]
+  },
+  {
+    "id": "debug-201",
+    "type": "DebugNode",
+    "config": { "message": "Device created: {{working.newDevice.id}}", "level": "verbose" },
+    "meta": { "category": "debug", "name": "debug", "label": "Debug 201", "x": 760, "y": 360 },
     "outputIds": [[]]
   },
   {
@@ -432,6 +680,13 @@ Webhook trigger → **Validate Payload** (schema check) → false: 400 reply; tr
       "headerInfo": [{ "keyTemplate": "Content-Type", "valueTemplate": "application/json" }]
     },
     "meta": { "category": "output", "name": "webhook-reply", "label": "Reply 400", "x": 60, "y": 260 },
+    "outputIds": [["debug-400-provision"]]
+  },
+  {
+    "id": "debug-400-provision",
+    "type": "DebugNode",
+    "config": { "message": "Replied 400: validation failed — {{working.errors | json}}", "level": "verbose" },
+    "meta": { "category": "debug", "name": "debug", "label": "Debug 400", "x": 60, "y": 360 },
     "outputIds": [[]]
   }
 ]
@@ -440,3 +695,13 @@ Webhook trigger → **Validate Payload** (schema check) → false: 400 reply; tr
 **Gotcha:** `CreateDeviceNode` writes the full device object to `resultPath`. The server-assigned Losant device ID is at `working.newDevice.id`. Use triple braces `{{{jsonEncode}}}` when embedding arrays or objects inside a JSON template string — double braces HTML-escape the quotes and produce invalid JSON.
 
 **Deduplication:** If the same device might be submitted more than once, query by serial number tag before creating: `GetDeviceNode` with `findMethod: "findByAllTags"` and the serial number tag, check if the result is non-null, and skip creation if already registered.
+
+### Reference
+
+| Resource | Link |
+|---|---|
+| Webhook trigger | `losant://flow/triggers/webhook` |
+| Validate Payload node | `losant://flow/nodes/validate-payload` |
+| Device node | `losant://flow/nodes/device` |
+| Webhook Reply node | `losant://flow/nodes/webhook-reply` |
+| Debug node | `losant://flow/nodes/debug` |

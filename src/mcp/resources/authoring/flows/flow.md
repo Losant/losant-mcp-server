@@ -13,8 +13,60 @@ This guide is the entry point for creating and updating Losant flows through the
 
 **Reading order for a new authoring task:**
 1. Read the envelope and wiring sections of this file (you're already here).
-2. For each trigger/node you intend to use, locate it in the catalog and read the resource at the URI listed in the Spec column.
-3. If the Spec doc references a `losant://references/flow/<name>` resource, read that too.
+2. Read `losant://references/flow/patterns` for common flow shapes and the debug/testing pattern.
+3. For each trigger/node you intend to use, locate it in the catalog and read the resource at the URI listed in the Spec column.
+4. If the Spec doc references a `losant://references/flow/<name>` resource, read that too.
+
+---
+
+## Before you save
+
+### Cloud flows — is it safe to enable immediately?
+
+Before creating or enabling a cloud flow, assess whether it can cause real-world side effects the moment it goes live.
+
+**Check the trigger type.** These triggers fire automatically without any human action:
+- `timer` — fires on schedule immediately after enable
+- `deviceState`, `deviceConnect`, `deviceDisconnect`, `deviceInactivity` — fire for every matching device event
+- `integration`, `mqttTopic`, `amazonSqs`, `azureEventHubs`, `googlePubSub`, `particle` — fire for every inbound message
+
+**Check for side-effect output nodes.** If the flow contains any of these, a bug could affect real users or external systems:
+- Messaging: SMS, Email, SendGrid, Mailgun, Twilio, WhatsApp
+- External services: Slack, Datadog, Loggly, HTTP (POSTing to an external endpoint)
+- Device commands: Device Command node
+
+**If both are true** (auto-firing trigger + side-effect output), create the flow with `enabled: false` and confirm with the user before enabling. Use the Virtual Button debug pattern (`losant://references/flow/patterns`) to test first. Only set `enabled: true` after the user explicitly confirms the flow is ready for production.
+
+**Safe to create enabled:** Virtual Button-only trigger (fires only on manual press), or flows whose output nodes have no external side effects (e.g., Mutate, Debug, Get Device, storage reads).
+
+---
+
+### Experience flows — development or production?
+
+Experience flows back HTTP endpoints. The risk depends on whether real users are hitting those endpoints.
+
+**Case 1 — New endpoint (the `experienceEndpoint` resource doesn't exist yet):**
+Safe to create enabled. No traffic can reach a route that isn't registered, so enabling immediately is harmless.
+
+**Case 2 — Existing endpoint, experience version mapped only to the default slug (`*.onlosant.com`):**
+Likely a development or staging environment. Relatively safe, but confirm: *"This experience appears to be on the default development slug — okay to enable the flow now?"*
+
+**Case 3 — Existing endpoint, experience version mapped to a custom domain:**
+Treat as production. Real users are hitting this domain. Default to `enabled: false` and confirm with the user before enabling — the same discipline as a cloud flow with side-effect outputs.
+
+To check: query `experienceDomain` resources on the application. If any custom domain is attached to the relevant experience version, treat it as production.
+
+---
+
+### Edge flows — determine `minimumAgentVersion` before choosing nodes
+
+Edge develop versions are safe to save freely — they only affect a device when explicitly deployed. The pre-flight concern is **compatibility**, not safety.
+
+**For an existing edge flow:** Read `minimumAgentVersion` from the flow before choosing any triggers or nodes. Every edge node and trigger spec states its minimum GEA version — do not include anything that requires a higher version than the flow currently targets. Never lower `minimumAgentVersion` — doing so may break devices already running the flow.
+
+**For a brand new edge flow:** You need to pick a starting `minimumAgentVersion`. Use this order:
+1. Query `losant_query` `operation=list` `resourceType=flow` with a filter for `flowClass=edge`, sorted by last updated, and take the 5 most recently updated edge flows. Use the highest `minimumAgentVersion` found in that set — it reflects what the team is currently targeting.
+2. If there are no edge flows in the application, read `losant://guides/device-auth` → **Connecting Devices** section for instructions on finding the current recommended GEA version and use that. Alternatively, ask the user to specify a target GEA version directly.
 
 ---
 
@@ -551,5 +603,5 @@ Several detail docs reference these. Read them once and the per-node docs become
 - `losant://references/flow/globals` — the three globals sources (flow, experience version, application) and their override order; the JSON-encoded API format (`"json": "\"string value\""` not `"json": "string value"`); version scoping rules.
 - `losant://references/flow/templating` — all four template syntaxes: payload paths (dot-notation, static, no `{{}}`), string templates (Handlebars `{{}}` in `*Template` fields), expressions (ConditionalNode/MathNode), and JSON templates (`bodyType: "jsonTemplate"` in HTTP node).
 - `losant://references/flow/execution-model` — how a flow run actually executes: trigger fires and passes a payload through nodes, branches run independently with no merge, what happens when a node throws (all paths halt), how the flow Error trigger catches thrown errors, and the distinction between nodes that throw vs. write errors to the payload.
-- `losant://references/flow/patterns` — six end-to-end flow patterns with node chains and minimal JSON: device threshold alert with de-bounce, scheduled external API pull, webhook request/reply handler, experience login flow, experience authenticated data endpoint, and device provisioning via webhook.
+- `losant://references/flow/patterns` — seven end-to-end flow patterns with node chains and minimal JSON: device threshold alert with de-bounce, scheduled external API pull, webhook request/reply handler, experience login flow, experience authenticated data endpoint, and device provisioning via webhook.
 - `losant://guides/credentials` — how `credentialNameTemplate` resolves Losant-managed credentials and what `authMethod` each credential supports. Used by HTTP and every integration node.
