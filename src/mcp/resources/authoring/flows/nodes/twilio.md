@@ -45,7 +45,7 @@ Three auth methods. Auth mode is determined by which config fields are present: 
     "bodyTemplate": "Alert: {{working.alertMsg}}",
     "toNumbers": ["+15559876543"]
   },
-  "meta": { "authMethod": "apiKey", ... }
+  "meta": { "category": "output", "name": "twilio", "label": "Twilio", "authMethod": "apiKey", "x": 200, "y": 200 }
 }
 ```
 
@@ -60,7 +60,7 @@ Three auth methods. Auth mode is determined by which config fields are present: 
     "bodyTemplate": "Alert: {{working.alertMsg}}",
     "toNumbers": ["+15559876543"]
   },
-  "meta": { "authMethod": "token", ... }
+  "meta": { "category": "output", "name": "twilio", "label": "Twilio", "authMethod": "token", "x": 200, "y": 200 }
 }
 ```
 

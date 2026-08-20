@@ -314,7 +314,7 @@ Deletes one or more events. Mode is stored in **`meta.mode`**.
     "deleteMultiple": false,
     "resultPath": "working.deleteResult"
   },
-  "meta": { "...", "mode": "queryTemplateSingle" }
+  "meta": { "category": "data", "name": "delete-event", "label": "Event: Delete", "mode": "queryTemplateSingle", "x": 200, "y": 200 }
 }
 ```
 
@@ -335,7 +335,7 @@ Deletes one or more events. Mode is stored in **`meta.mode`**.
     "deleteMultiple": true,
     "resultPath": "working.deleteResult"
   },
-  "meta": { "...", "mode": "queryTemplateMultiple" }
+  "meta": { "category": "data", "name": "delete-event", "label": "Event: Delete", "mode": "queryTemplateMultiple", "x": 200, "y": 200 }
 }
 ```
 
