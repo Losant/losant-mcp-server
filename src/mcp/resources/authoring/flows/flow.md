@@ -13,8 +13,9 @@ This guide is the entry point for creating and updating Losant flows through the
 
 **Reading order for a new authoring task:**
 1. Read the envelope and wiring sections of this file (you're already here).
-2. For each trigger/node you intend to use, locate it in the catalog and read the resource at the URI listed in the Spec column.
-3. If the Spec doc references a `losant://references/flow/<name>` resource, read that too.
+2. Read `losant://references/flow/patterns` for common flow shapes and the debug/testing pattern.
+3. For each trigger/node you intend to use, locate it in the catalog and read the resource at the URI listed in the Spec column.
+4. If the Spec doc references a `losant://references/flow/<name>` resource, read that too.
 
 ---
 
@@ -551,5 +552,5 @@ Several detail docs reference these. Read them once and the per-node docs become
 - `losant://references/flow/globals` — the three globals sources (flow, experience version, application) and their override order; the JSON-encoded API format (`"json": "\"string value\""` not `"json": "string value"`); version scoping rules.
 - `losant://references/flow/templating` — all four template syntaxes: payload paths (dot-notation, static, no `{{}}`), string templates (Handlebars `{{}}` in `*Template` fields), expressions (ConditionalNode/MathNode), and JSON templates (`bodyType: "jsonTemplate"` in HTTP node).
 - `losant://references/flow/execution-model` — how a flow run actually executes: trigger fires and passes a payload through nodes, branches run independently with no merge, what happens when a node throws (all paths halt), how the flow Error trigger catches thrown errors, and the distinction between nodes that throw vs. write errors to the payload.
-- `losant://references/flow/patterns` — six end-to-end flow patterns with node chains and minimal JSON: device threshold alert with de-bounce, scheduled external API pull, webhook request/reply handler, experience login flow, experience authenticated data endpoint, and device provisioning via webhook.
+- `losant://references/flow/patterns` — seven end-to-end flow patterns with node chains and minimal JSON: device threshold alert with de-bounce, scheduled external API pull, webhook request/reply handler, experience login flow, experience authenticated data endpoint, and device provisioning via webhook.
 - `losant://guides/credentials` — how `credentialNameTemplate` resolves Losant-managed credentials and what `authMethod` each credential supports. Used by HTTP and every integration node.
