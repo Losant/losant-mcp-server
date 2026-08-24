@@ -32,7 +32,7 @@ losant_write:
 - \`type\` (required): \`"file"\` for a file, \`"directory"\` for a folder
 - \`parentDirectory\`: path of the parent folder (e.g. \`"/reports/2024"\`); omit for root
 - \`contentType\`: MIME type (e.g. \`"image/png"\`, \`"text/csv"\`, \`"application/json"\`)
-- \`fileSize\` (required): size in bytes. The value does not need to be exact — after the file is uploaded to object storage, Losant reads the actual size from the storage system and overwrites this field. Pass your best estimate if known; otherwise ask the user for the file size before proceeding.
+- \`fileSize\` (required when `type: "file"`, omit for `type: "directory"`): size in bytes. The value does not need to be exact — after the file is uploaded to object storage, Losant reads the actual size from the storage system and overwrites this field. Pass your best estimate if known; otherwise ask the user for the file size before proceeding.
 
 **Response** includes the file metadata plus an \`upload\` object:
 \`\`\`json

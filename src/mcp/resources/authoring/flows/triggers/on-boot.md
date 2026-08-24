@@ -26,7 +26,7 @@ Not available.
 ```json
 {
   "type": "onBoot",
-  "key": "onBoot",
+  "key": "onBoot-a1b2c3d4",
   "config": {},
   "meta": { "category": "trigger", "name": "onBoot", "label": "Device: Startup", "x": 60, "y": 60 },
   "outputIds": [["init"]]
