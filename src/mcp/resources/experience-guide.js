@@ -1,4 +1,14 @@
+import conf from '../../config.js';
 import { buildReferenceSection } from './helpers.js';
+
+const apiHost = new URL(conf.get('losant.apiUrl')).hostname;
+// Production (*.losant.com): api.losant.com → onlosant.com (no dot between "on" and domain)
+// Other envs (*.losant.space): api.losant.space → on.losant.space
+const baseDomain = apiHost.replace(/^api\./, '');
+const slugDomain = apiHost.endsWith('.losant.com')
+  ? `on${baseDomain}`
+  : `on.${baseDomain}`;
+
 const content = `# Experiences Guide
 
 Losant Experiences let you build custom web portals and APIs on top of your device data. A request hits an **Endpoint**, which either replies immediately via a static reply (redirect or render a page) or triggers an **Experience Flow** that builds the reply dynamically. All seven experience resource types are tightly coupled — read this guide before writing any \`experience*\` resource.
@@ -26,7 +36,7 @@ Key fields for \`experienceVersion\`:
 
 1. Build and test in \`develop\`
 2. Create a named version with \`losant_write\` \`operation=createOne\` \`resourceType=experienceVersion\`
-3. Assign a domain or slug to that version — update the \`experienceDomain\` or \`experienceSlug\` with the new \`versionName\`
+3. Assign a domain or slug to that version — update the \`experienceDomain\` or \`experienceSlug\` with the new \`version\`
 
 ## Experience Views
 
@@ -183,25 +193,54 @@ Set \`access: "group"\` on an endpoint and supply \`experienceGroupIds\` to rest
 
 Two distinct resource types for routing traffic to an experience version.
 
-**\`experienceSlug\`** — subdomain on \`*.onlosant.com\` (e.g., \`my-portal.onlosant.com\`):
+**\`experienceSlug\`** — subdomain on \`*.${slugDomain}\` (e.g., \`my-portal.${slugDomain}\`):
 - \`slug\`: required, globally unique, 3+ characters, alphanumeric + hyphens
-- \`versionName\`: which experience version to serve (use \`develop\` for the editable version, or a named version)
+- \`version\`: which experience version to serve (use \`develop\` for the editable version, or a named version)
 
 **\`experienceDomain\`** — fully custom domain (e.g., \`portal.example.com\`):
 - \`domain\`: required, valid domain with a known TLD, must be owned by the organization
-- \`versionName\`: which experience version to serve
+- \`version\`: which experience version to serve
 - \`sslKey\`: PEM-encoded private key — optional, for your own TLS certificate
 - \`sslCertificate\`: PEM-encoded certificate — optional, paired with \`sslKey\`
 - \`sslBundle\`: PEM-encoded intermediate/CA bundle — optional, included when your certificate requires a chain
 - DNS: after creating the domain, the API response includes a Losant-provided CNAME target. Create a CNAME record at your DNS registrar pointing your domain to that target. DNS propagation can take minutes to hours; the domain shows as "pending" until verification succeeds.
 
-Multiple domains/slugs can point to the same version. Change which version a domain/slug serves by updating its \`versionName\`.
+Multiple domains/slugs can point to the same version. Change which version a domain/slug serves by updating its \`version\`.
 
 ### Common Procedure: Assign a slug to a version
 
-1. Create a slug: \`losant_write\` \`operation=createOne\` \`resourceType=experienceSlug\` with the \`slug\` name and \`versionName\`
-2. Or update an existing slug: \`losant_write\` \`operation=updateOne\` \`resourceType=experienceSlug\` — set \`versionName\` to the new version name
+1. Create a slug: \`losant_write\` \`operation=createOne\` \`resourceType=experienceSlug\` with the \`slug\` name and \`version\`
+2. Or update an existing slug: \`losant_write\` \`operation=updateOne\` \`resourceType=experienceSlug\` — set \`version\` to the new version name
 3. Check \`losant://schemas/experienceSlugPost\` and \`losant://schemas/experienceSlugPatch\` for schemas
+
+### Common Procedure: Unassign a version from a slug
+
+To detach a slug from a version without deleting the slug record itself, set \`version\` to \`null\`:
+
+1. Use \`losant_query\` \`operation=list\` \`resourceType=experienceSlug\` \`applicationId=<id>\` to find the slug and get its \`id\`
+2. Call \`losant_write\` \`operation=updateOne\` \`resourceType=experienceSlug\` with \`resourceId=<slugId>\` and \`body: { "version": null }\`
+
+The slug record is preserved but no longer serves any experience version.
+
+### Common Procedure: Search endpoints or views by version
+
+\`experienceEndpoint\` and \`experienceView\` list operations default to \`develop\`. **There is no error or signal if \`params.version\` is omitted** — the response silently returns develop resources. Always pass \`params.version\` explicitly when you need a specific version:
+
+\`\`\`
+losant_query operation=list resourceType=experienceEndpoint applicationId=<id> params={ "version": "develop" }
+losant_query operation=list resourceType=experienceEndpoint applicationId=<id> params={ "version": "v1" }
+\`\`\`
+
+Same pattern for views:
+\`\`\`
+losant_query operation=list resourceType=experienceView applicationId=<id> params={ "version": "v1" }
+\`\`\`
+
+To discover which named versions exist in an application, query \`resourceType=experienceVersion\`:
+\`\`\`
+losant_query operation=list resourceType=experienceVersion applicationId=<id>
+\`\`\`
+Each result includes \`version\` (the name), \`globals\`, and metadata — use the \`version\` field value as the \`params.version\` argument above.
 
 ${buildReferenceSection(['experienceVersion', 'experienceDomain', 'experienceSlug', 'experienceView', 'experienceEndpoint', 'experienceUser', 'experienceGroup'])}
 `;

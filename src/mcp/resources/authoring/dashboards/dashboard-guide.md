@@ -5,6 +5,8 @@ description: Build, edit, and update Losant application dashboards through the A
 
 # Losant Dashboard Authoring
 
+> **MCP resource type:** `applicationDashboard`. Use `resourceType: "applicationDashboard"` with `losant_write` and `losant_query`. Do not use `dashboard` — that is not a valid MCP resource type.
+
 This guide covers **application-owned dashboards** — created via `POST /applications/{appId}/dashboards`. Organization-owned and sandbox-owned dashboards (which allow blocks to draw from multiple applications) are supported by the Losant platform but are not currently available through the MCP tools.
 
 The **envelope, layout grid, and shared block shape** are described here in full. The **per-block detail** — what goes in a block's `config` — lives in `losant://dashboard/blocks/{blockType}`, indexed by the catalog table below. Cross-cutting concepts that several block docs reference live in `reference/`.
@@ -73,10 +75,10 @@ Blocks are positioned on a **4-column grid** (columns indexed 0 through 3, in 0.
 
 - `startX` / `startY`: top-left corner of the block (in grid units).
 - `width` / `height`: block size (in grid units).
-- All four are snapped to the nearest 0.5 on save (`0` → `0`, `1.3` → `1.5`, etc.).
+- All four are **silently rounded to the nearest 0.5** on save with no warning — `1.3` is stored as `1.5`, `0.7` is stored as `0.5`, etc. Always use exact 0.5-increment values to avoid unexpected rounding.
 - `startX + width` must not exceed 4. (E.g. `startX: 0, width: 4` fills a row; `startX: 2, width: 3` is rejected.)
 - `startY + height` has no upper bound.
-- **Blocks may not overlap.** The save call returns an "Overlapping blocks" validation error.
+- Blocks may overlap — overlapping coordinates are accepted silently and the UI renders blocks sequentially without breakage, but overlapping layouts are confusing and should be avoided.
 - Minimum block size is `0.5 × 0.5`.
 
 ## Block object shape
@@ -210,7 +212,6 @@ Use this to pick the right block before looking up its spec.
 
 ## Validation errors you'll hit
 
-- `Overlapping blocks.` — Two blocks have intersecting grid positions. Recompute `startX`/`startY`/`width`/`height` so they don't intersect.
 - `Block positioned out of range.` — `startX + width > 4`. The grid is 4 columns wide.
 - `Block IDs must be unique.` — Two blocks have the same `id`. Either omit `id` and let the server assign, or pick distinct values.
 - `Resolution cannot be greater than Duration.` — Dashboard-level `resolution` exceeds `duration`. Both are in milliseconds.

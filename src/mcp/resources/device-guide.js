@@ -20,8 +20,10 @@ Seven distinct classes, set via \`deviceClass\` at creation. **A device's class 
 Default when not specified: \`standalone\`. For most IoT use cases, \`standalone\` is correct.
 
 **Peripheral vs. floating:** Both are gateway-reported peripherals that do not connect to Losant directly. The difference is which gateway is allowed to report for them:
-- \`peripheral\` — state may only be reported by one specific gateway. Requires \`gatewayId\` pointing to a \`gateway\` or \`edgeCompute\` device. Confirm the gateway device exists before creating. The peripheral appears in that gateway's "Peripherals" tab.
-- \`floating\` — state may be reported by **any** gateway in the application. No \`gatewayId\` is set. Use for devices that physically move between multiple gateway locations. Floating peripherals do **not** appear in any gateway's "Peripherals" tab.
+- \`peripheral\` — state may only be reported by one specific gateway. **Requires \`gatewayId\`** pointing to a \`gateway\` or \`edgeCompute\` device. Omitting \`gatewayId\` on a \`peripheral\` will cause the API to return a validation error. Use \`losant_query\` \`operation=list\` \`resourceType=device\` with \`query: { "deviceClass": { "$in": ["gateway", "edgeCompute"] } }\` to find a valid gateway device ID before creating.
+- \`floating\` — state may be reported by **any** gateway in the application. No \`gatewayId\` is set. Use for devices that physically move between multiple gateway locations.
+
+**\`gatewayId\` is only meaningful for \`peripheral\` devices.** Include \`gatewayId\` if and only if \`deviceClass\` is \`peripheral\`. For all other device classes, the API silently drops the field — no error is returned, but the value is not persisted.
 
 **System devices** are grouping mechanisms — their state is calculated as an aggregation of child device states, not reported directly. System attributes define which aggregation method to use (FIRST, LAST, COUNT, MAX, MIN, MEDIAN, MEAN, SUM, STD_DEV).
 

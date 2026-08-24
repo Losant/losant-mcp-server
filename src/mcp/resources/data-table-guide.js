@@ -113,6 +113,8 @@ losant_write:
 \`\`\`
 Body is a flat \`{ columnName: value }\` object — no nesting. Values must match each column's declared \`dataType\`. \`required\` columns must be present; \`unique\` columns must not duplicate an existing row value.
 
+**Unknown column names are silently dropped.** If the body includes a key that does not match any column defined on the table, that key is ignored without an error. Always verify column names against the table schema (via \`losant_query\` \`operation=get\` on the \`dataTable\`) before inserting if you are unsure of the exact column names.
+
 Check \`losant://schemas/dataTableRowPost\` for the full body schema.
 
 ### Update a row

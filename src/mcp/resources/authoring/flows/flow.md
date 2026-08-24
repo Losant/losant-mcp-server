@@ -48,8 +48,8 @@ Experience flows back HTTP endpoints. The risk depends on whether real users are
 **Case 1 — New endpoint (the `experienceEndpoint` resource doesn't exist yet):**
 Safe to create enabled. No traffic can reach a route that isn't registered, so enabling immediately is harmless.
 
-**Case 2 — Existing endpoint, experience version mapped only to the default slug (`*.onlosant.com`):**
-Likely a development or staging environment. Relatively safe, but confirm: *"This experience appears to be on the default development slug — okay to enable the flow now?"*
+**Case 2 — Existing endpoint, experience version mapped only to the default slug domain:**
+Likely a development or staging environment. Relatively safe, but confirm: *"This experience appears to be on the default development slug — okay to enable the flow now?"* To identify the default slug domain for this environment, read `losant://guides/experiences` → **Experience Domains & Slugs** section — the slug domain is environment-specific and listed there.
 
 **Case 3 — Existing endpoint, experience version mapped to a custom domain:**
 Treat as production. Real users are hitting this domain. Default to `enabled: false` and confirm with the user before enabling — the same discipline as a cloud flow with side-effect outputs.
@@ -83,6 +83,45 @@ Typical lifecycle:
 2. `PATCH /applications/{appId}/flows/{flowId}` — edit the develop version.
 3. `POST /applications/{appId}/flows/{flowId}/versions` — publish a named immutable version.
 4. `PATCH /applications/{appId}/flows/{flowId}` with `defaultVersionId` — promote that version.
+
+## Searching for a Flow
+
+Use `losant_query` `operation=list` `resourceType=flow` to find existing flows before creating or editing.
+
+> **`flowClass` defaults to `cloud`.** The list operation silently returns only cloud flows if `flowClass` is not specified in `params`. Always pass it explicitly.
+
+**By name (cloud flows):**
+```
+losant_query operation=list resourceType=flow applicationId=<id> filterField=name filter="Sync*" params={ "flowClass": "cloud" }
+```
+
+**By flow class:**
+```
+losant_query operation=list resourceType=flow applicationId=<id> params={ "flowClass": "edge" }
+```
+
+**Inspect a flow's develop version** (triggers and nodes):
+```
+losant_query operation=get resourceType=flow applicationId=<id> resourceId=<flowId>
+```
+The response body includes the `triggers` and `nodes` arrays representing the develop version.
+
+**Find all flows that have a specific named version** (e.g. `v1`):
+```
+losant_query operation=list resourceType=flow applicationId=<id> params={ "version": "v1", "flowClass": "cloud", "allVersions": true } query={ "version": { "$eq": "v1" } }
+```
+`allVersions: true` makes the query search across all published version names rather than only the develop version. To find develop explicitly: `params={ "version": "develop", "flowClass": "cloud" }`.
+
+**List all published versions of a known flow:**
+```
+losant_query operation=list resourceType=flowVersion applicationId=<id> parentResourceId=<flowId>
+```
+Each item includes `version` (the name), `triggers`, and `nodes`. The `develop` version does not appear here — access it via `operation=get` on the flow directly.
+
+**Inspect one specific named version of a known flow:**
+```
+losant_query operation=list resourceType=flowVersion applicationId=<id> parentResourceId=<flowId> filterField=version filter=v1
+```
 
 ## Flow create body (POST)
 
