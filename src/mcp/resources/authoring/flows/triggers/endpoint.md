@@ -73,7 +73,7 @@ Two selection modes are available:
 
 ### Specific endpoint
 
-Fires only when the named endpoint receives a request. `key` is the Experience Endpoint ID.
+Fires only when the named endpoint receives a request. `key` is the Experience Endpoint ID. If you don't know its ID, use `losant_query` `operation=list` `resourceType=experienceEndpoint` with `filterField=route` to find it before constructing the trigger.
 
 ```json
 {
