@@ -220,4 +220,4 @@ Only users in specific groups can reach this endpoint:
   "unauthorizedReply": { "type": "page", "value": "<forbiddenViewId>", "statusCode": 403 }
 }
 ```
-Members of the listed groups — and members of any parent group in the hierarchy — are allowed through. If exprienceGroupIds is empty `[]` then the endpoint is restricted from all groups and all users will recieve an unauthorized reply.
+Members of the listed groups — and members of any parent group in the hierarchy — are allowed through. If experienceGroupIds is empty `[]` then the endpoint is restricted from all groups and all users will receive an unauthorized reply.
