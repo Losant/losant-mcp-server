@@ -125,11 +125,34 @@ Every node that would normally have `outputIds: [[]]` should get a Debug node ap
 
 Wire each previously-terminal node's `outputIds` to this debug node instead of `[[]]`. The debug log in the Losant UI will show the full payload at that point. Add a separate Debug node per terminal path to distinguish which branch was reached.
 
+**ThrowErrorNode exception:** A Throw Error Node halts execution immediately — it has no outputs and `outputIds` must be `[]`. Any Debug node placed after it is unreachable and will never fire. Place the Debug node **before** the Throw Error Node in the chain to capture the payload state at the point of failure.
+
+**Add a scope-local Flow Error trigger during testing:** Nodes that throw (most nodes on error) bypass all remaining output nodes. Add a `scope: "local"` Flow Error trigger to the flow during testing so thrown errors surface in the debug log rather than silently aborting:
+
+```json
+{
+  "type": "flowError",
+  "config": { "scope": "local" },
+  "meta": { "category": "trigger", "name": "flowError", "label": "Flow Error", "x": 60, "y": 360 },
+  "outputIds": [["debug-error"]]
+},
+{
+  "id": "debug-error",
+  "type": "DebugNode",
+  "config": { "message": "Error: {{data.errorInfo.error.message}} in {{data.errorInfo.nodeId}}", "level": "error" },
+  "meta": { "category": "debug", "name": "debug", "label": "Debug error", "x": 260, "y": 360 },
+  "outputIds": [[]]
+}
+```
+
+See `losant://flow/triggers/flow-error` for the full error payload shape.
+
 ### Reference
 
 | Resource | Link |
 |---|---|
 | Virtual Button trigger | `losant://flow/triggers/virtual-button` |
+| Flow Error trigger | `losant://flow/triggers` |
 | Mutate node | `losant://flow/nodes/mutate` |
 | Debug node | `losant://flow/nodes/debug` |
 

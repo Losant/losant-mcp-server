@@ -41,7 +41,7 @@ HTTP credentials attach secrets to HTTP node requests. The node validates the re
 
 \`uriMatch\` is a **plain URL prefix**. No wildcards, no \`*\`. The HTTP node checks that the request URL has:
 - the same **protocol** (e.g., \`https\`)
-- the same **hostname** (e.g., \`api.example.com\`)
+- the same **hostname** (e.g., \`api.example.com\`) — must be a **publicly accessible hostname**, not \`localhost\` or a private/internal address
 - the same **port** (explicit or implied: 80 for http, 443 for https)
 - a **pathname that starts with** the credential's pathname
 

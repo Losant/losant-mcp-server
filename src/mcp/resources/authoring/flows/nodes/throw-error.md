@@ -44,3 +44,8 @@ Minimum GEA version: **1.48.0**.
 ## Custom Node flows
 
 For edge custom node flows, same configuration as Edge. For all other custom node flows, same as Cloud.
+
+## Idiom notes
+
+- **Place Debug nodes before, not after.** Because the Throw Error Node halts execution immediately and has no outputs, any Debug node placed after it will never fire. If you want to capture the payload state at the point of failure, add a Debug node immediately before the Throw Error node in the chain.
+- **Pair with a Flow Error trigger.** On its own, a thrown error silently aborts the flow. Add a `scope: "local"` Flow Error trigger to the same flow to catch the error and take action (log it, send a reply, alert on-call). See `losant://flow/triggers/flow-error`.

@@ -13,6 +13,10 @@ Branches the flow based on a Losant expression. The most common branching node â
 
 ## Cloud (Application) flows
 
+`outputIds` has **exactly two** outer entries: index 0 = false branch, index 1 = true branch. Either inner array may be empty (`[]`) if you don't need to wire that branch.
+
+### Branch on false and true
+
 ```json
 {
   "id": "check",
@@ -26,7 +30,33 @@ Branches the flow based on a Losant expression. The most common branching node â
 }
 ```
 
-`outputIds` has **exactly two** outer entries: index 0 = false branch, index 1 = true branch. Either inner array may be empty (`[]`) if you don't need to wire that branch.
+### Branch on false
+```json
+{
+  "id": "check",
+  "type": "ConditionalNode",
+  "config": { "expression": "{{data.temp}} > 80" },
+  "meta": { "category": "logic", "name": "conditional", "label": "Conditional", "x": 200, "y": 200 },
+  "outputIds": [
+    ["when-false-node"],
+    []
+  ]
+}
+```
+
+### Branch on true
+```json
+{
+  "id": "check",
+  "type": "ConditionalNode",
+  "config": { "expression": "{{data.temp}} > 80" },
+  "meta": { "category": "logic", "name": "conditional", "label": "Conditional", "x": 200, "y": 200 },
+  "outputIds": [
+    [],
+    ["when-true-node"]
+  ]
+}
+```
 
 ### Config
 
