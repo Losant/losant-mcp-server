@@ -39,6 +39,24 @@ For a complete index of all available documentation and schemas, and environment
 ## Advanced Queries
 
 For MongoDB-style filtering, use the \`query\` parameter instead of \`filterField\`/\`filter\`. See [losant://guides/advanced-queries](losant://guides/advanced-queries) for supported operators, examples, and resource-specific schema links.
+
+## Resource-specific \`params\`
+
+Some resource types accept additional query parameters beyond the standard filter/sort fields. Pass them as an object to the \`params\` field — they are forwarded directly to the Losant API.
+
+**Experience endpoints and views — filter by version:**
+
+\`experienceEndpoint\` and \`experienceView\` list operations default to returning resources in the \`develop\` version. To retrieve resources belonging to a named version, pass \`version\` in \`params\`. **Without \`params.version\` the result always reflects \`develop\`, with no error or signal that the version was defaulted** — an absent version param is not the same as no version filter.
+
+\`\`\`
+losant_query operation=list resourceType=experienceEndpoint applicationId=<id> params={ "version": "v1" }
+\`\`\`
+
+**Flows — filter by flow class:**
+
+\`\`\`
+losant_query operation=list resourceType=flow applicationId=<id> params={ "flowClass": "edge" }
+\`\`\`
 `;
 
 export default {

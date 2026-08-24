@@ -59,9 +59,9 @@ For resource types with complex internal structure, read the relevant authoring 
 | Guide | When to use it |
 |---|---|
 | \`losant://authoring/flow\` | Building flows — node JSON, trigger config, wiring model |
-| \`losant://authoring/dashboards/dashboard\` | Dashboard block types and config |
-| \`losant://authoring/experiences/experience-view\` | Experience view types, layout/page/component structure |
-| \`losant://authoring/experiences/experience-endpoint\` | Endpoint routing, static vs. flow-driven reply |
+| \`losant://authoring/dashboard\` | Dashboard block types and config |
+| \`losant://authoring/experience-view\` | Experience view types, layout/page/component structure |
+| \`losant://authoring/experience-endpoint\` | Endpoint routing, static vs. flow-driven reply |
 | \`losant://references/shared/handlebars\` | Handlebars template helpers — usable in flows, dashboards, and experiences |
 
 ## Operations
