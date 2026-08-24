@@ -119,7 +119,7 @@ Key fields for \`experienceEndpoint\`:
 - \`method\`: required
 - \`route\`: required
 - \`access\`: optional, defaults to \`public\` — \`public\`, \`authenticated\`, \`group\`, or \`device\`
-- \`experienceGroupIds\`: array of group IDs — required when \`access\` is \`group\`
+- \`experienceGroupIds\`: array of group IDs — optional when \`access\` is \`group\`, but **omitting it or sending \`[]\` silently blocks all users** (no API error — the platform returns \`experienceGroups: []\` and every request receives \`unauthorizedReply\`); always supply at least one group ID for any users to reach the endpoint
 - \`deviceIdTemplate\`: string template resolving to a device ID — required when \`access\` is \`device\`
 - \`staticReply\`: object or null — authorized/public reply (see above)
 - \`unauthorizedReply\`: object or null — unauthorized reply (see above)
