@@ -152,6 +152,7 @@ See `losant://flow/triggers/flow-error` for the full error payload shape.
 | Resource | Link |
 |---|---|
 | Virtual Button trigger | `losant://flow/triggers/virtual-button` |
+| Flow Error trigger | `losant://flow/triggers` |
 | Mutate node | `losant://flow/nodes/mutate` |
 | Debug node | `losant://flow/nodes/debug` |
 
