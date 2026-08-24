@@ -48,4 +48,4 @@ Not available.
   "triggerId": "<trigger key>",
   "triggerType": "onBoot"
 }
-```]
+```
