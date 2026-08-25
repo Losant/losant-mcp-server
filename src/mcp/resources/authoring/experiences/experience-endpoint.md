@@ -54,6 +54,8 @@ The `access` field defaults to `"public"` if omitted. Additional fields depend o
 | `group` | Members of specific groups (or their ancestors) | `experienceGroupIds`: array of group IDs |
 | `device` | Experience users who are associated with a specific device via group membership | `deviceIdTemplate`: Handlebars template resolving to the expected device ID |
 
+**`access: "group"` gotcha:** Setting `access: "group"` without `experienceGroupIds`, or with an empty `[]`, is API-valid — the platform accepts the request and returns `experienceGroups: []` with no error — but the endpoint silently blocks all users. Every request receives `unauthorizedReply` because no group is authorized. Always populate `experienceGroupIds` with at least one group ID.
+
 ### `deviceIdTemplate`
 
 `access: "device"` does **not** use device access tokens. The request must carry an **experience user token**, and the platform checks that the authenticated experience user is a member of an Experience Group that is associated with the device identified by `deviceIdTemplate`.
@@ -220,4 +222,4 @@ Only users in specific groups can reach this endpoint:
   "unauthorizedReply": { "type": "page", "value": "<forbiddenViewId>", "statusCode": 403 }
 }
 ```
-Members of the listed groups — and members of any parent group in the hierarchy — are allowed through. If experienceGroupIds is empty `[]` then the endpoint is restricted from all groups and all users will receive an unauthorized reply.
+Members of the listed groups — and members of any parent group in the hierarchy — are allowed through. **Always include at least one group ID** — omitting `experienceGroupIds` entirely or passing `[]` is API-valid and returns no error, but silently blocks all users because no group is authorized.

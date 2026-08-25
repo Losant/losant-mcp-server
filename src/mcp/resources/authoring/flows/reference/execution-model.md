@@ -56,6 +56,7 @@ The error payload delivered to the `flowError` trigger includes context about wh
 | `data.errorInfo.nodeType` | A string representing the type of node that threw the error (e.g. `'HttpNode'`) |
 | `data.errorInfo.nodeId` | ID of the node that threw |
 | `data.erroredPayload` | Full payload snapshot at the point of the error — **only when the payload is under 256 KB**. If the payload exceeds that limit, `data.erroredPayload` is the string `"Payload data omitted due to size"` rather than an object. Always guard with `typeof data.erroredPayload === 'object'` before accessing properties — code that assumes it is always an object will throw a runtime error on large payloads. |
+| `data.replyId` | **Experience and webhook flows only.** The reply ID for the in-flight request. Must be passed to the Endpoint Reply node to send a response back to the client. Without this value, the Endpoint Reply node cannot complete the request and the client will hang. Typically accessed as `{{data.replyId}}` in the Endpoint Reply node's Reply ID field. |
 
 ---
 

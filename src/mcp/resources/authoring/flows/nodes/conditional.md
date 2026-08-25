@@ -93,7 +93,6 @@ Supports `&&`, `||`, `!`, and parentheses. Numbers are compared numerically in c
 
 - Use `===` not `==` — strict comparison only.
 - Missing paths render as `""` which is falsy, not an error.
-- `outputIds` must have exactly two outer arrays — a missing second array causes a validation error.
 
 ## Experience flows
 
