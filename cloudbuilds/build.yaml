@@ -38,7 +38,7 @@ steps:
   - |
     set -euo pipefail
     IFS=$'\n\t'
-    tagName=${TAG_NAME:-$BRANCH_NAME}
+    tagName=${$TAG_NAME:-$BRANCH_NAME}
     tag=us-docker.pkg.dev/$PROJECT_ID/$_ORG_NAME/$_IMAGE_NAME:$tagName 
     docker buildx build --platform=linux/amd64,linux/arm64 --tag=$tag --file=./Dockerfile --push .
   waitFor: ['createBuilder']
