@@ -75,7 +75,7 @@ Three state data modes controlled by `config.attrDataMethod`:
 | `deviceIdTemplateType` | `"stringTemplate"` | `"stringTemplate"` or `"jsonPath"`. |
 | `attrDataMethod` | `"individualFields"` | State source mode. |
 | `timeSourceType` | `"payloadTime"` | `"payloadTime"` — use payload time. `"now"` — use current time. `"payloadPath"` — read from `timeSourcePath`. |
-| `timeSourcePath` | — | Payload path to a time value. Required when `timeSourceType: "payloadPath"`. |
+| `timeSourcePath` | — | Payload path to a time value. Required when `timeSourceType: "payloadPath"`. Accepted formats: a numeric **milliseconds-since-epoch** value (≥ 1,000,000,000,000); a numeric **seconds-since-epoch** value (< 1,000,000,000,000 — auto-multiplied by 1000); `0` for current time; a negative number for an offset relative to now (ms); an ISO 8601 string or any string parseable by `new Date()`; or a Losant LJSON date object `{ "$date": "..." }`. |
 | `resultPath` | — | Optional. Payload path to write `{ success: true }` on success or `{ error: { type, message } }` on failure. On edge, requires GEA **1.12.0+**. |
 | `metaTemplate` | — | Optional. JSON-string template for a meta attribute added to the state payload. |
 | `metaTemplateType` | `"stringTemplate"` | How `metaTemplate` is interpreted: `"jsonTemplate"`, `"stringTemplate"`, or `"jsonPath"`. |

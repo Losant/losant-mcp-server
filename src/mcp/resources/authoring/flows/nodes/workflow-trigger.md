@@ -73,7 +73,7 @@ The Workflow Trigger Node triggers another flow's Virtual Button — immediately
 | `payloadTemplate` | `""` | Payload to send. JSON template, string, or payload path per `payloadTemplateType`. |
 | `scheduling` | `"relative"` | **Required** when `behavior: "schedule"`. `"relative"` or `"absolute"`. |
 | `secondsTemplate` | `""` | **Required** when `scheduling: "relative"`. Seconds from now. Template. |
-| `dateTemplate` | `""` | **Required** when `scheduling: "absolute"`. ISO 8601 datetime. Template. |
+| `dateTemplate` | `""` | **Required** when `scheduling: "absolute"`. Handlebars template. The rendered string must be parseable as a date: a numeric **milliseconds-since-epoch** value (≥ 1,000,000,000,000); a numeric **seconds-since-epoch** value (< 1,000,000,000,000 — auto-multiplied by 1000); `0` for current time; a negative number for an offset relative to now (ms); or an ISO 8601 string. LJSON `{ "$date": "..." }` objects are not supported — the template renders to a string before parsing. Invalid values throw a validation error. Cannot be more than one year in the future. |
 | `runIdTemplate` | `""` | **Required** when `behavior: "cancel"`. The run ID from when the execution was scheduled. Template. Also used with `behavior: "schedule"` to set the run ID for the scheduled execution. |
 | `resultPath` | `""` | Payload path to write the result. |
 
