@@ -162,7 +162,7 @@ LJSON is the serialization format Losant uses to carry the flow payload between 
 
 ### What this means when authoring flows
 
-- **Date values on the payload** are `{ "$date": "..." }` objects when accessed via a `payloadPath` lookup. Fields that accept a time value (e.g. `timeSourcePath`, `relativeToPath`) handle this format natively so you do not to to reference `$date` manually.
+- **Date values on the payload** are `{ "$date": "..." }` objects when accessed via a `payloadPath` lookup. Fields that accept a time value (e.g. `timeSourcePath`, `relativeToPath`) handle this format natively so you do not to include `$date` in the path.
 - **In a Function node (RawFunctionNode)**, `payload` is already deserialized — you work with native JS `Date` objects, numbers, etc. LJSON encoding/decoding is transparent.
 - **`{{format data.time 'x'}}` in a string template** — the Handlebars `format` helper receives the deserialized JS `Date`, so this works correctly. You do not need to unwrap `$date` manually in templates.
 
