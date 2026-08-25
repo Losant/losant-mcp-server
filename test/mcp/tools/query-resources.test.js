@@ -69,13 +69,12 @@ describe('query-resources tool', () => {
           operation: 'list',
           resourceType: 'application'
         });
-
         should.not.exist(result.isError);
         const response = JSON.parse(result.content[1].text);
         response.should.have.property('count', 2);
         response.items.should.have.length(2);
-        response.items[0]._omittedCounts.should.have.property('globals', 2);
-        response.items[0]._omittedCounts.should.have.property('archiveConfig', 1);
+        response.items[0]._availableViaGet.should.deepEqual({ readme: true, archiveConfig: true, globals: true });
+        response.items[1]._availableViaGet.should.deepEqual({ readme: true });
       });
     });
 
@@ -159,6 +158,46 @@ describe('query-resources tool', () => {
         result.isError.should.be.true();
         result.content[0].text.should.equal(JSON.stringify({ code: -32600, message: 'MCP error -32600: Tool input validation failed', data: { errors: [{ fieldName: 'filterField', details: "The 'filterField' parameter cannot be used together with the 'query' parameter. The 'query' parameter overrides simple filters. Remove the 'filterField' parameter and include any filtering logic in the 'query' object instead." }, { fieldName: 'filter', details: "The 'filter' parameter cannot be used together with the 'query' parameter. The 'query' parameter overrides simple filters. Remove the 'filter' parameter and include any filtering logic in the 'query' object instead." }] } }));
       });
+      it('should error if applicationJobLog list uses filterField', async () => {
+        const result = await queryTool({
+          operation: 'list',
+          resourceType: 'applicationJobLog',
+          applicationId: APP_ID,
+          filterField: 'name'
+        });
+        result.isError.should.be.true();
+        const error = JSON.parse(result.content[0].text);
+        error.data.errors.should.have.length(1);
+        error.data.errors[0].should.have.property('fieldName', 'filterField');
+        error.data.errors[0].details.should.equal("The 'list' operation on 'applicationJobLog' does not support the 'filterField' parameter.");
+      });
+      it('should error if applicationJobLog list uses filter', async () => {
+        const result = await queryTool({
+          operation: 'list',
+          resourceType: 'applicationJobLog',
+          applicationId: APP_ID,
+          filter: 'Archive*'
+        });
+        result.isError.should.be.true();
+        const error = JSON.parse(result.content[0].text);
+        error.data.errors.should.have.length(1);
+        error.data.errors[0].should.have.property('fieldName', 'filter');
+        error.data.errors[0].details.should.equal("The 'list' operation on 'applicationJobLog' does not support the 'filter' parameter.");
+      });
+      it('should error on both filterField and filter when both provided for applicationJobLog', async () => {
+        const result = await queryTool({
+          operation: 'list',
+          resourceType: 'applicationJobLog',
+          applicationId: APP_ID,
+          filterField: 'name',
+          filter: 'Archive*'
+        });
+        result.isError.should.be.true();
+        const error = JSON.parse(result.content[0].text);
+        error.data.errors.should.have.length(2);
+        error.data.errors[0].should.have.property('fieldName', 'filterField');
+        error.data.errors[1].should.have.property('fieldName', 'filter');
+      });
     });
   });
 
@@ -227,10 +266,178 @@ describe('query-resources tool', () => {
       });
 
       should.not.exist(result.isError);
-      const response = JSON.parse(result.content[0].text);
+      const hint = JSON.parse(result.content[0].text);
+      hint.should.deepEqual({
+        _projection: {
+          mode: 'summary',
+          omittedFields: ['attributes.description', 'attributes.contentType', 'attributes.attributeTags', 'attributes.system'],
+          hint: 'Attributes include name and dataType only. Use operation:get with the deviceId to retrieve full attribute details including description, contentType, attributeTags, and system configuration.'
+        }
+      });
+      const response = JSON.parse(result.content[1].text);
       response.should.have.property('count', 1);
       response.items.should.have.length(1);
       response.items[0].should.have.property('name', '2-Platen Electric Grill (ME-2P)');
+    });
+
+    it('should list applicationJobLog with applicationId', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .get(`/applications/${APP_ID}/jobLogs`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false', perPage: 100 })
+        .reply(200, {
+          count: 1,
+          items: [{
+            id: '575ec76c7ae143cd83dc4a96',
+            jobId: '575ec76c7ae143cd83dc4a96',
+            ownerId: APP_ID,
+            ownerType: 'application',
+            runQueuedAt: '2025-06-10T04:00:00.000Z',
+            runStartedAt: '2025-06-10T04:00:01.000Z',
+            status: 'inProgress',
+            name: 'ArchiveData',
+            progress: {
+              total: 10,
+              completed: 5
+            }
+          }]
+        });
+
+      const result = await queryTool({
+        operation: 'list',
+        resourceType: 'applicationJobLog',
+        applicationId: APP_ID
+      });
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('count', 1);
+      response.items.should.have.length(1);
+      response.items[0].should.have.property('name', 'ArchiveData');
+    });
+
+    it('should list edgeDeployment with applicationId', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .get(`/applications/${APP_ID}/edge/deployments`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false', perPage: 100 })
+        .reply(200, {
+          count: 1,
+          items: [{
+            id: '5a591be186b70d7b9f9b0954',
+            edgeDeploymentId: '5a591be186b70d7b9f9b0954',
+            applicationId: APP_ID,
+            deviceId: DEVICE_ID,
+            flowId: '575ed18f7ae143cd83dc4aa6',
+            creationDate: '2016-06-13T04:00:00.000Z',
+            lastUpdated: '2016-06-13T04:00:00.000Z',
+            desiredVersion: 'v1.4.0',
+            currentVersion: null,
+            logs: [
+              {
+                sourceType: 'user',
+                sourceId: '575ed70c7ae143cd83dc4aa9',
+                date: '2016-06-13T04:00:00.000Z',
+                changeType: 'desired',
+                newValue: 'v1.4.0',
+                previousValue: null
+              }
+            ]
+          }
+          ]
+        });
+
+      const result = await queryTool({
+        operation: 'list',
+        resourceType: 'edgeDeployment',
+        applicationId: APP_ID
+      });
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[1].text);
+      response.should.have.property('count', 1);
+      response.items.should.have.length(1);
+      response.items[0].should.have.property('flowId', '575ed18f7ae143cd83dc4aa6');
+      response.items[0].should.not.have.property('logs');
+      response.items[0]._omittedCounts.should.have.property('logs', 1);
+    });
+
+    it('should list embeddedDeployment with applicationId', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .get(`/applications/${APP_ID}/embedded/deployments`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false', perPage: 100 })
+        .reply(200, {
+          count: 1,
+          items: [{
+            id: '5a591be186b70d7b9f9b0954',
+            embeddedDeploymentId: '5a591be186b70d7b9f9b0954',
+            applicationId: APP_ID,
+            flows: {
+              '575ed18f7ae143cd83dc4aa6': {
+                flowName: 'my flow',
+                desiredVersion: 'v1.4.0',
+                currentVersion: null
+              }
+            },
+            creationDate: '2016-06-13T04:00:00.000Z',
+            lastUpdated: '2016-06-13T04:00:00.000Z',
+            currentBundleVersion: 'nullVersion',
+            desiredBundleVersion: '1615500683',
+            unknownBundle: false,
+            logs: [
+              {
+                sourceType: 'user',
+                sourceId: '575ed70c7ae143cd83dc4aa9',
+                date: '2016-06-13T04:00:00.000Z',
+                changeType: 'desired',
+                updateType: 'newFlow',
+                updateFlowId: '575ed18f7ae143cd83dc4aa6',
+                desiredVersion: 'v1.4.1',
+                newBundle: 'v1.4.0'
+              }
+            ]
+          }]
+        });
+
+      const result = await queryTool({
+        operation: 'list',
+        resourceType: 'embeddedDeployment',
+        applicationId: APP_ID
+      });
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[1].text);
+      response.should.have.property('count', 1);
+      response.items.should.have.length(1);
+      response.items[0].should.have.property('desiredBundleVersion', '1615500683');
+      response.items[0].should.not.have.property('logs');
+      response.items[0]._omittedCounts.should.have.property('logs', 1);
+    });
+
+    it('should strip verbose attribute fields but keep name and dataType when listing devices', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .get(`/applications/${APP_ID}/devices`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false', perPage: 100 })
+        .reply(200, {
+          count: 1,
+          items: [{
+            id: DEVICE_ID,
+            name: 'My Device',
+            attributes: [
+              {
+                name: 'voltage', dataType: 'number', description: 'Battery voltage', contentType: 'text/plain', attributeTags: { unit: 'V' }, system: { aggregation: 'LAST' }
+              },
+              { name: 'location', dataType: 'gps', description: 'GPS position' }
+            ]
+          }]
+        });
+
+      const result = await queryTool({
+        operation: 'list',
+        resourceType: 'device',
+        applicationId: APP_ID
+      });
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[1].text);
+      response.items[0].attributes.should.deepEqual([
+        { name: 'voltage', dataType: 'number' },
+        { name: 'location', dataType: 'gps' }
+      ]);
     });
 
     it('should map paginate and omitt properly for applicationDashboards', async () => {
@@ -420,9 +627,9 @@ describe('query-resources tool', () => {
         page: 1,
         perPage: 25
       });
-      result.content.length.should.equal(2);
-      result.content[0].text.should.deepEqual(JSON.stringify(listDevicesResponse, null, 2));
-      result.content[1].text.should.match(/Pagination hint: \d+ more device\(s\) exist beyond this page/i);
+      result.content.length.should.equal(3);
+      JSON.parse(result.content[1].text).items.length.should.equal(listDevicesResponse.items.length);
+      result.content[2].text.should.match(/Pagination hint: \d+ more device\(s\) exist beyond this page/i);
     });
 
     it('should pass filter parameters correctly', async () => {
@@ -460,6 +667,73 @@ describe('query-resources tool', () => {
       const response = JSON.parse(result.content[0].text);
       response.should.have.property('id', DEVICE_ID);
       response.should.have.property('name', '2-Platen Electric Grill (ME-2P)');
+    });
+
+    it('should get application and merge readme content', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .get(`/applications/${APP_ID}`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .reply(200, { id: APP_ID, name: 'Test App' });
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .get(`/applications/${APP_ID}/readme`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .reply(200, { applicationId: APP_ID, content: '# My App\nThis app manages grills.' });
+
+      const result = await queryTool({
+        operation: 'get',
+        resourceType: 'application',
+        resourceId: APP_ID
+      });
+
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('id', APP_ID);
+      response.should.have.property('name', 'Test App');
+      response.readme.should.equal('# My App\nThis app manages grills.');
+    });
+
+    it('should get application without readme if readme fetch fails', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .get(`/applications/${APP_ID}`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .reply(200, { id: APP_ID, name: 'Test App' });
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .get(`/applications/${APP_ID}/readme`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .reply(404, { error: 'Not found' });
+
+      const result = await queryTool({
+        operation: 'get',
+        resourceType: 'application',
+        resourceId: APP_ID
+      });
+
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('id', APP_ID);
+      response.should.have.property('readme', '');
+    });
+
+    it('should get application without readme if readme content is empty', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .get(`/applications/${APP_ID}`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .reply(200, { id: APP_ID, name: 'Test App' });
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .get(`/applications/${APP_ID}/readme`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .reply(200, { applicationId: APP_ID, content: '' });
+
+      const result = await queryTool({
+        operation: 'get',
+        resourceType: 'application',
+        resourceId: APP_ID
+      });
+
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('id', APP_ID);
+      response.should.have.property('readme', '');
     });
   });
 
@@ -535,6 +809,87 @@ describe('query-resources tool', () => {
     });
   });
 
+  describe('applicationKey, applicationCertificate, applicationCertificateAuthority', () => {
+    const keyId = '5f1b6285032b36000627aaaa';
+    const certId = '5f1b6285032b36000627cccc';
+    const caId = '5f1b6285032b36000627bbbb';
+
+    it('should list applicationKeys', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .get(`/applications/${APP_ID}/keys`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false', perPage: 100 })
+        .reply(200, { count: 1, items: [{ id: keyId, applicationKeyId: keyId, key: 'abc123', status: 'active' }] });
+
+      const result = await queryTool({ operation: 'list', resourceType: 'applicationKey', applicationId: APP_ID });
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('count', 1);
+      response.items[0].should.have.property('key', 'abc123');
+    });
+
+    it('should get a single applicationKey by ID', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .get(`/applications/${APP_ID}/keys/${keyId}`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .reply(200, { id: keyId, applicationKeyId: keyId, key: 'abc123', status: 'active' });
+
+      const result = await queryTool({ operation: 'get', resourceType: 'applicationKey', applicationId: APP_ID, resourceId: keyId });
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('applicationKeyId', keyId);
+    });
+
+    it('should list applicationCertificateAuthorities', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .get(`/applications/${APP_ID}/certificate-authorities`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false', perPage: 100 })
+        .reply(200, { count: 1, items: [{ id: caId, applicationCertificateAuthorityId: caId, name: 'My CA', status: 'active' }] });
+
+      const result = await queryTool({ operation: 'list', resourceType: 'applicationCertificateAuthority', applicationId: APP_ID });
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('count', 1);
+      response.items[0].should.have.property('name', 'My CA');
+    });
+
+    it('should get a single applicationCertificateAuthority by ID', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .get(`/applications/${APP_ID}/certificate-authorities/${caId}`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .reply(200, { id: caId, applicationCertificateAuthorityId: caId, name: 'My CA', status: 'active' });
+
+      const result = await queryTool({ operation: 'get', resourceType: 'applicationCertificateAuthority', applicationId: APP_ID, resourceId: caId });
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('applicationCertificateAuthorityId', caId);
+    });
+
+    it('should list applicationCertificates', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .get(`/applications/${APP_ID}/certificates`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false', perPage: 100 })
+        .reply(200, { count: 1, items: [{ id: certId, applicationCertificateId: certId, name: 'My Cert', status: 'active', filterType: 'none' }] });
+
+      const result = await queryTool({ operation: 'list', resourceType: 'applicationCertificate', applicationId: APP_ID });
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('count', 1);
+      response.items[0].should.have.property('name', 'My Cert');
+    });
+
+    it('should get a single applicationCertificate by ID', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .get(`/applications/${APP_ID}/certificates/${certId}`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .reply(200, { id: certId, applicationCertificateId: certId, name: 'My Cert', status: 'active', filterType: 'none' });
+
+      const result = await queryTool({ operation: 'get', resourceType: 'applicationCertificate', applicationId: APP_ID, resourceId: certId });
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('applicationCertificateId', certId);
+    });
+  });
+
   describe('Tool Metadata', () => {
     it('should have correct tool name', () => {
       queryResourcesTool.should.have.property('name', 'losant_query');
@@ -588,7 +943,7 @@ describe('query-resources tool', () => {
       });
 
       should.not.exist(result.isError);
-      const response = JSON.parse(result.content[0].text);
+      const response = JSON.parse(result.content[1].text);
       response.should.have.property('count', 0);
       response.items.should.be.an.Array().with.length(0);
     });
@@ -634,7 +989,7 @@ describe('query-resources tool', () => {
       });
 
       should.not.exist(result.isError);
-      const response = JSON.parse(result.content[0].text);
+      const response = JSON.parse(result.content[1].text);
       response.should.have.property('count', 100);
       response.items.should.have.length(100);
     });

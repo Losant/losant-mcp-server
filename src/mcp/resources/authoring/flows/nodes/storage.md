@@ -1,0 +1,86 @@
+# Flow Storage Nodes
+
+Two nodes for reading and writing flow-scoped persistent storage. Values persist across flow executions and are shared across all instances of the same flow. Available in cloud, experience, edge, and customNode flows.
+
+## Required Fields
+
+| `type` | `meta.category` | `meta.name` | `meta.label` default |
+|---|---|---|---|
+| `GetValueNode` | `data` | `get-value` | `"Storage: Get Value"` |
+| `StoreValueNode` | `data` | `store-value` | `"Storage: Set Value"` |
+
+## Cloud (Application) flows
+
+### GetValueNode — Read from flow storage
+
+Reads a stored value by key and writes it to a payload path.
+
+```json
+{
+  "id": "get-counter",
+  "type": "GetValueNode",
+  "config": {
+    "keyName": "deviceCounter-{{data.deviceId}}",
+    "valuePath": "working.counter"
+  },
+  "meta": { "category": "data", "name": "get-value", "label": "Storage: Get Value", "x": 200, "y": 200 },
+  "outputIds": [["next"]]
+}
+```
+
+| Config field | Default | Notes |
+|---|---|---|
+| `keyName` | — | Required when `getAll` is `false`. Storage key as a template. Use `{{data.deviceId}}` to make keys device-specific. |
+| `valuePath` | — | **Required.** Payload path to write the stored value. Writes `null` (or `defaultValue`) if the key doesn't exist. |
+| `defaultValue` | — | Optional. Value written to `valuePath` when `keyName` does not exist in storage. |
+| `defaultValueType` | `"template"` | How to interpret `defaultValue`: `"template"`, `"json"`, or `"path"`. |
+| `getAll` | `false` | When `true`, retrieves all storage keys as an object and writes the result to `valuePath`. `keyName` is ignored and may be omitted. Requires GEA 1.10.0+ on edge. |
+
+---
+
+### StoreValueNode — Write to flow storage
+
+Writes a value to a storage key.
+
+```json
+{
+  "id": "inc-counter",
+  "type": "StoreValueNode",
+  "config": {
+    "keyName": "deviceCounter-{{data.deviceId}}",
+    "valueType": "template",
+    "value": "{{add working.counter 1}}"
+  },
+  "meta": { "category": "data", "name": "store-value", "label": "Storage: Set Value", "x": 400, "y": 200 },
+  "outputIds": [["next"]]
+}
+```
+
+| Config field | Default | Notes |
+|---|---|---|
+| `keyName` | — | **Required** for most value types. Storage key as a template. Omit only when `valueType: 'clear'` and you intend to clear ALL flow storage. Providing `keyName` with `valueType: 'clear'` clears only that key. |
+| `valueType` | — | **Required.** How to interpret the value. Options: `"template"` (render `value` as Handlebars), `"json"` (parse `value` as JSON), `"number"` (coerce `value` to a number), `"path"` (read from `valuePath` on the payload), `"incr"` (atomically increment the stored number by the amount in `value`), `"decr"` (atomically decrement the stored number by the amount in `value`), `"clear"` (delete the key). |
+| `value` | — | The value to store or operate with. **Required** when `valueType` is `"template"`, `"json"`, `"number"`, `"incr"`, `"decr"`, or `"path"`. For `"incr"` and `"decr"` this is the amount to increment/decrement by (template resolving to a number). For `"path"`, `value` is the primary field — it holds the payload path to read from. |
+| `valuePath` | — | Legacy fallback for `valueType: "path"` on cloud and edge when `value` is absent. Use `value` as the primary field for new configs. |
+| `resultPath` | — | Optional. Payload path to write the stored value back onto the payload after storing. |
+
+### Idiom notes
+
+- Storage keys are flow-scoped — different flows cannot share storage.
+- Make keys device-specific by including `{{data.deviceId}}` when the value should differ per device.
+- Values stored with `valueType: 'template'` are stored as strings — use `{{add working.counter 0}}` to coerce a stored string back to numeric type in subsequent templates. Values stored with `valueType: 'number'`, `'incr'`, `'decr'`, or `'json'` preserve their native types.
+- Always read (`GetValueNode`) before writing (`StoreValueNode`) for counters and rate limiters — the stored value may be `undefined` on first run.
+
+## Experience flows
+
+Same as Cloud.
+
+## Edge flows
+
+Same as Cloud. Storage values are **per-device** on edge — each deployed device has its own isolated storage namespace, and values cannot be read from the Losant cloud console.
+
+> **Note:** `StoreValueNode` with `valueType: 'clear'` and no `keyName` (clear all flow storage) requires GEA 1.22.0+ on edge.
+
+## Custom Node flows
+
+For edge custom node flows, same configuration as Edge. For all other custom node flows, same as Cloud.

@@ -114,11 +114,6 @@ Use the \`query\` parameter instead of simple \`filterField\`/\`filter\` when yo
 }
 \`\`\`
 
-## Available Query Schemas
-
-Reference these schemas for resource-specific query capabilities:
-${SCHEMA_FILES.map((f) => `- [${f.replace('.json', '')}](losant://schemas/${f.replace('.json', '')})`).join('\n')}
-
 ## Resource-Specific Queries
 
 ### Devices (advancedDeviceQuery)
@@ -135,6 +130,12 @@ Supports querying by: id, name, description, enabled status, and timestamps
 
 ### Experience Users & Groups
 Supports querying by: id, email, firstName, lastName, tags, and timestamps
+
+## Available Query Schemas
+
+If the resource you want to query isn't listed above, check the documentation for that resource to see if it supports advanced queries and which fields are queryable.
+
+${SCHEMA_FILES.filter((f) => f.includes('Query')).map((f) => `- [${f.replace('.json', '')}](losant://schemas/${f.replace('.json', '')})`).join('\n')}
 `;
 export default {
   name: 'advanced-query-guide',
