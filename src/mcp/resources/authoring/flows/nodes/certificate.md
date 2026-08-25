@@ -64,7 +64,7 @@ When provided, these override the corresponding fields from the CSR. All are Han
 | Config field | Default | Notes |
 |---|---|---|
 | `serialNumberTemplate` | `""` | Serial number as a bare hex string (no `0x` prefix), up to 20 octets (40 hex chars). Template. |
-| `notBeforeTemplate` | `""` | Certificate validity start date. Handlebars template. Defaults to current time when empty or omitted. Accepted formats when set: a numeric **milliseconds-since-epoch** value (≥ 1,000,000,000,000); a numeric **seconds-since-epoch** value (< 1,000,000,000,000 — auto-multiplied by 1000); `0` for current time; a negative number for an offset relative to now (ms); or an ISO 8601 string. LJSON `{ "$date": "..." }` objects are not supported — the template renders to a string before parsing. Invalid values throw a validation error (halting the flow). `expiresInDaysTemplate` counts forward from this value. |
+| `notBeforeTemplate` | `""` | Certificate validity start date. Handlebars template. Defaults to current time when empty or omitted. Accepted formats when set: a numeric **milliseconds-since-epoch** value (≥ 1,000,000,000,000); a numeric **seconds-since-epoch** value (< 1,000,000,000,000); `0` for current time; a negative number of milliseconds offset from now (e.g. `-5000` = 5 seconds in the past); or an ISO 8601 string. LJSON `{ "$date": "..." }` objects are not supported — the template renders to a string before parsing. Invalid values throw a validation error (halting the flow). `expiresInDaysTemplate` counts forward from this value. |
 
 #### Subject Alternative Names (optional, require GEA 2.4.0+ on edge)
 

@@ -5,6 +5,8 @@ description: Complete reference for all template syntaxes used in flow node conf
 
 # Templating Reference
 
+> **Always read this file together with `losant://references/flow/payload`.** This file explains *how* to write templates (syntax, operators, helpers); the payload reference explains *what* is available to reference (envelope fields, trigger-populated `data.*`, `working.*`, `globals`, and flow-class-specific additions). You need both to correctly author templates for any node config field.
+
 Losant flow node config fields use four distinct syntaxes depending on the field type. Using the wrong one produces silent failures.
 
 | Syntax | Used in | Example |
@@ -143,3 +145,24 @@ The entire string is processed through Handlebars first, then the result must be
 { {{#gt data.score 50}}"result": "pass"{{else}}"result": "fail"{{/gt}} }
 → { "result": "pass" }
 ```
+
+---
+
+## LJSON — Losant Extended JSON
+
+LJSON is the serialization format Losant uses to carry the flow payload between nodes. It is a superset of JSON that preserves JavaScript types standard JSON cannot represent. Understanding it explains why certain values on the payload look the way they do and why fields like `timeSourcePath` accept a `{ "$date": "..." }` object.
+
+### Special type encodings
+
+| JS type | LJSON wire form | Notes |
+|---|---|---|
+| `Date` | `{ "$date": "2024-01-15T14:30:00.000Z" }` | ISO 8601 string inside `$date`. This is what dates look like on the payload — e.g. `payload.time` serializes this way. |
+| `undefined` | `{ "$undefined": true }` | Roundtrips `undefined` through JSON, which would normally drop the key. |
+| `NaN` / `Infinity` / `-Infinity` | `{ "$numberDouble": "NaN" }` etc. | Non-finite numbers that `JSON.stringify` would silently turn to `null`. |
+
+### What this means when authoring flows
+
+- **Date values on the payload** are `{ "$date": "..." }` objects when accessed via a `payloadPath` lookup. Fields that accept a time value (e.g. `timeSourcePath`, `relativeToPath`) handle this format natively so you do not to to reference `$date` manually.
+- **In a Function node (RawFunctionNode)**, `payload` is already deserialized — you work with native JS `Date` objects, numbers, etc. LJSON encoding/decoding is transparent.
+- **`{{format data.time 'x'}}` in a string template** — the Handlebars `format` helper receives the deserialized JS `Date`, so this works correctly. You do not need to unwrap `$date` manually in templates.
+

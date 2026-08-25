@@ -5,6 +5,8 @@ description: Runtime payload structure for all Losant flow classes — standard 
 
 # Flow Payload Reference
 
+> **Always read this file together with `losant://references/flow/templating`.** This file explains *what* is available to reference (envelope fields, trigger-populated `data.*`, `working.*`, `globals`, and flow-class-specific additions); the templating reference explains *how* to write templates (syntax, operators, helpers). You need both to correctly author templates for any node config field.
+
 The flow payload plays a similar role to `context-configuration` in dashboards and experiences — it is the root data object available to all templates and expressions during execution. Unlike those, it is **mutable**: nodes read from and write to it as execution progresses, building up intermediate results under `working` and passing the final state downstream.
 
 Every flow execution carries a **payload** — a mutable JSON object that flows from the trigger through every node. Triggers supply initial data under `data`; nodes read from and write to any path on the payload as they execute.
@@ -123,6 +125,6 @@ Two distinct syntaxes exist for referencing payload data — they are not interc
 
 **String templates** (used in `*Template` fields):
 - Handlebars: `{{data.temp}}`, `{{globals.apiBase}}`, `"Alert: {{data.level}} exceeded"`
-- See `losant://references/flow/templating` for the full dialect including block helpers, format helpers, and LJSON syntax for HTTP nodes.
+- See `losant://references/flow/templating` for the full dialect including block helpers, format helpers, and LJSON syntax for nodes.
 
 The key gotcha: putting `{{}}` in a payload path field, or putting a bare dot-path in a template field, are both silent errors that produce wrong results. Check which syntax the node field expects before populating it.
