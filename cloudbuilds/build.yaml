@@ -38,14 +38,7 @@ steps:
   - |
     set -euo pipefail
     IFS=$'\n\t'
-    if [[ -n '$TAG_NAME' ]]; then
-      tag=us-docker.pkg.dev/$PROJECT_ID/$_ORG_NAME/$_IMAGE_NAME:$TAG_NAME
-      docker buildx build --platform=linux/amd64,linux/arm64 --tag=$tag --file=./Dockerfile --push .
-    else
-      tag=us-docker.pkg.dev/$PROJECT_ID/$_ORG_NAME/$_IMAGE_NAME:$BRANCH_NAME
-      docker buildx build --platform=linux/amd64,linux/arm64 --tag=$tag --file=./Dockerfile --push .
-      echo "Building and pushing Docker image for branch $BRANCH_NAME"
-    fi
+    docker buildx build --platform=linux/amd64,linux/arm64 --tag=us-docker.pkg.dev/$PROJECT_ID/$_ORG_NAME/$_IMAGE_NAME:$REF_NAME --file=./Dockerfile --push .
   waitFor: ['createBuilder']
 
 # Redeploy staging or release if this is a develop or release branch build
