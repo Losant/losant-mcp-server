@@ -3,6 +3,7 @@
 Losant uses a Handlebars-based templating dialect across dashboards, experience views, and flows. This reference covers the full language — syntax modes, block helpers, every format helper, expression operators, and JSON templates.
 
 **Context-specific variables** (what data is available in each authoring area) are documented separately:
+- Flow payload context → `losant://references/flow/payload`
 - Dashboard render context → `losant://references/dashboard/templates`
 - Experience view render context → `losant://references/experience/context-configuration`
 

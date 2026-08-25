@@ -51,7 +51,7 @@ The configuration mode is controlled by `config.dataMethod`:
 | `dataSourcePath` | Payload path to the additional data object. Used when `dataSourceType: "payloadPath"`. |
 | `eventTags` | Optional array of `{ "keyTemplate": "...", "valueTemplate": "..." }` objects for event tags. |
 | `timeSourceType` | `"now"` (default), `"payloadTime"`, or `"payloadPath"`. Override the event timestamp. |
-| `timeSourcePath` | Payload path to a timestamp. Used when `timeSourceType: "payloadPath"`. |
+| `timeSourcePath` | Payload path to a timestamp. Used when `timeSourceType: "payloadPath"`. Accepted formats: a numeric **milliseconds-since-epoch** value (≥ 1,000,000,000,000); a numeric **seconds-since-epoch** value (< 1,000,000,000,000); `0` for current time; a negative number of milliseconds offset from now (e.g. `-5000` = 5 seconds in the past); an ISO 8601 string; or a Losant LJSON date object `{ "$date": "..." }`. If the value cannot be parsed, falls back to current time. |
 | `disableTagChangeTracking` | boolean — when `true`, tag changes on this event do not create timeline entries. |
 | `resultPath` | Payload path for the created event object. Shape: `{ id, applicationId, level, subject, message, deviceId, data, eventTags, state, creationDate, lastUpdated }`. The `id` field is needed to Get/Update/Delete the event downstream. |
 
