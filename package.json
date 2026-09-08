@@ -52,16 +52,16 @@
     "memoizee": "^0.4.17",
     "omnibelt": "^4.1.0",
     "rollbar": "^3.1.0",
-    "zod": "^4.4.3"
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "@losant/eslint-config-losant": "^2.1.0",
     "c8": "^12.0.0",
-    "eslint": "^10.8.1",
+    "eslint": "^10.10.0",
     "esmock": "^2.7.6",
     "husky": "^9.1.7",
-    "lint-staged": "^17.3.0",
-    "mocha": "^11.8.0",
+    "lint-staged": "^17.5.0",
+    "mocha": "^12.0.0",
     "nock": "^14.0.17",
     "nodemon": "^3.1.14",
     "should": "^13.2.3",
