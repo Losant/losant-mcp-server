@@ -42,7 +42,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VEX_GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
         with:
-          vex_repo: Losant/losant-vexhub-internal
+          vex_repo: Losant/losant-vexhub
           gcp_project: losant-core
           cloud_run_job: gca-vex-generator-mcp
           cloud_run_region: us-central1
