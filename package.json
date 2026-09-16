@@ -20,7 +20,7 @@
   "engines": {
     "node": ">=24"
   },
-  "packageManager": "pnpm@11.20.0",
+  "packageManager": "pnpm@12.4.2",
   "license": "MIT",
   "author": "Losant <hello@losant.com>",
   "type": "module",
