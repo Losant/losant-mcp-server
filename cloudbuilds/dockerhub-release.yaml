@@ -1,0 +1,53 @@
+options:
+  machineType: N1_HIGHCPU_8
+  env:
+  - 'DOCKER_API_VERSION=1.41'
+  - 'BUILDX_NO_DEFAULT_ATTESTATIONS=1'
+timeout: 3600s
+
+# Substitutions
+# _ORG_NAME    - the artifact registry org name, e.g. 'losant'
+# _IMAGE_NAME  - the image name in artifact registry, e.g. 'losant-mcp-server'
+# _SOURCE_TAG  - the tag to pull from artifact registry, e.g. 'v1.1.0'
+# _REPO        - the full dockerhub repository, e.g. 'losant/losant-mcp-server'
+# _VERSION     - the semver version string, e.g. '1.1.0'
+
+steps:
+- id: copyToDockerHub
+  name: 'us-docker.pkg.dev/losant-core/losant/cloud-build-tools:latest'
+  entrypoint: 'bash'
+  args:
+  - '-c'
+  - |
+    set -euo pipefail
+    IFS=$'\n\t'
+    gcloud secrets versions access latest --secret=DOCKERHUB_TOKEN --project=$PROJECT_ID \
+      | docker login --username=losant --password-stdin
+
+    docker buildx create --driver docker-container --name my-builder --use
+    pull_from="us-docker.pkg.dev/$PROJECT_ID/$_ORG_NAME/$_IMAGE_NAME"
+    push_to=$_REPO
+    version=$_VERSION
+    major="${version%%.*}"
+    minor="${version%.*}"
+    maintags=("$major" "$minor" "latest")
+
+    # --- multi-platform (amd64 + arm64) ---
+    docker buildx imagetools create --tag $push_to:$version $pull_from:$_SOURCE_TAG
+    for tag in "${maintags[@]}"; do
+      docker buildx imagetools create --tag $push_to:$tag $push_to:$version
+    done
+
+    # --- amd64-only ---
+    docker buildx imagetools create --platform=linux/amd64 \
+      --tag $push_to:$version-amd64 $pull_from:$_SOURCE_TAG
+    for tag in "${maintags[@]}"; do
+      docker buildx imagetools create --tag $push_to:$tag-amd64 $push_to:$version-amd64
+    done
+
+    # --- arm64-only ---
+    docker buildx imagetools create --platform=linux/arm64 \
+      --tag $push_to:$version-arm64 $pull_from:$_SOURCE_TAG
+    for tag in "${maintags[@]}"; do
+      docker buildx imagetools create --tag $push_to:$tag-arm64 $push_to:$version-arm64
+    done
