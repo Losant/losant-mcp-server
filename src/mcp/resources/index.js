@@ -2,6 +2,7 @@ import path from 'node:path';
 import { readFile } from 'node:fs/promises';
 import { ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js'; // eslint-disable-line import/no-unresolved
 import advancedQueryGuide from './advanced-query-guide.js';
+import deleteToolGuide from './delete-tool-guide.js';
 import queryToolGuide from './query-tool-guide.js';
 import writeToolGuide from './write-tool-guide.js';
 import deviceGuide from './device-guide.js';
@@ -20,7 +21,7 @@ import conf from '../../config.js';
 import memoizee from 'memoizee';
 import { SCHEMA_NAME_TO_FILE, DOC_NAME_TO_FILE,
   DOCS_PATH, RESOURCE_TYPE_SET, SCHEMAS_PATH,
-  WRITABLE_RESOURCE_TYPES, NO_CREATE_TYPES, AUTHORING_HUB_TO_FILE,
+  WRITABLE_RESOURCE_TYPES, NO_CREATE_TYPES, DELETABLE_RESOURCE_TYPES, AUTHORING_HUB_TO_FILE,
   FLOW_NODE_TO_FILE, FLOW_TRIGGER_TO_FILE, DASHBOARD_BLOCK_TO_FILE,
   REFERENCES_TO_FILE } from '../../constants.js';
 import { getPluralResourceName } from '../tools/helpers.js';
@@ -44,6 +45,7 @@ Losant is an IoT application enablement platform for building, connecting, and m
 
 `;
 const WRITABLE_RESOURCE_TYPE_SET = new Set(WRITABLE_RESOURCE_TYPES);
+const DELETABLE_RESOURCE_TYPE_SET = new Set(DELETABLE_RESOURCE_TYPES);
 // Set of plural API collection names for writable, creatable types — used to add the write disclaimer to plural doc pages.
 // Built via getPluralResourceName so irregular plurals (e.g. applicationCertificateAuthorities) are handled correctly.
 const WRITABLE_PLURAL_NAME_SET = new Set(
@@ -55,6 +57,7 @@ const GUIDES_TO_REGISTER = [
   advancedQueryGuide,
   queryToolGuide,
   writeToolGuide,
+  deleteToolGuide,
   credentialGuide,
   dataTableGuide,
   deviceGuide,
@@ -120,6 +123,7 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
     } else if (filePath.endsWith('device.md')) {
       disclaimerLines.push('- endpoint "get" used by tool `losant_query` as operation "get"');
       disclaimerLines.push('- endpoint "patch" used by tool `losant_write` as operation "updateOne"');
+      disclaimerLines.push('- endpoint "delete" used by tool `losant_delete`');
       disclaimerLines.push('- endpoint "getState" used by tool `losant_timeseries` as operation "getState"');
       disclaimerLines.push('- endpoint "getLogEntries" used by tool `losant_timeseries` as operation "getLogEntries"');
       disclaimerLines.push('- endpoint "getCommand" used by tool `losant_timeseries` as operation "getCommand"');
@@ -129,6 +133,9 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
       disclaimerLines.push('- endpoint "get" used by tool `losant_query` as operation "get"');
       if (isWritable) {
         disclaimerLines.push('- endpoint "patch" used by tool `losant_write` as operation "updateOne"');
+      }
+      if (DELETABLE_RESOURCE_TYPE_SET.has(fileName)) {
+        disclaimerLines.push('- endpoint "delete" used by tool `losant_delete`');
       }
     } else {
       disclaimerLines.push('- endpoint "get" used by tool `losant_query` as operation "list"');
