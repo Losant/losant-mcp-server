@@ -244,6 +244,18 @@ describe('MCP Resources', () => {
       });
     });
 
+    it('should provide handler for losant delete tool guide', async () => {
+      const result = await client.readResource({ uri: 'losant://guides/losant-delete-tool' });
+
+      result.should.have.property('contents');
+      result.contents.should.be.an.Array();
+      result.contents[0].should.have.property('uri', 'losant://guides/losant-delete-tool');
+      result.contents[0].should.have.property('mimeType', 'text/markdown');
+      result.contents[0].should.have.property('text');
+      result.contents[0].text.should.match(/deletion is permanent|cannot be undone/i);
+      result.contents[0].text.should.match(/Devices are \*\*NOT\*\* permanently deleted/);
+    });
+
     it('should provide handler for losant query tool guide', async () => {
       const result = await client.readResource({ uri: 'losant://guides/losant-query-tool' });
 

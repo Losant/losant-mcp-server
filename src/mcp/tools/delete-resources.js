@@ -11,7 +11,7 @@ export default {
   inputInfo: {
     annotations: {
       readOnlyHint: false,
-      idempotentHint: true,
+      idempotentHint: false,
       destructiveHint: true
     },
     title: 'Delete Losant Resources',

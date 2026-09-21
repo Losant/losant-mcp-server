@@ -14,6 +14,7 @@ const content = `# Losant Delete Tool Guide
 Use \`losant_delete\` to permanently delete a Losant resource — for example, to clean up test resources created during a session or when a user explicitly instructs you to remove a specific resource.
 
 > **Warning**: Deletion is permanent and cannot be undone for most resource types. Before deleting, use \`losant_query\` to fetch and surface the full resource to the user in case they want to recreate it — note that recreating assigns a new resource ID and is not equivalent to never having deleted it. Confirm the correct \`resourceId\` before calling.
+
 > **Warning**: Devices are **NOT** permanently deleted. They can be recovered via the Losant UI after deletion - but they are the ONLY resource that behaves this way.
 
 ## Before Calling

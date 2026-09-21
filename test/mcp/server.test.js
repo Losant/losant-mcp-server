@@ -51,7 +51,7 @@ describe('MCP Server', () => {
       server._registeredTools.losant_delete.annotations.should.deepEqual({
         readOnlyHint: false,
         destructiveHint: true,
-        idempotentHint: true,
+        idempotentHint: false,
         title: 'losant_delete',
         openWorldHint: false
       });

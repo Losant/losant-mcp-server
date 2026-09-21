@@ -21,8 +21,8 @@ describe('delete-resources tool', () => {
       deleteResourcesTool.inputInfo.annotations.readOnlyHint.should.be.false();
     });
 
-    it('should be idempotent', () => {
-      deleteResourcesTool.inputInfo.annotations.idempotentHint.should.be.true();
+    it('should not be idempotent', () => {
+      deleteResourcesTool.inputInfo.annotations.idempotentHint.should.be.false();
     });
 
     it('should be destructive', () => {
@@ -87,6 +87,24 @@ describe('delete-resources tool', () => {
   });
 
   describe('Delete with special resource field ID', () => {
+    it('should delete an experienceVersion using "experienceVersionIdOrName" as the resource field', async () => {
+      const experienceVersionIdOrName = 'v1.0';
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .delete(`/applications/${APP_ID}/experience/versions/${experienceVersionIdOrName}`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .reply(200, { success: true });
+
+      const result = await deleteTool({
+        resourceType: 'experienceVersion',
+        applicationId: APP_ID,
+        resourceId: experienceVersionIdOrName
+      });
+
+      should.not.exist(result.isError);
+      const response = JSON.parse(result.content[0].text);
+      response.should.have.property('success', true);
+    });
+
     it('should delete an applicationDashboard using "dashboardId" as the resource field', async () => {
       const dashboardId = '575ece2b7ae143cd83dc4a9b';
       nock(LOSANT_API_URL, { encodedQueryParams: true })
