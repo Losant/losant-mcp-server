@@ -43,6 +43,7 @@ ${resourceList}
 Some resource types are nested under a parent and require \`parentResourceId\`:
 
 ${nestedNote}
+
 ## Restrictions
 
 - \`application\` does not require \`resourceId\` — it is identified by \`applicationId\` alone. Use with extreme caution: deleting an application removes all of its resources.

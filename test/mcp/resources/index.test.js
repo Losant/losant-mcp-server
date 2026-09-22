@@ -256,6 +256,14 @@ describe('MCP Resources', () => {
       result.contents[0].text.should.match(/Devices are \*\*NOT\*\* permanently deleted/);
     });
 
+    it('should include delete endpoint disclaimer in deletable resource docs', async () => {
+      const result = await client.readResource({ uri: 'losant://docs/device' });
+
+      result.should.have.property('contents');
+      result.contents[0].should.have.property('text');
+      result.contents[0].text.should.containEql('endpoint "delete" used by tool `losant_delete`');
+    });
+
     it('should provide handler for losant query tool guide', async () => {
       const result = await client.readResource({ uri: 'losant://guides/losant-query-tool' });
 

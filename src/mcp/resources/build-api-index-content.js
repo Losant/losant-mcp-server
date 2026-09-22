@@ -22,7 +22,7 @@ let indexContent = `# Losant API Documentation
 > - API: \`applicationCertificate\` → UI: **Device Certificate**
 > - API: \`applicationCertificateAuthority\` → UI: **Device Certificate Authority**
 > - API: \`applicationKey\` → UI: **Access Key**
-> Always use the API names with \`losant_query\` and \`losant_write\`.
+> Always use the API names with \`losant_query\`, \`losant_write\`, and \`losant_delete\`.
 
 ## Supported Resources
 The following resources can be queried with the losant_query tool:

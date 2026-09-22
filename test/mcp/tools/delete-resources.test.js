@@ -140,6 +140,17 @@ describe('delete-resources tool', () => {
       const response = JSON.parse(result.content[0].text);
       response.should.have.property('success', true);
     });
+
+    it('should reject when resourceId is provided but does not match applicationId', async () => {
+      const result = await deleteTool({
+        resourceType: 'application',
+        applicationId: APP_ID,
+        resourceId: 'aaaaaaaaaaaaaaaaaaaaaaaa'
+      });
+
+      result.should.have.property('isError', true);
+      result.content[0].text.should.containEql('resourceId');
+    });
   });
 
   describe('Nested Resources', () => {

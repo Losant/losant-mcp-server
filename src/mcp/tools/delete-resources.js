@@ -30,7 +30,7 @@ export default {
         },
         resourceId: {
           type: 'string',
-          description: 'Resource ID — required for all resource types except "application" (which is identified by applicationId alone)'
+          description: 'Resource ID — required for all resource types except "application" (which is identified by applicationId alone). For experienceVersion or flowVersion, this can be an ID or version name.'
         },
         parentResourceId: {
           type: 'string',
@@ -48,6 +48,13 @@ export default {
         return invalidRequestError({
           message: 'Tool input validation failed',
           errors: [{ fieldName: 'resourceId', details: 'resourceId is required for all resource types except "application".' }]
+        });
+      }
+
+      if (resourceType === 'application' && resourceId && resourceId !== applicationId) {
+        return invalidRequestError({
+          message: 'Tool input validation failed',
+          errors: [{ fieldName: 'resourceId', details: 'For resourceType "application", if resourceId is provided it must equal applicationId. The application is identified solely by applicationId.' }]
         });
       }
 
