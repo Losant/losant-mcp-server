@@ -37,7 +37,7 @@ jobs:
       # v3
       - uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db
 
-      - uses: losant-vex-tools/issue-vex-assertions@main
+      - uses: Losant/losant-vex-tools/issue-vex-assertions@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VEX_GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
