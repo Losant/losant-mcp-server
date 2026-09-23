@@ -28,7 +28,7 @@ jobs:
         with:
           app-id: 4830546
           private-key: ${{ secrets.VEX_APP_PRIVATE_KEY }}
-          repositories: "losant-vexhub-internal"
+          repositories: "losant-vexhub"
 
       # v3
       - uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093
