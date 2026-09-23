@@ -1,6 +1,6 @@
 {
   "name": "losant-mcp-server",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Model Context Protocol (MCP) server for the Losant IoT Platform",
   "keywords": [
     "mcp",
@@ -20,7 +20,7 @@
   "engines": {
     "node": ">=24"
   },
-  "packageManager": "pnpm@11.20.0",
+  "packageManager": "pnpm@12.4.2",
   "license": "MIT",
   "author": "Losant <hello@losant.com>",
   "type": "module",
@@ -48,20 +48,20 @@
     "convict": "^6.2.5",
     "debug": "^4.4.3",
     "jsonwebtoken": "^9.0.3",
-    "losant-rest": "^4.2.2",
+    "losant-rest": "Losant/losant-rest-js#develop",
     "memoizee": "^0.4.17",
     "omnibelt": "^4.1.0",
     "rollbar": "^3.1.0",
-    "zod": "^4.4.3"
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@losant/eslint-config-losant": "^2.1.0",
     "c8": "^12.0.0",
-    "eslint": "^10.8.1",
+    "eslint": "^10.10.0",
     "esmock": "^2.7.6",
     "husky": "^9.1.7",
-    "lint-staged": "^17.3.0",
-    "mocha": "^11.8.0",
+    "lint-staged": "^17.5.1",
+    "mocha": "^12.0.1",
     "nock": "^14.0.17",
     "nodemon": "^3.1.14",
     "should": "^13.2.3",
