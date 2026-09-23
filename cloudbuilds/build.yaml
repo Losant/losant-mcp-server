@@ -54,10 +54,10 @@ steps:
     IFS=$'\n\t'
 
     if [[ -n '$TAG_NAME' ]]; then
-      VERSION=$(cat package.json | jq -r '.version')
+      mcp_version=$(cat package.json | jq -r '.version')
       gcloud builds triggers run mcp-release \
         --project=$PROJECT_ID \
-        --substitutions=_ORG_NAME=$_ORG_NAME,_IMAGE_NAME=$_IMAGE_NAME,_SOURCE_TAG=$TAG_NAME,_REPO=losant/losant-mcp-server,_VERSION=$VERSION,_LOGS_BUCKET=$_LOGS_BUCKET
+        --substitutions=_ORG_NAME=$_ORG_NAME,_IMAGE_NAME=$_IMAGE_NAME,_SOURCE_TAG=$TAG_NAME,_REPO=losant/losant-mcp-server,_MCP_VERSION=$mcp_version,_LOGS_BUCKET=$_LOGS_BUCKET
     fi
 
   waitFor: ['mcpBuildAndPush']

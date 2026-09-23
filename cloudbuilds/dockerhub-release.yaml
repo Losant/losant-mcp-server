@@ -10,7 +10,7 @@ timeout: 3600s
 # _IMAGE_NAME  - the image name in artifact registry, e.g. 'losant-mcp-server'
 # _SOURCE_TAG  - the tag to pull from artifact registry, e.g. 'v1.1.0'
 # _REPO        - the full dockerhub repository, e.g. 'losant/losant-mcp-server'
-# _VERSION     - the semver version string, e.g. '1.1.0'
+# _MCP_VERSION - the semver version string, e.g. '1.1.0'
 
 steps:
 - id: copyToDockerHub
@@ -27,7 +27,7 @@ steps:
     docker buildx create --driver docker-container --name my-builder --use
     pull_from="us-docker.pkg.dev/$PROJECT_ID/$_ORG_NAME/$_IMAGE_NAME"
     push_to=$_REPO
-    version=$_VERSION
+    version=$_MCP_VERSION
     major="${version%%.*}"
     minor="${version%.*}"
     maintags=("$major" "$minor" "latest")
