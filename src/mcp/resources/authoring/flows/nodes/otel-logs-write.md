@@ -114,7 +114,7 @@ When set to `"agentConfig"`, all connection/auth/TLS fields are read from the GE
 
 | Config field | Default | Notes |
 |---|---|---|
-| `logsWriteMethod` | `"individualFields"` | **Required.** `"individualFields"`, `"jsonTemplate"`, or `"payloadPath"`. |
+| `logsWriteMethod` | `"individualFields"` | Set to `"individualFields"`. |
 | `logRecords` | `[]` | **Required** when `logsWriteMethod` is `"individualFields"`. Array of log record objects. At least one entry is required. Max 100. |
 | `logRecords[].bodyTemplate` | `""` | **Required** per entry. Log message body. Blank renders (after trimming) trigger a missing-field workflow error. Template. |
 | `logRecords[].severityTemplate` | `"9"` | **Required** per entry. Numeric severity 0–24, or a named level: `TRACE` (1), `DEBUG` (5), `INFO` (9), `WARN`/`WARNING` (13), `ERROR` (17), `FATAL` (21). Case-insensitive. |

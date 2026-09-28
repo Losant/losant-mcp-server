@@ -116,7 +116,7 @@ When set to `"agentConfig"`, all connection/auth/TLS fields are read from the GE
 
 | Config field | Default | Notes |
 |---|---|---|
-| `metricsWriteMethod` | `"individualFields"` | **Required.** `"individualFields"`, `"jsonTemplate"`, or `"payloadPath"`. |
+| `metricsWriteMethod` | `"individualFields"` | Set to `"individualFields"`. |
 | `customMetrics` | `[]` | **Required** when `metricsWriteMethod` is `"individualFields"`. Array of metric objects. At least one entry is required. Max 100. |
 | `customMetrics[].nameTemplate` | `""` | **Required** per entry. OTel metric name. Template. |
 | `customMetrics[].valueTemplate` | `""` | **Required** per entry. Numeric value for the metric data point. Must resolve to a finite number. Template. |
