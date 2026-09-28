@@ -25,6 +25,8 @@ Not available.
 
 The node is divided into four configuration areas: Connection, Resource Config, Logs, and Result.
 
+> **Prefer `connectionSource: "agentConfig"` when possible.** When the edge device's GEA has an `[otlpCollector]` block configured, use `connectionSource: "agentConfig"` instead of `"inline"`. This keeps collector credentials out of the flow and makes the flow reusable across any edge device whose agent is pointed at an OTel collector — no per-flow credential changes needed when the collector URL or auth changes. See `losant://guides/devices` → **OpenTelemetry Integration** for the GEA configuration reference.
+
 ### Connection: Individual Fields (`connectionSource: "inline"`)
 
 ```json
