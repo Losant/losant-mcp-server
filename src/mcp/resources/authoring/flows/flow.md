@@ -236,6 +236,12 @@ Edge flows are deployed to Gateway Edge Agent (GEA) hardware and run locally on 
 > - The single most common edge mistake: editing develop and expecting devices to pick it up. Always publish a new version after editing.
 > - Flow storage is isolated per-device. Two devices running the same flow have completely separate storage namespaces.
 
+**OpenTelemetry (OTel) integration (GEA 2.6.0+):** Edge flows can write custom logs and metrics to an OpenTelemetry collector using the OTel Write nodes:
+- `losant://flow/nodes/otel-logs-write` — OTel Logs: Write Node
+- `losant://flow/nodes/otel-metrics-write` — OTel Metrics: Write Node
+
+Both nodes support two connection modes: `connectionSource: "inline"` (embed the collector URL and credentials directly in the flow) or `connectionSource: "agentConfig"` (pull the connection from the GEA `[otlpCollector]` config block — no credentials in the flow). The agent-config mode requires the edge device's GEA to have `[otlpCollector]` configured. See `losant://guides/devices` → **OpenTelemetry Integration** for the GEA config reference.
+
 ---
 
 ## Triggers — object shape
@@ -589,6 +595,8 @@ See `losant://flow/nodes/loop` for the full pattern and a worked example.
 | `OpcUaCallNode` | `opcua-call` | data | edge | `losant://flow/nodes/opcua-nodes` |
 | `OpcUaReadNode` | `opcua-read` | data | edge | `losant://flow/nodes/opcua-nodes` |
 | `OpcUaWriteNode` | `opcua-write` | data | edge | `losant://flow/nodes/opcua-nodes` |
+| `OtelLogsWriteNode` | `otel-logs-write` | data | edge | `losant://flow/nodes/otel-logs-write` |
+| `OtelMetricsWriteNode` | `otel-metrics-write` | data | edge | `losant://flow/nodes/otel-metrics-write` |
 | `S7ReadNode` | `s7-read` | data | edge | `losant://flow/nodes/siemens-s7` |
 | `S7WriteNode` | `s7-write` | data | edge | `losant://flow/nodes/siemens-s7` |
 | `SamlLoginRedirectNode` | `saml-login` | experience | cloud, exp, custom | `losant://flow/nodes/saml` |

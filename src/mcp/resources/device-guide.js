@@ -120,6 +120,56 @@ The access secret is returned **once** on \`createOne applicationKey\` and is ne
 ### Edge Compute devices (\`edgeCompute\` class)
 Edge Compute devices run the Losant Gateway Edge Agent (GEA), which supports both auth methods. Access key auth uses \`DEVICE_ID\` / \`ACCESS_KEY\` / \`ACCESS_SECRET\` environment variables; certificate auth requires configuring the GEA's TLS client certificate settings. Refer to the Losant Edge Agent documentation for GEA-specific configuration details.
 
+### OpenTelemetry Integration (GEA 2.6.0+)
+
+Edge Compute devices running GEA 2.6.0 or later can export metrics and logs to an OpenTelemetry (OTel) collector over OTLP/HTTP. This has two parts: centralizing the collector connection in the GEA config, and optionally enabling automatic container metrics reporting.
+
+**Centralizing the collector connection (\`[otlpCollector]\`)**
+
+Configure the \`[otlpCollector]\` block in the GEA configuration file (or via the equivalent environment variables). When this block is present, edge flows can set \`connectionSource: "agentConfig"\` on the OTel Write nodes — the nodes pull the collector URL, auth, and TLS from the agent config rather than requiring them to be embedded in the flow. Resource attributes set at the agent level are automatically merged with any per-node resource attributes (per-node values win on key conflict).
+
+| Config key | Env variable | Notes |
+|---|---|---|
+| \`otlpCollector.url\` | \`OTLP_COLLECTOR_URL\` | **Required.** Base URL of the OTLP collector (e.g. \`http://otel-collector:4318\`). Do not include \`/v1/metrics\` or \`/v1/logs\` — the node appends the signal path. |
+| \`otlpCollector.authType\` | \`OTLP_COLLECTOR_AUTH_TYPE\` | \`none\` (default), \`bearer\`, \`basic\`, or \`clientCert\`. |
+| \`otlpCollector.bearerToken\` | \`OTLP_COLLECTOR_BEARER_TOKEN\` | Required when \`authType\` is \`bearer\`. |
+| \`otlpCollector.username\` | \`OTLP_COLLECTOR_USERNAME\` | Required when \`authType\` is \`basic\`. |
+| \`otlpCollector.password\` | \`OTLP_COLLECTOR_PASSWORD\` | Optional when \`authType\` is \`basic\`. |
+| \`otlpCollector.clientCertPath\` | \`OTLP_COLLECTOR_CLIENT_CERT_PATH\` | Path to PEM-encoded client certificate. Required when \`authType\` is \`clientCert\`. |
+| \`otlpCollector.clientKeyPath\` | \`OTLP_COLLECTOR_CLIENT_KEY_PATH\` | Path to PEM-encoded private key. Required when \`authType\` is \`clientCert\`. |
+| \`otlpCollector.caCertPath\` | \`OTLP_COLLECTOR_CA_CERT_PATH\` | Custom CA certificate for verifying self-signed or internal collector certs. |
+| \`otlpCollector.disableSSLVerification\` | \`OTLP_COLLECTOR_DISABLE_SSL_VERIFICATION\` | Set to \`true\` to skip TLS certificate verification. |
+| \`otlpCollector.resourceAttributes\` | \`OTLP_COLLECTOR_RESOURCE_ATTRIBUTES\` | JSON object of resource-level key-value pairs attached to all exported telemetry (e.g. \`{"service.name":"gea","host.name":"device-01"}\`). |
+
+Example TOML config:
+\`\`\`toml
+[otlpCollector]
+url = 'http://otel-collector:4318'
+authType = 'bearer'
+bearerToken = 'my-secret-token'
+
+[otlpCollector.resourceAttributes]
+"service.name" = "edge-gateway-01"
+"host.name" = "device-hostname"
+\`\`\`
+
+**Automatic container metrics (\`[otelReporting]\`)**
+
+When enabled, the GEA itself exports container performance metrics to the configured collector every 30 seconds (configurable). Requires \`[otlpCollector]\` to be configured.
+
+| Config key | Env variable | Notes |
+|---|---|---|
+| \`otelReporting.enabled\` | \`OTEL_REPORTING_ENABLED\` | Set to \`true\` to enable automatic GEA metrics reporting. |
+| \`otelReporting.intervalSeconds\` | \`OTEL_REPORTING_INTERVAL_SECONDS\` | Reporting interval in seconds. Default: \`30\`. |
+
+Metrics exported: \`process.memory.usage\`, \`v8js.memory.heap.total\`, \`v8js.memory.heap.used\`, \`v8js.memory.external\`, \`process.cpu.time\`, \`process.uptime\`.
+
+**Using OTel in edge flows**
+
+Once the GEA has an \`[otlpCollector]\` block, edge flows can write logs and metrics to the same collector via \`connectionSource: "agentConfig"\` — no credentials need to be embedded in the flow. See:
+- \`losant://flow/nodes/otel-logs-write\` — OTel Logs: Write Node (GEA 2.6.0+)
+- \`losant://flow/nodes/otel-metrics-write\` — OTel Metrics: Write Node (GEA 2.6.0+)
+
 ## Reacting to device events with flows
 
 Device activity fires flows automatically — no polling required:
