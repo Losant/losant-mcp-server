@@ -4,6 +4,7 @@ let indexContent = `# Losant API Documentation
 ## Quick Links
 - [Advanced Query Guide](losant://guides/advanced-queries) - Learn how to build MongoDB-style queries
 - [Losant Query Tool Guide](losant://guides/losant-query-tool) - Procedural guide for the losant_query tool — application selection, nested resources, and resource documentation links
+- [Losant Delete Tool Guide](losant://guides/losant-delete-tool) - When and how to use losant_delete — supported types, required parameters, nested resource rules, and pre-deletion fetch recommendation
 - [Devices & Device Recipes Guide](losant://guides/devices) - Domain guide for devices and recipes — classes, attributes, tags, and common procedures
 - [Integrations Guide](losant://guides/integrations) - Integration types, required config objects, credential usage, and flow pairing
 - [Data Tables Guide](losant://guides/data-tables) - Column schema, constraints, the dataTable/dataTableRow relationship, and common procedures
@@ -21,7 +22,7 @@ let indexContent = `# Losant API Documentation
 > - API: \`applicationCertificate\` → UI: **Device Certificate**
 > - API: \`applicationCertificateAuthority\` → UI: **Device Certificate Authority**
 > - API: \`applicationKey\` → UI: **Access Key**
-> Always use the API names with \`losant_query\` and \`losant_write\`.
+> Always use the API names with \`losant_query\`, \`losant_write\`, and \`losant_delete\`.
 
 ## Supported Resources
 The following resources can be queried with the losant_query tool:

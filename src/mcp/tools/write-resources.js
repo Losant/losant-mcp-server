@@ -81,6 +81,10 @@ export default {
         });
       }
       const requestParams = { applicationId, _links: false, _actions: false, _embedded: false };
+      if (resourceType === 'flow' || (resourceType === 'flowVersion' && operation === 'createOne')) {
+        // this will collect strict and all validation errors for a flow
+        requestParams.strictValidation = true;
+      }
       if (parentFieldName) { requestParams[parentFieldName] = parentResourceId; }
       const sdkBodyKey = SDK_BODY_KEY[resourceType] ?? resourceType;
       try {
@@ -113,7 +117,7 @@ export default {
           content: [{ type: 'text', text: JSON.stringify(response, null, 2) }]
         };
       } catch (err) {
-        return restToMCPError(err, { resourceType });
+        return restToMCPError(err, { resourceType, validationErrors: err?.validationErrors });
       }
     };
   }

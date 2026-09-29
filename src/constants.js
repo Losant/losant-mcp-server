@@ -112,6 +112,33 @@ export const SCHEMA_FILES = readdirSync(SCHEMAS_PATH).filter((f) => {
   const name = f.replace('.json', '');
   return name.includes('Query') || WRITE_SCHEMA_SUFFIXES.has(name);
 });
+// Excludes applicationKey, credential, applicationCertificate, applicationCertificateAuthority (sensitive),
+// and types with no delete endpoint (applicationJobLog, edgeDeployment, embeddedDeployment).
+export const DELETABLE_RESOURCE_TYPES = [
+  'application',
+  'event',
+  'device',
+  'deviceRecipe',
+  'dataTable',
+  'dataTableRow',
+  'webhook',
+  'integration',
+  'applicationDashboard',
+  'notebook',
+  'flow',
+  'flowVersion',
+  'resourceJob',
+  'file',
+  'privateFile',
+  'experienceDomain',
+  'experienceEndpoint',
+  'experienceGroup',
+  'experienceSlug',
+  'experienceUser',
+  'experienceVersion',
+  'experienceView'
+];
+
 // Resources supported by the unified tool
 export const NESTED_RESOURCES = {
   flowVersion: { parentField: 'flowId', parentType: 'flow' },

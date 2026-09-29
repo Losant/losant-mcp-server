@@ -1,8 +1,9 @@
 import queryResourcesTool from './query-resources.js';
 import queryTimeseriesTool from './query-timeseries.js';
 import writeResourcesTool from './write-resources.js';
+import deleteResourcesTool from './delete-resources.js';
 
-const tools = [queryResourcesTool, queryTimeseriesTool, writeResourcesTool];
+const tools = [queryResourcesTool, queryTimeseriesTool, writeResourcesTool, deleteResourcesTool];
 
 const applyDefaultAnnotations = (inputInfo, name) => {
   inputInfo.annotations = {

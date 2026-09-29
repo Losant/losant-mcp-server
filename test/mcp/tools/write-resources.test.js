@@ -114,7 +114,7 @@ describe('write-resources tool', () => {
     it('should create a flow', async () => {
       nock(LOSANT_API_URL, { encodedQueryParams: true })
         .post(`/applications/${APP_ID}/flows`)
-        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false', strictValidation: 'true' })
         .reply(201, {
           id: flowId, flowId, applicationId: APP_ID, name: 'My Workflow', enabled: true, triggers: [], nodes: [], globals: []
         });
@@ -132,10 +132,59 @@ describe('write-resources tool', () => {
       response.should.have.property('name', 'My Workflow');
     });
 
+    it('should return validationErrors from the API when flow nodes are invalid', async () => {
+      const validationErrors = [
+        { field: 'nodes.[0].config.thisIsAnExtraField', validationMessage: 'is an additional property' },
+        { field: 'nodes.[0].config.groupTagTemplates', validationMessage: 'is the wrong type' },
+        { field: 'nodes.[1].config.nameTemplate', validationMessage: 'is the wrong type' },
+        { field: 'nodes.[2]', validationMessage: 'must belong to a loop' }
+      ];
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .post(`/applications/${APP_ID}/flows`)
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false', strictValidation: 'true' })
+        .reply(422, {
+          type: 'Validation',
+          message: 'nodes.[0].config.thisIsAnExtraField is an additional property.',
+          validationErrors
+        });
+
+      const result = await writeTool({
+        operation: 'createOne',
+        resourceType: 'flow',
+        applicationId: APP_ID,
+        body: {
+          flowClass: 'cloud',
+          name: 'cloudFlow',
+          nodes: [
+            {
+              type: 'CreateExperienceGroupNode',
+              meta: { x: 0, y: 0, category: 'experience', name: 'create-experience-group' },
+              config: { thisIsAnExtraField: 'hi', groupTagTemplates: 'shouldBeAnArray' }
+            },
+            {
+              type: 'CreateExperienceGroupNode',
+              meta: { x: 0, y: 0, category: 'experience', name: 'create-experience-group' },
+              config: { nameTemplate: true }
+            },
+            {
+              type: 'LoopCapNode',
+              meta: { x: 0, y: 0, category: 'loop', name: 'loop-next' },
+              config: { loopNodeId: 'someLoopId' }
+            }
+          ]
+        }
+      });
+
+      result.isError.should.be.true();
+      const error = JSON.parse(result.content[0].text);
+      error.data.should.have.property('resourceType', 'flow');
+      error.data.validationErrors.should.deepEqual(validationErrors);
+    });
+
     it('should update a flow', async () => {
       nock(LOSANT_API_URL, { encodedQueryParams: true })
         .patch(`/applications/${APP_ID}/flows/${flowId}`)
-        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false', strictValidation: 'true' })
         .reply(200, {
           id: flowId, flowId, applicationId: APP_ID, name: 'Updated Workflow', enabled: false, triggers: [], nodes: [], globals: []
         });
@@ -162,7 +211,7 @@ describe('write-resources tool', () => {
     it('should create a flowVersion with parentResourceId', async () => {
       nock(LOSANT_API_URL, { encodedQueryParams: true })
         .post(`/applications/${APP_ID}/flows/${flowId}/versions`)
-        .query({ _actions: 'false', _links: 'false', _embedded: 'false' })
+        .query({ _actions: 'false', _links: 'false', _embedded: 'false', strictValidation: 'true' })
         .reply(201, {
           id: flowVersionId, flowVersionId, flowId, applicationId: APP_ID, version: 'v1.2.3', enabled: true, triggers: [], nodes: [], globals: []
         });
