@@ -210,6 +210,7 @@ export const REFERENCES_TO_FILE = {
   'flow/templating': path.join(AUTHORING_PATH, 'flows/reference/templating.md'),
   'flow/execution-model': path.join(AUTHORING_PATH, 'flows/reference/execution-model.md'),
   'flow/patterns': path.join(AUTHORING_PATH, 'flows/reference/patterns.md'),
+  'flow/debug-patterns': path.join(AUTHORING_PATH, 'flows/reference/debug-patterns.md'),
   'experience/context-configuration': path.join(AUTHORING_PATH, 'experiences/reference/context-configuration.md'),
   'dashboard/context-configuration': path.join(AUTHORING_PATH, 'dashboards/reference/context-configuration.md'),
   'dashboard/templates': path.join(AUTHORING_PATH, 'dashboards/reference/templates.md'),

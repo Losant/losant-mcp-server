@@ -13,7 +13,7 @@ This guide is the entry point for creating and updating Losant flows through the
 
 **Reading order for a new authoring task:**
 1. Read the envelope and wiring sections of this file (you're already here).
-2. Read `losant://references/flow/patterns` for common flow shapes and the debug/testing pattern.
+2. Read `losant://references/flow/patterns` for common flow shapes, and `losant://references/flow/debug-patterns` for debug/testing patterns.
 3. For each trigger/node you intend to use, locate it in the catalog and read the resource at the URI listed in the Spec column.
 4. If the Spec doc references a `losant://references/flow/<name>` resource, read that too.
 
@@ -35,7 +35,7 @@ Before creating or enabling a cloud flow, assess whether it can cause real-world
 - External services: Slack, Datadog, Loggly, HTTP (POSTing to an external endpoint)
 - Device commands: Device Command node
 
-**If both are true** (auto-firing trigger + side-effect output), create the flow with `enabled: false` and confirm with the user before enabling. Use the Virtual Button debug pattern (`losant://references/flow/patterns`) to test first. Only set `enabled: true` after the user explicitly confirms the flow is ready for production.
+**If both are true** (auto-firing trigger + side-effect output), create the flow with `enabled: false` and confirm with the user before enabling. Use the Virtual Button debug pattern (`losant://references/flow/debug-patterns`) to test first. Only set `enabled: true` after the user explicitly confirms the flow is ready for production.
 
 **Safe to create enabled:** Virtual Button-only trigger (fires only on manual press), or flows whose output nodes have no external side effects (e.g., Mutate, Debug, Get Device, storage reads).
 
@@ -678,5 +678,6 @@ Several detail docs reference these. Read them once and the per-node docs become
 - `losant://references/flow/globals` — the three globals sources (flow, experience version, application) and their override order; the JSON-encoded API format (`"json": "\"string value\""` not `"json": "string value"`); version scoping rules.
 - `losant://references/flow/templating` — all four template syntaxes: payload paths (dot-notation, static, no `{{}}`), string templates (Handlebars `{{}}` in `*Template` fields), expressions (ConditionalNode/MathNode), and JSON templates (`bodyType: "jsonTemplate"` in HTTP node).
 - `losant://references/flow/execution-model` — how a flow run actually executes: trigger fires and passes a payload through nodes, branches run independently with no merge, what happens when a node throws (all paths halt), how the flow Error trigger catches thrown errors, and the distinction between nodes that throw vs. write errors to the payload.
-- `losant://references/flow/patterns` — seven end-to-end flow patterns with node chains and minimal JSON: device threshold alert with de-bounce, scheduled external API pull, webhook request/reply handler, experience login flow, experience authenticated data endpoint, and device provisioning via webhook.
+- `losant://references/flow/patterns` — six end-to-end flow patterns with node chains and minimal JSON: device threshold alert with de-bounce, scheduled external API pull, webhook request/reply handler, experience login flow, experience authenticated data endpoint, and device provisioning via webhook.
+- `losant://references/flow/debug-patterns` — debug/local-testing patterns: Virtual Button manual triggering, capturing end/error payloads to a file for inspection and replay, and synchronous webhook+curl debugging for instant terminal feedback.
 - `losant://guides/credentials` — how `credentialNameTemplate` resolves Losant-managed credentials and what `authMethod` each credential supports. Used by HTTP and every integration node.

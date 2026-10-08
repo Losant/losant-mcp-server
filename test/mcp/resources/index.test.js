@@ -309,6 +309,16 @@ describe('MCP Resources', () => {
       result.contents[0].text.should.match(/mutual TLS/i);
     });
 
+    it('should provide handler for webhooks guide', async () => {
+      const result = await client.readResource({ uri: 'losant://guides/webhooks' });
+
+      result.should.have.property('contents');
+      result.contents[0].should.have.property('uri', 'losant://guides/webhooks');
+      result.contents[0].should.have.property('mimeType', 'text/markdown');
+      result.contents[0].text.should.match(/token/);
+      result.contents[0].text.should.match(/waitForReply/);
+    });
+
     describe('authoring/dashboard resources', () => {
       it('should return dashboard authoring hub guide for losant://authoring/dashboard', async () => {
         const result = await client.readResource({ uri: 'losant://authoring/dashboard' });
@@ -516,6 +526,15 @@ describe('MCP Resources', () => {
       result.contents[0].should.have.property('uri', 'losant://references/flow/patterns');
       result.contents[0].should.have.property('mimeType', 'text/markdown');
       result.contents[0].text.should.containEql('Pattern');
+    });
+
+    it('should provide handler for flow reference debug-patterns', async () => {
+      const result = await client.readResource({ uri: 'losant://references/flow/debug-patterns' });
+
+      result.should.have.property('contents');
+      result.contents[0].should.have.property('uri', 'losant://references/flow/debug-patterns');
+      result.contents[0].should.have.property('mimeType', 'text/markdown');
+      result.contents[0].text.should.containEql('Virtual Button');
     });
 
     it('should provide handler for flow node access-key', async () => {
