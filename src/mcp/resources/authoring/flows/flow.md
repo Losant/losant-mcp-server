@@ -41,6 +41,22 @@ Before creating or enabling a cloud flow, assess whether it can cause real-world
 
 ---
 
+### Cloud flows — Capture existing develop flow in a version before editing
+
+For cloud flows, develop runs live by default — updating `triggers`/`nodes` on the flow takes effect immediately on any traffic currently being handled by that flow (see **When changes go live** under Flow behavior by flow class). Before editing an *existing* cloud flow's develop version, check `defaultVersionId` on the flow:
+
+- **Already set to a published version** — develop isn't live. Edit freely.
+- **Unset (develop is live)** — snapshot the current develop state before touching it:
+  1. `losant_query` `operation=get` `resourceType=flow` to fetch the current `triggers` and `nodes`.
+  2. `losant_write` `operation=createOne` `resourceType=flowVersion` `parentResourceId=<flowId>` with those exact `triggers`/`nodes` (e.g. `"version": "pre-edit-2026-10-08"`) — you must pass them explicitly, omitting them snapshots empty arrays instead.
+  3. `losant_write` `operation=updateOne` `resourceType=flow` setting `defaultVersionId` to that new version's ID.
+
+With `defaultVersionId` pinned to the pre-edit snapshot, live execution keeps running the known-good version while you freely iterate on develop. If your changes need to be discarded, the snapshot is already there to roll back to; if they work out, clear or update `defaultVersionId` to promote develop (or a newly published version) back to live.
+
+Skip this for brand-new flows — there's no live traffic to protect yet.
+
+---
+
 ### Experience flows — development or production?
 
 Experience flows back HTTP endpoints. The risk depends on whether real users are hitting those endpoints.
