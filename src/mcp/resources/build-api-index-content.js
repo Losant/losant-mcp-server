@@ -17,6 +17,7 @@ let indexContent = `# Losant API Documentation
 - [Experiences Guide](losant://guides/experiences) - Versioning model, views, endpoints, users, groups, domains, and slugs
 - [Device Authentication Guide](losant://guides/device-auth) - Access keys and device certificates for MQTT broker authentication; API vs. UI naming for certificate resources
 - [Webhooks Guide](losant://guides/webhooks) - Webhook resource fields, the id-vs-token invocation URL distinction, custom replies, verification, and basic auth
+- [Flow Diagnostics Tool Guide](losant://guides/losant-flow-diagnostics-tool) - Query flow run stats, historical errors, and aggregated log entries via losant_flow_diagnostics
 
 > **API naming note**: Some resource types have names in the API that differ from their display names in the Losant UI:
 > - API: \`flow\` / \`flowVersion\` → UI: **Workflow** / **Workflow Version**
