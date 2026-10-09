@@ -326,7 +326,7 @@ describe('MCP Resources', () => {
       result.contents[0].should.have.property('uri', 'losant://guides/losant-flow-diagnostics-tool');
       result.contents[0].should.have.property('mimeType', 'text/markdown');
       result.contents[0].text.should.match(/stats/);
-      result.contents[0].text.should.match(/getLogEntries/);
+      result.contents[0].text.should.match(/errors/);
     });
 
     it('should include flow diagnostics endpoint disclaimers in flow doc', async () => {
@@ -334,7 +334,7 @@ describe('MCP Resources', () => {
 
       result.should.have.property('contents');
       result.contents[0].should.have.property('text');
-      result.contents[0].text.should.containEql('endpoints "stats", "errors", and "getLogEntries" all used by tool `losant_flow_diagnostics`');
+      result.contents[0].text.should.containEql('endpoints "stats" and "errors" both used by tool `losant_flow_diagnostics`');
     });
 
     describe('authoring/dashboard resources', () => {

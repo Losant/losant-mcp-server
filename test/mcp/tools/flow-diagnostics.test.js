@@ -44,15 +44,9 @@ const errorsResponse = {
   ]
 };
 
-const logEntriesResponse = [
-  {
-    flowVersionId, time: '2024-01-01T12:00:00.000Z', pathsFailed: 0, pathsCompleted: 1, runCount: 1, wallTime: 42, errors: []
-  }
-];
-
 describe('flow-diagnostics tool (with nock)', () => {
 
-  it('should fetch stats, errors, and derive since/pruning for getLogEntries', async () => {
+  it('should fetch stats and errors', async () => {
     nock(LOSANT_API_URL, { encodedQueryParams: true })
       .get(`/applications/${APP_ID}/flows/${flowId}/stats`)
       .query(true)
@@ -61,20 +55,13 @@ describe('flow-diagnostics tool (with nock)', () => {
       .query(true)
       .reply(200, errorsResponse);
 
-    const logsScope = nock(LOSANT_API_URL, { encodedQueryParams: true })
-      .get(`/applications/${APP_ID}/flows/${flowId}/logs`)
-      .query((q) => { return q.since === String(new Date(windowStart).getTime()); })
-      .reply(200, logEntriesResponse);
-
     const result = await diagnosticsTool({ applicationId: APP_ID, flowId });
 
     should.not.exist(result.isError);
     const response = JSON.parse(result.content[0].text);
     response.stats.should.have.property('metrics');
     response.errors.errors.should.be.an.Array().with.length(1);
-    response.logEntries.should.be.an.Array().with.length(1);
-    should.not.exist(response.notes);
-    logsScope.done();
+    should.not.exist(response.logEntries);
   });
 
   it('should reverse stats.metrics to newest-first since the API returns it oldest-first', async () => {
@@ -92,10 +79,7 @@ describe('flow-diagnostics tool (with nock)', () => {
       .reply(200, multiBucketStats)
       .get(`/applications/${APP_ID}/flows/${flowId}/errors`)
       .query(true)
-      .reply(200, errorsResponse)
-      .get(`/applications/${APP_ID}/flows/${flowId}/logs`)
-      .query(true)
-      .reply(200, logEntriesResponse);
+      .reply(200, errorsResponse);
 
     const result = await diagnosticsTool({ applicationId: APP_ID, flowId });
 
@@ -105,7 +89,7 @@ describe('flow-diagnostics tool (with nock)', () => {
     ]);
   });
 
-  it('should not send either limit or sortDirection to stats but should forward errorsLimit/logEntriesLimit independently', async () => {
+  it('should not send limit or sortDirection to stats but should forward limit to errors', async () => {
     const statsScope = nock(LOSANT_API_URL, { encodedQueryParams: true })
       .get(`/applications/${APP_ID}/flows/${flowId}/stats`)
       .query((q) => { return q.duration === '3600000' && q.resolution === '900000' && !('limit' in q) && !('sortDirection' in q); })
@@ -114,99 +98,37 @@ describe('flow-diagnostics tool (with nock)', () => {
       .get(`/applications/${APP_ID}/flows/${flowId}/errors`)
       .query((q) => { return q.duration === '3600000' && q.limit === '5' && !('sortDirection' in q); })
       .reply(200, errorsResponse);
-    const logsScope = nock(LOSANT_API_URL, { encodedQueryParams: true })
-      .get(`/applications/${APP_ID}/flows/${flowId}/logs`)
-      .query((q) => { return q.limit === '2' && !('duration' in q) && !('resolution' in q); })
-      .reply(200, logEntriesResponse);
 
     const result = await diagnosticsTool({
       applicationId: APP_ID,
       flowId,
       duration: '3600000',
       resolution: '900000',
-      errorsLimit: 5,
-      logEntriesLimit: 2
+      limit: 5
     });
 
     should.not.exist(result.isError);
     statsScope.done();
     errorsScope.done();
-    logsScope.done();
   });
 
-  it('should forward flowVersionId as flowVersion to stats/errors and prune logEntries client-side', async () => {
+  it('should forward flowVersionId as flowVersion to stats/errors', async () => {
     nock(LOSANT_API_URL, { encodedQueryParams: true })
       .get(`/applications/${APP_ID}/flows/${flowId}/stats`)
       .query((q) => { return q.flowVersion === flowVersionId; })
       .reply(200, statsResponse)
       .get(`/applications/${APP_ID}/flows/${flowId}/errors`)
       .query((q) => { return q.flowVersion === flowVersionId; })
-      .reply(200, errorsResponse)
-      .get(`/applications/${APP_ID}/flows/${flowId}/logs`)
-      .query(true)
-      .reply(200, [
-        {
-          flowVersionId, time: '2024-01-01T12:00:00.000Z', pathsFailed: 0, pathsCompleted: 1, runCount: 1, wallTime: 42, errors: []
-        },
-        {
-          flowVersionId: 'otherVersionId00000000000', time: '2024-01-01T13:00:00.000Z', pathsFailed: 0, pathsCompleted: 2, runCount: 2, wallTime: 10, errors: []
-        }
-      ]);
+      .reply(200, errorsResponse);
 
     const result = await diagnosticsTool({ applicationId: APP_ID, flowId, flowVersionId });
 
     should.not.exist(result.isError);
     const response = JSON.parse(result.content[0].text);
-    response.logEntries.should.be.an.Array().with.length(1);
-    response.logEntries[0].should.have.property('flowVersionId', flowVersionId);
+    response.stats.should.have.property('flowVersionId', flowVersionId);
   });
 
-  it('should note when flowVersionId matches no log entries', async () => {
-    nock(LOSANT_API_URL, { encodedQueryParams: true })
-      .get(`/applications/${APP_ID}/flows/${flowId}/stats`)
-      .query(true)
-      .reply(200, statsResponse)
-      .get(`/applications/${APP_ID}/flows/${flowId}/errors`)
-      .query(true)
-      .reply(200, errorsResponse)
-      .get(`/applications/${APP_ID}/flows/${flowId}/logs`)
-      .query(true)
-      .reply(200, logEntriesResponse);
-
-    const result = await diagnosticsTool({ applicationId: APP_ID, flowId, flowVersionId: 'nonMatchingVersionId00000' });
-
-    const response = JSON.parse(result.content[0].text);
-    response.logEntries.should.be.an.Array().with.length(0);
-    response.notes.should.containEql('No log entries matched flowVersionId "nonMatchingVersionId00000" out of 1 fetched.');
-  });
-
-  it('should prune log entries newer than the resolved window end and note it', async () => {
-    nock(LOSANT_API_URL, { encodedQueryParams: true })
-      .get(`/applications/${APP_ID}/flows/${flowId}/stats`)
-      .query(true)
-      .reply(200, statsResponse)
-      .get(`/applications/${APP_ID}/flows/${flowId}/errors`)
-      .query(true)
-      .reply(200, errorsResponse)
-      .get(`/applications/${APP_ID}/flows/${flowId}/logs`)
-      .query(true)
-      .reply(200, [
-        {
-          flowVersionId, time: '2024-01-01T12:00:00.000Z', pathsFailed: 0, pathsCompleted: 1, runCount: 1, wallTime: 42, errors: []
-        },
-        {
-          flowVersionId, time: '2024-01-03T00:00:00.000Z', pathsFailed: 0, pathsCompleted: 1, runCount: 1, wallTime: 42, errors: []
-        }
-      ]);
-
-    const result = await diagnosticsTool({ applicationId: APP_ID, flowId });
-
-    const response = JSON.parse(result.content[0].text);
-    response.logEntries.should.be.an.Array().with.length(1);
-    response.notes.should.containEql("Pruned 1 log entries that fell after the resolved time window's end - getLogEntries has no end parameter of its own, so entries newer than the requested window are fetched and then filtered out here.");
-  });
-
-  it('should skip getLogEntries entirely and note why when deviceId is given', async () => {
+  it('should forward deviceId to stats/errors', async () => {
     const deviceId = '5f1b64164280e100067ef355';
     nock(LOSANT_API_URL, { encodedQueryParams: true })
       .get(`/applications/${APP_ID}/flows/${flowId}/stats`)
@@ -219,34 +141,6 @@ describe('flow-diagnostics tool (with nock)', () => {
     const result = await diagnosticsTool({ applicationId: APP_ID, flowId, deviceId });
 
     should.not.exist(result.isError);
-    const response = JSON.parse(result.content[0].text);
-    should.not.exist(response.logEntries);
-    response.notes.should.containEql('Skipped getLogEntries because deviceId was provided - the flow run-metric log model has no deviceId field to scope by, so returning unfiltered log entries would be misleading alongside device-scoped stats/errors.');
-  });
-
-  it('should fall back to an unscoped getLogEntries call and note it when both stats and errors fail', async () => {
-    nock(LOSANT_API_URL, { encodedQueryParams: true })
-      .get(`/applications/${APP_ID}/flows/${flowId}/stats`)
-      .query(true)
-      .reply(404, { message: 'Flow not found' })
-      .get(`/applications/${APP_ID}/flows/${flowId}/errors`)
-      .query(true)
-      .reply(404, { message: 'Flow not found' });
-
-    const logsScope = nock(LOSANT_API_URL, { encodedQueryParams: true })
-      .get(`/applications/${APP_ID}/flows/${flowId}/logs`)
-      .query((q) => { return !('since' in q); })
-      .reply(200, logEntriesResponse);
-
-    const result = await diagnosticsTool({ applicationId: APP_ID, flowId });
-
-    should.not.exist(result.isError);
-    const response = JSON.parse(result.content[0].text);
-    response.stats.should.have.property('error');
-    response.errors.should.have.property('error');
-    response.logEntries.should.be.an.Array().with.length(1);
-    response.notes.should.containEql("Could not resolve a time window for getLogEntries because both stats and errors failed - falling back to the API's default (most recent entries, unscoped by time).");
-    logsScope.done();
   });
 
   it('should embed a per-endpoint error without failing the whole call', async () => {
@@ -256,10 +150,7 @@ describe('flow-diagnostics tool (with nock)', () => {
       .reply(404, { message: 'Flow not found' })
       .get(`/applications/${APP_ID}/flows/${flowId}/errors`)
       .query(true)
-      .reply(200, errorsResponse)
-      .get(`/applications/${APP_ID}/flows/${flowId}/logs`)
-      .query(true)
-      .reply(200, logEntriesResponse);
+      .reply(200, errorsResponse);
 
     const result = await diagnosticsTool({ applicationId: APP_ID, flowId });
 
@@ -267,7 +158,6 @@ describe('flow-diagnostics tool (with nock)', () => {
     const response = JSON.parse(result.content[0].text);
     response.stats.should.have.property('error');
     response.errors.should.have.property('errors');
-    response.logEntries.should.be.an.Array().with.length(1);
   });
 
   describe('duration/resolution 15-minute floor validation', () => {
@@ -336,14 +226,50 @@ describe('flow-diagnostics tool (with nock)', () => {
         .reply(200, statsResponse)
         .get(`/applications/${APP_ID}/flows/${flowId}/errors`)
         .query((q) => { return q.duration === '900000'; })
-        .reply(200, errorsResponse)
-        .get(`/applications/${APP_ID}/flows/${flowId}/logs`)
-        .query(true)
-        .reply(200, logEntriesResponse);
+        .reply(200, errorsResponse);
 
       const result = await diagnosticsTool({
         applicationId: APP_ID, flowId, duration: '900000', resolution: '900000'
       });
+
+      should.not.exist(result.isError);
+    });
+  });
+
+  describe('limit validation', () => {
+
+    it('should reject a limit below 1', async () => {
+      const result = await diagnosticsTool({ applicationId: APP_ID, flowId, limit: 0 });
+
+      result.isError.should.be.true();
+      const error = JSON.parse(result.content[0].text);
+      error.data.errors.should.containEql({
+        fieldName: 'limit',
+        details: 'Must be at least 1.'
+      });
+    });
+
+    it('should reject a limit above 25', async () => {
+      const result = await diagnosticsTool({ applicationId: APP_ID, flowId, limit: 26 });
+
+      result.isError.should.be.true();
+      const error = JSON.parse(result.content[0].text);
+      error.data.errors.should.containEql({
+        fieldName: 'limit',
+        details: 'Must be at most 25.'
+      });
+    });
+
+    it('should accept a limit exactly at the bounds', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .get(`/applications/${APP_ID}/flows/${flowId}/stats`)
+        .query(true)
+        .reply(200, statsResponse)
+        .get(`/applications/${APP_ID}/flows/${flowId}/errors`)
+        .query((q) => { return q.limit === '25'; })
+        .reply(200, errorsResponse);
+
+      const result = await diagnosticsTool({ applicationId: APP_ID, flowId, limit: 25 });
 
       should.not.exist(result.isError);
     });

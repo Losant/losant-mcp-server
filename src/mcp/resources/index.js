@@ -144,7 +144,7 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
       if (DELETABLE_RESOURCE_TYPE_SET.has(fileName)) {
         disclaimerLines.push('- endpoint "delete" used by tool `losant_delete`');
       }
-      disclaimerLines.push('- endpoints "stats", "errors", and "getLogEntries" all used by tool `losant_flow_diagnostics` (returned together in one call)');
+      disclaimerLines.push('- endpoints "stats" and "errors" both used by tool `losant_flow_diagnostics` (returned together in one call)');
       disclaimerLines.push('\nSee [losant://guides/losant-flow-diagnostics-tool](losant://guides/losant-flow-diagnostics-tool) for the response shape, parameter reference, and restrictions.');
     } else if (isSingularResource) {
       disclaimerLines.push('- endpoint "get" used by tool `losant_query` as operation "get"');
