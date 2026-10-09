@@ -1,164 +1,17 @@
 ---
 name: losant-flow-patterns
-description: Seven common flow patterns with concrete node chains and minimal JSON examples — debug/local testing with virtual button, device threshold alert with de-bounce, scheduled external API pull, webhook request/reply handler, experience login flow, experience authenticated data endpoint, and device provisioning via webhook.
+description: Six common flow patterns with concrete node chains and minimal JSON examples — device threshold alert with de-bounce, scheduled external API pull, webhook request/reply handler, experience login flow, experience authenticated data endpoint, and device provisioning via webhook.
 ---
 
 # Common Flow Patterns
 
 Grounded examples of the most frequent real-world flow shapes. Each pattern shows the trigger-to-output chain, the key config fields, and the non-obvious gotcha that causes the most problems. Individual node details are at `losant://flow/nodes/<name>` and `losant://flow/triggers/<name>`.
 
----
-
-## 1. Debug / Local Testing with Virtual Button
-
-**Test a flow on demand without waiting for a real event — disconnect production triggers, add a Virtual Button that injects a realistic test payload, and cap every terminal path with a Debug node.**
-
-### The approach
-
-1. **Disconnect** production triggers by setting their `outputIds` to `[[]]` — they remain in the `triggers` array so they can be reconnected later, but they no longer route into the flow.
-2. **Add** one or more Virtual Button triggers, setting `meta.payload` to a JSON object string that matches the `data` structure the real trigger would produce. Wire each button's `outputIds` to the first real node.
-3. **Add a Debug node** at every terminal node — any node whose `outputIds` is `[[]]` during normal execution — so you can inspect the payload at each dead end in the debug log.
-4. **Press** the button in the Losant UI to fire the flow immediately.
-5. **Restore** when done: remove the Virtual Button(s) and Debug nodes, and reconnect the production trigger `outputIds`.
-
-### Two variants
-
-**A — Virtual Button alone** (when `meta.payload` fully covers what your flow reads from `data`):
-
-```json
-{
-  "triggers": [
-    {
-      "type": "deviceState",
-      "config": { "attributeWhitelist": [] },
-      "meta": { "category": "trigger", "name": "deviceState", "label": "Device State", "x": 60, "y": 60 },
-      "outputIds": [[]]
-    },
-    {
-      "type": "virtualButton",
-      "config": {},
-      "meta": {
-        "category": "trigger",
-        "name": "virtualButton",
-        "label": "Test: hot + humid",
-        "payload": "{\"tempC\": 95, \"humidity\": 82}",
-        "x": 60, "y": 160
-      },
-      "outputIds": [["check-threshold"]]
-    }
-  ]
-}
-```
-
-This produces `data.tempC = 95`, `data.humidity = 82` — matching what the Device State trigger delivers. The Device State trigger is still in the array with `outputIds: [[]]`, ready to be reconnected.
-
-**B — Virtual Button + Mutate node** (when the real trigger places fields at the root of the payload rather than under `data`, or when you need to seed `working.*` paths):
-
-`meta.payload` only controls `data`. Some triggers place additional fields at the root level of the payload that your flow may read — for example, the Device Connect trigger populates `deviceName`, `deviceTags`, and `device` at the root, not under `data`. Since a Virtual Button cannot set those fields, add a Mutate node immediately after the button to inject them:
-
-```json
-[
-  {
-    "type": "virtualButton",
-    "config": {},
-    "meta": {
-      "category": "trigger",
-      "name": "virtualButton",
-      "label": "Test: device connect",
-      "payload": "{}",
-      "x": 60, "y": 160
-    },
-    "outputIds": [["seed-root"]]
-  },
-  {
-    "id": "seed-root",
-    "type": "MutateNode",
-    "config": {
-      "rules": [
-        { "type": "set", "path": "deviceName", "value": "Test Sensor 1" },
-        { "type": "set", "path": "deviceTags", "value": { "location": ["warehouse-a"] } },
-        { "type": "set", "path": "triggerId", "value": "abc123deviceid" }
-      ]
-    },
-    "meta": { "category": "logic", "name": "mutate", "label": "Seed root fields", "x": 260, "y": 160 },
-    "outputIds": [["first-real-node"]]
-  }
-]
-```
-
-Check `losant://flow/triggers/<name>` for the exact payload shape of the trigger you are replacing — specifically which fields are at the root vs. under `data`.
-
-### Multiple buttons for multiple code paths
-
-Add several Virtual Button triggers with different `meta.payload` values to exercise different branches without deploying separate test flows:
-
-```json
-[
-  {
-    "type": "virtualButton", "config": {},
-    "meta": { "name": "virtualButton", "category": "trigger", "label": "Test: over threshold", "payload": "{\"tempC\": 95}", "x": 60, "y": 160 },
-    "outputIds": [["check-threshold"]]
-  },
-  {
-    "type": "virtualButton", "config": {},
-    "meta": { "name": "virtualButton", "category": "trigger", "label": "Test: under threshold", "payload": "{\"tempC\": 55}", "x": 60, "y": 260 },
-    "outputIds": [["check-threshold"]]
-  }
-]
-```
-
-Both buttons wire to the same first node — pressing each one exercises a different branch.
-
-### Debug nodes at terminal ends
-
-Every node that would normally have `outputIds: [[]]` should get a Debug node appended during testing:
-
-```json
-{
-  "id": "debug-end",
-  "type": "DebugNode",
-  "config": { "message": "Terminal: {{working | json}}", "level": "verbose" },
-  "meta": { "category": "debug", "name": "debug", "label": "Debug end", "x": 560, "y": 360 },
-  "outputIds": [[]]
-}
-```
-
-Wire each previously-terminal node's `outputIds` to this debug node instead of `[[]]`. The debug log in the Losant UI will show the full payload at that point. Add a separate Debug node per terminal path to distinguish which branch was reached.
-
-**ThrowErrorNode exception:** A Throw Error Node halts execution immediately — it has no outputs and `outputIds` must be `[]`. Any Debug node placed after it is unreachable and will never fire. Place the Debug node **before** the Throw Error Node in the chain to capture the payload state at the point of failure.
-
-**Add a scope-local Flow Error trigger during testing:** Nodes that throw (most nodes on error) bypass all remaining output nodes. Add a `scope: "local"` Flow Error trigger to the flow during testing so thrown errors surface in the debug log rather than silently aborting:
-
-```json
-{
-  "type": "flowError",
-  "config": { "scope": "local" },
-  "meta": { "category": "trigger", "name": "flowError", "label": "Flow Error", "x": 60, "y": 360 },
-  "outputIds": [["debug-error"]]
-},
-{
-  "id": "debug-error",
-  "type": "DebugNode",
-  "config": { "message": "Error: {{data.errorInfo.error.message}} in {{data.errorInfo.nodeId}}", "level": "error" },
-  "meta": { "category": "debug", "name": "debug", "label": "Debug error", "x": 260, "y": 360 },
-  "outputIds": [[]]
-}
-```
-
-See `losant://flow/triggers/flow-error` for the full error payload shape.
-
-### Reference
-
-| Resource | Link |
-|---|---|
-| Virtual Button trigger | `losant://flow/triggers/virtual-button` |
-| Flow Error trigger | `losant://flow/triggers` |
-| Mutate node | `losant://flow/nodes/mutate` |
-| Debug node | `losant://flow/nodes/debug` |
+> For debug/local-testing patterns (Virtual Button, file capture, webhook+curl), see `losant://references/flow/debug-patterns`.
 
 ---
 
-## 2. Device Threshold Alert with De-bounce
+## 1. Device Threshold Alert with De-bounce
 
 **Send a notification when a sensor reading crosses a threshold — once per event, not on every reading.**
 
@@ -233,7 +86,7 @@ Device State trigger → **Conditional** (threshold check) → **Latch** (suppre
 
 ---
 
-## 3. Scheduled External API Pull
+## 2. Scheduled External API Pull
 
 **Periodically fetch data from a third-party REST API and store it in Losant device state for dashboards and time-series queries.**
 
@@ -310,7 +163,7 @@ Timer trigger → **HTTP** (call external API) → **Conditional** (status 200?)
 
 ---
 
-## 4. Webhook Request/Reply Handler
+## 3. Webhook Request/Reply Handler
 
 **Receive an HTTP POST from an external system (Stripe, GitHub, Twilio, etc.), process the payload, and send a synchronous JSON reply.**
 
@@ -395,7 +248,7 @@ Webhook trigger (wait-for-reply) → process nodes → **Webhook Reply** (succes
 
 ---
 
-## 5. Experience Login Flow
+## 4. Experience Login Flow
 
 **Serve a login page on GET and authenticate credentials on POST, then issue an auth cookie and redirect into the application.**
 
@@ -540,7 +393,7 @@ POST /login ──┘                                     ──► false: Condi
 
 ---
 
-## 6. Experience Authenticated Data Endpoint
+## 5. Experience Authenticated Data Endpoint
 
 **Serve JSON data from a protected GET endpoint — return 401 if not logged in, fetch and return data if authenticated.**
 
@@ -633,7 +486,7 @@ Endpoint trigger (GET `/api/devices`) → **Conditional** (`{{experience.user}}`
 
 ---
 
-## 7. Device Provisioning via Webhook
+## 6. Device Provisioning via Webhook
 
 **Register a new Losant device when an external system POSTs device info, and reply with the assigned device ID.**
 

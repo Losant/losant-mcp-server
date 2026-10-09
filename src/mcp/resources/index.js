@@ -16,6 +16,7 @@ import experienceGuide from './experience-guide.js';
 import deviceAuthGuide from './device-auth-guide.js';
 import dashboardGuide from './dashboard-guide.js';
 import flowGuide from './flow-guide.js';
+import webhookGuide from './webhook-guide.js';
 import indexContent from './build-api-index-content.js';
 import conf from '../../config.js';
 import memoizee from 'memoizee';
@@ -68,7 +69,8 @@ const GUIDES_TO_REGISTER = [
   flowGuide,
   integrationGuide,
   notebookGuide,
-  resourceJobGuide
+  resourceJobGuide,
+  webhookGuide
 ];
 
 const readFileContent = memoizee(async (filePath, mimeType, href) => {
@@ -114,6 +116,9 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
     }
     if (filePath.endsWith('flow.md') || filePath.endsWith('flows.md') || filePath.endsWith('flowVersion.md') || filePath.endsWith('flowVersions.md')) {
       disclaimerLines.push('\nSee [losant://guides/flows](losant://guides/flows) for the full flow authoring guide — trigger catalog, node catalog, wiring model, payload reference, and templating.');
+    }
+    if (filePath.endsWith('webhook.md') || filePath.endsWith('webhooks.md')) {
+      disclaimerLines.push('\nSee [losant://guides/webhooks](losant://guides/webhooks) for webhook resource fields, the id-vs-token invocation URL distinction, custom replies, verification, and basic auth.');
     }
     if (filePath.endsWith('data.md')) {
       disclaimerLines.push('- endpoint "timeSeriesQuery" used by tool `losant_timeseries` as operation "timeSeriesQuery"');

@@ -16,6 +16,7 @@ let indexContent = `# Losant API Documentation
 - [Notebooks Guide](losant://guides/notebooks) - Two-step upload pattern, input/output types, imageVersion
 - [Experiences Guide](losant://guides/experiences) - Versioning model, views, endpoints, users, groups, domains, and slugs
 - [Device Authentication Guide](losant://guides/device-auth) - Access keys and device certificates for MQTT broker authentication; API vs. UI naming for certificate resources
+- [Webhooks Guide](losant://guides/webhooks) - Webhook resource fields, the id-vs-token invocation URL distinction, custom replies, verification, and basic auth
 
 > **API naming note**: Some resource types have names in the API that differ from their display names in the Losant UI:
 > - API: \`flow\` / \`flowVersion\` → UI: **Workflow** / **Workflow Version**
