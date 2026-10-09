@@ -319,6 +319,24 @@ describe('MCP Resources', () => {
       result.contents[0].text.should.match(/waitForReply/);
     });
 
+    it('should provide handler for flow diagnostics tool guide', async () => {
+      const result = await client.readResource({ uri: 'losant://guides/losant-flow-diagnostics-tool' });
+
+      result.should.have.property('contents');
+      result.contents[0].should.have.property('uri', 'losant://guides/losant-flow-diagnostics-tool');
+      result.contents[0].should.have.property('mimeType', 'text/markdown');
+      result.contents[0].text.should.match(/stats/);
+      result.contents[0].text.should.match(/getLogEntries/);
+    });
+
+    it('should include flow diagnostics endpoint disclaimers in flow doc', async () => {
+      const result = await client.readResource({ uri: 'losant://docs/flow' });
+
+      result.should.have.property('contents');
+      result.contents[0].should.have.property('text');
+      result.contents[0].text.should.containEql('endpoints "stats", "errors", and "getLogEntries" all used by tool `losant_flow_diagnostics`');
+    });
+
     describe('authoring/dashboard resources', () => {
       it('should return dashboard authoring hub guide for losant://authoring/dashboard', async () => {
         const result = await client.readResource({ uri: 'losant://authoring/dashboard' });

@@ -17,6 +17,7 @@ import deviceAuthGuide from './device-auth-guide.js';
 import dashboardGuide from './dashboard-guide.js';
 import flowGuide from './flow-guide.js';
 import webhookGuide from './webhook-guide.js';
+import flowDiagnosticsGuide from './flow-diagnostics-tool-guide.js';
 import indexContent from './build-api-index-content.js';
 import conf from '../../config.js';
 import memoizee from 'memoizee';
@@ -70,7 +71,8 @@ const GUIDES_TO_REGISTER = [
   integrationGuide,
   notebookGuide,
   resourceJobGuide,
-  webhookGuide
+  webhookGuide,
+  flowDiagnosticsGuide
 ];
 
 const readFileContent = memoizee(async (filePath, mimeType, href) => {
@@ -134,6 +136,16 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
       disclaimerLines.push('- endpoint "getCommand" used by tool `losant_timeseries` as operation "getCommand"');
       disclaimerLines.push('- endpoint "getCompositeState" used by tool `losant_timeseries` as operation "getCompositeState"');
       disclaimerLines.push('\nSee [losant://guides/devices](losant://guides/devices) for domain context, device classes, attribute constraints, and common procedures.');
+    } else if (filePath.endsWith('flow.md')) {
+      disclaimerLines.push('- endpoint "get" used by tool `losant_query` as operation "get"');
+      if (isWritable) {
+        disclaimerLines.push('- endpoint "patch" used by tool `losant_write` as operation "updateOne"');
+      }
+      if (DELETABLE_RESOURCE_TYPE_SET.has(fileName)) {
+        disclaimerLines.push('- endpoint "delete" used by tool `losant_delete`');
+      }
+      disclaimerLines.push('- endpoints "stats", "errors", and "getLogEntries" all used by tool `losant_flow_diagnostics` (returned together in one call)');
+      disclaimerLines.push('\nSee [losant://guides/losant-flow-diagnostics-tool](losant://guides/losant-flow-diagnostics-tool) for the response shape, parameter reference, and restrictions.');
     } else if (isSingularResource) {
       disclaimerLines.push('- endpoint "get" used by tool `losant_query` as operation "get"');
       if (isWritable) {
