@@ -18,7 +18,7 @@ Three ways to test and debug a flow without relying on waiting for real events t
 1. **Disconnect** production triggers by setting their `outputIds` to `[[]]` — they remain in the `triggers` array so they can be reconnected later, but they no longer route into the flow.
 2. **Add** one or more Virtual Button triggers, setting `meta.payload` to a JSON object string that matches the `data` structure the real trigger would produce. Wire each button's `outputIds` to the first real node.
 3. **Add a Debug node** at every terminal point — any node whose `outputIds` is `[[]]` during normal execution, or, for branching nodes (Conditional, Switch), any inner array that's empty — so you can inspect the payload at each dead end in the debug log.
-4. **Press** the button in the Losant UI to fire the flow immediately.
+4. **Ask the user** to press the button in the Losant UI and paste back the debug log output — pressing a Virtual Button and reading the debug log both happen in the Losant UI and are outside this server's reach.
 5. **Restore** when done: remove the Virtual Button(s) and Debug nodes, and reconnect the production trigger `outputIds`.
 
 ### Two variants
@@ -119,13 +119,13 @@ Every node that would normally have `outputIds: [[]]` should get a Debug node ap
 {
   "id": "debug-end",
   "type": "DebugNode",
-  "config": { "message": "Terminal: {{working | json}}", "level": "verbose" },
+  "config": { "message": "Terminal: {{jsonEncode working}}", "level": "verbose" },
   "meta": { "category": "debug", "name": "debug", "label": "Debug end", "x": 560, "y": 360 },
   "outputIds": [[]]
 }
 ```
 
-Wire each previously-terminal node's `outputIds` to this debug node instead of `[[]]`. The debug log in the Losant UI will show the full payload at that point. Add a separate Debug node per terminal path to distinguish which branch was reached.
+Wire each previously-terminal node's `outputIds` to this debug node instead of `[[]]`. The debug log is only visible in the Losant UI — ask the user to paste its contents back after they trigger the flow. Add a separate Debug node per terminal path to distinguish which branch was reached.
 
 **ThrowErrorNode exception:** A Throw Error Node halts execution immediately — it has no outputs and `outputIds` must be `[]`. Any Debug node placed after it is unreachable and will never fire. Place the Debug node **before** the Throw Error Node in the chain to capture the payload state at the point of failure.
 
@@ -164,6 +164,8 @@ See `losant://flow/triggers/flow-error` for the full error payload shape.
 
 **Persist the payload at every terminating node — and on thrown errors — to Losant file storage, so you can inspect or replay exactly what a run produced without relying on the live debug panel.**
 
+Captured payloads can contain tokens, keys, or other PII — use `"private": true` on every File node in this pattern so the capture isn't sitting at a world-readable URL.
+
 ### The approach
 
 1. **Enumerate every terminating branch** — a node whose `outputIds` is `[[]]`, or, for branching nodes, any inner array that's empty — and rewire each to its own `FileCreateNode` instance. Branches never merge, so each terminal needs its own node instance.
@@ -185,7 +187,7 @@ One `FileCreateNode` per terminal branch:
     "fileContentsTemplate": "{{{jsonEncode working}}}",
     "encodingTemplate": "utf8",
     "shouldOverwrite": false,
-    "private": false,
+    "private": true,
     "resultPath": "working.debugFileResult"
   },
   "meta": { "category": "data", "name": "file-create", "label": "Capture end payload", "x": 560, "y": 360 },
@@ -210,7 +212,7 @@ A `flowError` trigger, a guard for the 256 KB case, and the write itself:
   {
     "id": "check-payload-size",
     "type": "ConditionalNode",
-    "config": { "expression": "typeof {{data.erroredPayload}} === 'object'" },
+    "config": { "expression": "{{typeof data.erroredPayload}} === 'object'" },
     "meta": { "category": "logic", "name": "conditional", "label": "Payload captured?", "x": 260, "y": 460 },
     "outputIds": [["debug-size-omitted"], ["capture-error"]]
   },
@@ -224,7 +226,7 @@ A `flowError` trigger, a guard for the 256 KB case, and the write itself:
       "fileContentsTemplate": "{{{jsonEncode data.erroredPayload}}}",
       "encodingTemplate": "utf8",
       "shouldOverwrite": false,
-      "private": false,
+      "private": true,
       "resultPath": "working.errorFileResult"
     },
     "meta": { "category": "data", "name": "file-create", "label": "Write erroredPayload", "x": 460, "y": 460 },
@@ -242,9 +244,9 @@ A `flowError` trigger, a guard for the 256 KB case, and the write itself:
 
 **Gotcha — 256 KB string fallback:** if the errored run's payload exceeded 256 KB, `data.erroredPayload` is the literal string `"Payload data omitted due to size"`, not an object. Writing it unguarded "succeeds" but the file just contains that string. Guard with a type check (shown above) before treating it as an object, matching the idiom note in `losant://flow/triggers/flow-error`.
 
-**Gotcha — default-version scoping:** a Flow Error Trigger only fires in the **default version** of an Application flow. If `defaultVersionId` is pinned to a published version (see `losant://authoring/flow` → "Capture develop in a version before editing"), a `flowError` trigger added to develop won't fire for errors in the pinned version — either add the trigger to the version that's actually live, or temporarily point `defaultVersionId` back at develop while capturing errors.
+**Gotcha — default-version scoping:** a Flow Error Trigger only fires in the **default version** of an Application flow. If `defaultVersionId` is pinned to a published version (see `losant://authoring/flow` → "Cloud flows — Capture existing develop flow in a version before editing"), a `flowError` trigger added to develop won't fire for errors in the pinned version — either add the trigger to the version that's actually live, or temporarily point `defaultVersionId` back at develop while capturing errors.
 
-**Replay note:** because the captured file contains the full `working`/`erroredPayload` snapshot, you can retrieve it (`FileGetNode`, or the Losant UI file browser) and feed the relevant fields into a Virtual Button's `meta.payload` (Pattern 1 above) to recreate the exact failing run.
+**Replay note:** because the captured file contains the full `working`/`erroredPayload` snapshot, you can retrieve its contents directly — `losant_query operation=get resourceType=file` on the captured file's `id`, then `curl` the returned `url` field — and feed the relevant fields into a Virtual Button's `meta.payload` (Pattern 1 above) to recreate the exact failing run.
 
 ### Reference
 
@@ -263,11 +265,12 @@ A `flowError` trigger, a guard for the 256 KB case, and the write itself:
 
 ### The approach
 
-1. **Find or create a `webhook` resource** (`losant_query resourceType=webhook`, or `losant_write operation=createOne resourceType=webhook`) with `waitForReply: true` set on the resource.
+1. **Create a dedicated debug `webhook` resource** (`losant_write operation=createOne resourceType=webhook`) with `waitForReply: true` set on the resource. Don't reuse an existing production webhook and flip `waitForReply` on it — every non-replying path on that webhook's real traffic would then hang for 60 seconds. If the flow under test is a Cloud flow with `defaultVersionId` pinned away from develop, see `losant://authoring/flow` → "Cloud flows — Capture existing develop flow in a version before editing" before wiring the debug trigger in.
 2. **Add a `webhook` trigger** with `key` set to that resource's `id`.
 3. **Rewire every terminating node** to a `WebhookReplyNode` — one per terminal branch. The first reply for a request wins globally, so this is only safe when exactly one branch executes per request (true for normal conditional branching; unsafe for genuinely parallel branches that could both fire for the same request).
 4. Use `bodyTemplateType: "payload"` for an instant full-payload echo, or a specific `bodyTemplate`/`bodyTemplateType: "path"` to check one value.
-5. **`curl` the webhook's public URL:** `https://triggers.losant.com/webhooks/<token>`, where `<token>` is the webhook resource's `token` field — this URL is global (not scoped by `applicationId`) and stable once created.
+5. **Add a local Flow Error trigger wired to its own `WebhookReplyNode`** so a thrown node replies instead of leaving curl to hang until the 60s timeout — see "JSON — error-path reply" below.
+6. **`curl` the webhook's public URL**, built from the webhook resource's `token` field, not `id` (see `losant://guides/webhooks`) — the URL is global (not scoped by `applicationId`) and stable once created.
 
 ### JSON — webhook trigger
 
@@ -299,21 +302,52 @@ A `flowError` trigger, a guard for the 256 KB case, and the write itself:
 }
 ```
 
+### JSON — local Flow Error trigger + WebhookReplyNode (error-path reply)
+
+Without this, a thrown node leaves no reply queued and curl hangs until the platform's 60s/`504` timeout — defeating the instant-feedback point of this pattern:
+
+```json
+[
+  {
+    "type": "flowError",
+    "config": { "scope": "local" },
+    "meta": { "category": "trigger", "name": "flowError", "label": "Debug error", "x": 60, "y": 460 },
+    "outputIds": [["debug-error-reply"]]
+  },
+  {
+    "id": "debug-error-reply",
+    "type": "WebhookReplyNode",
+    "config": {
+      "replyIdPath": "data.replyId",
+      "replyType": "custom",
+      "responseCodeTemplate": "500",
+      "bodyTemplateType": "path",
+      "bodyTemplate": "data.errorInfo",
+      "headerInfo": [{ "keyTemplate": "Content-Type", "valueTemplate": "application/json" }]
+    },
+    "meta": { "category": "output", "name": "webhook-reply", "label": "Debug error reply", "x": 260, "y": 460 },
+    "outputIds": [[]]
+  }
+]
+```
+
+`data.replyId` is only populated on the flow-error payload when the errored execution had a pending reply (e.g. it started from this same webhook trigger) — see `losant://flow/triggers/flow-error`.
+
 ### curl command
 
 ```bash
-curl -X POST https://triggers.losant.com/webhooks/<token> \
+curl -X POST <webhook invocation URL> \
   -H "Content-Type: application/json" \
   -d '{"tempC": 95, "humidity": 82}'
 ```
 
-Add `-u user:pass` if the webhook resource has `basicAuthUsername`/`basicAuthPassword` set.
+Build the invocation URL from the webhook resource's `token` field (not `id`) — see `losant://guides/webhooks`. Add `-u user:pass` if the webhook resource has `basicAuthUsername`/`basicAuthPassword` set.
 
-**Gotcha — `waitForReply`:** without `waitForReply: true` on the webhook resource, Losant auto-replies `{"success":true}` immediately and curl returns before the flow even finishes — the flow's `WebhookReplyNode` has no effect. With it set and no reply issued within 60s, Losant auto-sends a `504` (a built-in timeout safety net, distinct from the error-handling pattern below).
+**Gotcha — `waitForReply`:** without `waitForReply: true` on the webhook resource, Losant auto-replies `{"success":true}` immediately and curl returns before the flow even finishes — the flow's `WebhookReplyNode` has no effect. With it set, a node throwing without the error-path reply above (or no reply issued for any other reason within 60s) ends with Losant auto-sending a `504`.
 
 **Gotcha — reply Content-Type allow-list:** the reply's `Content-Type` only honors `application/json`, `application/xml`, `text/plain`, `text/xml`, `text/csv` — anything else silently falls back to `application/json`. Max reply body 256 KB.
 
-**Cross-reference instead of duplicating:** for production-grade error handling on a webhook flow (a `flowError` trigger wired to a 500-reply safety net so the caller never hangs), see pattern "Webhook Request/Reply Handler" in `losant://references/flow/patterns` — that pattern documents the safety-net mechanics in full. This pattern's focus is purely "get an instant reply while debugging," not production error handling.
+**Cross-reference for production use:** the error-path reply above is sized for debugging only (a single local trigger, no retry/logging). For production-grade error handling on a webhook flow, see pattern "Webhook Request/Reply Handler" in `losant://references/flow/patterns`.
 
 ### Reference
 
