@@ -17,7 +17,7 @@ Three ways to test and debug a flow without relying on waiting for real events t
 
 1. **Disconnect** production triggers by setting their `outputIds` to `[[]]` — they remain in the `triggers` array so they can be reconnected later, but they no longer route into the flow.
 2. **Add** one or more Virtual Button triggers, setting `meta.payload` to a JSON object string that matches the `data` structure the real trigger would produce. Wire each button's `outputIds` to the first real node.
-3. **Add a Debug node** at every terminal node — any node whose `outputIds` is `[[]]` during normal execution — so you can inspect the payload at each dead end in the debug log.
+3. **Add a Debug node** at every terminal point — any node whose `outputIds` is `[[]]` during normal execution, or, for branching nodes (Conditional, Switch), any inner array that's empty — so you can inspect the payload at each dead end in the debug log.
 4. **Press** the button in the Losant UI to fire the flow immediately.
 5. **Restore** when done: remove the Virtual Button(s) and Debug nodes, and reconnect the production trigger `outputIds`.
 
@@ -29,9 +29,10 @@ Three ways to test and debug a flow without relying on waiting for real events t
 {
   "triggers": [
     {
-      "type": "deviceState",
-      "config": { "attributeWhitelist": [] },
-      "meta": { "category": "trigger", "name": "deviceState", "label": "Device State", "x": 60, "y": 60 },
+      "type": "deviceId",
+      "key": "5f1c2d3e4f5a6b7c8d9e0f1a",
+      "config": { "triggerOn": "both", "batchBehavior": "each" },
+      "meta": { "category": "trigger", "name": "device", "label": "Device: State", "x": 60, "y": 60 },
       "outputIds": [[]]
     },
     {
@@ -50,7 +51,7 @@ Three ways to test and debug a flow without relying on waiting for real events t
 }
 ```
 
-This produces `data.tempC = 95`, `data.humidity = 82` — matching what the Device State trigger delivers. The Device State trigger is still in the array with `outputIds: [[]]`, ready to be reconnected.
+This produces `data.tempC = 95`, `data.humidity = 82` — matching what the Device: State trigger delivers. The Device: State trigger is still in the array with `outputIds: [[]]`, ready to be reconnected.
 
 **B — Virtual Button + Mutate node** (when the real trigger places fields at the root of the payload rather than under `data`, or when you need to seed `working.*` paths):
 
@@ -75,9 +76,10 @@ This produces `data.tempC = 95`, `data.humidity = 82` — matching what the Devi
     "type": "MutateNode",
     "config": {
       "rules": [
-        { "type": "set", "path": "deviceName", "value": "Test Sensor 1" },
-        { "type": "set", "path": "deviceTags", "value": { "location": ["warehouse-a"] } },
-        { "type": "set", "path": "triggerId", "value": "abc123deviceid" }
+        { "type": "set", "valueTemplate": "Test Sensor 1", "destination": "deviceName" },
+        { "type": "set", "valueTemplate": "{\"location\": [\"warehouse-a\"]}", "valueTemplateType": "json", "destination": "deviceTags" },
+        { "type": "set", "valueTemplate": "{\"id\": \"abc123deviceid\", \"name\": \"Test Sensor 1\"}", "valueTemplateType": "json", "destination": "device" },
+        { "type": "set", "valueTemplate": "abc123deviceid", "destination": "triggerId" }
       ]
     },
     "meta": { "category": "logic", "name": "mutate", "label": "Seed root fields", "x": 260, "y": 160 },
@@ -152,7 +154,7 @@ See `losant://flow/triggers/flow-error` for the full error payload shape.
 | Resource | Link |
 |---|---|
 | Virtual Button trigger | `losant://flow/triggers/virtual-button` |
-| Flow Error trigger | `losant://flow/triggers` |
+| Flow Error trigger | `losant://flow/triggers/flow-error` |
 | Mutate node | `losant://flow/nodes/mutate` |
 | Debug node | `losant://flow/nodes/debug` |
 
