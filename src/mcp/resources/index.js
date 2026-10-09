@@ -1,4 +1,5 @@
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { readFile } from 'node:fs/promises';
 import { ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js'; // eslint-disable-line import/no-unresolved
 import advancedQueryGuide from './advanced-query-guide.js';
@@ -29,6 +30,7 @@ import { SCHEMA_NAME_TO_FILE, DOC_NAME_TO_FILE,
 import { getPluralResourceName } from '../tools/helpers.js';
 import debug from 'debug';
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const apiUrl = conf.get('losant.apiUrl');
 const apiHost = new URL(apiUrl).hostname;
 const brokerHost = apiHost.replace(/^api\./, 'broker.');
@@ -194,6 +196,45 @@ export default (server) => {
           uri: uri.href,
           mimeType: 'text/markdown',
           text: infoPreamble + indexContent
+        }]
+      };
+    }
+  );
+  // SPIKE: flow-view MCP App widget (losant_flow_view tool) - bare-bones, no caching
+  // CSP lives on the UI resource (not the tool) - hosts read it from the resources/read content
+  // item's _meta, falling back to this registration's _meta if that's missing.
+  // The ext-apps browser bundle is inlined (not loaded from a CDN script src) because hosts have
+  // been seen enforcing a bare `script-src 'unsafe-inline'` that blocks external script loads
+  // regardless of declared resourceDomains - inlining only needs 'unsafe-inline', always granted.
+  const flowViewCsp = {
+    connectDomains: [new URL(apiUrl).origin, 
+      'https://api.losant.space'
+    ],
+    resourceDomains: [
+      'https://api.losant.space'
+    ]
+  };
+  const extAppsBundlePath = fileURLToPath(import.meta.resolve('@modelcontextprotocol/ext-apps/app-with-deps'));
+  server.registerResource(
+    'flow-view-app',
+    'ui://losant/flow-view',
+    { mimeType: 'text/html;profile=mcp-app', _meta: { csp: flowViewCsp } },
+    async (uri) => {
+      let html = await readFile(path.join(__dirname, 'flow-view-app.html'), 'utf-8');
+      const bundle = await readFile(extAppsBundlePath, 'utf-8');
+      const appVarMatch = bundle.match(/(\w+)\s+as\s+App\s*\}\s*;?\s*$/);
+      if (!appVarMatch) { throw new Error('Could not find App export in ext-apps bundle'); }
+      const bundleScript = `<script type="module">\n${bundle}\nwindow.__MCPApp = ${appVarMatch[1]};\n</script>`;
+      // Use a replacer function, not a string - a string replacement would treat "$&", "$1",
+      // "$$" etc. found anywhere in the 337KB minified bundle as special pattern tokens and
+      // corrupt the output (this was the cause of "missing ) after argument list").
+      html = html.replace('<!-- MCP_APP_BUNDLE_SCRIPT -->', () => { return bundleScript; });
+      return {
+        contents: [{
+          uri: uri.href,
+          mimeType: 'text/html;profile=mcp-app',
+          text: html,
+          _meta: { ui: { csp: flowViewCsp } }
         }]
       };
     }

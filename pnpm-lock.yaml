@@ -175,6 +175,9 @@ importers:
       '@hapi/inert':
         specifier: ^7.1.2
         version: 7.1.2
+      '@modelcontextprotocol/ext-apps':
+        specifier: ^1.7.5
+        version: 1.7.5(@modelcontextprotocol/sdk@1.30.0(supports-color@5.5.0)(zod@4.6.5))(zod@4.6.5)
       '@modelcontextprotocol/sdk':
         specifier: ^1.30.0
         version: 1.30.0(supports-color@5.5.0)(zod@4.6.5)
@@ -454,6 +457,20 @@ packages:
     resolution: {integrity: sha512-9GzUVxsy8EeNeRxXGYBSpTNypvxJ8Yn4eytG2W7vdDC6bO3fehxjWOHf8uEQ1Ons+y+tac0FqRgRwN2d2aC9vw==}
     engines: {node: '>=20.0.0'}
 
+  '@modelcontextprotocol/ext-apps@1.7.5':
+    resolution: {integrity: sha512-TjPH2S2y5UEGKhmI6+XGFuqfqOV4ppe1x6DA3txnUaEWkgtA4G5vo14jGKFZmegdkZ1H4QMLyujLvoU1BEdnAg==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      '@modelcontextprotocol/sdk': ^1.29.0
+      react: ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^17.0.0 || ^18.0.0 || ^19.0.0
+      zod: ^3.25.0 || ^4.0.0
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-dom:
+        optional: true
+
   '@modelcontextprotocol/sdk@1.30.0':
     resolution: {integrity: sha512-xKd8OIzlqNzcqcNumGAa6g+PW2kjD5vrpcKOnfldAUPP3j7lnqMPwlTXQm8gF+UwH72z0lqaRbjr9hqGz0eITA==}
     engines: {node: '>=18'}
@@ -497,6 +514,9 @@ packages:
 
   '@sinonjs/samsam@10.0.2':
     resolution: {integrity: sha512-8lVwD1Df1BmzoaOLhMcGGcz/Jyr5QY2KSB75/YK1QgKzoabTeLdIVyhXNZK9ojfSKSdirbXqdbsXXqP9/Ve8+A==}
+
+  '@standard-schema/spec@1.1.0':
+    resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
 
   '@types/css-font-loading-module@0.0.7':
     resolution: {integrity: sha512-nl09VhutdjINdWyXxHWN/w9zlNCfr60JUqJbd24YXUuCwgeL0TpFSdElCwb6cxfB6ybE19Gjj4g0jsgkXxKv1Q==}
@@ -2552,6 +2572,12 @@ snapshots:
       - jiti
       - supports-color
 
+  '@modelcontextprotocol/ext-apps@1.7.5(@modelcontextprotocol/sdk@1.30.0(supports-color@5.5.0)(zod@4.6.5))(zod@4.6.5)':
+    dependencies:
+      '@modelcontextprotocol/sdk': 1.30.0(supports-color@5.5.0)(zod@4.6.5)
+      '@standard-schema/spec': 1.1.0
+      zod: 4.6.5
+
   '@modelcontextprotocol/sdk@1.30.0(supports-color@5.5.0)(zod@4.6.5)':
     dependencies:
       '@hono/node-server': 2.1.1(hono@4.13.8)
@@ -2616,6 +2642,8 @@ snapshots:
     dependencies:
       '@sinonjs/commons': 3.0.1
       type-detect: 4.1.0
+
+  '@standard-schema/spec@1.1.0': {}
 
   '@types/css-font-loading-module@0.0.7': {}
 

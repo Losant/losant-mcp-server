@@ -1,0 +1,157 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  body { font-family: system-ui, sans-serif; margin: 8px; font-size: 13px; }
+  section { margin-bottom: 16px; }
+  h3 { margin: 0 0 6px 0; font-size: 13px; }
+  ul { list-style: none; margin: 0; padding: 0; max-height: 150px; overflow-y: auto; border: 1px solid #ddd; }
+  li { padding: 4px 8px; border-bottom: 1px solid #eee; }
+  li:hover { background: #f5f5f5; }
+  pre { background: #f7f7f7; padding: 8px; max-height: 200px; overflow: auto; white-space: pre-wrap; word-break: break-all; }
+  #debug-log { max-height: 250px; }
+  #debug-log div { border-bottom: 1px dashed #ddd; padding: 2px 0; }
+  select, button { font-size: 13px; }
+</style>
+</head>
+<body>
+  <section>
+    <h3>Nodes &amp; Triggers</h3>
+    <ul id="node-list"></ul>
+    <pre id="node-json">(click an item above)</pre>
+  </section>
+
+  <section>
+    <h3>Press Virtual Button</h3>
+    <select id="button-select"></select>
+    <button id="press-btn">Press</button>
+    <pre id="press-result"></pre>
+  </section>
+
+  <section>
+    <h3>Live Debug Feed</h3>
+    <pre id="debug-log">(connecting...)</pre>
+  </section>
+
+  <!-- MCP_APP_BUNDLE_SCRIPT -->
+
+  <script type="module">
+    const App = window.__MCPApp;
+
+    const app = new App({ name: 'Flow View', version: '0.0.1' });
+
+    app.ontoolresult = (result) => {
+      console.log('[flow-view] ontoolresult fired, raw result:', result);
+      const data = result.structuredContent;
+      if (!data) {
+        console.error('[flow-view] no structuredContent on tool result - result.content was:', result.content);
+        document.getElementById('node-json').textContent = '(no structuredContent received - see console)';
+        return;
+      }
+      console.log('[flow-view] structuredContent:', data);
+      try {
+        renderNodesAndTriggers(data);
+      } catch (err) {
+        console.error('[flow-view] renderNodesAndTriggers threw:', err);
+      }
+      startDebugStream(data);
+    };
+
+    app.connect();
+    console.log('[flow-view] app.connect() called');
+
+    function renderNodesAndTriggers(data) {
+      const list = document.getElementById('node-list');
+      list.innerHTML = '';
+      const items = [...(data.triggers || []), ...(data.nodes || [])];
+      console.log('[flow-view] rendering', items.length, 'items (', (data.triggers || []).length, 'triggers +', (data.nodes || []).length, 'nodes)');
+      items.forEach((item) => {
+        const li = document.createElement('li');
+        li.textContent = `${item.type}${item.id ? ' (' + item.id + ')' : ''}`;
+        li.addEventListener('click', () => {
+          document.getElementById('node-json').textContent = JSON.stringify(item, null, 2);
+        });
+        list.appendChild(li);
+      });
+
+      const select = document.getElementById('button-select');
+      select.innerHTML = '';
+      (data.triggers || []).filter((t) => { return t.type === 'virtualButton'; }).forEach((t) => {
+        const opt = document.createElement('option');
+        opt.value = t.key;
+        opt.textContent = (t.meta && (t.meta.label || t.meta.name)) || t.key;
+        select.appendChild(opt);
+      });
+
+      document.getElementById('press-btn').onclick = async () => {
+        const result = await app.callServerTool({
+          name: 'losant_flow_press_virtual_button',
+          arguments: { applicationId: data.applicationId, flowId: data.flowId, key: select.value }
+        });
+        const text = result.content && result.content.find((c) => { return c.type === 'text'; });
+        document.getElementById('press-result').textContent = (text && text.text) || '[no result]';
+      };
+    }
+
+    async function startDebugStream(data) {
+      const log = document.getElementById('debug-log');
+      if (!data.debugUrl || !data.token) {
+        log.textContent = '(no debug stream info provided)';
+        return;
+      }
+      log.textContent = '';
+      console.log('[flow-view] connecting to debug stream:', data.debugUrl);
+      let resp;
+      try {
+        resp = await fetch(data.debugUrl, { headers: { Authorization: `Bearer ${data.token}` } });
+      } catch (err) {
+        console.error('[flow-view] debug stream fetch threw (likely CORS/network):', err);
+        log.textContent = '(fetch failed - see console)';
+        return;
+      }
+      console.log('[flow-view] debug stream response status:', resp.status, [...resp.headers.entries()]);
+      if (!resp.ok) {
+        const bodyText = await resp.text();
+        console.error('[flow-view] debug stream non-OK response body:', bodyText);
+        log.textContent = `(debug stream returned ${resp.status} - see console)`;
+        return;
+      }
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder();
+      let buf = '';
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) { console.log('[flow-view] debug stream closed'); break; }
+        const rawChunk = decoder.decode(value, { stream: true });
+        console.log('[flow-view] raw SSE bytes:', JSON.stringify(rawChunk));
+        buf += rawChunk;
+        const chunks = buf.split('\n\n');
+        buf = chunks.pop();
+        for (const chunk of chunks) {
+          let eventName = 'message';
+          let dataLine = '';
+          chunk.split('\n').forEach((line) => {
+            if (line.startsWith('event:')) { eventName = line.slice(6).trim(); }
+            if (line.startsWith('data:')) { dataLine += line.slice(5).trim(); }
+          });
+          console.log('[flow-view] parsed SSE event:', eventName, dataLine);
+          if (eventName === 'logEntry' && dataLine) {
+            // NOTE: this only renders the entry for a human watching the widget - it does not
+            // reach Claude's context. After extensive exploration, this is a confirmed, real gap:
+            // nothing that happens in this iframe automatically reaches the model. Closing it is
+            // a feasible, worthwhile next step (not yet attempted here) - e.g. app.updateModelContext(...)
+            // per-entry (if the host implements it), or a server-side-relay "poll" tool as a fallback.
+            // Once bridged, this becomes a real opportunity to expand live workflow creation/updating/
+            // debugging - Claude could watch real-time execution and react to it, not just inspect
+            // after the fact via the 15-minute-bucketed stats/errors tool.
+            const entry = document.createElement('div');
+            entry.textContent = dataLine;
+            log.prepend(entry);
+          }
+        }
+      }
+    }
+  </script>
+</body>
+</html>

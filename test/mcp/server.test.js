@@ -25,8 +25,8 @@ describe('MCP Server', () => {
 
     it('should register tools', () => {
       const toolNames = Object.keys(server._registeredTools);
-      toolNames.should.have.length(5);
-      toolNames.should.containDeep(['losant_query', 'losant_timeseries', 'losant_write', 'losant_delete', 'losant_flow_diagnostics']);
+      toolNames.should.have.length(7);
+      toolNames.should.containDeep(['losant_query', 'losant_timeseries', 'losant_write', 'losant_delete', 'losant_flow_diagnostics', 'losant_flow_view', 'losant_flow_press_virtual_button']);
       server._registeredTools.losant_query.annotations.should.deepEqual({
         readOnlyHint: true,
         destructiveHint: false,

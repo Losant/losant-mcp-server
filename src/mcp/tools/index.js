@@ -3,8 +3,10 @@ import queryTimeseriesTool from './query-timeseries.js';
 import writeResourcesTool from './write-resources.js';
 import deleteResourcesTool from './delete-resources.js';
 import flowDiagnosticsTool from './flow-diagnostics.js';
+import flowViewTool from './flow-view.js';
+import flowPressVirtualButtonTool from './flow-press-virtual-button.js';
 
-const tools = [queryResourcesTool, queryTimeseriesTool, writeResourcesTool, deleteResourcesTool, flowDiagnosticsTool];
+const tools = [queryResourcesTool, queryTimeseriesTool, writeResourcesTool, deleteResourcesTool, flowDiagnosticsTool, flowViewTool, flowPressVirtualButtonTool];
 
 const applyDefaultAnnotations = (inputInfo, name) => {
   inputInfo.annotations = {
