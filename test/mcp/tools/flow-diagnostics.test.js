@@ -105,10 +105,10 @@ describe('flow-diagnostics tool (with nock)', () => {
     ]);
   });
 
-  it('should not send limit or sortDirection to stats but should forward limit to errors/getLogEntries', async () => {
+  it('should not send either limit or sortDirection to stats but should forward errorsLimit/logEntriesLimit independently', async () => {
     const statsScope = nock(LOSANT_API_URL, { encodedQueryParams: true })
       .get(`/applications/${APP_ID}/flows/${flowId}/stats`)
-      .query((q) => { return q.duration === '3600000' && q.resolution === '600000' && !('limit' in q) && !('sortDirection' in q); })
+      .query((q) => { return q.duration === '3600000' && q.resolution === '900000' && !('limit' in q) && !('sortDirection' in q); })
       .reply(200, statsResponse);
     const errorsScope = nock(LOSANT_API_URL, { encodedQueryParams: true })
       .get(`/applications/${APP_ID}/flows/${flowId}/errors`)
@@ -116,15 +116,16 @@ describe('flow-diagnostics tool (with nock)', () => {
       .reply(200, errorsResponse);
     const logsScope = nock(LOSANT_API_URL, { encodedQueryParams: true })
       .get(`/applications/${APP_ID}/flows/${flowId}/logs`)
-      .query((q) => { return q.limit === '5' && !('duration' in q) && !('resolution' in q); })
+      .query((q) => { return q.limit === '2' && !('duration' in q) && !('resolution' in q); })
       .reply(200, logEntriesResponse);
 
     const result = await diagnosticsTool({
       applicationId: APP_ID,
       flowId,
       duration: '3600000',
-      resolution: '600000',
-      limit: 5
+      resolution: '900000',
+      errorsLimit: 5,
+      logEntriesLimit: 2
     });
 
     should.not.exist(result.isError);
@@ -267,5 +268,84 @@ describe('flow-diagnostics tool (with nock)', () => {
     response.stats.should.have.property('error');
     response.errors.should.have.property('errors');
     response.logEntries.should.be.an.Array().with.length(1);
+  });
+
+  describe('duration/resolution 15-minute floor validation', () => {
+
+    it('should reject a duration below 15 minutes instead of letting the API silently clamp it', async () => {
+      const result = await diagnosticsTool({ applicationId: APP_ID, flowId, duration: '60000' });
+
+      result.isError.should.be.true();
+      const error = JSON.parse(result.content[0].text);
+      error.data.errors.should.containEql({
+        fieldName: 'duration',
+        details: 'Must be at least 900000 (15 minutes) - flow stats/errors are reported in 15-minute aggregates by the platform, so a smaller value would be silently clamped up to 15 minutes by the API rather than rejected, which would be confusing.'
+      });
+    });
+
+    it('should reject a duration above 31 days instead of letting the API silently clamp it', async () => {
+      const result = await diagnosticsTool({ applicationId: APP_ID, flowId, duration: '9999999999999' });
+
+      result.isError.should.be.true();
+      const error = JSON.parse(result.content[0].text);
+      error.data.errors.should.containEql({
+        fieldName: 'duration',
+        details: 'Must be at most 2678400000 (31 days) - the API silently clamps larger values down to 31 days rather than rejecting them.'
+      });
+    });
+
+    it('should reject a resolution below 15 minutes instead of letting the API silently clamp it', async () => {
+      const result = await diagnosticsTool({ applicationId: APP_ID, flowId, resolution: '60000' });
+
+      result.isError.should.be.true();
+      const error = JSON.parse(result.content[0].text);
+      error.data.errors.should.containEql({
+        fieldName: 'resolution',
+        details: 'Must be at least 900000 (15 minutes) - flow stats are reported in 15-minute aggregates by the platform, so a smaller value would be silently clamped up to 15 minutes by the API rather than rejected, which would be confusing.'
+      });
+    });
+
+    it('should reject a resolution greater than duration instead of letting the API silently clamp it', async () => {
+      const result = await diagnosticsTool({
+        applicationId: APP_ID, flowId, duration: '3600000', resolution: '7200000'
+      });
+
+      result.isError.should.be.true();
+      const error = JSON.parse(result.content[0].text);
+      error.data.errors.should.containEql({
+        fieldName: 'resolution',
+        details: 'Must not exceed duration (3600000ms) - the API silently clamps resolution down to duration rather than rejecting it.'
+      });
+    });
+
+    it('should reject a resolution greater than the default duration when duration is omitted', async () => {
+      const result = await diagnosticsTool({ applicationId: APP_ID, flowId, resolution: '99999999999' });
+
+      result.isError.should.be.true();
+      const error = JSON.parse(result.content[0].text);
+      error.data.errors.should.containEql({
+        fieldName: 'resolution',
+        details: 'Must not exceed duration (86400000ms - the API default, since duration was omitted) - the API silently clamps resolution down to duration rather than rejecting it.'
+      });
+    });
+
+    it('should accept duration/resolution exactly at the 15-minute floor', async () => {
+      nock(LOSANT_API_URL, { encodedQueryParams: true })
+        .get(`/applications/${APP_ID}/flows/${flowId}/stats`)
+        .query((q) => { return q.duration === '900000' && q.resolution === '900000'; })
+        .reply(200, statsResponse)
+        .get(`/applications/${APP_ID}/flows/${flowId}/errors`)
+        .query((q) => { return q.duration === '900000'; })
+        .reply(200, errorsResponse)
+        .get(`/applications/${APP_ID}/flows/${flowId}/logs`)
+        .query(true)
+        .reply(200, logEntriesResponse);
+
+      const result = await diagnosticsTool({
+        applicationId: APP_ID, flowId, duration: '900000', resolution: '900000'
+      });
+
+      should.not.exist(result.isError);
+    });
   });
 });

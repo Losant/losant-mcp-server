@@ -2,6 +2,8 @@ const content = `# Losant Flow Diagnostics Tool Guide
 
 Use \`losant_flow_diagnostics\` to inspect a flow's **runtime health** — how often it's running, where it's failing, and its historical run-metric log. This is different from flow authoring (\`losant_query\`/\`losant_write\` on \`resourceType: "flow"\`, \`losant://authoring/flow\`): those read/write a flow's *definition* (triggers, nodes); this tool reads a flow's *execution history*.
 
+**This is not a real-time log.** A flow worker reports \`stats\`/\`errors\` data in 15-minute aggregates — there is no finer-grained view available, live or historical. See **Time range** below for the 15-minute floor this imposes on \`duration\`/\`resolution\`.
+
 ## Before Calling
 
 Obtain \`applicationId\` and \`flowId\` — query \`resourceType=flow\` with \`losant_query\` if you only have a flow name.
@@ -50,6 +52,8 @@ Because of this derivation, \`getLogEntries\` is **not** called in parallel with
 
 Together these define the window: the last \`duration\` milliseconds ending at \`end\`. Omit both for "the last 24 hours up to now." \`getLogEntries\` has no \`duration\`/\`end\` of its own — see **One shared time window** below for how its range is derived from these two instead.
 
+**15-minute floor:** flow \`stats\`/\`errors\` are reported in aggregate by a flow worker approximately every 15 minutes — finer-grained data doesn't exist to query. The raw API reflects this by silently clamping \`duration\` to between \`900000\` (15 minutes) and \`2678400000\` (31 days), and \`resolution\` to between \`900000\` and \`duration\` — e.g. asking for a 5-minute \`duration\` would silently return a 15-minute window instead, which is easy to misread as "no activity in the last 5 minutes" rather than "the platform doesn't track anything finer than 15 minutes." **This tool validates those same bounds up front and rejects out-of-range \`duration\`/\`resolution\` with a tool input error instead** — if you see that error, widen the value rather than retrying with the same one.
+
 ### Filters
 
 | Parameter | Applies to | Notes |
@@ -64,11 +68,14 @@ Pass either, both, or neither — \`flowVersionId\` scopes strictly to one versi
 | Parameter | Applies to | Default |
 |---|---|---|
 | \`resolution\` | \`stats\` only | \`3600000\` ms (1 hour) |
-| \`limit\` | \`errors\`, \`getLogEntries\` | \`errors\`: \`25\`. \`getLogEntries\`: \`1\` |
+| \`errorsLimit\` | \`errors\` only | \`25\` |
+| \`logEntriesLimit\` | \`getLogEntries\` only | \`1\` |
 
-These two pull in opposite directions: \`resolution\` is a *bucket size* for \`stats\` — the **smaller** it is, the **more** buckets come back in \`stats.metrics\` over the same \`duration\`. \`limit\` is a *row cap* for \`errors\`/\`getLogEntries\` — the **larger** it is, the **more** entries come back, up to what's available. Neither applies to the other's endpoint(s): \`limit\` is never sent to \`stats\` (its size is controlled by \`duration\`/\`resolution\` instead, not a row count), and \`resolution\` has no meaning for \`errors\`/\`getLogEntries\` (they return individual records, not buckets).
+\`errorsLimit\` and \`logEntriesLimit\` are separate parameters, not one shared \`limit\`, because the two endpoints' rows aren't comparable in weight: each \`errors\` row is one flat, bounded error record, while each \`getLogEntries\` row is an aggregated run-metric bucket that embeds its own \`errors\` sub-array — a heavier object, which is why the API defaults it to just \`1\`. Raise \`logEntriesLimit\` explicitly when you need more than the single most recent bucket.
 
-Any parameter not listed as applying to a given endpoint is simply never sent there — there's no validation error to work around, just read the tables above to know what will actually take effect.
+\`resolution\` pulls in the opposite direction from the two limits: it's a *bucket size* for \`stats\` — the **smaller** it is, the **more** buckets come back in \`stats.metrics\` over the same \`duration\`. \`errorsLimit\`/\`logEntriesLimit\` are *row caps* — the **larger** they are, the **more** entries come back, up to what's available. None of the three apply outside their own endpoint: neither limit is ever sent to \`stats\` (its size is controlled by \`duration\`/\`resolution\` instead, not a row count), and \`resolution\` has no meaning for \`errors\`/\`getLogEntries\` (they return individual records, not buckets).
+
+Any parameter not listed as applying to a given endpoint is simply never sent there — passing it is not an error, it is just silently ignored for that endpoint; read the tables above to know what will actually take effect. The one exception is \`duration\`/\`resolution\` range validation (see **15-minute floor** above), which does return an error.
 
 ## Sort order (not configurable)
 
@@ -78,6 +85,7 @@ There is no \`sortDirection\` parameter. The platform itself returns \`stats.met
 
 - \`getLogEntries\` has no \`flowVersionId\`/\`deviceId\` query support at the API level — version scoping is done by client-side filtering after the fact (and only works with a real version ID), and device scoping isn't possible at all for this endpoint (hence the full skip).
 - Empty results don't necessarily mean "the flow never runs" — it can also mean the time range is too narrow, or \`flowVersionId\` doesn't match anything real (check the \`notes\` array in the response, and consider verifying the ID via \`losant_query\` on \`flowVersion\`).
+- \`duration\` must be between \`900000\` (15 minutes) and \`2678400000\` (31 days), and \`resolution\` between \`900000\` and \`duration\` — out-of-range values return a tool input validation error rather than a diagnostics result. See **15-minute floor** above.
 
 ## Reference
 

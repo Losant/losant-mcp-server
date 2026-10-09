@@ -1,6 +1,44 @@
 import { z } from 'zod';
 import debug from 'debug';
+import { invalidRequestError } from '../../helpers/errors.js';
 const log = debug('losant-mcp-server:tools:flow-diagnostics');
+
+// Flow stats/errors are reported in aggregate by a flow worker approximately every 15 minutes -
+// the platform silently clamps duration/resolution to this floor (and duration to a 31-day
+// ceiling, resolution to a duration ceiling) rather than rejecting out-of-range values. This tool
+// validates up front instead, so the LLM gets an explicit error rather than a confusingly
+// coarser-than-requested window/bucket size.
+const MIN_WINDOW_MS = 900000; // 15 minutes
+const MAX_DURATION_MS = 31 * 24 * 60 * 60 * 1000; // 31 days
+const DEFAULT_DURATION_MS = 86400000; // the API's own default, used here only to validate resolution when duration is omitted
+
+const validateWindowParams = (duration, resolution) => {
+  const errors = [];
+  const durationMs = duration === undefined ? DEFAULT_DURATION_MS : Number(duration);
+
+  if (duration !== undefined) {
+    if (!Number.isFinite(durationMs)) {
+      errors.push({ fieldName: 'duration', details: `Must be a numeric value in milliseconds, got "${duration}".` });
+    } else if (durationMs < MIN_WINDOW_MS) {
+      errors.push({ fieldName: 'duration', details: `Must be at least ${MIN_WINDOW_MS} (15 minutes) - flow stats/errors are reported in 15-minute aggregates by the platform, so a smaller value would be silently clamped up to 15 minutes by the API rather than rejected, which would be confusing.` });
+    } else if (durationMs > MAX_DURATION_MS) {
+      errors.push({ fieldName: 'duration', details: `Must be at most ${MAX_DURATION_MS} (31 days) - the API silently clamps larger values down to 31 days rather than rejecting them.` });
+    }
+  }
+
+  if (resolution !== undefined) {
+    const resolutionMs = Number(resolution);
+    if (!Number.isFinite(resolutionMs)) {
+      errors.push({ fieldName: 'resolution', details: `Must be a numeric value in milliseconds, got "${resolution}".` });
+    } else if (resolutionMs < MIN_WINDOW_MS) {
+      errors.push({ fieldName: 'resolution', details: `Must be at least ${MIN_WINDOW_MS} (15 minutes) - flow stats are reported in 15-minute aggregates by the platform, so a smaller value would be silently clamped up to 15 minutes by the API rather than rejected, which would be confusing.` });
+    } else if (Number.isFinite(durationMs) && resolutionMs > durationMs) {
+      errors.push({ fieldName: 'resolution', details: `Must not exceed duration (${durationMs}ms${duration === undefined ? ' - the API default, since duration was omitted' : ''}) - the API silently clamps resolution down to duration rather than rejecting it.` });
+    }
+  }
+
+  return errors;
+};
 
 const callFlowEndpoint = async (client, name, params) => {
   try {
@@ -39,7 +77,7 @@ export default {
         },
         duration: {
           type: 'string',
-          description: 'Duration of the time range in milliseconds, ending at `end`. Sent directly to stats and errors. getLogEntries has no duration/end parameters of its own, so its results are derived from and pruned to this same resolved window. Default (set by the API when omitted): 86400000 (24 hours).'
+          description: 'Duration of the time range in milliseconds, ending at `end`. Sent directly to stats and errors. getLogEntries has no duration/end parameters of its own, so its results are derived from and pruned to this same resolved window. Default (set by the API when omitted): 86400000 (24 hours). Must be between 900000 (15 minutes) and 2678400000 (31 days) - flow stats/errors are reported in 15-minute aggregates by the platform, so finer windows are not meaningful. Out-of-range values are rejected with a validation error rather than silently clamped.'
         },
         end: {
           type: 'string',
@@ -47,7 +85,7 @@ export default {
         },
         resolution: {
           type: 'string',
-          description: 'Bucket size in milliseconds for the stats metrics array. Stats only. Default (set by the API when omitted): 3600000 (1 hour).'
+          description: 'Bucket size in milliseconds for the stats metrics array. Stats only. Default (set by the API when omitted): 3600000 (1 hour). Must be between 900000 (15 minutes) and `duration` - flow stats are reported in 15-minute aggregates by the platform, so finer buckets are not meaningful. Out-of-range values are rejected with a validation error rather than silently clamped.'
         },
         flowVersionId: {
           type: 'string',
@@ -57,9 +95,13 @@ export default {
           type: 'string',
           description: 'For edge or embedded flows, the device ID to scope stats/errors to. Forwarded to the stats and errors APIs. getLogEntries is skipped entirely when this is set, since the run-metric log model has no deviceId field to scope by - returning unfiltered log entries alongside device-scoped stats/errors would be misleading. Omit for an aggregate across all devices.'
         },
-        limit: {
+        errorsLimit: {
           type: 'number',
-          description: 'Maximum number of entries to return. Applies to errors (API default 25) and getLogEntries (API default 1). Does NOT apply to stats - its result size is controlled by duration/resolution instead, not a row count.'
+          description: 'Maximum number of entries to return from errors. Default (set by the API when omitted): 25. Does NOT apply to stats or getLogEntries.'
+        },
+        logEntriesLimit: {
+          type: 'number',
+          description: 'Maximum number of entries to return from getLogEntries. Default (set by the API when omitted): 1 - each entry is an aggregated run-metric bucket with its own embedded errors array, so it is heavier than a single errors record and the API defaults it low. Raise this explicitly to pull more history. Does NOT apply to stats or errors.'
         }
       },
       required: ['applicationId', 'flowId']
@@ -67,11 +109,16 @@ export default {
   },
   runnerFactory: (losantClient) => {
     return async ({
-      applicationId, flowId, duration, end, resolution, flowVersionId, deviceId, limit
+      applicationId, flowId, duration, end, resolution, flowVersionId, deviceId, errorsLimit, logEntriesLimit
     }) => {
       log('Flow Diagnostics Tool called with parameters:', {
-        applicationId, flowId, duration, end, resolution, flowVersionId, deviceId, limit
+        applicationId, flowId, duration, end, resolution, flowVersionId, deviceId, errorsLimit, logEntriesLimit
       });
+
+      const paramErrors = validateWindowParams(duration, resolution);
+      if (paramErrors.length) {
+        return invalidRequestError({ message: 'Tool input validation failed', errors: paramErrors });
+      }
 
       const statsParams = { applicationId, flowId };
       if (duration !== undefined) { statsParams.duration = duration; }
@@ -87,7 +134,7 @@ export default {
       const errorsParams = { applicationId, flowId };
       if (duration !== undefined) { errorsParams.duration = duration; }
       if (end !== undefined) { errorsParams.end = end; }
-      if (limit !== undefined) { errorsParams.limit = limit; }
+      if (errorsLimit !== undefined) { errorsParams.limit = errorsLimit; }
       if (flowVersionId !== undefined) { errorsParams.flowVersion = flowVersionId; }
       if (deviceId !== undefined) { errorsParams.deviceId = deviceId; }
 
@@ -108,7 +155,7 @@ export default {
       } else {
         const window = resolveWindow(statsOutcome, errorsOutcome);
         const logEntriesParams = { applicationId, flowId };
-        if (limit !== undefined) { logEntriesParams.limit = limit; }
+        if (logEntriesLimit !== undefined) { logEntriesParams.limit = logEntriesLimit; }
         if (window.start !== undefined) { logEntriesParams.since = String(window.start); }
         if (window.start === undefined) {
           notes.push("Could not resolve a time window for getLogEntries because both stats and errors failed - falling back to the API's default (most recent entries, unscoped by time).");
