@@ -1,7 +1,7 @@
 import Hapi from '@hapi/hapi';
 import Boom from '@hapi/boom';
 import Inert from '@hapi/inert';
-import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js'; // eslint-disable-line import/no-unresolved
+import { NodeStreamableHTTPServerTransport } from '@modelcontextprotocol/node';
 import { createMCPServer } from '../mcp/server.js';
 import { extractBearerToken, validateBearerToken } from '../auth/bearer.js';
 import { createOAuthDiscoveryRoute, createOAuthServerRoute } from './oauth-discovery.js';
@@ -9,10 +9,9 @@ import { createRootPageRoute } from './root-page.js';
 import conf from '../config.js';
 import debug from 'debug';
 import rollbar from '../helpers/rollbar.js';
-import { ErrorCode } from '@modelcontextprotocol/sdk/types.js'; // eslint-disable-line import/no-unresolved
 import path from 'path';
 import { fileURLToPath } from 'url';
-
+import { SdkErrorCode } from '@modelcontextprotocol/server';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const log = debug('losant-mcp-server:http');
@@ -34,7 +33,7 @@ const unauthBoom = (err, enableOAuth, resourceUrl, hasToken = true) => {
   error.isMissing = false;
   error.output.payload.jsonrpc = '2.0';
   error.output.payload.error = {
-    code: ErrorCode.ConnectionClosed,
+    code: SdkErrorCode.ConnectionClosed,
     message: msg,
     data: { error: msg, description: err.description }
   };
@@ -122,7 +121,7 @@ export const createHttpServer = async () => {
         logPayload('Received MCP request with body:', request.payload);
 
         // NEW SESSION: Create MCP server with this bearer token
-        const transport = new StreamableHTTPServerTransport({
+        const transport = new NodeStreamableHTTPServerTransport({
           enableJsonResponse: true,
           sessionIdGenerator: undefined
         });

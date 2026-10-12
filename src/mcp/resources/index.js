@@ -1,6 +1,6 @@
 import path from 'node:path';
 import { readFile } from 'node:fs/promises';
-import { ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js'; // eslint-disable-line import/no-unresolved
+import { ResourceTemplate } from '@modelcontextprotocol/server';
 import advancedQueryGuide from './advanced-query-guide.js';
 import deleteToolGuide from './delete-tool-guide.js';
 import queryToolGuide from './query-tool-guide.js';

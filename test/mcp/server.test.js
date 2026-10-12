@@ -1,8 +1,7 @@
 import '../common.js';
 import should from 'should';
 import { createMCPServer } from '../../src/mcp/server.js';
-import { Client } from '@modelcontextprotocol/sdk/client/index.js'; // eslint-disable-line import/no-unresolved
-import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js'; // eslint-disable-line import/no-unresolved
+import { Client, InMemoryTransport } from '@modelcontextprotocol/client';
 import { SCHEMA_FILES, SCHEMA_FILE_ALIASES } from '../../src/constants.js';
 
 export const REGISTERED_SCHEMA_URIS = [
