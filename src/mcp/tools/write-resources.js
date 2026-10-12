@@ -47,10 +47,12 @@ export default {
         },
         body: {
           type: 'object',
+          additionalProperties: true,
           description: 'Resource data matching the Post or Patch schema for the given resourceType.'
         }
       },
-      required: ['operation', 'resourceType', 'applicationId', 'body']
+      required: ['operation', 'resourceType', 'applicationId', 'body'],
+      additionalProperties: false
     })
   },
   runnerFactory: (losantClient) => {
