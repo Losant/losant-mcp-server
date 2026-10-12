@@ -53,8 +53,7 @@
     "rollbar": "^3.1.0",
     "zod": "^4.6.5",
     "@modelcontextprotocol/server": "^2.3.1",
-    "@modelcontextprotocol/node": "^2.1.1",
-    "@modelcontextprotocol/client": "^2.3.1"
+    "@modelcontextprotocol/node": "^2.1.1"
   },
   "devDependencies": {
     "@losant/eslint-config-losant": "^2.1.0",
@@ -67,7 +66,8 @@
     "nock": "^14.0.17",
     "nodemon": "^3.1.14",
     "should": "^13.2.3",
-    "sinon": "^22.1.0"
+    "sinon": "^22.1.0",
+    "@modelcontextprotocol/client": "^2.3.1"
   },
   "lint-staged": {
     "*.js": "eslint --max-warnings=0"

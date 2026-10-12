@@ -175,9 +175,6 @@ importers:
       '@hapi/inert':
         specifier: ^7.1.2
         version: 7.1.2
-      '@modelcontextprotocol/client':
-        specifier: ^2.3.1
-        version: 2.3.1
       '@modelcontextprotocol/node':
         specifier: ^2.1.1
         version: 2.1.1(@modelcontextprotocol/server@2.3.1)
@@ -212,6 +209,9 @@ importers:
       '@losant/eslint-config-losant':
         specifier: ^2.1.0
         version: 2.1.0(supports-color@5.5.0)
+      '@modelcontextprotocol/client':
+        specifier: ^2.3.1
+        version: 2.3.1
       c8:
         specifier: ^12.0.0
         version: 12.0.0
