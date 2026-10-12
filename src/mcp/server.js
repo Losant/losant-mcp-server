@@ -1,4 +1,4 @@
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'; // eslint-disable-line import/no-unresolved
+import { McpServer } from '@modelcontextprotocol/server';
 import { createClient } from 'losant-rest';
 import loadResources from './resources/index.js';
 import registerTools from './tools/index.js';

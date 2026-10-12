@@ -2,8 +2,7 @@ import '../../common.js';
 import should from 'should';
 import registerResourceLoader from '../../../src/mcp/resources/index.js';
 import { createMCPServer } from '../../../src/mcp/server.js';
-import { Client } from '@modelcontextprotocol/sdk/client/index.js'; // eslint-disable-line import/no-unresolved
-import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js'; // eslint-disable-line import/no-unresolved
+import { Client, InMemoryTransport } from '@modelcontextprotocol/client';
 
 describe('MCP Resources', () => {
 

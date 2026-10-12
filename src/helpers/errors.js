@@ -1,11 +1,11 @@
-import { ErrorCode } from '@modelcontextprotocol/sdk/types.js'; // eslint-disable-line import/no-unresolved
+import { ProtocolErrorCode } from '@modelcontextprotocol/server';
 
 export const invalidRequestError = ({ message, ...details } = {}) => {
   return {
     content: [{
       type: 'text',
       text: JSON.stringify({
-        code: ErrorCode.InvalidRequest,
+        code: ProtocolErrorCode.InvalidRequest,
         message: `MCP error -32600: ${message || 'Invalid request'}`,
         data: { ...details }
       })
