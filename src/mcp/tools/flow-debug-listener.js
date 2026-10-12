@@ -3,6 +3,7 @@ import debug from 'debug';
 import { randomUUID } from 'node:crypto';
 import { EventSource } from 'eventsource';
 import { invalidRequestError, restToMCPError } from '../../helpers/errors.js';
+import { sleep } from 'omnibelt';
 
 const log = debug('losant-mcp-server:tools:flow-debug-listener');
 
@@ -10,7 +11,7 @@ const MIN_TIMEOUT_SEC = 1;
 const MAX_TIMEOUT_SEC = 60;
 const DEFAULT_TIMEOUT_SEC = 10;
 
-const validateParams = (timeout, messageCount, virtualButtonKey, virtualButtonPayload) => {
+const validateParams = (timeout, messageCount, virtualButtonKey, virtualButtonPayload, includeUnmatchedMessages) => {
   const errors = [];
 
   if (timeout !== undefined) {
@@ -31,6 +32,10 @@ const validateParams = (timeout, messageCount, virtualButtonKey, virtualButtonPa
 
   if (virtualButtonPayload !== undefined && virtualButtonKey === undefined) {
     errors.push({ fieldName: 'virtualButtonPayload', details: 'Only meaningful when virtualButtonKey is also given.' });
+  }
+
+  if (includeUnmatchedMessages !== undefined && virtualButtonKey === undefined) {
+    errors.push({ fieldName: 'includeUnmatchedMessages', details: 'Only meaningful when virtualButtonKey is also given - there is no filtering to exclude messages from without it.' });
   }
 
   return errors;
@@ -71,8 +76,6 @@ const openDebugStream = (apiUrl, accessToken, debugPath) => {
 
   return { es, openPromise, isTransportFailure };
 };
-
-const delay = (ms) => new Promise((resolve) => { setTimeout(resolve, ms); });
 
 export default {
   name: 'losant_flow_debug_listener',
@@ -115,6 +118,10 @@ export default {
         messageCount: {
           type: 'number',
           description: 'Number of matching messages to wait for before returning early, instead of waiting the full timeout. If omitted, always waits the full timeout and returns everything collected.'
+        },
+        includeUnmatchedMessages: {
+          type: 'boolean',
+          description: 'If true, also return the raw debug messages that were seen but did not match this press (as `unmatchedMessages`), instead of just their count. Only meaningful when virtualButtonKey is given. Use this to inspect what the stream actually saw when the press/run correlation comes back empty or incomplete - the stream is live-only, so this is the only way to see those messages after the fact. Default false, to avoid returning extra data when not needed.'
         }
       },
       required: ['applicationId', 'flowId'],
@@ -123,13 +130,13 @@ export default {
   },
   runnerFactory: (losantClient) => {
     return async ({
-      applicationId, flowId, flowVersionId, virtualButtonKey, virtualButtonPayload, timeout, messageCount
+      applicationId, flowId, flowVersionId, virtualButtonKey, virtualButtonPayload, timeout, messageCount, includeUnmatchedMessages
     }) => {
       log('Flow Debug Listener Tool called with parameters:', {
-        applicationId, flowId, flowVersionId, virtualButtonKey, virtualButtonPayload, timeout, messageCount
+        applicationId, flowId, flowVersionId, virtualButtonKey, virtualButtonPayload, timeout, messageCount, includeUnmatchedMessages
       });
 
-      const paramErrors = validateParams(timeout, messageCount, virtualButtonKey, virtualButtonPayload);
+      const paramErrors = validateParams(timeout, messageCount, virtualButtonKey, virtualButtonPayload, includeUnmatchedMessages);
       if (paramErrors.length) {
         return invalidRequestError({ message: 'Tool input validation failed', errors: paramErrors });
       }
@@ -152,8 +159,10 @@ export default {
         }
 
         const collected = [];
+        const unmatched = [];
         let pressId;
         let matchedRunId;
+        let unmatchedCount = 0;
 
         const isMatch = (message) => {
           if (virtualButtonKey === undefined) { return true; }
@@ -175,7 +184,11 @@ export default {
             log('Failed to parse debug message, skipping', err);
             return;
           }
-          if (!isMatch(message)) { return; }
+          if (!isMatch(message)) {
+            unmatchedCount += 1;
+            if (includeUnmatchedMessages) { unmatched.push(message); }
+            return;
+          }
           collected.push(message);
           if (messageCount !== undefined && collected.length >= messageCount) {
             resolveDone('count');
@@ -203,21 +216,26 @@ export default {
           }
         }
 
-        const outcome = await Promise.race([donePromise, delay(timeoutSec * 1000).then(() => 'timeout')]);
+        const outcome = await Promise.race([donePromise, sleep(timeoutSec * 1000).then(() => 'timeout')]);
 
         const timedOut = outcome === 'timeout';
-        let detail;
+        const detailParts = [];
         if (timedOut && messageCount !== undefined && collected.length < messageCount) {
-          detail = `Timed out after ${timeoutSec}s before collecting the requested ${messageCount} message(s); ${collected.length} collected.`;
+          detailParts.push(`Timed out after ${timeoutSec}s before collecting the requested ${messageCount} message(s); ${collected.length} collected.`);
         } else if (outcome === 'dropped') {
-          detail = `Debug stream closed unexpectedly after collecting ${collected.length} message(s).`;
+          detailParts.push(`Debug stream closed unexpectedly after collecting ${collected.length} message(s).`);
         }
+        if (virtualButtonKey !== undefined && unmatchedCount > 0) {
+          detailParts.push(`${unmatchedCount} other debug message(s) were seen on the stream but did not match this press (different pressId/runId) and were excluded - the run likely executed even if 0 messages were returned above.`);
+        }
+        const detail = detailParts.length ? detailParts.join(' ') : undefined;
 
         const response = {
           applicationId,
           flowId,
           ...(flowVersionId !== undefined && { flowVersionId }),
-          ...(virtualButtonKey !== undefined && { virtualButtonKey, pressId }),
+          ...(virtualButtonKey !== undefined && { virtualButtonKey, pressId, unmatchedMessageCount: unmatchedCount }),
+          ...(includeUnmatchedMessages && { unmatchedMessages: unmatched }),
           ...(matchedRunId !== undefined && { runId: matchedRunId }),
           messageCount: collected.length,
           timedOut,

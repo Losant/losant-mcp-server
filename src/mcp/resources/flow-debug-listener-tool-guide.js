@@ -32,12 +32,22 @@ Calling this tool requires the access token to carry the \`flow.debug\` scope (u
 | \`virtualButtonPayload\` | No | Sent as the press's \`data\`. Only meaningful with \`virtualButtonKey\` — an error if given without it. |
 | \`timeout\` | No | Seconds to listen. Default \`10\`, must be \`1\`–\`60\`. |
 | \`messageCount\` | No | Stop early once this many matching messages arrive. Omit to always wait the full \`timeout\` and return everything collected. |
+| \`includeUnmatchedMessages\` | No | If true, also return the raw unmatched messages (as \`unmatchedMessages\`), not just their count. Only meaningful with \`virtualButtonKey\`. Default \`false\`. |
+
+## Choosing \`timeout\` and \`messageCount\`
+
+Don't default to the 60-second max "to be safe" — it makes every call slower than it needs to be, and a long wait with \`messageCount\` unset still returns as soon as the window closes, not as soon as the flow finishes.
+
+- **\`timeout\`**: check \`losant_flow_diagnostics\` first — its \`stats.metrics[].wallTime\` gives the flow's actual historical run time. Set \`timeout\` to a bit above the typical wall time (e.g. 2x, or +3-5s of buffer), not the max. Only reach for something close to the full 60s when you have a specific reason to expect a long-running execution for *this* run (e.g. the flow includes a Resource Time Delay node, loops over many items, or calls a slow external API) — not as a default hedge.
+- **\`messageCount\`**: if you know how many Debug nodes will fire for the path you're exercising — for example, you just added them yourself following the Virtual Button debug pattern (\`losant://references/flow/patterns\`, Pattern 1) — set \`messageCount\` to that number. The call then returns the moment all expected output has arrived instead of waiting out the full \`timeout\`. Leave it unset when you don't know how many messages to expect, or when watching unfiltered (no \`virtualButtonKey\`) for an open-ended window.
 
 ## How run correlation works (when \`virtualButtonKey\` is given)
 
 The tool generates a random \`pressId\` and attaches it as \`meta.pressId\` on the virtual button press (separate from \`virtualButtonPayload\`, which becomes \`data\`). That \`meta\` object rides along on the flow's payload for the whole run, so the tool matches incoming debug messages on \`payload.meta.pressId\`. Once the first match is found, it also learns the run's \`runId\` and accepts further messages that match on \`runId\` alone — this covers flows where an earlier node overwrites or strips \`payload.meta\` before a later node logs.
 
-**Limitation**: if *every* node between the trigger and the first debug-emitting node strips \`payload.meta\` (e.g. a Mutate node that replaces the whole payload), the \`pressId\` never seeds the \`runId\` fallback, and this tool will return zero messages even though the run executed. If you get an empty result for a press you know fired, try the same call without \`virtualButtonKey\` to confirm messages are flowing on the stream at all.
+**Limitation**: if *every* node between the trigger and the first debug-emitting node strips \`payload.meta\` (e.g. a Mutate node that replaces the whole payload), the \`pressId\` never seeds the \`runId\` fallback, and this tool will return zero messages even though the run executed. Check \`unmatchedMessageCount\` before concluding "nothing happened" — a nonzero value means the stream saw other debug activity during the window that just didn't correlate to this press (likely this limitation, or unrelated traffic on the same flow). If you get an empty result with \`unmatchedMessageCount: 0\` too, try the same call without \`virtualButtonKey\` to confirm messages are flowing on the stream at all.
+
+**Debugging a failed correlation**: the debug stream is live-only — once a call returns, any unmatched messages from that window are gone and can't be re-fetched. If \`unmatchedMessageCount\` is nonzero and you need to see what was actually on the stream (e.g. to find the real \`runId\` or confirm whether \`payload.meta\` was stripped), re-run the same call with \`includeUnmatchedMessages: true\` to get those raw messages back as \`unmatchedMessages\` instead of just a count.
 
 ## Response shape
 
@@ -48,6 +58,8 @@ The tool generates a random \`pressId\` and attaches it as \`meta.pressId\` on t
   "flowVersionId": "...",            // only if given
   "virtualButtonKey": "...",         // only if given
   "pressId": "...",                  // only if virtualButtonKey given
+  "unmatchedMessageCount": 0,        // only if virtualButtonKey given - messages seen but filtered out, see below
+  "unmatchedMessages": [ ... ],      // only if includeUnmatchedMessages: true
   "runId": "...",                    // only once a matching message has been seen
   "messageCount": 3,
   "timedOut": true,
@@ -56,7 +68,9 @@ The tool generates a random \`pressId\` and attaches it as \`meta.pressId\` on t
 }
 \`\`\`
 
-\`detail\` is populated when \`timeout\` fired before the requested \`messageCount\` was reached, or when the debug stream closed unexpectedly mid-collection — in both cases \`messages\` still contains whatever was collected up to that point.
+\`detail\` is populated when \`timeout\` fired before the requested \`messageCount\` was reached, when the debug stream closed unexpectedly mid-collection, and/or when \`unmatchedMessageCount\` is nonzero — in all cases \`messages\` still contains whatever matched and was collected up to that point.
+
+\`unmatchedMessageCount\` (only present with \`virtualButtonKey\`) counts debug messages the stream delivered during the listen window that did **not** correlate to this press. This is the signal to check before concluding "the button press did nothing": a nonzero value means the flow (or something else on it) was active, it just didn't match this run — see the correlation limitation below.
 
 Each entry in \`messages\` is the raw debug event as published by the flow worker: \`message\`, \`level\`, \`payload\`, \`sourceNode\`, \`runId\`, \`flowId\`, \`flowVersionId\`, \`time\`, \`runStart\`, plus optional \`error\`, \`customNode\`, \`payloadPath\`, \`etag\`, \`iterationStart\`.
 

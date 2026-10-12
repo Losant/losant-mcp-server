@@ -149,6 +149,62 @@ describe('flow-debug-listener tool', () => {
     body.detail.should.match(/Timed out/);
   });
 
+  it('should report unmatchedMessageCount and a detail note when messages are seen but do not match the press', async () => {
+    const tool = await loadTool();
+    nock(LOSANT_API_URL, { encodedQueryParams: true })
+      .post(`/applications/${APP_ID}/flows/${flowId}/virtualButton`)
+      .query(true)
+      .reply(200, { flowId, flowVersion: 'develop', virtualButtonId: 'vb1', payload: {}, success: true });
+
+    const resultPromise = tool({ applicationId: APP_ID, flowId, virtualButtonKey: 'vb-key', timeout: 1 });
+    const es = FakeEventSource.instances[0];
+    es.emitOpen();
+    await nextTick();
+    es.emitMessage('logEntry', baseMessage({
+      runId: 'unrelated-run',
+      payload: { meta: { pressId: 'someone-elses-press' } }
+    }));
+
+    const result = await resultPromise;
+    should.not.exist(result.isError);
+    const body = JSON.parse(result.content[0].text);
+    body.messageCount.should.equal(0);
+    body.unmatchedMessageCount.should.equal(1);
+    body.detail.should.match(/other debug message/);
+    should.not.exist(body.unmatchedMessages);
+  });
+
+  it('should return a validation error when includeUnmatchedMessages is given without virtualButtonKey', async () => {
+    const tool = await loadTool();
+    const result = await tool({ applicationId: APP_ID, flowId, includeUnmatchedMessages: true });
+    result.isError.should.equal(true);
+  });
+
+  it('should return the raw unmatched messages when includeUnmatchedMessages is true', async () => {
+    const tool = await loadTool();
+    nock(LOSANT_API_URL, { encodedQueryParams: true })
+      .post(`/applications/${APP_ID}/flows/${flowId}/virtualButton`)
+      .query(true)
+      .reply(200, { flowId, flowVersion: 'develop', virtualButtonId: 'vb1', payload: {}, success: true });
+
+    const resultPromise = tool({
+      applicationId: APP_ID, flowId, virtualButtonKey: 'vb-key', timeout: 1, includeUnmatchedMessages: true
+    });
+    const es = FakeEventSource.instances[0];
+    es.emitOpen();
+    await nextTick();
+    es.emitMessage('logEntry', baseMessage({
+      runId: 'unrelated-run',
+      payload: { meta: { pressId: 'someone-elses-press' } }
+    }));
+
+    const result = await resultPromise;
+    const body = JSON.parse(result.content[0].text);
+    body.unmatchedMessageCount.should.equal(1);
+    body.unmatchedMessages.should.be.an.Array().with.lengthOf(1);
+    body.unmatchedMessages[0].runId.should.equal('unrelated-run');
+  });
+
   it('should return an error when pressVirtualButton fails', async () => {
     const tool = await loadTool();
     nock(LOSANT_API_URL, { encodedQueryParams: true })

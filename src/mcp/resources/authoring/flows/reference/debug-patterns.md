@@ -18,7 +18,7 @@ Three ways to test and debug a flow without relying on waiting for real events t
 1. **Disconnect** production triggers by setting their `outputIds` to `[[]]` — they remain in the `triggers` array so they can be reconnected later, but they no longer route into the flow.
 2. **Add** one or more Virtual Button triggers, setting `meta.payload` to a JSON object string that matches the `data` structure the real trigger would produce. Wire each button's `outputIds` to the first real node.
 3. **Add a Debug node** at every terminal point — any node whose `outputIds` is `[[]]` during normal execution, or, for branching nodes (Conditional, Switch), any inner array that's empty — so you can inspect the payload at each dead end in the debug log.
-4. **Ask the user** to press the button in the Losant UI and paste back the debug log output — pressing a Virtual Button and reading the debug log both happen in the Losant UI and are outside this server's reach.
+4. **Press the button and collect the debug log with `losant_flow_debug_listener`** (`applicationId`, `flowId`, `virtualButtonKey`, and an appropriate `timeout`/`messageCount` — see `losant://guides/losant-flow-debug-listener-tool`) — it presses the button after opening the stream and returns only that run's debug messages, no user interaction required. Falls back to asking the user to press the button in the Losant UI and paste back the debug log only if the access token lacks the required `flow.debug` scope.
 5. **Restore** when done: remove the Virtual Button(s) and Debug nodes, and reconnect the production trigger `outputIds`.
 
 ### Two variants
@@ -125,7 +125,7 @@ Every node that would normally have `outputIds: [[]]` should get a Debug node ap
 }
 ```
 
-Wire each previously-terminal node's `outputIds` to this debug node instead of `[[]]`. The debug log is only visible in the Losant UI — ask the user to paste its contents back after they trigger the flow. Add a separate Debug node per terminal path to distinguish which branch was reached.
+Wire each previously-terminal node's `outputIds` to this debug node instead of `[[]]`. Collect the resulting output with `losant_flow_debug_listener` (see step 4 above) rather than asking the user to trigger the flow and paste the debug log from the Losant UI. Add a separate Debug node per terminal path to distinguish which branch was reached.
 
 **ThrowErrorNode exception:** A Throw Error Node halts execution immediately — it has no outputs and `outputIds` must be `[]`. Any Debug node placed after it is unreachable and will never fire. Place the Debug node **before** the Throw Error Node in the chain to capture the payload state at the point of failure.
 
@@ -157,6 +157,7 @@ See `losant://flow/triggers/flow-error` for the full error payload shape.
 | Flow Error trigger | `losant://flow/triggers/flow-error` |
 | Mutate node | `losant://flow/nodes/mutate` |
 | Debug node | `losant://flow/nodes/debug` |
+| Flow Debug Listener tool (press + collect automatically) | `losant://guides/losant-flow-debug-listener-tool` |
 
 ---
 
