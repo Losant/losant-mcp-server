@@ -77,7 +77,7 @@ jobs:
         id: upgrade
         uses: Losant/losant-vex-tools/auto-upgrade-node@main
         with:
-          node_major_version: ${{ inputs.node_major_version || '24' }}
+          node_major_version: ${{ inputs.node_major_version || '26' }}
 
       - name: Save upgrade diff
         if: steps.upgrade.outputs.new_node_version != ''
