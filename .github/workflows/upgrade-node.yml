@@ -1,9 +1,6 @@
 name: Upgrade Node.js Version
 
 on:
-  push:
-    branches:
-      - SP-15609
   schedule:
     - cron: '0 9 * * *' # Daily 9 AM UTC
   workflow_dispatch:
@@ -77,7 +74,7 @@ jobs:
         id: upgrade
         uses: Losant/losant-vex-tools/auto-upgrade-node@main
         with:
-          node_major_version: ${{ inputs.node_major_version || '26' }}
+          node_major_version: ${{ inputs.node_major_version || '24' }}
 
       - name: Save upgrade diff
         if: steps.upgrade.outputs.new_node_version != ''
