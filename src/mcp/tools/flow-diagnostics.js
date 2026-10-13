@@ -105,7 +105,8 @@ export default {
           description: 'Maximum number of entries to return from errors. Does NOT apply to stats. Must be between 1 and 25. Default (set by the API when omitted): 25.'
         }
       },
-      required: ['applicationId', 'flowId']
+      required: ['applicationId', 'flowId'],
+      additionalProperties: false
     })
   },
   runnerFactory: (losantClient) => {

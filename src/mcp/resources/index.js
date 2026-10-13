@@ -18,6 +18,7 @@ import dashboardGuide from './dashboard-guide.js';
 import flowGuide from './flow-guide.js';
 import webhookGuide from './webhook-guide.js';
 import flowDiagnosticsGuide from './flow-diagnostics-tool-guide.js';
+import flowDebugListenerGuide from './flow-debug-listener-tool-guide.js';
 import indexContent from './build-api-index-content.js';
 import conf from '../../config.js';
 import memoizee from 'memoizee';
@@ -72,7 +73,8 @@ const GUIDES_TO_REGISTER = [
   notebookGuide,
   resourceJobGuide,
   webhookGuide,
-  flowDiagnosticsGuide
+  flowDiagnosticsGuide,
+  flowDebugListenerGuide
 ];
 
 const readFileContent = memoizee(async (filePath, mimeType, href) => {
@@ -145,7 +147,9 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
         disclaimerLines.push('- endpoint "delete" used by tool `losant_delete`');
       }
       disclaimerLines.push('- endpoints "stats" and "errors" both used by tool `losant_flow_diagnostics` (returned together in one call)');
+      disclaimerLines.push('- endpoint "debug" (private, SSE) and endpoint "pressVirtualButton" both used by tool `losant_flow_debug_listener`');
       disclaimerLines.push('\nSee [losant://guides/losant-flow-diagnostics-tool](losant://guides/losant-flow-diagnostics-tool) for the response shape, parameter reference, and restrictions.');
+      disclaimerLines.push('\nSee [losant://guides/losant-flow-debug-listener-tool](losant://guides/losant-flow-debug-listener-tool) for the required scope, run-correlation strategy, and parameter reference.');
     } else if (isSingularResource) {
       disclaimerLines.push('- endpoint "get" used by tool `losant_query` as operation "get"');
       if (isWritable) {

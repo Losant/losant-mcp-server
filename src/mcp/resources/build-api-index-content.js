@@ -18,6 +18,7 @@ let indexContent = `# Losant API Documentation
 - [Device Authentication Guide](losant://guides/device-auth) - Access keys and device certificates for MQTT broker authentication; API vs. UI naming for certificate resources
 - [Webhooks Guide](losant://guides/webhooks) - Webhook resource fields, the id-vs-token invocation URL distinction, custom replies, verification, and basic auth
 - [Flow Diagnostics Tool Guide](losant://guides/losant-flow-diagnostics-tool) - Query flow run stats, historical errors, and aggregated log entries via losant_flow_diagnostics
+- [Flow Debug Listener Tool Guide](losant://guides/losant-flow-debug-listener-tool) - Open a live SSE debug stream for a flow, optionally press a virtual button and collect only that run's messages, via losant_flow_debug_listener
 
 > **API naming note**: Some resource types have names in the API that differ from their display names in the Losant UI:
 > - API: \`flow\` / \`flowVersion\` → UI: **Workflow** / **Workflow Version**
