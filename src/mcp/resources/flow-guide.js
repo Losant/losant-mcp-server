@@ -48,6 +48,7 @@ For the wiring model, trigger configuration, and per-node config details read:
 - \`losant://references/flow/execution-model\` — how execution works: payload flow, branching, throws, and the Flow Error trigger
 - \`losant://references/flow/patterns\` — six common flow patterns with concrete node chains: device alert, scheduled API pull, webhook handler, experience login, authenticated API endpoint, device provisioning
 - \`losant://references/flow/debug-patterns\` — debug/local-testing patterns: Virtual Button manual triggering, capture-to-file for replay, and synchronous webhook+curl debugging
+- \`losant://guides/losant-flow-diagnostics-tool\` — query run stats, historical errors, and log entries for a flow via \`losant_flow_diagnostics\`
 
 ## Flow Versions
 
