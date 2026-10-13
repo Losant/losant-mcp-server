@@ -6,12 +6,12 @@ Use \`losant_flow_debug_listener\` to watch a flow's **live debug output** — t
 
 ## Required scope — read this first
 
-Calling this tool requires the access token to carry the \`flow.debug\` scope (unversioned, no \`flowVersionId\`) or the \`flowVersion.debug\` scope (when \`flowVersionId\` is given). **Neither scope is included in this server's default OAuth scopes.** If the call fails with a connection error mentioning a 401/403, the most likely cause is a missing scope on the token — not a bad \`applicationId\`/\`flowId\` — re-authenticate or re-issue the token with the scope added.
+Calling this tool requires the access token to carry the \`flow.debug\` scope (\`filterVersion\` other than \`"id"\`) or the \`flowVersion.debug\` scope (\`filterVersion: "id"\`). **Neither scope is included in this server's default OAuth scopes.** If the call fails with a connection error mentioning a 401/403, the most likely cause is a missing scope on the token — not a bad \`applicationId\`/\`flowId\` — re-authenticate or re-issue the token with the scope added.
 
 ## Before Calling
 
 - Obtain \`applicationId\` and \`flowId\` with \`losant_query\` (\`resourceType=flow\`) if you only have a flow name.
-- If testing a specific published version rather than develop, obtain \`flowVersionId\` with \`losant_query\` (\`resourceType=flowVersion\`).
+- If testing a specific published version rather than develop, obtain \`flowVersionId\` with \`losant_query\` (\`resourceType=flowVersion\`) and pass \`filterVersion: "id"\` alongside it.
 - If pressing a Virtual Button, find its trigger \`key\` by reading the flow's \`triggers\` array (\`losant_query\`, \`resourceType=flow\`) for the entry with \`type: "virtualButton"\`. See \`losant://flow/triggers/virtual-button\` for the trigger's shape.
 
 ## What it does
@@ -27,12 +27,28 @@ Calling this tool requires the access token to carry the \`flow.debug\` scope (u
 |---|---|---|
 | \`applicationId\` | Yes | The application the flow belongs to. |
 | \`flowId\` | Yes | The flow to watch. |
-| \`flowVersionId\` | No | Scopes both the stream and the virtual button press (if any) to one published version. Omit to watch the unversioned/develop stream. |
+| \`filterVersion\` | No | Which flow version(s) to watch: \`develop\` (default), \`all\`, \`default\`, or \`id\`. Must be \`id\` when \`flowVersionId\` is given, and anything *but* \`id\` when it's not — see below. |
+| \`flowVersionId\` | Only with \`filterVersion: "id"\` | Must be the 24-character hex version ID — version names like \`"develop"\` are rejected here, even though the underlying API accepts them. Scopes both the stream and the virtual button press (if any) to one published version. |
+| \`deviceId\` | No | For edge workflows — the edge compute device to connect the stream to (24-character hex string). Required for edge flows; without it the stream will not see anything. If \`virtualButtonKey\` is also given, this is forwarded onto the button press too, so the press and the stream target the same device. |
+| \`deploymentId\` | No | For edge workflows — the deployment to connect the stream to (24-character hex string). Also forwarded onto the virtual button press, same as \`deviceId\`. |
 | \`virtualButtonKey\` | No | Trigger key of the Virtual Button to press after the stream opens. If omitted, **all** messages seen during the listen window are returned, unfiltered. |
 | \`virtualButtonPayload\` | No | Sent as the press's \`data\`. Only meaningful with \`virtualButtonKey\` — an error if given without it. |
 | \`timeout\` | No | Seconds to listen. Default \`10\`, must be \`1\`–\`60\`. |
 | \`messageCount\` | No | Stop early once this many matching messages arrive. Omit to always wait the full \`timeout\` and return everything collected. |
 | \`includeUnmatchedMessages\` | No | If true, also return the raw unmatched messages (as \`unmatchedMessages\`), not just their count. Only meaningful with \`virtualButtonKey\`. Default \`false\`. |
+| \`debugParams\` | No | Extra debug-stream query params, for cutting down noise on a busy flow. See "Debug stream query parameters" below for the full current list. |
+
+## Debug stream query parameters (\`debugParams\`)
+
+These narrow down what the stream sends based on how this specific flow is built — which Debug nodes exist and what level each is set to. Nothing here is about *where* the stream connects (see \`deviceId\`/\`deploymentId\`/\`filterVersion\` above for that) — only *what* it sends once connected.
+
+| Key | Notes |
+|---|---|
+| \`level\` | Array (or comma-separated string) of levels to include: \`all\`, \`none\`, \`verbose\`, \`info\`, \`warn\`, \`error\`. Matches the level set on each Debug node — set this to only see output from nodes at or above a certain severity. Must be one or more entries, each a valid level, with no duplicates — anything else is rejected. |
+| \`excludeIds\` | Array (or comma-separated string) of Debug node keys to exclude from the stream. |
+| \`includeIds\` | Comma-separated string of Debug node keys — only messages from these nodes are included. By default (omitted), every Debug node's output is included. |
+| \`filterExpression\` | Conditional expression run against the payload to filter messages, e.g. \`'{{experience.user.email}} === "bob@example.com"'\`. The single biggest lever for cutting noise on a busy flow. |
+| \`includeCustomNodes\` | If true, also include debug messages from inside custom nodes. |
 
 ## Choosing \`timeout\` and \`messageCount\`
 
@@ -77,7 +93,6 @@ Each entry in \`messages\` is the raw debug event as published by the flow worke
 ## Restrictions
 
 - \`timeout\` max is 60 seconds — this tool is for short, interactive debug sessions, not long-running monitoring.
-- Debug-level filtering, edge/device scoping, and custom-node-internal messages are not exposed as parameters — the stream uses the platform's defaults.
 - This tool is annotated as non-read-only/non-idempotent because, with \`virtualButtonKey\` given, it triggers a real flow execution (which may have real side effects, same as pressing the button in the UI). Calling it without \`virtualButtonKey\` is purely observational.
 
 ## Reference

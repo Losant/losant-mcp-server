@@ -10,9 +10,78 @@ const log = debug('losant-mcp-server:tools:flow-debug-listener');
 const MIN_TIMEOUT_SEC = 1;
 const MAX_TIMEOUT_SEC = 60;
 const DEFAULT_TIMEOUT_SEC = 10;
+const OBJECT_ID_PATTERN = /^[A-Fa-f\d]{24}$/;
 
-const validateParams = (timeout, messageCount, virtualButtonKey, virtualButtonPayload, includeUnmatchedMessages) => {
+// Query params accepted by the debug stream - shared by the unversioned and versioned endpoints.
+// deviceId/deploymentId are top-level params instead (execution targeting, like flowVersionId),
+// not something tuned based on the flow's own content. Hand-maintained - keep in sync with
+// losant-platform's flow.yaml / flow-version.yaml debug action.
+const SHARED_DEBUG_PARAM_KEYS = new Set([
+  'includeCustomNodes', 'level', 'excludeIds', 'includeIds', 'filterExpression'
+]);
+const DEFAULT_FILTER_VERSION = 'develop';
+const VALID_DEBUG_LEVELS = new Set(['all', 'none', 'verbose', 'info', 'warn', 'error']);
+
+const validateLevel = (level) => {
   const errors = [];
+  const entries = Array.isArray(level) ? level : String(level).split(',').map((entry) => entry.trim());
+
+  if (!entries.length || entries.some((entry) => !entry)) {
+    errors.push({ fieldName: 'debugParams.level', details: 'Must contain one or more non-empty level entries.' });
+    return errors;
+  }
+
+  const invalid = entries.filter((entry) => !VALID_DEBUG_LEVELS.has(entry));
+  if (invalid.length) {
+    errors.push({ fieldName: 'debugParams.level', details: `Invalid level(s): ${invalid.join(', ')}. Must be one of: ${[...VALID_DEBUG_LEVELS].join(', ')}.` });
+  }
+
+  const seen = new Set();
+  const duplicates = new Set();
+  entries.forEach((entry) => {
+    if (seen.has(entry)) { duplicates.add(entry); }
+    seen.add(entry);
+  });
+  if (duplicates.size) {
+    errors.push({ fieldName: 'debugParams.level', details: `Duplicate level(s): ${[...duplicates].join(', ')}.` });
+  }
+
+  return errors;
+};
+
+const validateParams = (
+  timeout, messageCount, virtualButtonKey, virtualButtonPayload, includeUnmatchedMessages, flowVersionId, effectiveFilterVersion, deviceId, deploymentId, debugParams
+) => {
+  const errors = [];
+
+  if (flowVersionId !== undefined && !OBJECT_ID_PATTERN.test(flowVersionId)) {
+    errors.push({ fieldName: 'flowVersionId', details: `Must be a 24-character hex string, got "${flowVersionId}".` });
+  }
+
+  if (deviceId !== undefined && !OBJECT_ID_PATTERN.test(deviceId)) {
+    errors.push({ fieldName: 'deviceId', details: `Must be a 24-character hex string, got "${deviceId}".` });
+  }
+
+  if (deploymentId !== undefined && !OBJECT_ID_PATTERN.test(deploymentId)) {
+    errors.push({ fieldName: 'deploymentId', details: `Must be a 24-character hex string, got "${deploymentId}".` });
+  }
+
+  if (effectiveFilterVersion === 'id' && flowVersionId === undefined) {
+    errors.push({ fieldName: 'flowVersionId', details: 'Required when filterVersion is "id".' });
+  }
+  if (effectiveFilterVersion !== 'id' && flowVersionId !== undefined) {
+    errors.push({ fieldName: 'filterVersion', details: 'Must be "id" when flowVersionId is given.' });
+  }
+
+  Object.keys(debugParams).forEach((key) => {
+    if (!SHARED_DEBUG_PARAM_KEYS.has(key)) {
+      errors.push({ fieldName: `debugParams.${key}`, details: `Unknown debug stream parameter "${key}".` });
+    }
+  });
+
+  if (debugParams.level !== undefined) {
+    errors.push(...validateLevel(debugParams.level));
+  }
 
   if (timeout !== undefined) {
     const timeoutNum = Number(timeout);
@@ -41,10 +110,28 @@ const validateParams = (timeout, messageCount, virtualButtonKey, virtualButtonPa
   return errors;
 };
 
-const buildDebugPath = (applicationId, flowId, flowVersionId) => {
-  return flowVersionId
+const buildDebugPath = (applicationId, flowId, flowVersionId, effectiveFilterVersion, deviceId, deploymentId, debugParams) => {
+  const isVersioned = effectiveFilterVersion === 'id';
+  const base = isVersioned
     ? `/applications/${applicationId}/flows/${flowId}/versions/${flowVersionId}/debug`
     : `/applications/${applicationId}/flows/${flowId}/debug`;
+
+  // The versioned endpoint doesn't accept `filter` at all; it's how "develop"/"all"/"default" are
+  // expressed on the unversioned endpoint instead. deviceId/deploymentId are valid on both.
+  const resolvedParams = {
+    ...(isVersioned ? {} : { filter: effectiveFilterVersion }),
+    deviceId,
+    deploymentId,
+    ...debugParams
+  };
+
+  const query = new URLSearchParams();
+  Object.entries(resolvedParams).forEach(([key, value]) => {
+    if (value === undefined) { return; }
+    query.set(key, Array.isArray(value) ? value.join(',') : String(value));
+  });
+  const qs = query.toString();
+  return qs ? `${base}?${qs}` : base;
 };
 
 // Native fetch/EventSource can't set custom headers, so every request this EventSource makes is
@@ -100,7 +187,20 @@ export default {
         },
         flowVersionId: {
           type: 'string',
-          description: 'Flow version ID (24-character hex string). If given, listens on the versioned debug endpoint for that exact version, and the virtual button press (if any) is scoped to it as well. Omit to listen on the unversioned endpoint (develop version).'
+          description: 'Flow version ID (24-character hex string; version names like "develop" are not accepted here, even though the underlying API allows them). Required when filterVersion is "id", and an error otherwise. Scopes both the debug endpoint and the virtual button press (if any) to that exact published version.'
+        },
+        filterVersion: {
+          type: 'string',
+          enum: ['develop', 'all', 'default', 'id'],
+          description: 'Which flow version(s) the debug stream reflects. "develop" (default) watches the unversioned develop stream. "all"/"default" watch the unversioned stream with that platform-level scope. "id" watches one exact published version and requires flowVersionId to also be given (flowVersionId is an error for any other value).'
+        },
+        deviceId: {
+          type: 'string',
+          description: 'For edge workflows - the edge compute device to connect the stream to (24-character hex string). Required for edge flows; without it the stream will not see anything. If virtualButtonKey is also given, this is forwarded onto the button press too, so the press and the stream target the same device.'
+        },
+        deploymentId: {
+          type: 'string',
+          description: 'For edge workflows - the deployment to connect the stream to (24-character hex string). Also forwarded onto the virtual button press, same as deviceId.'
         },
         virtualButtonKey: {
           type: 'string',
@@ -109,7 +209,7 @@ export default {
         virtualButtonPayload: {
           type: 'object',
           additionalProperties: true,
-          description: 'Payload to send with the virtual button press (any JSON value), delivered as `data` on the flow payload. Only meaningful when virtualButtonKey is given; an error if given without it.'
+          description: 'JSON object to send with the virtual button press, delivered as `data` on the flow payload. Must be an object (not a primitive or array). Only meaningful when virtualButtonKey is given; an error if given without it.'
         },
         timeout: {
           type: 'number',
@@ -122,6 +222,11 @@ export default {
         includeUnmatchedMessages: {
           type: 'boolean',
           description: 'If true, also return the raw debug messages that were seen but did not match this press (as `unmatchedMessages`), instead of just their count. Only meaningful when virtualButtonKey is given. Use this to inspect what the stream actually saw when the press/run correlation comes back empty or incomplete - the stream is live-only, so this is the only way to see those messages after the fact. Default false, to avoid returning extra data when not needed.'
+        },
+        debugParams: {
+          type: 'object',
+          additionalProperties: true,
+          description: 'Additional query parameters forwarded directly to the debug stream, tuned to this specific flow (which Debug nodes exist, what level each is set to). See losant://guides/losant-flow-debug-listener-tool for the full current list of accepted keys (level, excludeIds, includeIds, filterExpression, includeCustomNodes) - unknown keys are rejected.'
         }
       },
       required: ['applicationId', 'flowId'],
@@ -130,13 +235,17 @@ export default {
   },
   runnerFactory: (losantClient) => {
     return async ({
-      applicationId, flowId, flowVersionId, virtualButtonKey, virtualButtonPayload, timeout, messageCount, includeUnmatchedMessages
+      applicationId, flowId, flowVersionId, filterVersion, deviceId, deploymentId, virtualButtonKey, virtualButtonPayload, timeout, messageCount, includeUnmatchedMessages, debugParams = {}
     }) => {
       log('Flow Debug Listener Tool called with parameters:', {
-        applicationId, flowId, flowVersionId, virtualButtonKey, virtualButtonPayload, timeout, messageCount, includeUnmatchedMessages
+        applicationId, flowId, flowVersionId, filterVersion, deviceId, deploymentId, virtualButtonKey, virtualButtonPayload, timeout, messageCount, includeUnmatchedMessages, debugParams
       });
 
-      const paramErrors = validateParams(timeout, messageCount, virtualButtonKey, virtualButtonPayload, includeUnmatchedMessages);
+      const effectiveFilterVersion = filterVersion === undefined ? DEFAULT_FILTER_VERSION : filterVersion;
+
+      const paramErrors = validateParams(
+        timeout, messageCount, virtualButtonKey, virtualButtonPayload, includeUnmatchedMessages, flowVersionId, effectiveFilterVersion, deviceId, deploymentId, debugParams
+      );
       if (paramErrors.length) {
         return invalidRequestError({ message: 'Tool input validation failed', errors: paramErrors });
       }
@@ -144,7 +253,7 @@ export default {
       const timeoutSec = timeout === undefined ? DEFAULT_TIMEOUT_SEC : Number(timeout);
       const apiUrl = losantClient.getOption('url');
       const accessToken = losantClient.getOption('accessToken');
-      const debugPath = buildDebugPath(applicationId, flowId, flowVersionId);
+      const debugPath = buildDebugPath(applicationId, flowId, flowVersionId, effectiveFilterVersion, deviceId, deploymentId, debugParams);
       const { es, openPromise, isTransportFailure } = openDebugStream(apiUrl, accessToken, debugPath);
 
       try {
@@ -208,7 +317,9 @@ export default {
                 key: virtualButtonKey,
                 ...(virtualButtonPayload !== undefined && { payload: virtualButtonPayload }),
                 meta: { pressId },
-                ...(flowVersionId !== undefined && { flowVersion: flowVersionId })
+                ...(flowVersionId !== undefined && { flowVersion: flowVersionId }),
+                ...(deviceId !== undefined && { deviceId }),
+                ...(deploymentId !== undefined && { deploymentId })
               }
             });
           } catch (err) {

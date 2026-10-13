@@ -81,6 +81,153 @@ describe('flow-debug-listener tool', () => {
     result.isError.should.equal(true);
   });
 
+  it('should return a validation error when flowVersionId is not a 24-character hex string', async () => {
+    const tool = await loadTool();
+    const result = await tool({ applicationId: APP_ID, flowId, flowVersionId: 'develop' });
+    result.isError.should.equal(true);
+  });
+
+  it('should return a validation error for an unknown debugParams key', async () => {
+    const tool = await loadTool();
+    const result = await tool({ applicationId: APP_ID, flowId, debugParams: { bogus: 'nope' } });
+    result.isError.should.equal(true);
+  });
+
+  it('should return a validation error for an invalid debugParams.level entry', async () => {
+    const tool = await loadTool();
+    const result = await tool({ applicationId: APP_ID, flowId, debugParams: { level: ['info', 'bogus'] } });
+    result.isError.should.equal(true);
+  });
+
+  it('should return a validation error for duplicate debugParams.level entries', async () => {
+    const tool = await loadTool();
+    const result = await tool({ applicationId: APP_ID, flowId, debugParams: { level: 'info,warn,info' } });
+    result.isError.should.equal(true);
+  });
+
+  it('should return a validation error for an empty debugParams.level', async () => {
+    const tool = await loadTool();
+    const result = await tool({ applicationId: APP_ID, flowId, debugParams: { level: [] } });
+    result.isError.should.equal(true);
+  });
+
+  it('should accept a valid debugParams.level as an array or comma-separated string', async () => {
+    const tool = await loadTool();
+    const resultPromise = tool({ applicationId: APP_ID, flowId, timeout: 1, debugParams: { level: ['info', 'warn'] } });
+
+    const es = FakeEventSource.instances[0];
+    es.url.should.match(/level=info%2Cwarn/);
+    es.emitOpen();
+
+    await resultPromise;
+  });
+
+  it('should return a validation error when filterVersion is "id" but flowVersionId is omitted', async () => {
+    const tool = await loadTool();
+    const result = await tool({ applicationId: APP_ID, flowId, filterVersion: 'id' });
+    result.isError.should.equal(true);
+  });
+
+  it('should return a validation error when flowVersionId is given but filterVersion is not "id"', async () => {
+    const tool = await loadTool();
+    const result = await tool({
+      applicationId: APP_ID, flowId, flowVersionId: '575ed18f7ae143cd83dc4aa7', filterVersion: 'all'
+    });
+    result.isError.should.equal(true);
+  });
+
+  it('should return a validation error when flowVersionId is given without filterVersion', async () => {
+    const tool = await loadTool();
+    const result = await tool({ applicationId: APP_ID, flowId, flowVersionId: '575ed18f7ae143cd83dc4aa7' });
+    result.isError.should.equal(true);
+  });
+
+  it('should default to filter=develop and forward debugParams on the unversioned stream URL', async () => {
+    const tool = await loadTool();
+    const resultPromise = tool({
+      applicationId: APP_ID, flowId, timeout: 1, debugParams: { level: ['info', 'error'], includeCustomNodes: true }
+    });
+
+    const es = FakeEventSource.instances[0];
+    es.url.should.match(/\/debug\?/);
+    es.url.should.match(/filter=develop/);
+    es.url.should.match(/level=info%2Cerror/);
+    es.url.should.match(/includeCustomNodes=true/);
+    es.emitOpen();
+
+    await resultPromise;
+  });
+
+  it('should apply filterVersion=all as the filter on the unversioned stream URL', async () => {
+    const tool = await loadTool();
+    const resultPromise = tool({ applicationId: APP_ID, flowId, timeout: 1, filterVersion: 'all' });
+
+    const es = FakeEventSource.instances[0];
+    es.url.should.match(/\/debug\?/);
+    es.url.should.match(/filter=all/);
+    es.emitOpen();
+
+    await resultPromise;
+  });
+
+  it('should omit filter and use the versioned stream URL when filterVersion is "id"', async () => {
+    const tool = await loadTool();
+    const flowVersionId = '575ed18f7ae143cd83dc4aa7';
+    const resultPromise = tool({
+      applicationId: APP_ID, flowId, flowVersionId, filterVersion: 'id', timeout: 1, debugParams: { filterExpression: 'true' }
+    });
+
+    const es = FakeEventSource.instances[0];
+    es.url.should.match(new RegExp(`/versions/${flowVersionId}/debug\\?`));
+    es.url.should.not.match(/filter=/);
+    es.url.should.match(/filterExpression=true/);
+    es.emitOpen();
+
+    await resultPromise;
+  });
+
+  it('should return a validation error for a non-hex deviceId', async () => {
+    const tool = await loadTool();
+    const result = await tool({ applicationId: APP_ID, flowId, deviceId: 'not-a-device-id' });
+    result.isError.should.equal(true);
+  });
+
+  it('should return a validation error for a non-hex deploymentId', async () => {
+    const tool = await loadTool();
+    const result = await tool({ applicationId: APP_ID, flowId, deploymentId: 'not-a-deployment-id' });
+    result.isError.should.equal(true);
+  });
+
+  it('should forward deviceId/deploymentId onto the debug stream URL and the virtual button press', async () => {
+    const tool = await loadTool();
+    let capturedBody;
+    nock(LOSANT_API_URL, { encodedQueryParams: true })
+      .post(`/applications/${APP_ID}/flows/${flowId}/virtualButton`)
+      .query(true)
+      .reply(200, (uri, requestBody) => {
+        capturedBody = typeof requestBody === 'string' ? JSON.parse(requestBody) : requestBody;
+        return { flowId, flowVersion: 'develop', virtualButtonId: 'vb1', payload: {}, success: true };
+      });
+
+    const resultPromise = tool({
+      applicationId: APP_ID,
+      flowId,
+      virtualButtonKey: 'vb-key',
+      timeout: 1,
+      deviceId: '575ed18f7ae143cd83dc4aa8',
+      deploymentId: '575ed18f7ae143cd83dc4aa9'
+    });
+
+    const es = FakeEventSource.instances[0];
+    es.url.should.match(/deviceId=575ed18f7ae143cd83dc4aa8/);
+    es.url.should.match(/deploymentId=575ed18f7ae143cd83dc4aa9/);
+    es.emitOpen();
+
+    await resultPromise;
+    capturedBody.deviceId.should.equal('575ed18f7ae143cd83dc4aa8');
+    capturedBody.deploymentId.should.equal('575ed18f7ae143cd83dc4aa9');
+  });
+
   it('should return a validation error when virtualButtonPayload is given without virtualButtonKey', async () => {
     const tool = await loadTool();
     const result = await tool({ applicationId: APP_ID, flowId, virtualButtonPayload: { foo: 'bar' } });
