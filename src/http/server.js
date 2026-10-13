@@ -11,7 +11,7 @@ import debug from 'debug';
 import rollbar from '../helpers/rollbar.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { SdkErrorCode } from '@modelcontextprotocol/server';
+import { ProtocolErrorCode } from '@modelcontextprotocol/server';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const log = debug('losant-mcp-server:http');
@@ -33,7 +33,7 @@ const unauthBoom = (err, enableOAuth, resourceUrl, hasToken = true) => {
   error.isMissing = false;
   error.output.payload.jsonrpc = '2.0';
   error.output.payload.error = {
-    code: SdkErrorCode.ConnectionClosed,
+    code: ProtocolErrorCode.InvalidRequest,
     message: msg,
     data: { error: msg, description: err.description }
   };

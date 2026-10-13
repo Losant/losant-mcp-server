@@ -393,14 +393,17 @@ export default {
         },
         query: {
           type: 'object',
-          description: 'Advanced MongoDB-style query object (list operation). Supports operators: $and, $or, $nor, $eq, $ne, $gt, $lt, $gte, $lte, $in, $nin, $startsWith, $endsWith, $contains, $ci. See losant://guides/advanced-queries and resource-specific schemas for details.'
+          description: 'Advanced MongoDB-style query object (list operation). Supports operators: $and, $or, $nor, $eq, $ne, $gt, $lt, $gte, $lte, $in, $nin, $startsWith, $endsWith, $contains, $ci. See losant://guides/advanced-queries and resource-specific schemas for details.',
+          additionalProperties: true
         },
         params: {
           type: 'object',
-          description: 'Additional resource-specific parameters - check documentation for available options'
+          description: 'Additional resource-specific parameters - check documentation for available options',
+          additionalProperties: true
         }
       },
-      required: ['operation', 'resourceType']
+      required: ['operation', 'resourceType'],
+      additionalProperties: false
     })
   },
   runnerFactory: (losantClient) => {

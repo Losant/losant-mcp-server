@@ -37,7 +37,8 @@ export default {
           description: 'Parent resource ID — required for nested resource types (e.g., the dataTableId when resourceType is "dataTableRow", or flowId when resourceType is "flowVersion")'
         }
       },
-      required: ['resourceType', 'applicationId']
+      required: ['resourceType', 'applicationId'],
+      additionalProperties: false
     })
   },
   runnerFactory: (losantClient) => {
