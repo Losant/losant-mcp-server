@@ -12,15 +12,40 @@ const MAX_TIMEOUT_SEC = 60;
 const DEFAULT_TIMEOUT_SEC = 10;
 const OBJECT_ID_PATTERN = /^[A-Fa-f\d]{24}$/;
 
+const DEFAULT_FILTER_VERSION = 'develop';
+const VALID_DEBUG_LEVELS = new Set(['all', 'none', 'verbose', 'info', 'warn', 'error']);
+
 // Query params accepted by the debug stream - shared by the unversioned and versioned endpoints.
 // deviceId/deploymentId are top-level params instead (execution targeting, like flowVersionId),
 // not something tuned based on the flow's own content. Hand-maintained - keep in sync with
-// losant-platform's flow.yaml / flow-version.yaml debug action.
-const SHARED_DEBUG_PARAM_KEYS = new Set([
-  'includeCustomNodes', 'level', 'excludeIds', 'includeIds', 'filterExpression'
-]);
-const DEFAULT_FILTER_VERSION = 'develop';
-const VALID_DEBUG_LEVELS = new Set(['all', 'none', 'verbose', 'info', 'warn', 'error']);
+// losant-platform's flow.yaml / flow-version.yaml debug action. Array values are joined into the
+// comma-separated form the endpoint expects by buildDebugPath.
+const DEBUG_PARAM_PROPERTIES = {
+  level: {
+    type: 'array',
+    items: { type: 'string', enum: [...VALID_DEBUG_LEVELS] },
+    description: 'Levels to include. Matches the level set on each Debug node - set this to only see output from nodes at a given severity. Must be one or more entries, with no duplicates.'
+  },
+  excludeIds: {
+    type: 'array',
+    items: { type: 'string' },
+    description: 'Debug node keys to exclude from the stream.'
+  },
+  includeIds: {
+    type: 'array',
+    items: { type: 'string' },
+    description: "Debug node keys to limit the stream to - only messages from these nodes are included. By default (omitted), every Debug node's output is included."
+  },
+  filterExpression: {
+    type: 'string',
+    description: 'Conditional expression run against the payload to filter messages, e.g. \'{{experience.user.email}} === "bob@example.com"\'. The single biggest lever for cutting noise on a busy flow.'
+  },
+  includeCustomNodes: {
+    type: 'boolean',
+    description: 'If true, also include debug messages from inside custom nodes.'
+  }
+};
+const SHARED_DEBUG_PARAM_KEYS = new Set(Object.keys(DEBUG_PARAM_PROPERTIES));
 
 const validateLevel = (level) => {
   const errors = [];
@@ -225,8 +250,9 @@ export default {
         },
         debugParams: {
           type: 'object',
-          additionalProperties: true,
-          description: 'Additional query parameters forwarded directly to the debug stream, tuned to this specific flow (which Debug nodes exist, what level each is set to). See losant://guides/losant-flow-debug-listener-tool for the full current list of accepted keys (level, excludeIds, includeIds, filterExpression, includeCustomNodes) - unknown keys are rejected.'
+          properties: DEBUG_PARAM_PROPERTIES,
+          additionalProperties: false,
+          description: 'Parameters used to filter which messages from the flow are recieved in this tool'
         }
       },
       required: ['applicationId', 'flowId'],

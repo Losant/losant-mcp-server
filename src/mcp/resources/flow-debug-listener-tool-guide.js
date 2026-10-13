@@ -44,9 +44,9 @@ These narrow down what the stream sends based on how this specific flow is built
 
 | Key | Notes |
 |---|---|
-| \`level\` | Array (or comma-separated string) of levels to include: \`all\`, \`none\`, \`verbose\`, \`info\`, \`warn\`, \`error\`. Matches the level set on each Debug node — set this to only see output from nodes at or above a certain severity. Must be one or more entries, each a valid level, with no duplicates — anything else is rejected. |
-| \`excludeIds\` | Array (or comma-separated string) of Debug node keys to exclude from the stream. |
-| \`includeIds\` | Comma-separated string of Debug node keys — only messages from these nodes are included. By default (omitted), every Debug node's output is included. |
+| \`level\` | Array of levels to include: \`all\`, \`none\`, \`verbose\`, \`info\`, \`warn\`, \`error\`. Matches the level set on each Debug node — set this to only see output from nodes at or above a certain severity. Must be one or more entries, each a valid level, with no duplicates — anything else is rejected. |
+| \`excludeIds\` | Array of Debug node keys to exclude from the stream. |
+| \`includeIds\` | Array of Debug node keys — only messages from these nodes are included. By default (omitted), every Debug node's output is included. |
 | \`filterExpression\` | Conditional expression run against the payload to filter messages, e.g. \`'{{experience.user.email}} === "bob@example.com"'\`. The single biggest lever for cutting noise on a busy flow. |
 | \`includeCustomNodes\` | If true, also include debug messages from inside custom nodes. |
 
