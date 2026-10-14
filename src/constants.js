@@ -139,6 +139,35 @@ export const DELETABLE_RESOURCE_TYPES = [
   'experienceView'
 ];
 
+// Maps a resource type to the domain guide covering it — rendered as the "Domain Guide" column
+// in the query, write, and delete tool guides. Types with no domain guide are intentionally absent.
+export const RESOURCE_TYPE_TO_GUIDE = {
+  device: 'losant://guides/devices',
+  deviceRecipe: 'losant://guides/devices',
+  dataTable: 'losant://guides/data-tables',
+  dataTableRow: 'losant://guides/data-tables',
+  webhook: 'losant://guides/webhooks',
+  integration: 'losant://guides/integrations',
+  resourceJob: 'losant://guides/resource-jobs',
+  credential: 'losant://guides/credentials',
+  file: 'losant://guides/files',
+  privateFile: 'losant://guides/files',
+  notebook: 'losant://guides/notebooks',
+  experienceDomain: 'losant://guides/experiences',
+  experienceEndpoint: 'losant://guides/experiences',
+  experienceGroup: 'losant://guides/experiences',
+  experienceSlug: 'losant://guides/experiences',
+  experienceUser: 'losant://guides/experiences',
+  experienceVersion: 'losant://guides/experiences',
+  experienceView: 'losant://guides/experiences',
+  applicationDashboard: 'losant://guides/dashboards',
+  flow: 'losant://guides/flows',
+  flowVersion: 'losant://guides/flows',
+  applicationKey: 'losant://guides/device-auth',
+  applicationCertificate: 'losant://guides/device-auth',
+  applicationCertificateAuthority: 'losant://guides/device-auth'
+};
+
 // Resources supported by the unified tool
 export const NESTED_RESOURCES = {
   flowVersion: { parentField: 'flowId', parentType: 'flow' },
@@ -149,18 +178,23 @@ export const NESTED_RESOURCES = {
 // Application-scoped resources that require applicationId
 export const APPLICATION_RESOURCES = RESOURCE_TYPES.filter((r) => r !== 'application');
 
-export const ALLOWS_ADVANCED_QUERIES_SET = new Set([
-  'device',
-  'event',
-  'applicationKey',
-  'flow',
-  'flowVersion',
-  'experienceGroup',
-  'dataTableRow',
-  'experienceUser',
-  'applicationJobLog',
-  'applicationCertificate'
-]);
+// Maps a resource type to the advanced (MongoDB-style) query schema its list operation accepts in
+// the `query` parameter — rendered as the "Advanced Query Schema" column in the query tool guide.
+// A type absent from this map does not support advanced queries.
+export const RESOURCE_TYPE_TO_QUERY_SCHEMA = {
+  device: 'advancedDeviceQuery',
+  event: 'advancedEventQuery',
+  applicationKey: 'advancedApplicationKeyQuery',
+  flow: 'advancedFlowQuery',
+  flowVersion: 'advancedFlowVersionQuery',
+  experienceGroup: 'advancedExperienceGroupQuery',
+  experienceUser: 'advancedExperienceUserQuery',
+  dataTableRow: 'advancedQuery',
+  applicationJobLog: 'advancedApplicationJobLogQuery',
+  applicationCertificate: 'advancedApplicationCertQuery'
+};
+
+export const ALLOWS_ADVANCED_QUERIES_SET = new Set(Object.keys(RESOURCE_TYPE_TO_QUERY_SCHEMA));
 
 // Maps every valid schema name to its filename on disk (canonical + aliases)
 export const SCHEMA_NAME_TO_FILE = Object.fromEntries([
@@ -182,6 +216,16 @@ export const AUTHORING_HUB_TO_FILE = {
   'dashboard': path.join(AUTHORING_PATH, 'dashboards/dashboard-guide.md'),
   'experience-view': path.join(AUTHORING_PATH, 'experiences/experience-view.md'),
   'experience-endpoint': path.join(AUTHORING_PATH, 'experiences/experience-endpoint.md')
+};
+
+// Maps a resource type to the authoring guide for its body — rendered as the "Authoring Guide"
+// column in the write tool guide. Only types with complex internal structure have one.
+export const RESOURCE_TYPE_TO_AUTHORING_GUIDE = {
+  flow: 'losant://authoring/flow',
+  flowVersion: 'losant://authoring/flow',
+  applicationDashboard: 'losant://authoring/dashboard',
+  experienceView: 'losant://authoring/experience-view',
+  experienceEndpoint: 'losant://authoring/experience-endpoint'
 };
 
 const flowNodesDir = path.join(AUTHORING_PATH, 'flows/nodes');

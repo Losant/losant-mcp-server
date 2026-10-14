@@ -340,7 +340,7 @@ export default {
   name: 'losant_query',
   inputInfo: {
     title: 'Query Losant Resources',
-    description: `List or get Losant resources: ${RESOURCE_TYPES.join(', ')}. See losant://guides/losant-query-tool for the step by step procedures, including how to select an application, handle nested resources, and links to per-resource documentation. For advanced MongoDB-style queries, see losant://guides/advanced-queries.`,
+    description: 'Read losant://guides/tools/losant_query before using this tool for the step by step procedures, including how to select an application, list or get Losant resources, and links to per-resource documentation.',
     inputSchema: z.fromJSONSchema({
       type: 'object',
       properties: {

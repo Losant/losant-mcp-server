@@ -19,7 +19,7 @@ export default {
       destructiveHint: false
     },
     title: 'Create or Update Losant Resources',
-    description: `Read losant://guides/losant-write-tool before using this tool. Create or update Losant resources: ${WRITABLE_RESOURCE_TYPES.join(', ')}.`,
+    description: `REQUIRED: Read losant://guides/tools/losant_write before using this tool. Create or update Losant resources: ${WRITABLE_RESOURCE_TYPES.join(', ')}.`,
     inputSchema: z.fromJSONSchema({
       type: 'object',
       properties: {

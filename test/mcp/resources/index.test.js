@@ -244,11 +244,11 @@ describe('MCP Resources', () => {
     });
 
     it('should provide handler for losant delete tool guide', async () => {
-      const result = await client.readResource({ uri: 'losant://guides/losant-delete-tool' });
+      const result = await client.readResource({ uri: 'losant://guides/tools/losant_delete' });
 
       result.should.have.property('contents');
       result.contents.should.be.an.Array();
-      result.contents[0].should.have.property('uri', 'losant://guides/losant-delete-tool');
+      result.contents[0].should.have.property('uri', 'losant://guides/tools/losant_delete');
       result.contents[0].should.have.property('mimeType', 'text/markdown');
       result.contents[0].should.have.property('text');
       result.contents[0].text.should.match(/deletion is permanent|cannot be undone/i);
@@ -264,11 +264,23 @@ describe('MCP Resources', () => {
     });
 
     it('should provide handler for losant query tool guide', async () => {
-      const result = await client.readResource({ uri: 'losant://guides/losant-query-tool' });
+      const result = await client.readResource({ uri: 'losant://guides/tools/losant_query' });
 
       result.should.have.property('contents');
       result.contents.should.be.an.Array();
-      result.contents[0].should.have.property('uri', 'losant://guides/losant-query-tool');
+      result.contents[0].should.have.property('uri', 'losant://guides/tools/losant_query');
+      result.contents[0].should.have.property('mimeType', 'text/markdown');
+      result.contents[0].should.have.property('text');
+      // Should contain query guide content
+      result.contents[0].text.should.match(/MongoDB|query|operator/i);
+    });
+
+    it('should provide handler for losant write tool guide', async () => {
+      const result = await client.readResource({ uri: 'losant://guides/tools/losant_write' });
+
+      result.should.have.property('contents');
+      result.contents.should.be.an.Array();
+      result.contents[0].should.have.property('uri', 'losant://guides/tools/losant_write');
       result.contents[0].should.have.property('mimeType', 'text/markdown');
       result.contents[0].should.have.property('text');
       // Should contain query guide content
