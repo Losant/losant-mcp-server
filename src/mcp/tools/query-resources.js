@@ -340,7 +340,7 @@ export default {
   name: 'losant_query',
   inputInfo: {
     title: 'Query Losant Resources',
-    description: 'Read losant://guides/tools/losant_query before using this tool for the step by step procedures, including how to select an application, list or get Losant resources, and links to per-resource documentation.',
+    description: 'REQUIRED: Read losant://guides/tools/losant_query before using this tool for the step by step procedures, including how to select an application, list or get Losant resources, and links to per-resource documentation.',
     inputSchema: z.fromJSONSchema({
       type: 'object',
       properties: {
