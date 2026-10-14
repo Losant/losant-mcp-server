@@ -174,16 +174,21 @@ Creates per-request MCP server instances:
 ### 4. Resources (`src/mcp/resources/index.js`)
 
 **Resource Types:**
+- **Info / API Index** (`losant://info`) - Start here: platform overview, environment info, and an auto-generated index of every guide, doc, and schema URI
 - **API Docs** (`losant://docs/{name}`) - From losant-rest package
-- **Query Schemas** (`losant://schemas/{name}`) - JSON schemas
-- **Advanced Query Guide** (`losant://guides/advanced-queries`) - Details on querying appication reosurces with an advanced query
-- **Query Tool Guide** (`losant://guides/tools/losant_query`) - Details on querying application resources
-- **API Index** (`losant://docs/index`) - Auto-generated index
+- **Schemas** (`losant://schemas/{name}`) - JSON schemas for write bodies (`{type}Post` / `{type}Patch`) and advanced queries (`advanced*Query`)
+- **Tool Guides** (`losant://guides/tools/{toolName}`) - One per tool, read before calling it: `losant_query`, `losant_write`, `losant_delete`. Defined in `src/mcp/resources/tools/`
+- **Domain Guides** (`losant://guides/{name}`) - Per-domain context: devices, data-tables, flows, dashboards, experiences, files, notebooks, integrations, credentials, resource-jobs, webhooks, device-auth, advanced-queries
+- **Authoring Hubs** (`losant://authoring/{resourceType}`) - Deep-dive authoring for resources whose body the schema alone does not explain: flow, dashboard, experience-view, experience-endpoint
+- **Authoring Detail** (`losant://flow/nodes/{name}`, `losant://flow/triggers/{name}`, `losant://dashboard/blocks/{type}`) - Per-node, per-trigger, and per-block reference
+- **References** (`losant://references/{resourceType}/{name}`) - Cross-cutting references such as `shared/handlebars` and `flow/payload`
 
 **Loading:**
 - Uses `require.resolve('losant-rest')` for safe package resolution
 - Memoized for 60 minutes
-- Loads from `losant-rest/docs/*.md` and `losant-rest/lib/schemas/*Query.json`
+- Loads from `losant-rest/docs/*.md` and `losant-rest/lib/schemas/*.json`; guides and authoring content are local to this repo
+
+**Tool guides:** each exports `{ toolName, resourceConfig, getContent }` and builds its markdown at module load from the maps in `src/constants.js`, so its resource tables cannot drift from the code. Add one to `src/mcp/resources/tools/index.js` and it is registered and listed in `losant://info` automatically.
 
 ### 5. Tools
 
@@ -193,7 +198,25 @@ Query Losant resources (applications, devices, flows, etc.).
 
 **Operations:** list, get  
 **Resources:** application, device, flow, applicationDashboard, dataTable, etc.  
-**Features:** Pagination, filtering, sorting, MongoDB queries
+**Features:** Pagination, filtering, sorting, MongoDB queries  
+**Guide:** `losant://guides/tools/losant_query`
+
+#### losant_write (`src/mcp/tools/write-resources.js`)
+
+Create or update Losant resources.
+
+**Operations:** createOne (POST), updateOne (PATCH)  
+**Resources:** `WRITABLE_RESOURCE_TYPES` — everything queryable except read-only types, plus `applicationReadme`  
+**Features:** Post/Patch schema validation, nested resource handling, strict validation for flows  
+**Guide:** `losant://guides/tools/losant_write`
+
+#### losant_delete (`src/mcp/tools/delete-resources.js`)
+
+Permanently delete a Losant resource.
+
+**Resources:** `DELETABLE_RESOURCE_TYPES` — excludes sensitive types (keys, credentials, certificates) and types with no delete endpoint  
+**Features:** Destructive hint annotation, nested resource handling  
+**Guide:** `losant://guides/tools/losant_delete`
 
 #### losant_timeseries (`src/mcp/tools/query-timeseries.js`)
 

@@ -1,4 +1,6 @@
-import { RESOURCE_TYPES, NESTED_RESOURCES, RESOURCE_TYPE_TO_GUIDE, RESOURCE_TYPE_TO_QUERY_SCHEMA } from '../../../constants.js';
+import { RESOURCE_TYPES, NESTED_RESOURCES, RESOURCE_TYPE_TO_GUIDE, RESOURCE_TYPE_TO_QUERY_SCHEMA,
+  LIST_OMITTED_FIELDS } from '../../../constants.js';
+import { getPluralResourceName } from '../../tools/helpers.js';
 
 const nestedNote = Object.entries(NESTED_RESOURCES)
   .map(([type, { parentField, parentType }]) => `- \`${type}\` — query \`${parentType}\` first and pass its \`id\` as \`parentResourceId\`. A \`${type}\` is only reachable through its \`${parentType}\`, so by the time you hold a \`${type}\` id you already have the \`${parentField}\` — reuse it rather than looking it up again.`)
@@ -12,11 +14,18 @@ const resourceRows = RESOURCE_TYPES
     const parentCol = nested ? `\`${nested.parentField}\`` : '—';
     const querySchema = RESOURCE_TYPE_TO_QUERY_SCHEMA[type];
     const queryCol = querySchema ? `[losant://schemas/${querySchema}](losant://schemas/${querySchema})` : '—';
+    const listApiAction = type === 'dataTableRow' ? 'query' : 'get';
     return [
       `| 'get' | ${type} | 'get' | losant://docs/${type} | ${parentCol} | — | ${guideCol} |`,
-      `| 'list' | ${type} | 'get' | losant://docs/${type}s | ${parentCol} | ${queryCol} | ${guideCol} |`
+      `| 'list' | ${type} | '${listApiAction}' | losant://docs/${getPluralResourceName(type)} | ${parentCol} | ${queryCol} | ${guideCol} |`
     ].join('\n');
   })
+  .join('\n');
+
+// Ordered by RESOURCE_TYPES so the rows line up with the Resource Types table above them.
+const omittedFieldRows = RESOURCE_TYPES
+  .filter((type) => LIST_OMITTED_FIELDS[type])
+  .map((type) => `| \`${type}\` | ${LIST_OMITTED_FIELDS[type].map((f) => `\`${f}\``).join(', ')} |`)
   .join('\n');
 
 const content = `# Losant Query Tool Guide
@@ -72,6 +81,18 @@ ${nestedNote}
 
 For a complete index of all available documentation and schemas, and environment info (API URL, MQTT broker host), see [losant://info](losant://info).
 
+## Summary Fields on \`"list"\`
+
+For the resource types below, \`"list"\` returns a **trimmed** version of each item — the listed fields are stripped before the response is returned, because a full page of them would crowd out everything else. The response carries a \`_projection\` notice naming what was removed, and \`applicationDashboard\`, \`flow\`, and \`flowVersion\` items also carry an \`_omittedCounts\` object summarizing the removed arrays (e.g. how many nodes of each type a flow has).
+
+**An omitted field is not an empty field.** A \`flow\` returned by \`"list"\` with no \`nodes\` is not an empty flow, and an \`application\` with no \`globals\` is not an application without globals. Never conclude a resource lacks something based on a \`"list"\` result. To read any of these fields, call \`"get"\` with that resource's \`resourceId\` — \`"get"\` always returns the complete resource.
+
+| Resource Type | Omitted on \`"list"\` |
+|---|---|
+${omittedFieldRows}
+
+For \`device\`, only the attribute sub-fields above are dropped — each attribute still has its \`name\` and \`dataType\`. Use \`"get"\` for the full attribute definitions.
+
 ## Advanced Queries
 
 Read [losant://guides/advanced-queries](losant://guides/advanced-queries) for the supported operators and examples before building a \`query\` object. The **Advanced Query Schema** column above tells you which types accept a \`query\` and which schema it must match. A \`query\` cannot be combined with \`filterField\`/\`filter\`.
@@ -113,7 +134,7 @@ export default {
   toolName: 'losant_query',
   resourceConfig: {
     title: 'Losant Query Tool Guide',
-    description: 'READ THIS BEFORE USING: losant_query tool - This includes procedural guide for the losant_query tool: application selection, nested resources, resource documentation links, and resource-specific query documentation links.'
+    description: 'READ THIS BEFORE USING: losant_query tool — application selection procedure, nested resources, per-resource documentation links, advanced query schemas, summary fields on list, and resource-specific params.'
   },
   getContent: async (uri) => {
     return {

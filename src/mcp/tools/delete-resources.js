@@ -15,7 +15,8 @@ export default {
       destructiveHint: true
     },
     title: 'Delete Losant Resources',
-    description: `REQUIRED: Read losant://guides/tools/losant_delete before using this tool. Permanently deletes a Losant resource: ${DELETABLE_RESOURCE_TYPES.join(', ')}.`,
+    // The resourceType enum below already lists every supported type — do not repeat it here.
+    description: 'REQUIRED: Read losant://guides/tools/losant_delete before using this tool. Permanently deletes a Losant resource — the guide covers which types are supported, what else is removed along with them, and the alternatives to deleting.',
     inputSchema: z.fromJSONSchema({
       type: 'object',
       properties: {

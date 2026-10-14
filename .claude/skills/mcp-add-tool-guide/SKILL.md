@@ -71,25 +71,26 @@ Links are written as full `[losant://uri](losant://uri)` pairs so the URI is vis
 
 ## 4. Register it
 
-Two edits in `src/mcp/resources/index.js`:
+One edit: import the guide in `src/mcp/resources/tools/index.js` and add it to the exported array.
 
-1. Add the import under the `// TOOL GUIDES` comment, keeping the block alphabetical by filename:
-   ```js
-   // TOOL GUIDES
-   import deleteToolGuide from './tools/delete-tool-guide.js';
-   import queryToolGuide from './tools/query-tool-guide.js';
-   import writeToolGuide from './tools/write-tool-guide.js';
-   ```
-2. Add it to `TOOL_GUIDES_TO_REGISTER`. The `forEach` below registers it as `guide-tool-${toolName}` at `losant://guides/tools/${toolName}`; nothing else needs touching, and the resource count in the `log(...)` line is computed from the array length.
+```js
+import deleteToolGuide from './delete-tool-guide.js';
+import queryToolGuide from './query-tool-guide.js';
+import writeToolGuide from './write-tool-guide.js';
 
-Then add a line for the guide to the tool-guides list at the top of `src/mcp/resources/build-api-index-content.js`, so it appears in the `losant://info` discovery index.
+export default [queryToolGuide, writeToolGuide, deleteToolGuide];
+```
 
-Confirm the tool itself points back: `src/mcp/tools/<tool>.js` `description` should begin by telling the caller to read `losant://guides/tools/<toolName>`.
+Everything downstream is generated from that array: `resources/index.js` registers it as `guide-tool-${toolName}` at `losant://guides/tools/${toolName}` and counts it in the startup log, and `build-api-index-content.js` renders its `resourceConfig.title` and `description` into the `losant://info` quick-links. Do not hand-add the guide anywhere else.
+
+Because the index entry comes from `resourceConfig.description`, write that field to read as a standalone one-line summary, not just as a resource blurb.
+
+Confirm the tool itself points back: `src/mcp/tools/<tool>.js` `description` should begin with `REQUIRED: Read losant://guides/tools/<toolName> before using this tool.`, then one sentence on what the tool does. Do not list the supported resource types there — the `resourceType` enum in the tool's `inputSchema` already enumerates them, and the guide covers them in detail.
 
 ## 5. Verify
 
 ```
-npx eslint src/mcp/resources/tools/<new-file>.js src/mcp/resources/index.js
+npx eslint src/mcp/resources/tools/ src/mcp/resources/index.js
 npx mocha test/mcp/resources/index.test.js
 ```
 

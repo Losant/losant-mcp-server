@@ -1,21 +1,10 @@
 import { z } from 'zod';
-import { NESTED_RESOURCES, RESOURCE_TYPES, APPLICATION_RESOURCES, ALLOWS_ADVANCED_QUERIES_SET } from '../../constants.js';
+import { NESTED_RESOURCES, RESOURCE_TYPES, APPLICATION_RESOURCES, ALLOWS_ADVANCED_QUERIES_SET,
+  LIST_OMITTED_FIELDS } from '../../constants.js';
 import debug from 'debug';
 import { restToMCPError, invalidRequestError } from '../../helpers/errors.js';
 import { getResourceFieldId, getPluralResourceName } from './helpers.js';
 const log = debug('losant-mcp-server:tools:query-resources');
-
-const omittedFieldsByResourceType = {
-  applicationDashboard: ['blocks', 'contextConfiguration'],
-  flow: ['nodes', 'triggers', 'iconData' ],
-  experienceView: ['body'],
-  experienceDomain: [ 'sslCert', 'sslBundle' ],
-  application: ['globals', 'archiveConfig', 'readme'],
-  embeddedDeployment: ['logs'],
-  device: ['attributes.description', 'attributes.contentType', 'attributes.attributeTags', 'attributes.system']
-};
-omittedFieldsByResourceType.edgeDeployment = omittedFieldsByResourceType.embeddedDeployment; // same structure for edge and embedded deployments
-omittedFieldsByResourceType.flowVersion = omittedFieldsByResourceType.flow; // same structure for flow and flowVersion
 
 const omittedFieldHint = {
   device: 'Attributes include name and dataType only. Use operation:get with the deviceId to retrieve full attribute details including description, contentType, attributeTags, and system configuration.'
@@ -304,7 +293,7 @@ const listResourceTool = async (losantClient, { resourceType }, requestParams, l
       text: JSON.stringify({
         _projection: {
           mode: 'summary',
-          omittedFields: omittedFieldsByResourceType[resourceType] || [],
+          omittedFields: LIST_OMITTED_FIELDS[resourceType] || [],
           hint: omittedFieldHint[resourceType] || 'Summary fields only. Use operation:get with an id to retrieve full content.'
         }
       }, null, 2)
@@ -340,7 +329,8 @@ export default {
   name: 'losant_query',
   inputInfo: {
     title: 'Query Losant Resources',
-    description: 'REQUIRED: Read losant://guides/tools/losant_query before using this tool for the step by step procedures, including how to select an application, list or get Losant resources, and links to per-resource documentation.',
+    // The resourceType enum below already lists every supported type — do not repeat it here.
+    description: 'REQUIRED: Read losant://guides/tools/losant_query before using this tool. List or get Losant resources — the guide covers the application-selection procedure, nested resources, advanced queries, and per-resource documentation links.',
     inputSchema: z.fromJSONSchema({
       type: 'object',
       properties: {

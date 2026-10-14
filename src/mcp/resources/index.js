@@ -15,10 +15,8 @@ import dashboardGuide from './dashboard-guide.js';
 import flowGuide from './flow-guide.js';
 import webhookGuide from './webhook-guide.js';
 import indexContent from './build-api-index-content.js';
-// TOOL GUIDES
-import deleteToolGuide from './tools/delete-tool-guide.js';
-import queryToolGuide from './tools/query-tool-guide.js';
-import writeToolGuide from './tools/write-tool-guide.js';
+// TOOL GUIDES — add new guides to ./tools/index.js
+import TOOL_GUIDES_TO_REGISTER from './tools/index.js';
 
 import conf from '../../config.js';
 import memoizee from 'memoizee';
@@ -55,11 +53,6 @@ const WRITABLE_PLURAL_NAME_SET = new Set(
   WRITABLE_RESOURCE_TYPES.filter((t) => !NO_CREATE_TYPES.has(t)).map(getPluralResourceName)
 );
 const log = debug('losant-mcp-server:mcp:resources');
-const TOOL_GUIDES_TO_REGISTER = [
-  queryToolGuide,
-  writeToolGuide,
-  deleteToolGuide
-];
 const GUIDES_TO_REGISTER = [
   advancedQueryGuide,
   credentialGuide,

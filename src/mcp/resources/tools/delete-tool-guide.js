@@ -56,7 +56,7 @@ Use \`losant_delete\` to permanently delete a Losant resource — for example, t
 |---|---|---|
 | \`resourceType\` | Yes | Type of resource to delete — must be a type whose **Supported** column below says Yes |
 | \`applicationId\` | Yes | Application ID (24-character hex string) - from Step 1 in the Before Calling section |
-| \`resourceId\` | Conditional | Resource ID — required for all types except \`application\` - from Step 2 in the Before Calling section |
+| \`resourceId\` | Conditional | Resource ID — required for all types except \`application\` - from Step 2 in the Before Calling section. For \`experienceVersion\` and \`flowVersion\` this may be a version name instead of an ID |
 | \`parentResourceId\` | Conditional | Required only for types that name a field in the **parentResourceId** column below — pass the value of that field |
 
 ## Resource Types

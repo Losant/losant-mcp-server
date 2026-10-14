@@ -70,6 +70,7 @@ ${nestedNote}
 - \`event\` is only valid for \`updateOne\` (e.g. to change an event's state or comment).
 - \`applicationReadme\` body must be \`{ "content": "..." }\` — pass the markdown string as the \`content\` field, not as a bare string.
 - \`applicationKey\`: the API key and secret are returned once on \`createOne\` and never again — surface them to the user immediately before taking any further action.
+- \`flow\` writes and \`flowVersion\` creates are sent with strict validation on, so they fail on problems other resource types would accept — an unknown node type, a malformed node config, a trigger the flow class does not allow. Expect a \`validationErrors\` list naming the offending node; fix the node and resend the complete \`nodes\`/\`triggers\` arrays.
 
 ## Additional Guides
 

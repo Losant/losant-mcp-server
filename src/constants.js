@@ -196,6 +196,22 @@ export const RESOURCE_TYPE_TO_QUERY_SCHEMA = {
 
 export const ALLOWS_ADVANCED_QUERIES_SET = new Set(Object.keys(RESOURCE_TYPE_TO_QUERY_SCHEMA));
 
+// Fields stripped from each item of a `list` response, keyed by resource type — these are large
+// enough that a full page of them would crowd out the rest of the context. The query tool returns a
+// `_projection` notice naming them, and the query tool guide renders this map as the "Summary Fields
+// on list" table. A type absent from this map is returned in full.
+export const LIST_OMITTED_FIELDS = {
+  applicationDashboard: ['blocks', 'contextConfiguration'],
+  flow: ['nodes', 'triggers', 'iconData'],
+  experienceView: ['body'],
+  experienceDomain: ['sslCert', 'sslBundle'],
+  application: ['globals', 'archiveConfig', 'readme'],
+  embeddedDeployment: ['logs'],
+  device: ['attributes.description', 'attributes.contentType', 'attributes.attributeTags', 'attributes.system']
+};
+LIST_OMITTED_FIELDS.edgeDeployment = LIST_OMITTED_FIELDS.embeddedDeployment; // same structure for edge and embedded deployments
+LIST_OMITTED_FIELDS.flowVersion = LIST_OMITTED_FIELDS.flow; // same structure for flow and flowVersion
+
 // Maps every valid schema name to its filename on disk (canonical + aliases)
 export const SCHEMA_NAME_TO_FILE = Object.fromEntries([
   ...SCHEMA_FILES.map((f) => [f.replace('.json', ''), f]),

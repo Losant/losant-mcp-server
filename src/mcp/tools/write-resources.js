@@ -19,7 +19,8 @@ export default {
       destructiveHint: false
     },
     title: 'Create or Update Losant Resources',
-    description: `REQUIRED: Read losant://guides/tools/losant_write before using this tool. Create or update Losant resources: ${WRITABLE_RESOURCE_TYPES.join(', ')}.`,
+    // The resourceType enum below already lists every supported type — do not repeat it here.
+    description: 'REQUIRED: Read losant://guides/tools/losant_write before using this tool. Create or update Losant resources — the guide covers which operations each type supports, the body schema to follow, and PATCH semantics.',
     inputSchema: z.fromJSONSchema({
       type: 'object',
       properties: {
