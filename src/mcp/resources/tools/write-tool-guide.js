@@ -53,7 +53,7 @@ Use \`losant_write\` to create or update Losant resources.
 - **Post Schema** / **Patch Schema** — the exact \`body\` shape for \`createOne\` / \`updateOne\`. A \`—\` in **Post Schema** means the type cannot be created through the API.
 - **parentResourceId** — the field whose value goes in the \`parentResourceId\` parameter; \`—\` means the type is not nested and the parameter must be omitted.
 - **Authoring Guide** — read before constructing the \`body\` for these types; the schema alone is not enough to build a valid flow, dashboard, view, or endpoint.
-- **Domain Guide** — Read this in loo of the Authoring Guide or if you are unfamiliar with this resource for resource fields, relationships, and common procedures.
+- **Domain Guide** — Read this in lieu of the Authoring Guide or if you are unfamiliar with this resource for resource fields, relationships, and common procedures.
 
 | Resource Type | Post Schema | Patch Schema | parentResourceId | Authoring Guide | Domain Guide |
 |---|---|---|---|---|---|
