@@ -141,6 +141,6 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
 # LLM Tools
-.claude/
+.claude/settings.local.json
 
 notes.txt
