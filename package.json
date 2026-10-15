@@ -44,6 +44,8 @@
     "@hapi/boom": "^10.0.1",
     "@hapi/hapi": "^21.4.10",
     "@hapi/inert": "^7.1.2",
+    "@modelcontextprotocol/node": "^2.1.1",
+    "@modelcontextprotocol/server": "^2.3.1",
     "convict": "^6.2.5",
     "debug": "^4.4.3",
     "jsonwebtoken": "^9.0.3",
@@ -51,12 +53,11 @@
     "memoizee": "^0.4.17",
     "omnibelt": "^4.1.0",
     "rollbar": "^3.1.0",
-    "zod": "^4.6.6",
-    "@modelcontextprotocol/server": "^2.3.1",
-    "@modelcontextprotocol/node": "^2.1.1"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@losant/eslint-config-losant": "^2.1.0",
+    "@modelcontextprotocol/client": "^2.3.1",
     "c8": "^12.0.0",
     "eslint": "^10.12.0",
     "esmock": "^2.7.9",
@@ -66,8 +67,7 @@
     "nock": "^14.0.17",
     "nodemon": "^3.1.14",
     "should": "^13.2.3",
-    "sinon": "^22.1.0",
-    "@modelcontextprotocol/client": "^2.3.1"
+    "sinon": "^22.1.0"
   },
   "lint-staged": {
     "*.js": "eslint --max-warnings=0"
