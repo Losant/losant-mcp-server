@@ -25,8 +25,7 @@ const resourceRows = RESOURCE_TYPES
     const supportedCol = DELETABLE_SET.has(type) ? 'Yes' : (UNSUPPORTED_REASON[type] || 'No');
     const nested = NESTED_RESOURCES[type];
     const parentCol = nested ? `\`${nested.parentField}\`` : '—';
-    const guideUri = RESOURCE_TYPE_TO_GUIDE[type];
-    const guideCol = guideUri ? `[${guideUri}](${guideUri})` : '—';
+    const guideCol = RESOURCE_TYPE_TO_GUIDE[type] || '—';
     return `| \`${type}\` | ${supportedCol} | ${parentCol} | ${guideCol} |`;
   })
   .join('\n');
@@ -61,7 +60,7 @@ Use \`losant_delete\` to permanently delete a Losant resource — for example, t
 
 ## Resource Types
 
-Read the domain guide before deleting a resource type you are not familiar with — it covers the resource's relationships and what else is removed along with it.
+Read the **Domain Guide** before using this tool against a resource; it covers the resource's fields, common procedures, and relationships between resources.
 
 The **parentResourceId** column names the field whose value goes in the \`parentResourceId\` parameter; \`—\` means the type is not nested and the parameter must be omitted.
 

@@ -1,7 +1,26 @@
-import { SCHEMA_FILES } from '../../constants.js';
+import { RESOURCE_TYPES, RESOURCE_TYPE_TO_QUERY_SCHEMA } from '../../constants.js';
+
+// Ordered by RESOURCE_TYPES so the rows line up with the table in the losant_query tool guide.
+const schemaRows = RESOURCE_TYPES
+  .filter((type) => RESOURCE_TYPE_TO_QUERY_SCHEMA[type])
+  .map((type) => `| \`${type}\` | losant://schemas/${RESOURCE_TYPE_TO_QUERY_SCHEMA[type]} |`)
+  .join('\n');
+
 const content =`# Advanced Query Guide
 
 Many Losant resources support advanced MongoDB-style queries for powerful filtering.
+
+## Where Queries Are Used
+
+The \`query\` parameter of \`losant_query\` is the most common consumer. **You must read [losant://guides/tools/losant_query](losant://guides/tools/losant_query) before using it** — it covers which types accept a \`query\` and the rule that a \`query\` cannot be combined with \`filterField\`/\`filter\`.
+
+The same syntax also appears inside resource bodies written with \`losant_write\`, where no tool parameter is involved. **You must read the guide below before embedding a query in a \`losant_write\` body** — the operators here are only half of what each one needs:
+
+- Dashboard device queries — read [losant://references/dashboard/device-queries](losant://references/dashboard/device-queries).
+- Flow node \`queryTemplate\` fields (the Experience User and Event nodes), written as LJSON templates — read [losant://authoring/flow](losant://authoring/flow).
+- Resource job \`queryJson\` — matches the schema for the job's target \`resourceType\`; read [losant://guides/resource-jobs](losant://guides/resource-jobs).
+
+> \`losant_timeseries\` does **not** use this syntax. Its \`timeSeriesQuery\` and \`lastValueQuery\` payloads are a different shape — read [losant://docs/data](losant://docs/data) instead.
 
 ## When to Use Advanced Queries
 
@@ -133,9 +152,11 @@ Supports querying by: id, email, firstName, lastName, tags, and timestamps
 
 ## Available Query Schemas
 
-If the resource you want to query isn't listed above, check the documentation for that resource to see if it supports advanced queries and which fields are queryable.
+These are every resource type that accepts an advanced query. **Read the schema for the type you are querying before building the query** — it is the authoritative list of that type's queryable fields, and a field the schema does not name is rejected by the API. A type absent from this table does not support advanced queries; use \`filterField\`/\`filter\` instead.
 
-${SCHEMA_FILES.filter((f) => f.includes('Query')).map((f) => `- [${f.replace('.json', '')}](losant://schemas/${f.replace('.json', '')})`).join('\n')}
+| Resource Type | Query Schema |
+|---|---|
+${schemaRows}
 `;
 export default {
   name: 'advanced-query-guide',

@@ -8,17 +8,12 @@ const nestedNote = Object.entries(NESTED_RESOURCES)
 
 const resourceRows = RESOURCE_TYPES
   .map((type) => {
-    const guideUri = RESOURCE_TYPE_TO_GUIDE[type];
-    const guideCol = guideUri ? `[${guideUri}](${guideUri})` : '—';
+    const guideCol = RESOURCE_TYPE_TO_GUIDE[type] || '—';
     const nested = NESTED_RESOURCES[type];
     const parentCol = nested ? `\`${nested.parentField}\`` : '—';
     const querySchema = RESOURCE_TYPE_TO_QUERY_SCHEMA[type];
-    const queryCol = querySchema ? `[losant://schemas/${querySchema}](losant://schemas/${querySchema})` : '—';
-    const listApiAction = type === 'dataTableRow' ? 'query' : 'get';
-    return [
-      `| 'get' | ${type} | 'get' | losant://docs/${type} | ${parentCol} | — | ${guideCol} |`,
-      `| 'list' | ${type} | '${listApiAction}' | losant://docs/${getPluralResourceName(type)} | ${parentCol} | ${queryCol} | ${guideCol} |`
-    ].join('\n');
+    const queryCol = querySchema ? `losant://schemas/${querySchema}` : '—';
+    return `| \`${type}\` | losant://docs/${type} | losant://docs/${getPluralResourceName(type)} | ${parentCol} | ${queryCol} | ${guideCol} |`;
   })
   .join('\n');
 
@@ -60,19 +55,22 @@ Almost every resource type requires an \`applicationId\`. Users may belong to th
 | \`sortDirection\` | No | \`"asc"\` or \`"desc"\` (\`"list"\` only) |
 | \`filterField\` | No | Field to filter on (\`"list"\` only). Use \`name\` for almost every type — \`experienceEndpoint\` allows only \`method\` or \`route\` |
 | \`filter\` | No | Filter value, supports globbing — e.g. \`"Embree*"\` (\`"list"\` only). Requires \`filterField\` |
-| \`query\` | No | Advanced MongoDB-style query object (\`"list"\` only). Supported only for types that name a schema in the **Advanced Query Schema** column below, and cannot be combined with \`filterField\`/\`filter\` |
+| \`query\` | No | Advanced MongoDB-style query object (\`"list"\` only) — see losant://guides/advanced-queries. Supported only for types that name a schema in the **Advanced Query Schema** column below, and cannot be combined with \`filterField\`/\`filter\` |
 | \`params\` | No | Additional resource-specific parameters forwarded to the Losant API — see Resource-specific \`params\` below |
 
 > \`page\`, \`perPage\`, \`sortField\`, \`sortDirection\`, \`filterField\`, \`filter\`, and \`query\` are rejected on \`"get"\`. Some types also reject a subset of them on \`"list"\`: \`experienceDomain\` and \`experienceSlug\` accept none of them, \`experienceEndpoint\` rejects \`page\`/\`perPage\`, and \`applicationJobLog\` rejects \`filterField\`/\`filter\`.
 
 ## Resource Types
 
-- **parentResourceId** — the field whose value goes in the \`parentResourceId\` parameter; \`—\` means the type is not nested and the parameter must be omitted.
-- **Advanced Query Schema** — the schema the \`query\` parameter must match for that type's \`"list"\` operation; \`—\` means the type does not support advanced queries, so use \`filterField\`/\`filter\` instead. Read the schema before building a \`query\` — it lists the queryable fields.
-- **Domain Guide** — read it for a resource type you are not familiar with; it covers the resource's fields, relationships, and common procedures.
+One row per type — the \`"get"\` and \`"list"\` columns give the documentation link for each operation; every other column applies to both.
 
-| Operation | Resource Type | API Action | Documentation Link | parentResourceId | Advanced Query Schema | Domain Guide |
-|---|---|---|---|---|---|---|
+- **\`"get"\` / \`"list"\` Docs** — Read this before constructing \`params\`; it is the Losant API documentation for that operation, and the only place the resource-specific parameters it accepts are listed. Both operations call the API's \`get\` action, except \`dataTableRow\` \`"list"\`, which calls \`query\`.
+- **parentResourceId** — the field whose value goes in the \`parentResourceId\` parameter; \`—\` means the type is not nested and the parameter must be omitted.
+- **Advanced Query Schema** — Read this **and** [losant://guides/advanced-queries](losant://guides/advanced-queries) before constructing the \`query\` parameter; the schema lists the fields that type allows you to query, and the guide covers the supported operators. \`—\` means the type does not support advanced queries, so use \`filterField\`/\`filter\` instead.
+- **Domain Guide** — Read this before using this tool against a resource; it covers the resource's fields, common procedures, and relationships between resources.
+
+| Resource Type | \`"get"\` Docs | \`"list"\` Docs | parentResourceId | Advanced Query Schema | Domain Guide |
+|---|---|---|---|---|---|
 ${resourceRows}
 
 Nested types — how to obtain the \`parentResourceId\`:
@@ -93,13 +91,9 @@ ${omittedFieldRows}
 
 For \`device\`, only the attribute sub-fields above are dropped — each attribute still has its \`name\` and \`dataType\`. Use \`"get"\` for the full attribute definitions.
 
-## Advanced Queries
-
-Read [losant://guides/advanced-queries](losant://guides/advanced-queries) for the supported operators and examples before building a \`query\` object. The **Advanced Query Schema** column above tells you which types accept a \`query\` and which schema it must match. A \`query\` cannot be combined with \`filterField\`/\`filter\`.
-
 ## Resource-specific \`params\`
 
-Beyond the standard parameters above, many resource types accept their own query parameters. Pass them as an object in \`params\` — they are forwarded to the Losant API unchanged. To discover what a type accepts on \`"get"\` or \`"list"\`, read its **Documentation Link** from the table above.
+Beyond the standard parameters above, many resource types accept their own query parameters. Pass them as an object in \`params\` — they are forwarded to the Losant API unchanged. To discover what a type accepts, read its **\`"get"\` Docs** or **\`"list"\` Docs** link from the table above — whichever matches the operation you are calling.
 
 > **Never put a tool parameter inside \`params\`.** An endpoint's documented parameter list includes names this tool already exposes — \`applicationId\`, \`page\`, \`perPage\`, \`sortField\`, \`sortDirection\`, \`filterField\`, \`filter\`, \`query\`, and the resource's own ID fields. Pass those at the top level and put only the remaining endpoint-specific parameters in \`params\`. Duplicating one there is **not** an error and you will get no warning: some are silently overwritten by the tool's own value (\`applicationId\`, the resource ID, the parent ID, and \`perPage\` on \`"list"\`, which always defaults to 100), and the rest are forwarded straight to the API without the tool's validation — a \`query\` passed in \`params\` skips the advanced-query support check entirely and fails at the API for types that do not support it.
 

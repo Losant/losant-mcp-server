@@ -15,8 +15,8 @@ const resourceRows = RESOURCE_TYPES
   .map((type) => {
     const nested = NESTED_RESOURCES[type];
     const parentCol = nested ? `\`${nested.parentField}\`` : '—';
-    const guideUri = RESOURCE_TYPE_TO_GUIDE[type];
-    const guideCol = guideUri ? `[${guideUri}](${guideUri})` : '—';
+    // Table cells carry bare URIs — the [uri](uri) link form doubles the size of every row.
+    const guideCol = RESOURCE_TYPE_TO_GUIDE[type] || '—';
     return `| \`${type}\` | ${parentCol} | ${guideCol} |`;
   })
   .join('\n');
@@ -48,7 +48,7 @@ Use \`<toolName>\` to <one sentence on what it does and when to reach for it>.
 ## Resource Types
 
 - **parentResourceId** — the field whose value goes in the \`parentResourceId\` parameter; \`—\` means the type is not nested and the parameter must be omitted.
-- **Domain Guide** — read it for a resource type you are not familiar with; it covers the resource's fields, relationships, and common procedures.
+- **Domain Guide** — Read this before using this tool against a resource; it covers the resource's fields, common procedures, and relationships between resources.
 
 | Resource Type | parentResourceId | Domain Guide |
 |---|---|---|

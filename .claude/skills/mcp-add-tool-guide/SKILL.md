@@ -63,11 +63,13 @@ Every guide uses this order. Omit a section only if it genuinely does not apply;
 
    ${nestedNote}
    ```
-7. Tool-specific sections — whatever this tool needs and the others do not (`## Advanced Queries`, `## Resource-specific \`params\``, `## Alternatives to Deletion`). Worked examples belong here, as fenced blocks in `losant_tool param=value` form.
+7. Tool-specific sections — whatever this tool needs and the others do not (`## Summary Fields on \`"list"\``, `## Resource-specific \`params\``, `## Alternatives to Deletion`). Worked examples belong here, as fenced blocks in `losant_tool param=value` form. A section that only restates a legend bullet or a Parameters row is not tool-specific content — cut it and let the bullet carry the instruction.
 8. `## Restrictions` — bullets for things the tool will not do or that behave surprisingly: unsupported operations per type, wholesale array replacement on PATCH, no bulk operation, one-time-return secrets.
 9. `## Additional Guides` — links to cross-cutting references that are not per-resource, e.g. `[losant://references/shared/handlebars](losant://references/shared/handlebars)`.
 
-Links are written as full `[losant://uri](losant://uri)` pairs so the URI is visible as text.
+In prose, links are written as full `[losant://uri](losant://uri)` pairs so the URI is visible as text. **In table cells, write the bare URI** — the link form doubles the width of every row, and a table of 29 resource types pays that cost on every line.
+
+Keep the table to one row per resource type. When a column's value differs by operation, give each operation its own column (the query guide's `"get"` Docs / `"list"` Docs) rather than emitting a row per operation, which repeats every other column.
 
 ## 4. Register it
 

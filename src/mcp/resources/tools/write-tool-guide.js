@@ -7,14 +7,12 @@ const nestedNote = Object.entries(NESTED_RESOURCES)
 
 const resourceRows = WRITABLE_RESOURCE_TYPES
   .map((type) => {
-    const postCol = NO_CREATE_TYPES.has(type) ? '—' : `[losant://schemas/${type}Post](losant://schemas/${type}Post)`;
-    const patchCol = `[losant://schemas/${type}Patch](losant://schemas/${type}Patch)`;
+    const postCol = NO_CREATE_TYPES.has(type) ? '—' : `losant://schemas/${type}Post`;
+    const patchCol = `losant://schemas/${type}Patch`;
     const nested = NESTED_RESOURCES[type];
     const parentCol = nested ? `\`${nested.parentField}\`` : '—';
-    const authoringUri = RESOURCE_TYPE_TO_AUTHORING_GUIDE[type];
-    const authoringCol = authoringUri ? `[${authoringUri}](${authoringUri})` : '—';
-    const guideUri = RESOURCE_TYPE_TO_GUIDE[type];
-    const guideCol = guideUri ? `[${guideUri}](${guideUri})` : '—';
+    const authoringCol = RESOURCE_TYPE_TO_AUTHORING_GUIDE[type] || '—';
+    const guideCol = RESOURCE_TYPE_TO_GUIDE[type] || '—';
     return `| \`${type}\` | ${postCol} | ${patchCol} | ${parentCol} | ${authoringCol} | ${guideCol} |`;
   })
   .join('\n');
@@ -50,10 +48,10 @@ Use \`losant_write\` to create or update Losant resources.
 
 ## Resource Types
 
-- **Post Schema** / **Patch Schema** — the exact \`body\` shape for \`createOne\` / \`updateOne\`. A \`—\` in **Post Schema** means the type cannot be created through the API.
+- **Post Schema** / **Patch Schema** — Read this before constructing the \`body\`; it is the exact \`body\` shape for \`createOne\` / \`updateOne\`. A \`—\` in **Post Schema** means the type cannot be created through the API.
 - **parentResourceId** — the field whose value goes in the \`parentResourceId\` parameter; \`—\` means the type is not nested and the parameter must be omitted.
-- **Authoring Guide** — read before constructing the \`body\` for these types; the schema alone is not enough to build a valid flow, dashboard, view, or endpoint.
-- **Domain Guide** — Read this in lieu of the Authoring Guide or if you are unfamiliar with this resource for resource fields, relationships, and common procedures.
+- **Authoring Guide** — Read this before constructing the \`body\` for these types; the schema alone is not enough to build a valid flow, dashboard, view, or endpoint.
+- **Domain Guide** — Read this before using this tool against a resource; it covers the resource's fields, common procedures, and relationships between resources.
 
 | Resource Type | Post Schema | Patch Schema | parentResourceId | Authoring Guide | Domain Guide |
 |---|---|---|---|---|---|
