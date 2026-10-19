@@ -3,6 +3,7 @@ import should from 'should';
 import registerResourceLoader from '../../../src/mcp/resources/index.js';
 import { createMCPServer } from '../../../src/mcp/server.js';
 import { Client, InMemoryTransport } from '@modelcontextprotocol/client';
+import { LIST_OMITTED_FIELDS } from '../../../src/constants.js';
 
 describe('MCP Resources', () => {
 
@@ -244,11 +245,11 @@ describe('MCP Resources', () => {
     });
 
     it('should provide handler for losant delete tool guide', async () => {
-      const result = await client.readResource({ uri: 'losant://guides/losant-delete-tool' });
+      const result = await client.readResource({ uri: 'losant://guides/tools/losant_delete' });
 
       result.should.have.property('contents');
       result.contents.should.be.an.Array();
-      result.contents[0].should.have.property('uri', 'losant://guides/losant-delete-tool');
+      result.contents[0].should.have.property('uri', 'losant://guides/tools/losant_delete');
       result.contents[0].should.have.property('mimeType', 'text/markdown');
       result.contents[0].should.have.property('text');
       result.contents[0].text.should.match(/deletion is permanent|cannot be undone/i);
@@ -264,15 +265,41 @@ describe('MCP Resources', () => {
     });
 
     it('should provide handler for losant query tool guide', async () => {
-      const result = await client.readResource({ uri: 'losant://guides/losant-query-tool' });
+      const result = await client.readResource({ uri: 'losant://guides/tools/losant_query' });
 
       result.should.have.property('contents');
       result.contents.should.be.an.Array();
-      result.contents[0].should.have.property('uri', 'losant://guides/losant-query-tool');
+      result.contents[0].should.have.property('uri', 'losant://guides/tools/losant_query');
       result.contents[0].should.have.property('mimeType', 'text/markdown');
       result.contents[0].should.have.property('text');
       // Should contain query guide content
       result.contents[0].text.should.match(/MongoDB|query|operator/i);
+    });
+
+    it('should document the fields the query tool omits from list responses', async () => {
+      const result = await client.readResource({ uri: 'losant://guides/tools/losant_query' });
+      const { text } = result.contents[0];
+
+      text.should.containEql('## Summary Fields');
+      // Every type the tool trims must be named, with the fields it trims
+      Object.entries(LIST_OMITTED_FIELDS).forEach(([resourceType, fields]) => {
+        text.should.containEql(`| \`${resourceType}\` | ${fields.map((f) => `\`${f}\``).join(', ')} |`);
+      });
+      text.should.match(/An omitted field is not an empty field/);
+    });
+
+    it('should provide handler for losant write tool guide', async () => {
+      const result = await client.readResource({ uri: 'losant://guides/tools/losant_write' });
+
+      result.should.have.property('contents');
+      result.contents.should.be.an.Array();
+      result.contents[0].should.have.property('uri', 'losant://guides/tools/losant_write');
+      result.contents[0].should.have.property('mimeType', 'text/markdown');
+      result.contents[0].should.have.property('text');
+      // Post/Patch schema links and PATCH semantics are what distinguish the write guide
+      result.contents[0].text.should.containEql('losant://schemas/devicePost');
+      result.contents[0].text.should.containEql('losant://schemas/devicePatch');
+      result.contents[0].text.should.match(/PATCH is partial/);
     });
 
     it('should provide handler for advanced query guide', async () => {
