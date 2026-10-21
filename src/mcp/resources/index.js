@@ -2,9 +2,6 @@ import path from 'node:path';
 import { readFile } from 'node:fs/promises';
 import { ResourceTemplate } from '@modelcontextprotocol/server';
 import advancedQueryGuide from './advanced-query-guide.js';
-import deleteToolGuide from './delete-tool-guide.js';
-import queryToolGuide from './query-tool-guide.js';
-import writeToolGuide from './write-tool-guide.js';
 import deviceGuide from './device-guide.js';
 import integrationGuide from './integration-guide.js';
 import dataTableGuide from './data-table-guide.js';
@@ -19,6 +16,9 @@ import flowGuide from './flow-guide.js';
 import webhookGuide from './webhook-guide.js';
 import flowDiagnosticsGuide from './flow-diagnostics-tool-guide.js';
 import indexContent from './build-api-index-content.js';
+// TOOL GUIDES — add new guides to ./tools/index.js
+import TOOL_GUIDES_TO_REGISTER from './tools/index.js';
+
 import conf from '../../config.js';
 import memoizee from 'memoizee';
 import { SCHEMA_NAME_TO_FILE, DOC_NAME_TO_FILE,
@@ -54,12 +54,8 @@ const WRITABLE_PLURAL_NAME_SET = new Set(
   WRITABLE_RESOURCE_TYPES.filter((t) => !NO_CREATE_TYPES.has(t)).map(getPluralResourceName)
 );
 const log = debug('losant-mcp-server:mcp:resources');
-
 const GUIDES_TO_REGISTER = [
   advancedQueryGuide,
-  queryToolGuide,
-  writeToolGuide,
-  deleteToolGuide,
   credentialGuide,
   dataTableGuide,
   deviceGuide,
@@ -179,7 +175,7 @@ const readAuthoringContent = memoizee(async (filePath, href) => {
 
 export default (server) => {
   // +8 = losant://info, doc template, schema template, authoring-hub template, flow-node template, flow-trigger template, dashboard-block template, reference template
-  log(`Registering ${GUIDES_TO_REGISTER.length + 8} resources...`);
+  log(`Registering ${GUIDES_TO_REGISTER.length + TOOL_GUIDES_TO_REGISTER.length + 8} resources...`);
   server.registerResource(
     'info',
     'losant://info',
@@ -217,6 +213,15 @@ export default (server) => {
   );
   GUIDES_TO_REGISTER.forEach(({ name, uriName, resourceConfig, getContent }) => {
     server.registerResource(name, uriName, resourceConfig, getContent);
+  });
+
+  TOOL_GUIDES_TO_REGISTER.forEach(({ toolName, resourceConfig, getContent }) => {
+    server.registerResource(
+      `guide-tool-${toolName}`,
+      `losant://guides/tools/${toolName}`,
+      { mimeType: 'text/markdown', ...resourceConfig },
+      getContent
+    );
   });
 
   server.registerResource(
