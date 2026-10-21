@@ -188,7 +188,7 @@ Creates per-request MCP server instances:
 - Memoized for 60 minutes
 - Loads from `losant-rest/docs/*.md` and `losant-rest/lib/schemas/*.json`; guides and authoring content are local to this repo
 
-**Tool guides:** each exports `{ toolName, resourceConfig, getContent }` and builds its markdown at module load from the maps in `src/constants.js`, so its resource tables cannot drift from the code. Add one to `src/mcp/resources/tools/index.js` and it is registered and listed in `losant://info` automatically.
+**Tool guides:** each exports `{ toolName, resourceConfig, content }` and builds its markdown at module load from the maps in `src/constants.js`, so its resource tables cannot drift from the code. Add one to `src/mcp/resources/tools/index.js` and it is registered and listed in `losant://info` automatically.
 
 ### 5. Tools
 

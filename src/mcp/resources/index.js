@@ -130,6 +130,16 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
       disclaimerLines.push('- endpoint "getCommand" used by tool `losant_timeseries` as operation "getCommand"');
       disclaimerLines.push('- endpoint "getCompositeState" used by tool `losant_timeseries` as operation "getCompositeState"');
       disclaimerLines.push('\nSee [losant://guides/devices](losant://guides/devices) for domain context, device classes, attribute constraints, and common procedures.');
+    } else if (filePath.endsWith('flow.md')) {
+      disclaimerLines.push('- endpoint "get" used by tool `losant_query` as operation "get"');
+      if (isWritable) {
+        disclaimerLines.push('- endpoint "patch" used by tool `losant_write` as operation "updateOne"');
+      }
+      if (DELETABLE_RESOURCE_TYPE_SET.has(fileName)) {
+        disclaimerLines.push('- endpoint "delete" used by tool `losant_delete`');
+      }
+      disclaimerLines.push('- endpoints "stats" and "errors" both used by tool `losant_flow_diagnostics` (returned together in one call)');
+      disclaimerLines.push('\nSee [losant://guides/tools/losant_flow_diagnostics](losant://guides/tools/losant_flow_diagnostics) for the response shape, parameter reference, and restrictions.');
     } else if (isSingularResource) {
       disclaimerLines.push('- endpoint "get" used by tool `losant_query` as operation "get"');
       if (isWritable) {
@@ -199,16 +209,26 @@ export default (server) => {
       return readFileContent(path.join(DOCS_PATH, file), 'text/markdown', uri.href);
     }
   );
-  GUIDES_TO_REGISTER.forEach(({ name, uriName, resourceConfig, getContent }) => {
-    server.registerResource(name, uriName, resourceConfig, getContent);
+  const serveMarkdown = (content) => async (uri) => {
+    return {
+      contents: [{
+        uri: uri.href,
+        mimeType: 'text/markdown',
+        text: content
+      }]
+    };
+  };
+
+  GUIDES_TO_REGISTER.forEach(({ name, uriName, resourceConfig, content }) => {
+    server.registerResource(name, uriName, resourceConfig, serveMarkdown(content));
   });
 
-  TOOL_GUIDES_TO_REGISTER.forEach(({ toolName, resourceConfig, getContent }) => {
+  TOOL_GUIDES_TO_REGISTER.forEach(({ toolName, resourceConfig, content }) => {
     server.registerResource(
       `guide-tool-${toolName}`,
       `losant://guides/tools/${toolName}`,
       { mimeType: 'text/markdown', ...resourceConfig },
-      getContent
+      serveMarkdown(content)
     );
   });
 

@@ -345,6 +345,47 @@ describe('MCP Resources', () => {
       result.contents[0].text.should.match(/waitForReply/);
     });
 
+    it('should provide handler for flow diagnostics tool guide', async () => {
+      const result = await client.readResource({ uri: 'losant://guides/tools/losant_flow_diagnostics' });
+
+      result.should.have.property('contents');
+      result.contents.should.be.an.Array();
+      result.contents[0].should.have.property('uri', 'losant://guides/tools/losant_flow_diagnostics');
+      result.contents[0].should.have.property('mimeType', 'text/markdown');
+      result.contents[0].should.have.property('text');
+      result.contents[0].text.should.match(/stats/);
+      result.contents[0].text.should.match(/errors/);
+      result.contents[0].text.should.match(/15-minute floor/);
+      result.contents[0].text.should.match(/losant:\/\/schemas\/flowStats/);
+      result.contents[0].text.should.match(/losant:\/\/schemas\/flowErrors/);
+    });
+
+    it('should load schema for flowStats response schema', async () => {
+      const result = await client.readResource({ uri: 'losant://schemas/flowStats' });
+      result.contents[0].should.have.property('uri', 'losant://schemas/flowStats');
+      result.contents[0].should.have.property('mimeType', 'application/json');
+      const parsed = JSON.parse(result.contents[0].text);
+      parsed.should.have.property('type', 'object');
+      parsed.properties.should.have.property('metrics');
+    });
+
+    it('should load schema for flowErrors response schema', async () => {
+      const result = await client.readResource({ uri: 'losant://schemas/flowErrors' });
+      result.contents[0].should.have.property('uri', 'losant://schemas/flowErrors');
+      result.contents[0].should.have.property('mimeType', 'application/json');
+      const parsed = JSON.parse(result.contents[0].text);
+      parsed.should.have.property('type', 'object');
+      parsed.properties.should.have.property('errors');
+    });
+
+    it('should include flow diagnostics endpoint disclaimers in flow doc', async () => {
+      const result = await client.readResource({ uri: 'losant://docs/flow' });
+
+      result.should.have.property('contents');
+      result.contents[0].should.have.property('text');
+      result.contents[0].text.should.containEql('endpoints "stats" and "errors" both used by tool `losant_flow_diagnostics`');
+    });
+
     describe('authoring/dashboard resources', () => {
       it('should return dashboard authoring hub guide for losant://authoring/dashboard', async () => {
         const result = await client.readResource({ uri: 'losant://authoring/dashboard' });
@@ -473,6 +514,10 @@ describe('MCP Resources', () => {
       indexText.should.match(/losant:\/\/schemas\/advancedApplicationJobLogQuery/);
       indexText.should.match(/losant:\/\/schemas\/advancedDeviceQuery/);
 
+      // Should contain links to response schemas
+      indexText.should.match(/losant:\/\/schemas\/flowStats/);
+      indexText.should.match(/losant:\/\/schemas\/flowErrors/);
+
       // Should contain link to advanced query guide
       indexText.should.match(/losant:\/\/guides\/advanced-queries/);
 
@@ -480,6 +525,7 @@ describe('MCP Resources', () => {
       indexText.should.match(/# Losant API Documentation/);
       indexText.should.match(/## API Documentation/);
       indexText.should.match(/## Query Schemas/);
+      indexText.should.match(/## Response Schemas/);
     });
 
     it('should provide handler for authoring flow hub', async () => {

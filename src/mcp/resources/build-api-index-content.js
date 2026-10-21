@@ -1,4 +1,4 @@
-import { APPLICATION_RESOURCES, MD_FILES, SCHEMA_FILE_ALIASES, SCHEMA_FILES } from '../../constants.js';
+import { APPLICATION_RESOURCES, MD_FILES, SCHEMA_FILE_ALIASES, SCHEMA_FILES, RESPONSE_SCHEMA_FILES } from '../../constants.js';
 import TOOL_GUIDES from './tools/index.js';
 
 // Generated from the registered tool guides so a new guide cannot be missed here.
@@ -65,6 +65,13 @@ writeSchemas.sort().forEach((file) => {
 });
 Object.keys(SCHEMA_FILE_ALIASES).sort().forEach((aliasName) => {
   indexContent += `- [${aliasName}](losant://schemas/${aliasName})\n`;
+});
+
+indexContent += '\n## Response Schemas\n\n';
+indexContent += 'JSON schemas for non-CRUD tool response shapes:\n\n';
+RESPONSE_SCHEMA_FILES.sort().forEach((file) => {
+  const name = file.replace('.json', '');
+  indexContent += `- [${name}](losant://schemas/${name})\n`;
 });
 
 export default indexContent;

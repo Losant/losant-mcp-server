@@ -1,19 +1,14 @@
-import { WRITABLE_RESOURCE_TYPES, NESTED_RESOURCES, NO_CREATE_TYPES,
-  RESOURCE_TYPE_TO_GUIDE, RESOURCE_TYPE_TO_AUTHORING_GUIDE } from '../../../constants.js';
+import { WRITABLE_RESOURCE_TYPES, NO_CREATE_TYPES, RESOURCE_TYPE_TO_AUTHORING_GUIDE } from '../../../constants.js';
+import { parentResourceIdColumn, domainGuideColumn, buildNestedNote } from './helpers.js';
 
-const nestedNote = Object.entries(NESTED_RESOURCES)
-  .map(([type, { parentField, parentType }]) => `- \`${type}\` — the \`${parentField}\` of the \`${parentType}\` you are writing into. Query \`${parentType}\` first if you do not already have it.`)
-  .join('\n');
+const nestedNote = buildNestedNote((type, parentField, parentType) => `- \`${type}\` — the \`${parentField}\` of the \`${parentType}\` you are writing into. Query \`${parentType}\` first if you do not already have it.`);
 
 const resourceRows = WRITABLE_RESOURCE_TYPES
   .map((type) => {
     const postCol = NO_CREATE_TYPES.has(type) ? '—' : `losant://schemas/${type}Post`;
     const patchCol = `losant://schemas/${type}Patch`;
-    const nested = NESTED_RESOURCES[type];
-    const parentCol = nested ? `\`${nested.parentField}\`` : '—';
     const authoringCol = RESOURCE_TYPE_TO_AUTHORING_GUIDE[type] || '—';
-    const guideCol = RESOURCE_TYPE_TO_GUIDE[type] || '—';
-    return `| \`${type}\` | ${postCol} | ${patchCol} | ${parentCol} | ${authoringCol} | ${guideCol} |`;
+    return `| \`${type}\` | ${postCol} | ${patchCol} | ${parentResourceIdColumn(type)} | ${authoringCol} | ${domainGuideColumn(type)} |`;
   })
   .join('\n');
 
@@ -81,13 +76,5 @@ export default {
     title: 'Losant Write Tool Guide',
     description: 'READ THIS BEFORE USING: losant_write tool — operations, schema links, domain guide links, nested resources, and restrictions.'
   },
-  getContent: async (uri) => {
-    return {
-      contents: [{
-        uri: uri.href,
-        mimeType: 'text/markdown',
-        text: content
-      }]
-    };
-  }
+  content
 };

@@ -1,4 +1,5 @@
 import deleteToolGuide from './delete-tool-guide.js';
+import flowDiagnosticsToolGuide from './flow-diagnostics-tool-guide.js';
 import queryToolGuide from './query-tool-guide.js';
 import writeToolGuide from './write-tool-guide.js';
 
@@ -8,5 +9,6 @@ import writeToolGuide from './write-tool-guide.js';
 export default [
   queryToolGuide,
   writeToolGuide,
-  deleteToolGuide
+  deleteToolGuide,
+  flowDiagnosticsToolGuide
 ];

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { NESTED_RESOURCES, RESOURCE_TYPES, APPLICATION_RESOURCES, ALLOWS_ADVANCED_QUERIES_SET,
+import { NESTED_RESOURCES, RESOURCE_TYPES, APPLICATION_RESOURCES, RESOURCE_TYPE_TO_QUERY_SCHEMA,
   LIST_OMITTED_FIELDS } from '../../constants.js';
 import debug from 'debug';
 import { restToMCPError, invalidRequestError } from '../../helpers/errors.js';
@@ -251,7 +251,7 @@ const listResourceTool = async (losantClient, { resourceType }, requestParams, l
 
   // Advanced query overrides simple filter parameters
   if (listInput.query) {
-    if (!ALLOWS_ADVANCED_QUERIES_SET.has(resourceType)) {
+    if (!RESOURCE_TYPE_TO_QUERY_SCHEMA[resourceType]) {
       errors.push({
         fieldName: 'query',
         details: `The resource type '${resourceType}' does not support advanced queries. Remove the 'query' parameter and use 'filterField' and 'filter' for simple filtering instead.`

@@ -122,13 +122,5 @@ export default {
     description: 'Webhook resource fields, the id-vs-token invocation URL distinction, HTTP/WebSocket differences, custom replies, verification, basic auth, and rate limits',
     mimeType: 'text/markdown'
   },
-  getContent: async (uri) => {
-    return {
-      contents: [{
-        uri: uri.href,
-        mimeType: 'text/markdown',
-        text: content
-      }]
-    };
-  }
+  content
 };
