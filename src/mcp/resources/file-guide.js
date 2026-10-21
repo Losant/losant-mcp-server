@@ -124,13 +124,5 @@ export default {
     description: 'Domain guide for Losant files and private files — the two-step create-then-upload pattern, file vs. directory, public vs. private',
     mimeType: 'text/markdown'
   },
-  getContent: async (uri) => {
-    return {
-      contents: [{
-        uri: uri.href,
-        mimeType: 'text/markdown',
-        text: content
-      }]
-    };
-  }
+  content
 };

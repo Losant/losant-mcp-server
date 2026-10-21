@@ -166,13 +166,5 @@ export default {
     description: 'Guide for building MongoDB-style advanced queries for Losant resources',
     mimeType: 'text/markdown'
   },
-  getContent: async (uri) => {
-    return {
-      contents: [{
-        uri: uri.href,
-        mimeType: 'text/markdown',
-        text: content
-      }]
-    };
-  }
+  content
 };

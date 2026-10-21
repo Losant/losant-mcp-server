@@ -199,8 +199,6 @@ export const RESOURCE_TYPE_TO_QUERY_SCHEMA = {
   applicationCertificate: 'advancedApplicationCertQuery'
 };
 
-export const ALLOWS_ADVANCED_QUERIES_SET = new Set(Object.keys(RESOURCE_TYPE_TO_QUERY_SCHEMA));
-
 // Fields stripped from each item of a `list` response, keyed by resource type — these are large
 // enough that a full page of them would crowd out the rest of the context. The query tool returns a
 // `_projection` notice naming them, and the query tool guide renders this map as the "Summary Fields

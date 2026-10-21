@@ -101,7 +101,7 @@ Add a case to `test/mcp/resources/index.test.js` alongside the existing tool-gui
 Render the guide and read it before calling it done — a generated table is easy to get syntactically right and semantically wrong:
 
 ```
-node -e "import('./src/mcp/resources/tools/<new-file>.js').then(async (m) => console.log((await m.default.getContent(new URL('losant://guides/tools/<toolName>'))).contents[0].text))"
+node -e "import('./src/mcp/resources/tools/<new-file>.js').then((m) => console.log(m.default.content))"
 ```
 
 Check that every row has the right number of cells, that no cell is an empty string where it should be `—`, and that the legend bullets describe the columns actually present.

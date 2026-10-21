@@ -209,8 +209,18 @@ export default (server) => {
       return readFileContent(path.join(DOCS_PATH, file), 'text/markdown', uri.href);
     }
   );
-  GUIDES_TO_REGISTER.forEach(({ name, uriName, resourceConfig, getContent }) => {
-    server.registerResource(name, uriName, resourceConfig, getContent);
+  const serveMarkdown = (content) => async (uri) => {
+    return {
+      contents: [{
+        uri: uri.href,
+        mimeType: 'text/markdown',
+        text: content
+      }]
+    };
+  };
+
+  GUIDES_TO_REGISTER.forEach(({ name, uriName, resourceConfig, content }) => {
+    server.registerResource(name, uriName, resourceConfig, serveMarkdown(content));
   });
 
   TOOL_GUIDES_TO_REGISTER.forEach(({ toolName, resourceConfig, content }) => {
@@ -218,15 +228,7 @@ export default (server) => {
       `guide-tool-${toolName}`,
       `losant://guides/tools/${toolName}`,
       { mimeType: 'text/markdown', ...resourceConfig },
-      async (uri) => {
-        return {
-          contents: [{
-            uri: uri.href,
-            mimeType: 'text/markdown',
-            text: content
-          }]
-        };
-      }
+      serveMarkdown(content)
     );
   });
 

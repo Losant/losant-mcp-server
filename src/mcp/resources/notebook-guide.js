@@ -112,13 +112,5 @@ export default {
     description: 'Domain guide for Losant notebooks — the two-step create-then-upload pattern, input/output types, and common procedures',
     mimeType: 'text/markdown'
   },
-  getContent: async (uri) => {
-    return {
-      contents: [{
-        uri: uri.href,
-        mimeType: 'text/markdown',
-        text: content
-      }]
-    };
-  }
+  content
 };

@@ -190,13 +190,5 @@ export default {
     description: 'Domain guide for working with Losant devices and device recipes — classes, attributes, tags, recipes, and common procedures for creating and managing devices and recipes',
     mimeType: 'text/markdown'
   },
-  getContent: async (uri) => {
-    return {
-      contents: [{
-        uri: uri.href,
-        mimeType: 'text/markdown',
-        text: content
-      }]
-    };
-  }
+  content
 };

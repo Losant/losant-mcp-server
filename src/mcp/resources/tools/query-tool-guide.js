@@ -1,19 +1,14 @@
-import { RESOURCE_TYPES, NESTED_RESOURCES, RESOURCE_TYPE_TO_GUIDE, RESOURCE_TYPE_TO_QUERY_SCHEMA,
-  LIST_OMITTED_FIELDS } from '../../../constants.js';
+import { RESOURCE_TYPES, RESOURCE_TYPE_TO_QUERY_SCHEMA, LIST_OMITTED_FIELDS } from '../../../constants.js';
 import { getPluralResourceName } from '../../tools/helpers.js';
+import { parentResourceIdColumn, domainGuideColumn, buildNestedNote } from './helpers.js';
 
-const nestedNote = Object.entries(NESTED_RESOURCES)
-  .map(([type, { parentField, parentType }]) => `- \`${type}\` — query \`${parentType}\` first and pass its \`id\` as \`parentResourceId\`. A \`${type}\` is only reachable through its \`${parentType}\`, so by the time you hold a \`${type}\` id you already have the \`${parentField}\` — reuse it rather than looking it up again.`)
-  .join('\n');
+const nestedNote = buildNestedNote((type, parentField, parentType) => `- \`${type}\` — query \`${parentType}\` first and pass its \`id\` as \`parentResourceId\`. A \`${type}\` is only reachable through its \`${parentType}\`, so by the time you hold a \`${type}\` id you already have the \`${parentField}\` — reuse it rather than looking it up again.`);
 
 const resourceRows = RESOURCE_TYPES
   .map((type) => {
-    const guideCol = RESOURCE_TYPE_TO_GUIDE[type] || '—';
-    const nested = NESTED_RESOURCES[type];
-    const parentCol = nested ? `\`${nested.parentField}\`` : '—';
     const querySchema = RESOURCE_TYPE_TO_QUERY_SCHEMA[type];
     const queryCol = querySchema ? `losant://schemas/${querySchema}` : '—';
-    return `| \`${type}\` | losant://docs/${type} | losant://docs/${getPluralResourceName(type)} | ${parentCol} | ${queryCol} | ${guideCol} |`;
+    return `| \`${type}\` | losant://docs/${type} | losant://docs/${getPluralResourceName(type)} | ${parentResourceIdColumn(type)} | ${queryCol} | ${domainGuideColumn(type)} |`;
   })
   .join('\n');
 

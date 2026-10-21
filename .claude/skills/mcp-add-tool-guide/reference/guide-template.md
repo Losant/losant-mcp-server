@@ -82,15 +82,7 @@ export default {
     title: 'Losant <Tool> Tool Guide',
     description: 'READ THIS BEFORE USING: <toolName> tool — <the few things a caller most needs from this guide>.'
   },
-  getContent: async (uri) => {
-    return {
-      contents: [{
-        uri: uri.href,
-        mimeType: 'text/markdown',
-        text: content
-      }]
-    };
-  }
+  content
 };
 ```
 

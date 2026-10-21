@@ -103,13 +103,5 @@ export default {
     description: 'Domain guide for Losant flows — flow classes, triggers, nodes, versions, and common procedures',
     mimeType: 'text/markdown'
   },
-  getContent: async (uri) => {
-    return {
-      contents: [{
-        uri: uri.href,
-        mimeType: 'text/markdown',
-        text: content
-      }]
-    };
-  }
+  content
 };
