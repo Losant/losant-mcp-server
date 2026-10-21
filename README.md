@@ -9,9 +9,10 @@
 ## Features
 
 - 🔐 **OAuth 2.0 Authentication** - RFC-compliant bearer token auth (RFC 6750, RFC 7235, RFC 8707, RFC 9728)
-- 🛠️ **Two Powerful MCP Tools**:
+- 🛠️ **Powerful MCP Tools**:
   - `losant_query` - Query applications, devices, flows, data tables, and more
   - `losant_write` - Create/Update devices, flows, data tables, files and more
+  - `losant_delete` - Permanently delete devices, flows, data tables, files and more
   - `losant_timeseries` - Retrieve time-series device data and state
 - 📚 **Dynamic Documentation** - API docs and schemas loaded from `losant-rest` package
 - 🚀 **Stateless & Scalable** - Per-request MCP server instances for horizontal scaling
@@ -363,7 +364,7 @@ Query Losant resources (applications, devices, flows, data tables, etc.).
 
 ### 2. losant_write
 
-Create or update Losant resources. Read `losant://guides/losant-write-tool` before calling for operations, schema links, PATCH semantics, and resource-specific notes.
+Create or update Losant resources. Read `losant://guides/tools/losant_write` before calling for operations, schema links, PATCH semantics, and resource-specific notes.
 
 **Parameters:**
 - `operation` - `"createOne"` (POST) or `"updateOne"` (PATCH)
@@ -438,7 +439,68 @@ Create or update Losant resources. Read `losant://guides/losant-write-tool` befo
 }
 ```
 
-### 3. losant_timeseries
+### 3. losant_delete
+
+Permanently delete a Losant resource. Read `losant://guides/tools/losant_delete` before calling for supported resource types, nested resource rules, and restrictions.
+
+> **Warning:** Deletion is permanent and cannot be undone for most resource types. Query and surface the resource to the user before deleting, and confirm the correct `resourceId`. Devices are the one exception — they can be recovered through the Losant UI after deletion.
+
+**Parameters:**
+- `resourceType` - Type of resource to delete
+- `applicationId` - Application ID (required)
+- `resourceId` - Resource ID (required for all types except `application`)
+- `parentResourceId` - Parent resource ID (required for nested resources)
+
+**Supported Resource Types:**
+- Top-level: `application`
+- App-scoped: `event`, `device`, `deviceRecipe`, `dataTable`, `webhook`, `integration`, `applicationDashboard`, `notebook`, `flow`, `resourceJob`, `file`, `privateFile`, `experienceDomain`, `experienceEndpoint`, `experienceGroup`, `experienceSlug`, `experienceUser`, `experienceVersion`, `experienceView`
+- Nested: `flowVersion` (requires `flowId`), `dataTableRow` (requires `dataTableId`)
+
+**Not supported:** `applicationKey`, `credential`, `applicationCertificate`, `applicationCertificateAuthority` (sensitive — manage via the Losant UI), and `applicationJobLog`, `edgeDeployment`, `embeddedDeployment` (no delete endpoint).
+
+**Key behaviors:**
+- `application` is identified by `applicationId` alone and does not take a `resourceId` — deleting it removes every resource it contains
+- Deleting a `dataTable` removes all of its rows; deleting a `file`/`privateFile` directory removes its contents recursively
+- Only the develop version of `experienceEndpoint` and `experienceView` can be deleted directly; versioned copies go away with their `experienceVersion`
+- There is no bulk delete — call the tool once per resource
+
+**Example: Delete a Device**
+```json
+{
+  "name": "losant_delete",
+  "arguments": {
+    "resourceType": "device",
+    "applicationId": "507f1f77bcf86cd799439011",
+    "resourceId": "507f1f77bcf86cd799439012"
+  }
+}
+```
+
+**Example: Delete a Data Table Row**
+```json
+{
+  "name": "losant_delete",
+  "arguments": {
+    "resourceType": "dataTableRow",
+    "applicationId": "507f1f77bcf86cd799439011",
+    "parentResourceId": "507f1f77bcf86cd799439013",
+    "resourceId": "507f1f77bcf86cd799439014"
+  }
+}
+```
+
+**Example: Delete an Application**
+```json
+{
+  "name": "losant_delete",
+  "arguments": {
+    "resourceType": "application",
+    "applicationId": "507f1f77bcf86cd799439011"
+  }
+}
+```
+
+### 4. losant_timeseries
 
 Query time-series device data and state information.
 

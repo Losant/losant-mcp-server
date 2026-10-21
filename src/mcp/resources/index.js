@@ -2,9 +2,6 @@ import path from 'node:path';
 import { readFile } from 'node:fs/promises';
 import { ResourceTemplate } from '@modelcontextprotocol/server';
 import advancedQueryGuide from './advanced-query-guide.js';
-import deleteToolGuide from './delete-tool-guide.js';
-import queryToolGuide from './query-tool-guide.js';
-import writeToolGuide from './write-tool-guide.js';
 import deviceGuide from './device-guide.js';
 import integrationGuide from './integration-guide.js';
 import dataTableGuide from './data-table-guide.js';
@@ -17,9 +14,10 @@ import deviceAuthGuide from './device-auth-guide.js';
 import dashboardGuide from './dashboard-guide.js';
 import flowGuide from './flow-guide.js';
 import webhookGuide from './webhook-guide.js';
-import flowDiagnosticsGuide from './flow-diagnostics-tool-guide.js';
-import flowDebugListenerGuide from './flow-debug-listener-tool-guide.js';
 import indexContent from './build-api-index-content.js';
+// TOOL GUIDES — add new guides to ./tools/index.js
+import TOOL_GUIDES_TO_REGISTER from './tools/index.js';
+
 import conf from '../../config.js';
 import memoizee from 'memoizee';
 import { SCHEMA_NAME_TO_FILE, DOC_NAME_TO_FILE,
@@ -55,12 +53,8 @@ const WRITABLE_PLURAL_NAME_SET = new Set(
   WRITABLE_RESOURCE_TYPES.filter((t) => !NO_CREATE_TYPES.has(t)).map(getPluralResourceName)
 );
 const log = debug('losant-mcp-server:mcp:resources');
-
 const GUIDES_TO_REGISTER = [
   advancedQueryGuide,
-  queryToolGuide,
-  writeToolGuide,
-  deleteToolGuide,
   credentialGuide,
   dataTableGuide,
   deviceGuide,
@@ -72,9 +66,7 @@ const GUIDES_TO_REGISTER = [
   integrationGuide,
   notebookGuide,
   resourceJobGuide,
-  webhookGuide,
-  flowDiagnosticsGuide,
-  flowDebugListenerGuide
+  webhookGuide
 ];
 
 const readFileContent = memoizee(async (filePath, mimeType, href) => {
@@ -147,6 +139,7 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
         disclaimerLines.push('- endpoint "delete" used by tool `losant_delete`');
       }
       disclaimerLines.push('- endpoints "stats" and "errors" both used by tool `losant_flow_diagnostics` (returned together in one call)');
+      disclaimerLines.push('\nSee [losant://guides/tools/losant_flow_diagnostics](losant://guides/tools/losant_flow_diagnostics) for the response shape, parameter reference, and restrictions.');
       disclaimerLines.push('- endpoint "debug" (private, SSE) and endpoint "pressVirtualButton" both used by tool `losant_flow_debug_listener`');
       disclaimerLines.push('\nSee [losant://guides/losant-flow-diagnostics-tool](losant://guides/losant-flow-diagnostics-tool) for the response shape, parameter reference, and restrictions.');
       disclaimerLines.push('\nSee [losant://guides/losant-flow-debug-listener-tool](losant://guides/losant-flow-debug-listener-tool) for the required scope, run-correlation strategy, and parameter reference.');
@@ -183,7 +176,7 @@ const readAuthoringContent = memoizee(async (filePath, href) => {
 
 export default (server) => {
   // +8 = losant://info, doc template, schema template, authoring-hub template, flow-node template, flow-trigger template, dashboard-block template, reference template
-  log(`Registering ${GUIDES_TO_REGISTER.length + 8} resources...`);
+  log(`Registering ${GUIDES_TO_REGISTER.length + TOOL_GUIDES_TO_REGISTER.length + 8} resources...`);
   server.registerResource(
     'info',
     'losant://info',
@@ -219,8 +212,27 @@ export default (server) => {
       return readFileContent(path.join(DOCS_PATH, file), 'text/markdown', uri.href);
     }
   );
-  GUIDES_TO_REGISTER.forEach(({ name, uriName, resourceConfig, getContent }) => {
-    server.registerResource(name, uriName, resourceConfig, getContent);
+  const serveMarkdown = (content) => async (uri) => {
+    return {
+      contents: [{
+        uri: uri.href,
+        mimeType: 'text/markdown',
+        text: content
+      }]
+    };
+  };
+
+  GUIDES_TO_REGISTER.forEach(({ name, uriName, resourceConfig, content }) => {
+    server.registerResource(name, uriName, resourceConfig, serveMarkdown(content));
+  });
+
+  TOOL_GUIDES_TO_REGISTER.forEach(({ toolName, resourceConfig, content }) => {
+    server.registerResource(
+      `guide-tool-${toolName}`,
+      `losant://guides/tools/${toolName}`,
+      { mimeType: 'text/markdown', ...resourceConfig },
+      serveMarkdown(content)
+    );
   });
 
   server.registerResource(

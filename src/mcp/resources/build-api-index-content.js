@@ -1,10 +1,15 @@
-import { APPLICATION_RESOURCES, MD_FILES, SCHEMA_FILE_ALIASES, SCHEMA_FILES } from '../../constants.js';
+import { APPLICATION_RESOURCES, MD_FILES, SCHEMA_FILE_ALIASES, SCHEMA_FILES, RESPONSE_SCHEMA_FILES } from '../../constants.js';
+import TOOL_GUIDES from './tools/index.js';
+
+// Generated from the registered tool guides so a new guide cannot be missed here.
+const toolGuideLinks = TOOL_GUIDES
+  .map(({ toolName, resourceConfig }) => `- [${resourceConfig.title}](losant://guides/tools/${toolName}) - ${resourceConfig.description}`)
+  .join('\n');
 
 let indexContent = `# Losant API Documentation
 ## Quick Links
 - [Advanced Query Guide](losant://guides/advanced-queries) - Learn how to build MongoDB-style queries
-- [Losant Query Tool Guide](losant://guides/losant-query-tool) - Procedural guide for the losant_query tool — application selection, nested resources, and resource documentation links
-- [Losant Delete Tool Guide](losant://guides/losant-delete-tool) - When and how to use losant_delete — supported types, required parameters, nested resource rules, and pre-deletion fetch recommendation
+${toolGuideLinks}
 - [Devices & Device Recipes Guide](losant://guides/devices) - Domain guide for devices and recipes — classes, attributes, tags, and common procedures
 - [Integrations Guide](losant://guides/integrations) - Integration types, required config objects, credential usage, and flow pairing
 - [Data Tables Guide](losant://guides/data-tables) - Column schema, constraints, the dataTable/dataTableRow relationship, and common procedures
@@ -17,8 +22,6 @@ let indexContent = `# Losant API Documentation
 - [Experiences Guide](losant://guides/experiences) - Versioning model, views, endpoints, users, groups, domains, and slugs
 - [Device Authentication Guide](losant://guides/device-auth) - Access keys and device certificates for MQTT broker authentication; API vs. UI naming for certificate resources
 - [Webhooks Guide](losant://guides/webhooks) - Webhook resource fields, the id-vs-token invocation URL distinction, custom replies, verification, and basic auth
-- [Flow Diagnostics Tool Guide](losant://guides/losant-flow-diagnostics-tool) - Query flow run stats, historical errors, and aggregated log entries via losant_flow_diagnostics
-- [Flow Debug Listener Tool Guide](losant://guides/losant-flow-debug-listener-tool) - Open a live SSE debug stream for a flow, optionally press a virtual button and collect only that run's messages, via losant_flow_debug_listener
 
 > **API naming note**: Some resource types have names in the API that differ from their display names in the Losant UI:
 > - API: \`flow\` / \`flowVersion\` → UI: **Workflow** / **Workflow Version**
@@ -62,6 +65,13 @@ writeSchemas.sort().forEach((file) => {
 });
 Object.keys(SCHEMA_FILE_ALIASES).sort().forEach((aliasName) => {
   indexContent += `- [${aliasName}](losant://schemas/${aliasName})\n`;
+});
+
+indexContent += '\n## Response Schemas\n\n';
+indexContent += 'JSON schemas for non-CRUD tool response shapes:\n\n';
+RESPONSE_SCHEMA_FILES.sort().forEach((file) => {
+  const name = file.replace('.json', '');
+  indexContent += `- [${name}](losant://schemas/${name})\n`;
 });
 
 export default indexContent;

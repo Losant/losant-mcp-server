@@ -144,13 +144,5 @@ export default {
     description: 'Domain guide for Losant integrations — integration types, config objects, credentials, and common procedures for creating and pairing integrations with flows',
     mimeType: 'text/markdown'
   },
-  getContent: async (uri) => {
-    return {
-      contents: [{
-        uri: uri.href,
-        mimeType: 'text/markdown',
-        text: content
-      }]
-    };
-  }
+  content
 };

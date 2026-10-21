@@ -68,7 +68,7 @@ export default {
   name: 'losant_flow_diagnostics',
   inputInfo: {
     title: 'Query Losant Flow Diagnostics',
-    description: "You must read losant://guides/losant-flow-diagnostics-tool before tool use. Query a flow's runtime health in one call: run statistics (stats) and historical per-node errors (errors).",
+    description: "REQUIRED: Read losant://guides/tools/losant_flow_diagnostics before using this tool. Query a flow's runtime health in one call: run statistics (stats) and historical per-node errors (errors).",
     inputSchema: z.fromJSONSchema({
       type: 'object',
       properties: {
@@ -92,9 +92,9 @@ export default {
           type: 'string',
           description: 'Bucket size in milliseconds for the stats metrics array. Stats only. Default (set by the API when omitted): 3600000 (1 hour). Must be between 900000 (15 minutes) and `duration` - flow stats are reported in 15-minute aggregates by the platform, so finer buckets are not meaningful. Out-of-range values are rejected with a validation error rather than silently clamped.'
         },
-        flowVersionId: {
+        flowVersion: {
           type: 'string',
-          description: 'Flow version ID (24-character hex string) to scope results to. Forwarded to the stats and errors APIs as their `flowVersion` parameter. Omit for an aggregate across all versions.'
+          description: 'Flow version name or ID to scope results to - e.g. "develop", or a 24-character flow version ID. Forwarded as-is to the stats and errors APIs as their `flowVersion` parameter. Omit for an aggregate across all versions.'
         },
         deviceId: {
           type: 'string',
@@ -111,10 +111,10 @@ export default {
   },
   runnerFactory: (losantClient) => {
     return async ({
-      applicationId, flowId, duration, end, resolution, flowVersionId, deviceId, limit
+      applicationId, flowId, duration, end, resolution, flowVersion, deviceId, limit
     }) => {
       log('Flow Diagnostics Tool called with parameters:', {
-        applicationId, flowId, duration, end, resolution, flowVersionId, deviceId, limit
+        applicationId, flowId, duration, end, resolution, flowVersion, deviceId, limit
       });
 
       const paramErrors = validateParams(duration, resolution, limit);
@@ -126,14 +126,14 @@ export default {
       if (duration !== undefined) { statsParams.duration = duration; }
       if (end !== undefined) { statsParams.end = end; }
       if (resolution !== undefined) { statsParams.resolution = resolution; }
-      if (flowVersionId !== undefined) { statsParams.flowVersion = flowVersionId; }
+      if (flowVersion !== undefined) { statsParams.flowVersion = flowVersion; }
       if (deviceId !== undefined) { statsParams.deviceId = deviceId; }
 
       const errorsParams = { applicationId, flowId };
       if (duration !== undefined) { errorsParams.duration = duration; }
       if (end !== undefined) { errorsParams.end = end; }
       if (limit !== undefined) { errorsParams.limit = limit; }
-      if (flowVersionId !== undefined) { errorsParams.flowVersion = flowVersionId; }
+      if (flowVersion !== undefined) { errorsParams.flowVersion = flowVersion; }
       if (deviceId !== undefined) { errorsParams.deviceId = deviceId; }
 
       const [statsOutcome, errorsOutcome] = await Promise.all([
