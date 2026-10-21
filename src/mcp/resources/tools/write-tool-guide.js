@@ -81,13 +81,5 @@ export default {
     title: 'Losant Write Tool Guide',
     description: 'READ THIS BEFORE USING: losant_write tool — operations, schema links, domain guide links, nested resources, and restrictions.'
   },
-  getContent: async (uri) => {
-    return {
-      contents: [{
-        uri: uri.href,
-        mimeType: 'text/markdown',
-        text: content
-      }]
-    };
-  }
+  content
 };

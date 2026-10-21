@@ -112,7 +112,7 @@ describe('flow-diagnostics tool (with nock)', () => {
     errorsScope.done();
   });
 
-  it('should forward flowVersionId as flowVersion to stats/errors', async () => {
+  it('should forward flowVersion (an ID) as-is to stats/errors', async () => {
     nock(LOSANT_API_URL, { encodedQueryParams: true })
       .get(`/applications/${APP_ID}/flows/${flowId}/stats`)
       .query((q) => { return q.flowVersion === flowVersionId; })
@@ -121,11 +121,25 @@ describe('flow-diagnostics tool (with nock)', () => {
       .query((q) => { return q.flowVersion === flowVersionId; })
       .reply(200, errorsResponse);
 
-    const result = await diagnosticsTool({ applicationId: APP_ID, flowId, flowVersionId });
+    const result = await diagnosticsTool({ applicationId: APP_ID, flowId, flowVersion: flowVersionId });
 
     should.not.exist(result.isError);
     const response = JSON.parse(result.content[0].text);
     response.stats.should.have.property('flowVersionId', flowVersionId);
+  });
+
+  it('should forward flowVersion (a version name) as-is to stats/errors', async () => {
+    nock(LOSANT_API_URL, { encodedQueryParams: true })
+      .get(`/applications/${APP_ID}/flows/${flowId}/stats`)
+      .query((q) => { return q.flowVersion === 'develop'; })
+      .reply(200, statsResponse)
+      .get(`/applications/${APP_ID}/flows/${flowId}/errors`)
+      .query((q) => { return q.flowVersion === 'develop'; })
+      .reply(200, errorsResponse);
+
+    const result = await diagnosticsTool({ applicationId: APP_ID, flowId, flowVersion: 'develop' });
+
+    should.not.exist(result.isError);
   });
 
   it('should forward deviceId to stats/errors', async () => {

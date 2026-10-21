@@ -130,13 +130,5 @@ export default {
     title: 'Losant Query Tool Guide',
     description: 'READ THIS BEFORE USING: losant_query tool — application selection procedure, nested resources, per-resource documentation links, advanced query schemas, summary fields on list, and resource-specific params.'
   },
-  getContent: async (uri) => {
-    return {
-      contents: [{
-        uri: uri.href,
-        mimeType: 'text/markdown',
-        text: content
-      }]
-    };
-  }
+  content
 };

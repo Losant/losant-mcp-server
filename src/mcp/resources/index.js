@@ -14,7 +14,6 @@ import deviceAuthGuide from './device-auth-guide.js';
 import dashboardGuide from './dashboard-guide.js';
 import flowGuide from './flow-guide.js';
 import webhookGuide from './webhook-guide.js';
-import flowDiagnosticsGuide from './flow-diagnostics-tool-guide.js';
 import indexContent from './build-api-index-content.js';
 // TOOL GUIDES — add new guides to ./tools/index.js
 import TOOL_GUIDES_TO_REGISTER from './tools/index.js';
@@ -67,8 +66,7 @@ const GUIDES_TO_REGISTER = [
   integrationGuide,
   notebookGuide,
   resourceJobGuide,
-  webhookGuide,
-  flowDiagnosticsGuide
+  webhookGuide
 ];
 
 const readFileContent = memoizee(async (filePath, mimeType, href) => {
@@ -141,7 +139,7 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
         disclaimerLines.push('- endpoint "delete" used by tool `losant_delete`');
       }
       disclaimerLines.push('- endpoints "stats" and "errors" both used by tool `losant_flow_diagnostics` (returned together in one call)');
-      disclaimerLines.push('\nSee [losant://guides/losant-flow-diagnostics-tool](losant://guides/losant-flow-diagnostics-tool) for the response shape, parameter reference, and restrictions.');
+      disclaimerLines.push('\nSee [losant://guides/tools/losant_flow_diagnostics](losant://guides/tools/losant_flow_diagnostics) for the response shape, parameter reference, and restrictions.');
     } else if (isSingularResource) {
       disclaimerLines.push('- endpoint "get" used by tool `losant_query` as operation "get"');
       if (isWritable) {
@@ -215,12 +213,20 @@ export default (server) => {
     server.registerResource(name, uriName, resourceConfig, getContent);
   });
 
-  TOOL_GUIDES_TO_REGISTER.forEach(({ toolName, resourceConfig, getContent }) => {
+  TOOL_GUIDES_TO_REGISTER.forEach(({ toolName, resourceConfig, content }) => {
     server.registerResource(
       `guide-tool-${toolName}`,
       `losant://guides/tools/${toolName}`,
       { mimeType: 'text/markdown', ...resourceConfig },
-      getContent
+      async (uri) => {
+        return {
+          contents: [{
+            uri: uri.href,
+            mimeType: 'text/markdown',
+            text: content
+          }]
+        };
+      }
     );
   });
 

@@ -92,13 +92,5 @@ export default {
     title: 'Losant Delete Tool Guide',
     description: 'READ THIS BEFORE USING: losant_delete tool — supported resource types, required parameters, nested resource rules, and restrictions.'
   },
-  getContent: async (uri) => {
-    return {
-      contents: [{
-        uri: uri.href,
-        mimeType: 'text/markdown',
-        text: content
-      }]
-    };
-  }
+  content
 };

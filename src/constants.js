@@ -112,6 +112,11 @@ export const SCHEMA_FILES = readdirSync(SCHEMAS_PATH).filter((f) => {
   const name = f.replace('.json', '');
   return name.includes('Query') || WRITE_SCHEMA_SUFFIXES.has(name);
 });
+
+// Response schemas for non-CRUD tool outputs (e.g. losant_flow_diagnostics) - exposed via
+// losant://schemas like SCHEMA_FILES, but kept separate because they are neither a Query nor a
+// Post/Patch schema, so they get their own index section in build-api-index-content.js.
+export const RESPONSE_SCHEMA_FILES = ['flowStats.json', 'flowErrors.json'];
 // Excludes applicationKey, credential, applicationCertificate, applicationCertificateAuthority (sensitive),
 // and types with no delete endpoint (applicationJobLog, edgeDeployment, embeddedDeployment).
 export const DELETABLE_RESOURCE_TYPES = [
@@ -215,6 +220,7 @@ LIST_OMITTED_FIELDS.flowVersion = LIST_OMITTED_FIELDS.flow; // same structure fo
 // Maps every valid schema name to its filename on disk (canonical + aliases)
 export const SCHEMA_NAME_TO_FILE = Object.fromEntries([
   ...SCHEMA_FILES.map((f) => [f.replace('.json', ''), f]),
+  ...RESPONSE_SCHEMA_FILES.map((f) => [f.replace('.json', ''), f]),
   ...Object.entries(SCHEMA_FILE_ALIASES)
 ]);
 
