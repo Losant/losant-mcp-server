@@ -1,19 +1,17 @@
 const content = `# Losant Flow Debug Listener Tool Guide
 
-Use \`losant_flow_debug_listener\` to watch a flow's **live debug output** — the same stream the Losant UI's debug panel shows — and optionally press a Virtual Button to trigger a test run, without asking a human to do either in the UI. This automates the manual loop described in Pattern 1 ("Debug / Local Testing with Virtual Button") of \`losant://references/flow/patterns\` — that pattern's step "ask the user to press the button... outside this server's reach" is exactly what this tool now does.
+Use \`losant_flow_debug_listener\` to watch a flow's **live debug output** — the same stream the Losant UI's debug panel shows — and optionally press a Virtual Button to trigger a test run, without asking a human to do either in the UI. This automates the manual loop described in Pattern 1 ("Debug / Local Testing with Virtual Button") of \`losant://references/flow/debug-patterns\` — that pattern's step "ask the user to press the button... outside this server's reach" is exactly what this tool now does.
 
 **This is different from \`losant_flow_diagnostics\`.** Diagnostics reports 15-minute aggregate run/error counts. This tool opens a short-lived live stream and returns individual per-node debug messages for a specific window of time (and optionally, a specific run).
-
-> **Required scope**: calling this tool requires the access token to carry the \`flow.debug\` scope (\`filterVersion\` other than \`"id"\`) or the \`flowVersion.debug\` scope (\`filterVersion: "id"\`). **Neither scope is included in this server's default OAuth scopes.** If the call fails with a connection error mentioning a 401/403, the most likely cause is a missing scope on the token — not a bad \`applicationId\`/\`flowId\` — re-authenticate or re-issue the token with the scope added.
 
 ## Before Calling
 
 1. Obtain \`applicationId\` and \`flowId\` with \`losant_query\` (\`resourceType=flow\`) if you only have a flow name.
-2. Read the flow itself (\`losant_query\`, \`operation=get\`, \`resourceType=flow\`) and [losant://guides/flows](losant://guides/flows) — you need to know the flow's triggers, nodes, and wiring before you can set up a useful debug session.
+2. Read the flow itself (\`losant_query\`, \`operation=get\`, \`resourceType=flow\`) and [losant://authoring/flow](losant://authoring/flow) — you need to know the flow's triggers, nodes, and wiring before you can set up a useful debug session.
 3. If testing a specific published version rather than develop, obtain \`flowVersionId\` with \`losant_query\` (\`resourceType=flowVersion\`) and pass \`filterVersion: "id"\` alongside it.
 4. If pressing a Virtual Button, find its trigger \`key\` in the \`triggers\` array from step 2 (the entry with \`type: "virtualButton"\`) and read [losant://flow/triggers/virtual-button](losant://flow/triggers/virtual-button) for the trigger's shape.
 
-> If this tool turns out to be a poor fit for the flow you're debugging (e.g. the token can't be granted the required scope, or you need synchronous request/response feedback instead of an async stream), see [losant://references/flow/patterns](losant://references/flow/patterns) for other debugging approaches.
+> If this tool turns out to be a poor fit for the flow you're debugging (e.g. the token can't be granted the required scope, or you need synchronous request/response feedback instead of an async stream), see [losant://references/flow/debug-patterns](losant://references/flow/debug-patterns) for other debugging approaches.
 
 ## Parameters
 
@@ -56,7 +54,7 @@ These narrow down what the stream sends based on how this specific flow is built
 Don't default to the 60-second max "to be safe" — it makes every call slower than it needs to be, and a long wait with \`messageCount\` unset still returns as soon as the window closes, not as soon as the flow finishes.
 
 - **\`timeout\`**: check \`losant_flow_diagnostics\` first — its \`stats.metrics[].wallTime\` gives the flow's actual historical run time. Set \`timeout\` to a bit above the typical wall time (e.g. 2x, or +3-5s of buffer), not the max. Only reach for something close to the full 60s when you have a specific reason to expect a long-running execution for *this* run (e.g. the flow includes a Resource Time Delay node, loops over many items, or calls a slow external API) — not as a default hedge.
-- **\`messageCount\`**: if you know how many Debug nodes will fire for the path you're exercising — for example, you just added them yourself following the Virtual Button debug pattern (\`losant://references/flow/patterns\`, Pattern 1) — set \`messageCount\` to that number. The call then returns the moment all expected output has arrived instead of waiting out the full \`timeout\`. Leave it unset when you don't know how many messages to expect, or when watching unfiltered (no \`virtualButtonKey\`) for an open-ended window.
+- **\`messageCount\`**: if you know how many Debug nodes will fire for the path you're exercising — for example, you just added them yourself following the Virtual Button debug pattern (\`losant://references/flow/debug-patterns\`, Pattern 1) — set \`messageCount\` to that number. The call then returns the moment all expected output has arrived instead of waiting out the full \`timeout\`. Leave it unset when you don't know how many messages to expect, or when watching unfiltered (no \`virtualButtonKey\`) for an open-ended window.
 
 ## How run correlation works (when \`virtualButtonKey\` is given)
 
@@ -99,8 +97,9 @@ Each entry in \`messages\` is the raw debug event as published by the flow worke
 ## Additional Guides
 
 - [losant://flow/triggers/virtual-button](losant://flow/triggers/virtual-button) covers the Virtual Button trigger shape.
-- [losant://references/flow/patterns](losant://references/flow/patterns) covers the debug patterns this tool automates.
-- [losant://guides/flows](losant://guides/flows) covers flow authoring.
+- [losant://references/flow/debug-patterns](losant://references/flow/debug-patterns) covers the debug patterns this tool automates.
+- [losant://guides/flows](losant://guides/flows) covers the flow/flowVersion resource model and managing them via \`losant_query\`/\`losant_write\`.
+- [losant://authoring/flow](losant://authoring/flow) covers flow authoring — the trigger catalog, node catalog, wiring model, and templating.
 `;
 
 export default {

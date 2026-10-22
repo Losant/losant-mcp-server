@@ -399,12 +399,14 @@ describe('MCP Resources', () => {
       result.contents[0].text.should.match(/unmatchedMessageCount/);
     });
 
-    it('should include flow debug listener endpoint disclaimers in flow doc', async () => {
+    it('should include flow debug listener endpoint disclaimer (pressVirtualButton only, not the private debug endpoint) in flow doc', async () => {
       const result = await client.readResource({ uri: 'losant://docs/flow' });
 
       result.should.have.property('contents');
       result.contents[0].should.have.property('text');
-      result.contents[0].text.should.containEql('endpoint "debug" (private, SSE) and endpoint "pressVirtualButton" both used by tool `losant_flow_debug_listener`');
+      result.contents[0].text.should.containEql('endpoint "pressVirtualButton" used by tool `losant_flow_debug_listener`');
+      result.contents[0].text.should.not.containEql('endpoint "debug"');
+      result.contents[0].text.should.containEql('losant://guides/tools/losant_flow_debug_listener');
     });
 
     describe('authoring/dashboard resources', () => {

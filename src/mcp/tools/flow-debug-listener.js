@@ -181,7 +181,9 @@ const openDebugStream = (apiUrl, accessToken, debugPath) => {
     es.addEventListener('error', (event) => {
       if (isTransportFailure(event)) {
         controller.abort();
-        reject(Object.assign(new Error(event.message || 'Failed to open flow debug stream'), { statusCode: event.code }));
+        const err = new Error(event.message || 'Failed to open flow debug stream');
+        err.statusCode = event.code;
+        reject(err);
       }
     }, { signal: controller.signal });
   });
