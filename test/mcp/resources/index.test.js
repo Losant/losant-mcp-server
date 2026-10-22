@@ -150,21 +150,21 @@ describe('MCP Resources', () => {
       referenceTemplate.config.should.have.property('mimeType', 'text/markdown');
     });
 
-    it('should register flow-node template with pattern losant://flow/nodes/{nodeType}', async () => {
+    it('should register flow-node template with pattern losant://flow/nodes/{nodeSpec}', async () => {
       registerResourceLoader(mockServer);
 
       const flowNodeTemplate = registeredTemplates.find((t) => t.name === 'flow-node');
       should.exist(flowNodeTemplate);
-      flowNodeTemplate.template.uriTemplate.toString().should.equal('losant://flow/nodes/{nodeType}');
+      flowNodeTemplate.template.uriTemplate.toString().should.equal('losant://flow/nodes/{nodeSpec}');
       flowNodeTemplate.config.should.have.property('mimeType', 'text/markdown');
     });
 
-    it('should register flow-trigger template with pattern losant://flow/triggers/{triggerType}', async () => {
+    it('should register flow-trigger template with pattern losant://flow/triggers/{triggerSpec}', async () => {
       registerResourceLoader(mockServer);
 
       const flowTriggerTemplate = registeredTemplates.find((t) => t.name === 'flow-trigger');
       should.exist(flowTriggerTemplate);
-      flowTriggerTemplate.template.uriTemplate.toString().should.equal('losant://flow/triggers/{triggerType}');
+      flowTriggerTemplate.template.uriTemplate.toString().should.equal('losant://flow/triggers/{triggerSpec}');
       flowTriggerTemplate.config.should.have.property('mimeType', 'text/markdown');
     });
   });
@@ -662,7 +662,7 @@ describe('MCP Resources', () => {
     });
 
     describe('flow-node spec-name hints', () => {
-      const readFlowNode = (nodeType) => client.readResource({ uri: `losant://flow/nodes/${nodeType}` }).catch((err) => err);
+      const readFlowNode = (nodeSpec) => client.readResource({ uri: `losant://flow/nodes/${nodeSpec}` }).catch((err) => err);
 
       it('should throw a plain not-found error for a genuinely unknown node name, with no spec hint', async () => {
         const err = await readFlowNode('TotallyBogusNode');
@@ -715,7 +715,7 @@ describe('MCP Resources', () => {
     });
 
     describe('flow-trigger spec-name hints', () => {
-      const readFlowTrigger = (triggerName) => client.readResource({ uri: `losant://flow/triggers/${triggerName}` }).catch((err) => err);
+      const readFlowTrigger = (triggerSpec) => client.readResource({ uri: `losant://flow/triggers/${triggerSpec}` }).catch((err) => err);
 
       it('should throw a plain not-found error for a genuinely unknown trigger name, with no spec hint', async () => {
         const err = await readFlowTrigger('totallyBogus');

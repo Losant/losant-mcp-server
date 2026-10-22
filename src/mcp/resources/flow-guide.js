@@ -39,8 +39,8 @@ The \`flowPost\` / \`flowPatch\` schemas are large (86KB). Read \`losant://schem
 For the wiring model, trigger configuration, and per-node config details read:
 
 - \`losant://authoring/flow\` — full authoring guide (trigger catalog, node catalog, wiring model, loops, conditionals)
-- \`losant://flow/nodes/{nodeType}\` — per-node detail
-- \`losant://flow/triggers/{triggerType}\` — per-trigger detail
+- \`losant://flow/nodes/{nodeSpec}\` — per-node detail
+- \`losant://flow/triggers/{triggerSpec}\` — per-trigger detail
 - \`losant://references/flow/templating\` — Handlebars dialect, format helpers, expressions, payload paths, and LJSON syntax for nodes
 - \`losant://references/flow/globals\` — global variables reference
 - \`losant://references/flow/payload\` — payload reference

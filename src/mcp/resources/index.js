@@ -230,10 +230,10 @@ export default (server) => {
   // the real `type` passed directly ("DataTableQueryNode"), the real `meta.name` passed directly
   // ("get-table-rows"), and a plausible-but-wrong type guess ("GetTableRowsNode") reduced to its
   // kebab-case meta.name equivalent.
-  const resolveNodeSpecHint = (nodeName) => {
-    return FLOW_NODE_TYPES[nodeName]?.spec ||
-      FLOW_NODE_META_NAME_TO_SPEC[nodeName] ||
-      FLOW_NODE_META_NAME_TO_SPEC[toKebabCase(nodeName.replace(/Node$/, ''))];
+  const resolveNodeSpecHint = (nodeSpec) => {
+    return FLOW_NODE_TYPES[nodeSpec]?.spec ||
+      FLOW_NODE_META_NAME_TO_SPEC[nodeSpec] ||
+      FLOW_NODE_META_NAME_TO_SPEC[toKebabCase(nodeSpec.replace(/Node$/, ''))];
   };
 
   GUIDES_TO_REGISTER.forEach(({ name, uriName, resourceConfig, content }) => {
@@ -286,29 +286,29 @@ export default (server) => {
 
   server.registerResource(
     'flow-node',
-    new ResourceTemplate('losant://flow/nodes/{nodeType}', { list: undefined }),
+    new ResourceTemplate('losant://flow/nodes/{nodeSpec}', { list: undefined }),
     {
       title: 'Losant Flow Node',
       description: 'Per-node authoring detail for Losant flow nodes — discovered via losant://authoring/flow',
       mimeType: 'text/markdown'
     },
-    async (uri, { nodeType }) => {
-      const filePath = FLOW_NODE_TO_FILE[nodeType];
+    async (uri, { nodeSpec }) => {
+      const filePath = FLOW_NODE_TO_FILE[nodeSpec];
       if (!filePath) {
-        const hint = resolveNodeSpecHint(nodeType);
+        const hint = resolveNodeSpecHint(nodeSpec);
         let hintText;
         if (hint) {
-          hintText = `Did you mean losant://flow/nodes/${hint}? "${nodeType}" looks like it refers to the node type documented there — see the Node catalog in losant://authoring/flow for the full type-to-spec mapping.`;
+          hintText = `Did you mean losant://flow/nodes/${hint}? "${nodeSpec}" looks like it refers to the node type documented there — see the Node catalog in losant://authoring/flow for the full type-to-spec mapping.`;
         } else {
           // Doesn't reduce cleanly via resolveNodeSpecHint (e.g. assumed the ResourceType+Action+Node
           // pattern when the real type doesn't follow it) - check the hand-maintained escape hatch.
-          const realType = NON_EXISTING_FLOW_NODE_TYPES[nodeType];
+          const realType = NON_EXISTING_FLOW_NODE_TYPES[nodeSpec];
           const realSpec = realType && resolveNodeSpecHint(realType);
           hintText = realType
-            ? `"${nodeType}" is not a valid node type. Did you mean "${realType}"? See losant://flow/nodes/${realSpec} for its spec.`
+            ? `"${nodeSpec}" is not a valid node type. Did you mean "${realType}"? See losant://flow/nodes/${realSpec} for its spec.`
             : 'It does not exist — read losant://authoring/flow for the full Node catalog.';
         }
-        throw resourceNotFoundError(`Flow node not found: ${nodeType}`, { uri: uri.href, hint: hintText });
+        throw resourceNotFoundError(`Flow node not found: ${nodeSpec}`, { uri: uri.href, hint: hintText });
       }
       return readAuthoringContent(filePath, uri.href);
     }
@@ -316,20 +316,20 @@ export default (server) => {
 
   server.registerResource(
     'flow-trigger',
-    new ResourceTemplate('losant://flow/triggers/{triggerType}', { list: undefined }),
+    new ResourceTemplate('losant://flow/triggers/{triggerSpec}', { list: undefined }),
     {
       title: 'Losant Flow Trigger',
       description: 'Per-trigger authoring detail for Losant flow triggers — discovered via losant://authoring/flow',
       mimeType: 'text/markdown'
     },
-    async (uri, { triggerType }) => {
-      const filePath = FLOW_TRIGGER_TO_FILE[triggerType];
+    async (uri, { triggerSpec }) => {
+      const filePath = FLOW_TRIGGER_TO_FILE[triggerSpec];
       if (!filePath) {
-        const hint = FLOW_TRIGGER_TYPE_TO_SPEC[triggerType];
+        const hint = FLOW_TRIGGER_TYPE_TO_SPEC[triggerSpec];
         const hintText = hint
-          ? `Did you mean losant://flow/triggers/${hint}? "${triggerType}" looks like it refers to the trigger type documented there — see the Trigger catalog in losant://authoring/flow for the full type-to-spec mapping.`
+          ? `Did you mean losant://flow/triggers/${hint}? "${triggerSpec}" looks like it refers to the trigger type documented there — see the Trigger catalog in losant://authoring/flow for the full type-to-spec mapping.`
           : 'It does not exist — read losant://authoring/flow for the full Trigger catalog.';
-        throw resourceNotFoundError(`Flow trigger not found: ${triggerType}`, { uri: uri.href, hint: hintText });
+        throw resourceNotFoundError(`Flow trigger not found: ${triggerSpec}`, { uri: uri.href, hint: hintText });
       }
       return readAuthoringContent(filePath, uri.href);
     }

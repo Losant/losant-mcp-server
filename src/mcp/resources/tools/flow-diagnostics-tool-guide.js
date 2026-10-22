@@ -51,7 +51,7 @@ A common procedure for turning \`errors\` into a fix:
 1. Call this tool with a \`duration\` covering the last day (widen it if you see no activity) to pull \`errors\`.
 2. Group the \`errors\` array by \`nodeId\` (each entry also carries a \`nodeLabel\`) — the node with the most occurrences is where to start digging.
 3. Look up that \`nodeId\` in the flow's \`nodes\` array (\`losant_query\` \`operation=get\` \`resourceType=flow\`) to get the node's \`type\`.
-4. Find that \`type\` in the node catalog table in [losant://authoring/flow](losant://authoring/flow), then read its [losant://flow/nodes/{nodeType}](losant://flow/nodes/{nodeType}) detail page for its config shape and common failure causes.
+4. Find that \`type\` in the node catalog table in [losant://authoring/flow](losant://authoring/flow), then read its [losant://flow/nodes/{nodeSpec}](losant://flow/nodes/{nodeSpec}) detail page for its config shape and common failure causes.
 5. Once you know the fix, use \`losant_write\` \`operation=updateOne\` \`resourceType=flow\` to update the node's \`config\` — see [losant://guides/tools/losant_write](losant://guides/tools/losant_write) and [losant://authoring/flow](losant://authoring/flow) before constructing the updated \`nodes\` array.
 
 This narrows "the flow is failing" down to "this node is failing" before you spend time reading the rest of the flow.
