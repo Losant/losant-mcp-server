@@ -29,12 +29,12 @@ const DEBUG_PARAM_PROPERTIES = {
   excludeIds: {
     type: 'array',
     items: { type: 'string' },
-    description: 'Debug node keys to exclude from the stream.'
+    description: "Debug node IDs (the node's `id` field, e.g. \"mGGqSmBXeD\" - not a trigger `key`) to exclude from the stream."
   },
   includeIds: {
     type: 'array',
     items: { type: 'string' },
-    description: "Debug node keys to limit the stream to - only messages from these nodes are included. By default (omitted), every Debug node's output is included."
+    description: "Debug node IDs (the node's `id` field, e.g. \"mGGqSmBXeD\" - not a trigger `key`) to limit the stream to - only messages from these nodes are included. By default (omitted), every Debug node's output is included."
   },
   filterExpression: {
     type: 'string',
@@ -291,7 +291,7 @@ export default {
           return invalidRequestError({
             message: `Failed to open flow debug stream: ${err.message}`,
             statusCode: err.statusCode,
-            detail: "This endpoint requires the flow.debug (or flowVersion.debug, if flowVersionId is given) scope on the access token - that scope is not included in this server's default scopes, so a 401/403 here most likely means the token is missing it."
+            detail: 'A 401/403 here most likely means the access token does not have read access to this application - the debug stream requires the same access as reading the flow itself, not any additional permission.'
           });
         }
 

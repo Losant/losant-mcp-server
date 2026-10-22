@@ -11,7 +11,7 @@ Use \`losant_flow_debug_listener\` to watch a flow's **live debug output** — t
 3. If testing a specific published version rather than develop, obtain \`flowVersionId\` with \`losant_query\` (\`resourceType=flowVersion\`) and pass \`filterVersion: "id"\` alongside it.
 4. If pressing a Virtual Button, find its trigger \`key\` in the \`triggers\` array from step 2 (the entry with \`type: "virtualButton"\`) and read [losant://flow/triggers/virtual-button](losant://flow/triggers/virtual-button) for the trigger's shape.
 
-> If this tool turns out to be a poor fit for the flow you're debugging (e.g. the token can't be granted the required scope, or you need synchronous request/response feedback instead of an async stream), see [losant://references/flow/debug-patterns](losant://references/flow/debug-patterns) for other debugging approaches.
+> If this tool turns out to be a poor fit for the flow you're debugging (e.g. you need synchronous request/response feedback instead of an async stream), see [losant://references/flow/debug-patterns](losant://references/flow/debug-patterns) for other debugging approaches.
 
 ## Parameters
 
@@ -37,8 +37,8 @@ These narrow down what the stream sends based on how this specific flow is built
 | Key | Notes |
 |---|---|
 | \`level\` | Array of levels to include: \`all\`, \`none\`, \`verbose\`, \`info\`, \`warn\`, \`error\`. Matches the level set on each Debug node — set this to only see output from nodes at or above a certain severity. Must be one or more entries, each a valid level, with no duplicates — anything else is rejected. |
-| \`excludeIds\` | Array of Debug node keys to exclude from the stream. |
-| \`includeIds\` | Array of Debug node keys — only messages from these nodes are included. By default (omitted), every Debug node's output is included. |
+| \`excludeIds\` | Array of Debug node IDs (each node's \`id\` field — unique across the flow, e.g. \`"mGGqSmBXeD"\` when API-generated, but can be hand-set to something human-readable; not a trigger \`key\`) to exclude from the stream. |
+| \`includeIds\` | Array of Debug node IDs (same \`id\` field as \`excludeIds\`) — only messages from these nodes are included. By default (omitted), every Debug node's output is included. |
 | \`filterExpression\` | Conditional expression run against the payload to filter messages, e.g. \`'{{experience.user.email}} === "bob@example.com"'\`. The single biggest lever for cutting noise on a busy flow. |
 | \`includeCustomNodes\` | If true, also include debug messages from inside custom nodes. |
 
