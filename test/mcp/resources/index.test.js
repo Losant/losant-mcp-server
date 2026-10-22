@@ -150,21 +150,21 @@ describe('MCP Resources', () => {
       referenceTemplate.config.should.have.property('mimeType', 'text/markdown');
     });
 
-    it('should register flow-node template with pattern losant://flow/nodes/{nodeName}', async () => {
+    it('should register flow-node template with pattern losant://flow/nodes/{nodeType}', async () => {
       registerResourceLoader(mockServer);
 
       const flowNodeTemplate = registeredTemplates.find((t) => t.name === 'flow-node');
       should.exist(flowNodeTemplate);
-      flowNodeTemplate.template.uriTemplate.toString().should.equal('losant://flow/nodes/{nodeName}');
+      flowNodeTemplate.template.uriTemplate.toString().should.equal('losant://flow/nodes/{nodeType}');
       flowNodeTemplate.config.should.have.property('mimeType', 'text/markdown');
     });
 
-    it('should register flow-trigger template with pattern losant://flow/triggers/{triggerName}', async () => {
+    it('should register flow-trigger template with pattern losant://flow/triggers/{triggerType}', async () => {
       registerResourceLoader(mockServer);
 
       const flowTriggerTemplate = registeredTemplates.find((t) => t.name === 'flow-trigger');
       should.exist(flowTriggerTemplate);
-      flowTriggerTemplate.template.uriTemplate.toString().should.equal('losant://flow/triggers/{triggerName}');
+      flowTriggerTemplate.template.uriTemplate.toString().should.equal('losant://flow/triggers/{triggerType}');
       flowTriggerTemplate.config.should.have.property('mimeType', 'text/markdown');
     });
   });
@@ -662,7 +662,7 @@ describe('MCP Resources', () => {
     });
 
     describe('flow-node spec-name hints', () => {
-      const readFlowNode = (nodeName) => client.readResource({ uri: `losant://flow/nodes/${nodeName}` }).catch((err) => err);
+      const readFlowNode = (nodeType) => client.readResource({ uri: `losant://flow/nodes/${nodeType}` }).catch((err) => err);
 
       it('should throw a plain not-found error for a genuinely unknown node name, with no spec hint', async () => {
         const err = await readFlowNode('TotallyBogusNode');
