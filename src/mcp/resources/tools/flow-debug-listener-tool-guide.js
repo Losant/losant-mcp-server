@@ -4,6 +4,8 @@ Use \`losant_flow_debug_listener\` to watch a flow's **live debug output** — t
 
 **This is different from \`losant_flow_diagnostics\`.** Diagnostics reports 15-minute aggregate run/error counts. This tool opens a short-lived live stream and returns individual per-node debug messages for a specific window of time (and optionally, a specific run).
 
+> **Which tool to reach for:** if you don't yet know what error you're chasing, start with [losant://guides/tools/losant_flow_diagnostics](losant://guides/tools/losant_flow_diagnostics) — it's faster and doesn't require wiring test infrastructure into the flow. Come back to this tool once diagnostics gives you a specific \`nodeId\`/error to reproduce, or once \`stats\`/\`errors\` come back empty but a problem is still suspected — use this tool to try to capture the error happening in real time instead.
+
 ## Before Calling
 
 1. Obtain \`applicationId\` and \`flowId\` with \`losant_query\` (\`resourceType=flow\`) if you only have a flow name.

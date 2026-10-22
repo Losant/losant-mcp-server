@@ -49,6 +49,7 @@ For the wiring model, trigger configuration, and per-node config details read:
 - \`losant://references/flow/patterns\` — six common flow patterns with concrete node chains: device alert, scheduled API pull, webhook handler, experience login, authenticated API endpoint, device provisioning
 - \`losant://references/flow/debug-patterns\` — debug/local-testing patterns: Virtual Button manual triggering, capture-to-file for replay, and synchronous webhook+curl debugging
 - \`losant://guides/tools/losant_flow_diagnostics\` — query run stats, and historical errors for a flow via \`losant_flow_diagnostics\`
+- \`losant://guides/tools/losant_flow_debug_listener\` — watch a flow's live debug output, optionally triggering a test run via Virtual Button, via \`losant_flow_debug_listener\`
 
 ## Flow Versions
 
@@ -91,6 +92,12 @@ Triggers and nodes in a \`flowVersion\` cannot be edited. To revise:
 1. Use \`losant_query\` \`operation=get\` \`resourceType=flow\` to retrieve the current develop version
 2. Apply your changes to \`triggers\` and \`nodes\` on the develop version via \`losant_write\` \`operation=updateOne\` \`resourceType=flow\`
 3. Snapshot a new \`flowVersion\` with a new version name
+
+### Debug a failing flow
+1. Investigating a historical bug a user described, or trying to characterize what's going wrong — start with \`losant_flow_diagnostics\` ([losant://guides/tools/losant_flow_diagnostics](losant://guides/tools/losant_flow_diagnostics)) for aggregate run/error counts and failing \`nodeId\`s.
+2. If diagnostics returns an error with a \`nodeId\`, switch to \`losant_flow_debug_listener\` ([losant://guides/tools/losant_flow_debug_listener](losant://guides/tools/losant_flow_debug_listener)) to reproduce that node's failure live and inspect the actual payload.
+3. If diagnostics comes back empty but a problem is still suspected, use \`losant_flow_debug_listener\` to watch the flow's live output and try to capture the error as it happens, rather than waiting on the next 15-minute aggregate.
+4. See [losant://references/flow/debug-patterns](losant://references/flow/debug-patterns) for the flow edits (Virtual Button, Debug nodes) needed to make the debug listener produce useful signal.
 
 ${buildReferenceSection(['flow', 'flowVersion'])}
 `;
