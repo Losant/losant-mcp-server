@@ -24,8 +24,8 @@ describe('MCP Server', () => {
 
     it('should register tools', () => {
       const toolNames = Object.keys(server._registeredTools);
-      toolNames.should.have.length(5);
-      toolNames.should.containDeep(['losant_query', 'losant_timeseries', 'losant_write', 'losant_delete', 'losant_flow_diagnostics']);
+      toolNames.should.have.length(6);
+      toolNames.should.containDeep(['losant_query', 'losant_timeseries', 'losant_write', 'losant_delete', 'losant_flow_diagnostics', 'losant_flow_debug_listener']);
       server._registeredTools.losant_query.annotations.should.deepEqual({
         readOnlyHint: true,
         destructiveHint: false,
@@ -59,6 +59,13 @@ describe('MCP Server', () => {
         destructiveHint: false,
         idempotentHint: true,
         title: 'losant_flow_diagnostics',
+        openWorldHint: false
+      });
+      server._registeredTools.losant_flow_debug_listener.annotations.should.deepEqual({
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: false,
+        title: 'losant_flow_debug_listener',
         openWorldHint: false
       });
     });
