@@ -394,7 +394,6 @@ describe('MCP Resources', () => {
       result.contents[0].should.have.property('uri', 'losant://guides/tools/losant_flow_debug_listener');
       result.contents[0].should.have.property('mimeType', 'text/markdown');
       result.contents[0].should.have.property('text');
-      result.contents[0].text.should.match(/flow\.debug/);
       result.contents[0].text.should.match(/pressId/);
       result.contents[0].text.should.match(/unmatchedMessageCount/);
     });

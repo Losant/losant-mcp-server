@@ -106,7 +106,7 @@ export default {
   toolName: 'losant_flow_debug_listener',
   resourceConfig: {
     title: 'Losant Flow Debug Listener Tool Guide',
-    description: 'READ THIS BEFORE USING: losant_flow_debug_listener tool — required flow.debug/flowVersion.debug scope, virtual-button run-correlation strategy, and parameter reference.'
+    description: 'READ THIS BEFORE USING: losant_flow_debug_listener tool — common procedures, virtual-button run-correlation strategy, and parameter reference.'
   },
   content
 };
