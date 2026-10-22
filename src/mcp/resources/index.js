@@ -226,14 +226,38 @@ export default (server) => {
   const AUTHORING_HUB_TO_CONTENT = { flow: flowAuthoringContent };
 
   const toKebabCase = (str) => str.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
-  // Resolves a bad flow-node spec-name guess to the likely intended spec. Handles three cases:
-  // the real `type` passed directly ("DataTableQueryNode"), the real `meta.name` passed directly
-  // ("get-table-rows"), and a plausible-but-wrong type guess ("GetTableRowsNode") reduced to its
-  // kebab-case meta.name equivalent.
-  const resolveNodeSpecHint = (nodeSpec) => {
-    return FLOW_NODE_TYPES[nodeSpec]?.spec ||
-      FLOW_NODE_META_NAME_TO_SPEC[nodeSpec] ||
-      FLOW_NODE_META_NAME_TO_SPEC[toKebabCase(nodeSpec.replace(/Node$/, ''))];
+  const toPascalCase = (str) => str.split('-').filter(Boolean).map((word) => word[0].toUpperCase() + word.slice(1)).join('');
+
+  // Tries every strategy (type/meta.name/kebab-fallback, then the NON_EXISTING_FLOW_NODE_TYPES
+  // escape hatch) against one candidate spelling of the guess.
+  const resolveNodeHintCandidate = (candidate) => {
+    const spec = FLOW_NODE_TYPES[candidate]?.spec ||
+      FLOW_NODE_META_NAME_TO_SPEC[candidate] ||
+      FLOW_NODE_META_NAME_TO_SPEC[toKebabCase(candidate.replace(/Node$/, ''))];
+    if (spec) { return { spec }; }
+    const realType = NON_EXISTING_FLOW_NODE_TYPES[candidate];
+    if (realType) { return { spec: FLOW_NODE_TYPES[realType]?.spec, realType }; }
+    return undefined;
+  };
+
+  // Resolves a bad flow-node spec-name guess to { spec, realType? } or undefined. Tries the guess
+  // as given, then reconstructed to the opposite casing convention - an LLM might hand us either
+  // direction:
+  //   - the real `type` or `meta.name` directly ("DataTableQueryNode", "get-table-rows")
+  //   - a plausible-but-wrong PascalCase type guess ("GetTableRowsNode") reduced to kebab-case
+  //   - an already-kebab-case guess, with or without a trailing "-node" ("opcua-write-node",
+  //     "data-table-query" - the kebab-case of the *type* name, not its meta.name), reconstructed
+  //     to PascalCase+Node
+  // `realType` is only surfaced when the guess *as given* matched the escape hatch - i.e. the
+  // input actually looked like a PascalCase type guess. When the match only came from the
+  // reconstructed candidate, the input was kebab-case to begin with, so naming an intermediate
+  // PascalCase type it was never trying to be would be misleading - keep just the spec.
+  const resolveNodeHint = (nodeSpec) => {
+    const asGiven = resolveNodeHintCandidate(nodeSpec);
+    if (asGiven) { return asGiven; }
+    const reconstructed = `${toPascalCase(nodeSpec.replace(/-?node$/i, ''))}Node`;
+    const viaReconstruction = resolveNodeHintCandidate(reconstructed);
+    return viaReconstruction && { spec: viaReconstruction.spec };
   };
 
   GUIDES_TO_REGISTER.forEach(({ name, uriName, resourceConfig, content }) => {
@@ -295,18 +319,12 @@ export default (server) => {
     async (uri, { nodeSpec }) => {
       const filePath = FLOW_NODE_TO_FILE[nodeSpec];
       if (!filePath) {
-        const hint = resolveNodeSpecHint(nodeSpec);
-        let hintText;
-        if (hint) {
-          hintText = `Did you mean losant://flow/nodes/${hint}? "${nodeSpec}" looks like it refers to the node type documented there — see the Node catalog in losant://authoring/flow for the full type-to-spec mapping.`;
-        } else {
-          // Doesn't reduce cleanly via resolveNodeSpecHint (e.g. assumed the ResourceType+Action+Node
-          // pattern when the real type doesn't follow it) - check the hand-maintained escape hatch.
-          const realType = NON_EXISTING_FLOW_NODE_TYPES[nodeSpec];
-          const realSpec = realType && resolveNodeSpecHint(realType);
-          hintText = realType
-            ? `"${nodeSpec}" is not a valid node type. Did you mean "${realType}"? See losant://flow/nodes/${realSpec} for its spec.`
-            : 'It does not exist — read losant://authoring/flow for the full Node catalog.';
+        const resolved = resolveNodeHint(nodeSpec);
+        let hintText = 'It does not exist — read losant://authoring/flow for the full Node catalog.';
+        if (resolved?.realType) {
+          hintText = `"${nodeSpec}" is not a valid node type. Did you mean "${resolved.realType}"? See losant://flow/nodes/${resolved.spec} for its spec.`;
+        } else if (resolved) {
+          hintText = `Did you mean losant://flow/nodes/${resolved.spec}? "${nodeSpec}" looks like it refers to the node type documented there — see the Node catalog in losant://authoring/flow for the full type-to-spec mapping.`;
         }
         throw resourceNotFoundError(`Flow node not found: ${nodeSpec}`, { uri: uri.href, hint: hintText });
       }
