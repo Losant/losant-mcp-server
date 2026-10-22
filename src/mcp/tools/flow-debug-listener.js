@@ -198,7 +198,7 @@ export default {
       destructiveHint: false
     },
     title: 'Listen to Losant Flow Debug Stream',
-    description: 'You must read losant://guides/losant-flow-debug-listener-tool before tool use. Opens a live debug stream for a flow, optionally presses a Virtual Button to trigger a test run, and collects the resulting debug messages.',
+    description: 'REQUIRED: Read losant://guides/tools/losant_flow_debug_listener before using this tool. Opens a live debug stream for a flow, optionally presses a Virtual Button to trigger a test run, and collects the resulting debug messages.',
     inputSchema: z.fromJSONSchema({
       type: 'object',
       properties: {

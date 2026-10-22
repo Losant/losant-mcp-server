@@ -140,9 +140,7 @@ const readFileContent = memoizee(async (filePath, mimeType, href) => {
       }
       disclaimerLines.push('- endpoints "stats" and "errors" both used by tool `losant_flow_diagnostics` (returned together in one call)');
       disclaimerLines.push('\nSee [losant://guides/tools/losant_flow_diagnostics](losant://guides/tools/losant_flow_diagnostics) for the response shape, parameter reference, and restrictions.');
-      disclaimerLines.push('- endpoint "debug" (private, SSE) and endpoint "pressVirtualButton" both used by tool `losant_flow_debug_listener`');
-      disclaimerLines.push('\nSee [losant://guides/losant-flow-diagnostics-tool](losant://guides/losant-flow-diagnostics-tool) for the response shape, parameter reference, and restrictions.');
-      disclaimerLines.push('\nSee [losant://guides/losant-flow-debug-listener-tool](losant://guides/losant-flow-debug-listener-tool) for the required scope, run-correlation strategy, and parameter reference.');
+      disclaimerLines.push('\nSee [losant://guides/tools/losant_flow_debug_listener](losant://guides/tools/losant_flow_debug_listener) for the required scope, run-correlation strategy, and parameter reference.');
     } else if (isSingularResource) {
       disclaimerLines.push('- endpoint "get" used by tool `losant_query` as operation "get"');
       if (isWritable) {
