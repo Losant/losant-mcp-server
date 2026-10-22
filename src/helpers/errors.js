@@ -1,4 +1,4 @@
-import { ProtocolErrorCode } from '@modelcontextprotocol/server';
+import { ProtocolError, ProtocolErrorCode } from '@modelcontextprotocol/server';
 
 export const invalidRequestError = ({ message, ...details } = {}) => {
   return {
@@ -12,6 +12,15 @@ export const invalidRequestError = ({ message, ...details } = {}) => {
     }],
     isError: true
   };
+};
+
+// For `registerResource`/`ResourceTemplate` read handlers, not tool runners - resources/read
+// errors aren't wrapped in a tool-call result, they're thrown and converted by the SDK into a
+// JSON-RPC error response. ProtocolError carries `data` as a field separate from `message` (same
+// split invalidRequestError gives tools), so a hint can be read by the client without parsing it
+// out of the message string.
+export const resourceNotFoundError = (message, data) => {
+  return new ProtocolError(ProtocolErrorCode.InvalidParams, message, data);
 };
 
 export const restToMCPError = (restError, details = {}) => {

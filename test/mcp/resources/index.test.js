@@ -3,7 +3,8 @@ import should from 'should';
 import registerResourceLoader from '../../../src/mcp/resources/index.js';
 import { createMCPServer } from '../../../src/mcp/server.js';
 import { Client, InMemoryTransport } from '@modelcontextprotocol/client';
-import { LIST_OMITTED_FIELDS } from '../../../src/constants.js';
+import { LIST_OMITTED_FIELDS, FLOW_NODE_TYPES, FLOW_NODE_TO_FILE, NON_EXISTING_FLOW_NODE_TYPES,
+  FLOW_TRIGGER_TYPES, FLOW_TRIGGER_TO_FILE } from '../../../src/constants.js';
 
 describe('MCP Resources', () => {
 
@@ -654,6 +655,50 @@ describe('MCP Resources', () => {
       result.contents[0].text.should.match(/DebugNode|debug/i);
     });
 
+    it('every FLOW_NODE_TYPES entry should reference a spec with an actual node doc file', () => {
+      Object.entries(FLOW_NODE_TYPES).forEach(([type, { spec }]) => {
+        should.exist(FLOW_NODE_TO_FILE[spec], `${type}'s spec "${spec}" has no file at losant://flow/nodes/${spec}`);
+      });
+    });
+
+    describe('flow-node spec-name hints', () => {
+      const readFlowNode = (nodeName) => client.readResource({ uri: `losant://flow/nodes/${nodeName}` }).catch((err) => err);
+
+      it('should throw a plain not-found error for a genuinely unknown node name, with no spec hint', async () => {
+        const err = await readFlowNode('TotallyBogusNode');
+        err.message.should.match(/Flow node not found: TotallyBogusNode/);
+        err.data.hint.should.match(/It does not exist/);
+      });
+
+      it('should hint at the real spec when the real `type` is passed directly', async () => {
+        const err = await readFlowNode('EventGetNode');
+        err.data.hint.should.match(/Did you mean losant:\/\/flow\/nodes\/event\?/);
+      });
+
+      it('should hint at the real spec when the real `meta.name` is passed directly', async () => {
+        const err = await readFlowNode('get-table-rows');
+        err.data.hint.should.match(/Did you mean losant:\/\/flow\/nodes\/data-table\?/);
+      });
+
+      it('should hint at the real spec for a plausible-but-wrong type guess reduced via kebab-case', async () => {
+        const err = await readFlowNode('GetTableRowsNode');
+        err.data.hint.should.match(/Did you mean losant:\/\/flow\/nodes\/data-table\?/);
+      });
+
+      it('should give a two-step hint (real type, then spec) for a NON_EXISTING_FLOW_NODE_TYPES entry', async () => {
+        const err = await readFlowNode('DataTableGetRowNode');
+        err.data.hint.should.match(/"DataTableGetRowNode" is not a valid node type\. Did you mean "DataTableQueryNode"\? See losant:\/\/flow\/nodes\/data-table for its spec\./);
+      });
+
+      it('every NON_EXISTING_FLOW_NODE_TYPES entry should map to a real, documented node type', () => {
+        Object.entries(NON_EXISTING_FLOW_NODE_TYPES).forEach(([guess, realType]) => {
+          should.exist(FLOW_NODE_TYPES[realType], `${guess} -> "${realType}" is not a real FLOW_NODE_TYPES entry`);
+          const spec = FLOW_NODE_TYPES[realType].spec;
+          should.exist(FLOW_NODE_TO_FILE[spec], `${guess} -> ${realType} has no spec file at losant://flow/nodes/${spec}`);
+        });
+      });
+    });
+
     it('should provide handler for flow trigger timer', async () => {
       const result = await client.readResource({ uri: 'losant://flow/triggers/timer' });
 
@@ -661,6 +706,38 @@ describe('MCP Resources', () => {
       result.contents[0].should.have.property('uri', 'losant://flow/triggers/timer');
       result.contents[0].should.have.property('mimeType', 'text/markdown');
       result.contents[0].text.should.match(/timer|cron/i);
+    });
+
+    it('every FLOW_TRIGGER_TYPES entry should reference a spec with an actual trigger doc file', () => {
+      FLOW_TRIGGER_TYPES.forEach(({ type, spec }) => {
+        should.exist(FLOW_TRIGGER_TO_FILE[spec], `${type}'s spec "${spec}" has no file at losant://flow/triggers/${spec}`);
+      });
+    });
+
+    describe('flow-trigger spec-name hints', () => {
+      const readFlowTrigger = (triggerName) => client.readResource({ uri: `losant://flow/triggers/${triggerName}` }).catch((err) => err);
+
+      it('should throw a plain not-found error for a genuinely unknown trigger name, with no spec hint', async () => {
+        const err = await readFlowTrigger('totallyBogus');
+        err.message.should.match(/Flow trigger not found: totallyBogus/);
+        err.data.hint.should.match(/It does not exist/);
+      });
+
+      it('should hint at the real spec when the real `type` is passed directly', async () => {
+        const err = await readFlowTrigger('deviceCreate');
+        err.data.hint.should.match(/Did you mean losant:\/\/flow\/triggers\/device-create\?/);
+      });
+
+      it('should hint at the real spec for an alias type (deviceTag shares device-state with deviceId)', async () => {
+        const err = await readFlowTrigger('deviceTag');
+        err.data.hint.should.match(/Did you mean losant:\/\/flow\/triggers\/device-state\?/);
+      });
+
+      it('should not hint at a single spec for the ambiguous "integration" type', async () => {
+        const err = await readFlowTrigger('integration');
+        err.message.should.match(/Flow trigger not found: integration/);
+        err.data.hint.should.match(/It does not exist/);
+      });
     });
   });
 });

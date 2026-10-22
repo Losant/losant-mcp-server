@@ -14,6 +14,7 @@ import deviceAuthGuide from './device-auth-guide.js';
 import dashboardGuide from './dashboard-guide.js';
 import flowGuide from './flow-guide.js';
 import webhookGuide from './webhook-guide.js';
+import flowAuthoringContent from './authoring/flows/flow.js';
 import indexContent from './build-api-index-content.js';
 // TOOL GUIDES — add new guides to ./tools/index.js
 import TOOL_GUIDES_TO_REGISTER from './tools/index.js';
@@ -23,9 +24,11 @@ import memoizee from 'memoizee';
 import { SCHEMA_NAME_TO_FILE, DOC_NAME_TO_FILE,
   DOCS_PATH, RESOURCE_TYPE_SET, SCHEMAS_PATH,
   WRITABLE_RESOURCE_TYPES, NO_CREATE_TYPES, DELETABLE_RESOURCE_TYPES, AUTHORING_HUB_TO_FILE,
-  FLOW_NODE_TO_FILE, FLOW_TRIGGER_TO_FILE, DASHBOARD_BLOCK_TO_FILE,
-  REFERENCES_TO_FILE } from '../../constants.js';
+  FLOW_NODE_TO_FILE, FLOW_NODE_TYPES, FLOW_TRIGGER_TO_FILE, DASHBOARD_BLOCK_TO_FILE,
+  REFERENCES_TO_FILE, FLOW_NODE_META_NAME_TO_SPEC, NON_EXISTING_FLOW_NODE_TYPES,
+  FLOW_TRIGGER_TYPE_TO_SPEC } from '../../constants.js';
 import { getPluralResourceName } from '../tools/helpers.js';
+import { resourceNotFoundError } from '../../helpers/errors.js';
 import debug from 'debug';
 
 const apiUrl = conf.get('losant.apiUrl');
@@ -204,7 +207,7 @@ export default (server) => {
     async (uri, { docName }) => {
       const file = DOC_NAME_TO_FILE[docName];
       if (!file) {
-        throw new Error(`Doc not found: ${docName}`);
+        throw resourceNotFoundError(`Doc not found: ${docName}`, { uri: uri.href });
       }
       return readFileContent(path.join(DOCS_PATH, file), 'text/markdown', uri.href);
     }
@@ -217,6 +220,20 @@ export default (server) => {
         text: content
       }]
     };
+  };
+
+  // 'flow' is served from the generated content in flow.js, not a static file - see AUTHORING_HUB_TO_FILE.
+  const AUTHORING_HUB_TO_CONTENT = { flow: flowAuthoringContent };
+
+  const toKebabCase = (str) => str.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+  // Resolves a bad flow-node spec-name guess to the likely intended spec. Handles three cases:
+  // the real `type` passed directly ("DataTableQueryNode"), the real `meta.name` passed directly
+  // ("get-table-rows"), and a plausible-but-wrong type guess ("GetTableRowsNode") reduced to its
+  // kebab-case meta.name equivalent.
+  const resolveNodeSpecHint = (nodeName) => {
+    return FLOW_NODE_TYPES[nodeName]?.spec ||
+      FLOW_NODE_META_NAME_TO_SPEC[nodeName] ||
+      FLOW_NODE_META_NAME_TO_SPEC[toKebabCase(nodeName.replace(/Node$/, ''))];
   };
 
   GUIDES_TO_REGISTER.forEach(({ name, uriName, resourceConfig, content }) => {
@@ -243,7 +260,7 @@ export default (server) => {
     async (uri, { schemaName }) => {
       const file = SCHEMA_NAME_TO_FILE[schemaName];
       if (!file) {
-        throw new Error(`Schema not found: ${schemaName}`);
+        throw resourceNotFoundError(`Schema not found: ${schemaName}`, { uri: uri.href });
       }
       return readFileContent(path.join(SCHEMAS_PATH, file), 'application/json', uri.href);
     }
@@ -258,8 +275,11 @@ export default (server) => {
       mimeType: 'text/markdown'
     },
     async (uri, { resourceType }) => {
+      if (AUTHORING_HUB_TO_CONTENT[resourceType]) {
+        return serveMarkdown(AUTHORING_HUB_TO_CONTENT[resourceType])(uri);
+      }
       const filePath = AUTHORING_HUB_TO_FILE[resourceType];
-      if (!filePath) { throw new Error(`Authoring hub not found: ${resourceType}`); }
+      if (!filePath) { throw resourceNotFoundError(`Authoring hub not found: ${resourceType}`, { uri: uri.href }); }
       return readAuthoringContent(filePath, uri.href);
     }
   );
@@ -274,7 +294,22 @@ export default (server) => {
     },
     async (uri, { nodeName }) => {
       const filePath = FLOW_NODE_TO_FILE[nodeName];
-      if (!filePath) { throw new Error(`Flow node not found: ${nodeName}`); }
+      if (!filePath) {
+        const hint = resolveNodeSpecHint(nodeName);
+        let hintText;
+        if (hint) {
+          hintText = `Did you mean losant://flow/nodes/${hint}? "${nodeName}" looks like it refers to the node type documented there — see the Node catalog in losant://authoring/flow for the full type-to-spec mapping.`;
+        } else {
+          // Doesn't reduce cleanly via resolveNodeSpecHint (e.g. assumed the ResourceType+Action+Node
+          // pattern when the real type doesn't follow it) - check the hand-maintained escape hatch.
+          const realType = NON_EXISTING_FLOW_NODE_TYPES[nodeName];
+          const realSpec = realType && resolveNodeSpecHint(realType);
+          hintText = realType
+            ? `"${nodeName}" is not a valid node type. Did you mean "${realType}"? See losant://flow/nodes/${realSpec} for its spec.`
+            : 'It does not exist — read losant://authoring/flow for the full Node catalog.';
+        }
+        throw resourceNotFoundError(`Flow node not found: ${nodeName}`, { uri: uri.href, hint: hintText });
+      }
       return readAuthoringContent(filePath, uri.href);
     }
   );
@@ -289,7 +324,13 @@ export default (server) => {
     },
     async (uri, { triggerName }) => {
       const filePath = FLOW_TRIGGER_TO_FILE[triggerName];
-      if (!filePath) { throw new Error(`Flow trigger not found: ${triggerName}`); }
+      if (!filePath) {
+        const hint = FLOW_TRIGGER_TYPE_TO_SPEC[triggerName];
+        const hintText = hint
+          ? `Did you mean losant://flow/triggers/${hint}? "${triggerName}" looks like it refers to the trigger type documented there — see the Trigger catalog in losant://authoring/flow for the full type-to-spec mapping.`
+          : 'It does not exist — read losant://authoring/flow for the full Trigger catalog.';
+        throw resourceNotFoundError(`Flow trigger not found: ${triggerName}`, { uri: uri.href, hint: hintText });
+      }
       return readAuthoringContent(filePath, uri.href);
     }
   );
@@ -304,7 +345,7 @@ export default (server) => {
     },
     async (uri, { blockType }) => {
       const filePath = DASHBOARD_BLOCK_TO_FILE[blockType];
-      if (!filePath) { throw new Error(`Dashboard block not found: ${blockType}`); }
+      if (!filePath) { throw resourceNotFoundError(`Dashboard block not found: ${blockType}`, { uri: uri.href }); }
       return readAuthoringContent(filePath, uri.href);
     }
   );
@@ -320,7 +361,7 @@ export default (server) => {
     async (uri, { resourceType, referenceName }) => {
       const key = `${resourceType}/${referenceName}`;
       const filePath = REFERENCES_TO_FILE[key];
-      if (!filePath) { throw new Error(`Reference not found: ${key}`); }
+      if (!filePath) { throw resourceNotFoundError(`Reference not found: ${key}`, { uri: uri.href }); }
       return readAuthoringContent(filePath, uri.href);
     }
   );
