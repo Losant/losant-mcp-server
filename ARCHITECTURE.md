@@ -180,8 +180,8 @@ Creates per-request MCP server instances:
 - **Tool Guides** (`losant://guides/tools/{toolName}`) - One per tool, read before calling it: `losant_query`, `losant_write`, `losant_delete`. Defined in `src/mcp/resources/tools/`
 - **Domain Guides** (`losant://guides/{name}`) - Per-domain context: devices, data-tables, flows, dashboards, experiences, files, notebooks, integrations, credentials, resource-jobs, webhooks, device-auth, advanced-queries
 - **Authoring Hubs** (`losant://authoring/{resourceType}`) - Deep-dive authoring for resources whose body the schema alone does not explain: flow, dashboard, experience-view, experience-endpoint
-- **Authoring Detail** (`losant://flow/nodes/{name}`, `losant://flow/triggers/{name}`, `losant://dashboard/blocks/{type}`) - Per-node, per-trigger, and per-block reference
-- **References** (`losant://references/{resourceType}/{name}`) - Cross-cutting references such as `shared/handlebars` and `flow/payload`
+- **Authoring Detail** (`losant://flow/nodes/{nodeSpec}`, `losant://flow/triggers/{triggerSpec}`, `losant://dashboard/blocks/{blockType}`) - Per-node, per-trigger, and per-block reference
+- **References** (`losant://references/{resourceType}/{referenceName}`) - Cross-cutting references such as `shared/handlebars` and `flow/payload`
 
 **Loading:**
 - Uses `require.resolve('losant-rest')` for safe package resolution

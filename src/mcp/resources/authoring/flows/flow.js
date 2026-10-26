@@ -22,7 +22,7 @@ description: Build, edit, and publish Losant flows through the API — flow vs. 
 
 > **Supported flow classes:** This guide and the associated node/trigger docs cover \`cloud\`, \`experience\`, \`edge\`, and \`customNode\` flows. **Embedded (\`flowClass: "embedded"\`) flows are not covered** — the embedded node set is highly restricted, its configuration differs significantly from other classes, and there is insufficient authoring information here to reliably create or debug embedded flows. Do not attempt to author \`flowClass: "embedded"\` flows using this guide.
 
-This guide is the entry point for creating and updating Losant flows through the API. The **envelope and wiring** are described here in full. The **per-type detail** — what goes in a node's or trigger's \`config\` — is accessed via \`losant://flow/nodes/<name>\` and \`losant://flow/triggers/<name>\`, indexed by the catalog tables below. Cross-cutting concepts that several detail docs reference are at \`losant://references/flow/<name>\`.
+This guide is the entry point for creating and updating Losant flows through the API. The **envelope and wiring** are described here in full. The **per-type detail** — what goes in a node's or trigger's \`config\` — is accessed via \`losant://flow/nodes/<nodeSpec>\` and \`losant://flow/triggers/<triggerSpec>\`, indexed by the catalog tables below. Cross-cutting concepts that several detail docs reference are at \`losant://references/flow/<name>\`.
 
 **Reading order for a new authoring task:**
 1. Read the envelope and wiring sections of this file (you're already here).

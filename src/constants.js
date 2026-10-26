@@ -291,10 +291,10 @@ export const FLOW_NODE_TYPES = {
   EdgeDeployNode: { name: 'edge-deploy', category: 'data', available: ['cloud', 'exp', 'custom'], spec: 'edge-deploy' },
   StructureEmailNode: { name: 'structure-email', category: 'output', available: ['cloud', 'exp', 'custom'], spec: 'email' },
   EndpointReplyNode: { name: 'endpoint-reply', category: 'output', available: ['cloud', 'exp', 'custom'], spec: 'endpoint-reply' },
-  EventCreateNode: { name: 'create-event', category: 'data', available: ['cloud', 'exp', 'custom'], spec: 'event' },
+  CreateEventNode: { name: 'create-event', category: 'data', available: ['cloud', 'exp', 'custom'], spec: 'event' },
   DeleteEventNode: { name: 'delete-event', category: 'data', available: ['cloud', 'exp', 'custom'], spec: 'event' },
-  EventGetNode: { name: 'get-event', category: 'data', available: ['cloud', 'exp', 'custom'], spec: 'event' },
-  EventUpdateNode: { name: 'update-event', category: 'data', available: ['cloud', 'exp', 'custom'], spec: 'event' },
+  GetEventNode: { name: 'get-event', category: 'data', available: ['cloud', 'exp', 'custom'], spec: 'event' },
+  UpdateEventNode: { name: 'update-event', category: 'data', available: ['cloud', 'exp', 'custom'], spec: 'event' },
   FileCreateNode: { name: 'file-create', category: 'data', available: ['cloud', 'exp', 'custom'], spec: 'file' },
   FileGetNode: { name: 'file-get', category: 'data', available: ['cloud', 'exp', 'custom'], spec: 'file' },
   GaugeNode: { name: 'gauge', category: 'data', available: ['cloud', 'exp', 'custom'], spec: 'time-series' },
@@ -412,6 +412,7 @@ export const FLOW_NODE_TYPES = {
 // (DataTableGetRowNode) instead of the real name (DataTableQueryNode).
 export const NON_EXISTING_FLOW_NODE_TYPES = {
   DataTableGetRowNode: 'DataTableQueryNode',
+  DataTableGetRowsNode: 'DataTableQueryNode',
   DeviceCreateNode: 'CreateDeviceNode',
   DeviceGetNode: 'GetDeviceNode',
   DeviceDeleteNode: 'DeviceDeleteWorkflowNode',
@@ -430,9 +431,12 @@ export const NON_EXISTING_FLOW_NODE_TYPES = {
   DeviceVerifyNode: 'VerifyDeviceNode',
   VerifyExperienceDeviceNode: 'VerifyDeviceNode',
   ExperienceGroupVerifyNode: 'VerifyExperienceGroupNode',
-  EventDeleteNode: 'DeleteEventNode',
   CreateFileNode: 'FileCreateNode',
-  GetFileNode: 'FileGetNode'
+  GetFileNode: 'FileGetNode',
+  EventCreateNode: 'CreateEventNode',
+  EventGetNode: 'GetEventNode',
+  EventUpdateNode: 'UpdateEventNode',
+  EventDeleteNode: 'DeleteEventNode'
 };
 
 // meta.name -> spec, derived from the same FLOW_NODE_TYPES map that generates flow.js's Node

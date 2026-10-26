@@ -30,6 +30,7 @@ import { SCHEMA_NAME_TO_FILE, DOC_NAME_TO_FILE,
 import { getPluralResourceName } from '../tools/helpers.js';
 import { resourceNotFoundError } from '../../helpers/errors.js';
 import debug from 'debug';
+import { kebabCase } from 'omnibelt';
 
 const apiUrl = conf.get('losant.apiUrl');
 const apiHost = new URL(apiUrl).hostname;
@@ -225,7 +226,6 @@ export default (server) => {
   // 'flow' is served from the generated content in flow.js, not a static file - see AUTHORING_HUB_TO_FILE.
   const AUTHORING_HUB_TO_CONTENT = { flow: flowAuthoringContent };
 
-  const toKebabCase = (str) => str.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
   const toPascalCase = (str) => str.split('-').filter(Boolean).map((word) => word[0].toUpperCase() + word.slice(1)).join('');
 
   // Tries every strategy (type/meta.name/kebab-fallback, then the NON_EXISTING_FLOW_NODE_TYPES
@@ -233,7 +233,7 @@ export default (server) => {
   const resolveNodeHintCandidate = (candidate) => {
     const spec = FLOW_NODE_TYPES[candidate]?.spec ||
       FLOW_NODE_META_NAME_TO_SPEC[candidate] ||
-      FLOW_NODE_META_NAME_TO_SPEC[toKebabCase(candidate.replace(/Node$/, ''))];
+      FLOW_NODE_META_NAME_TO_SPEC[kebabCase(candidate.replace(/Node$/, ''))];
     if (spec) { return { spec }; }
     const realType = NON_EXISTING_FLOW_NODE_TYPES[candidate];
     if (realType) { return { spec: FLOW_NODE_TYPES[realType]?.spec, realType }; }
@@ -322,9 +322,9 @@ export default (server) => {
         const resolved = resolveNodeHint(nodeSpec);
         let hintText = 'It does not exist — read losant://authoring/flow for the full Node catalog.';
         if (resolved?.realType) {
-          hintText = `"${nodeSpec}" is not a valid node type. Did you mean "${resolved.realType}"? See losant://flow/nodes/${resolved.spec} for its spec.`;
+          hintText = `"${nodeSpec}" is not a valid node spec. Did you mean "${resolved.realType}"? See losant://flow/nodes/${resolved.spec} for its spec.`;
         } else if (resolved) {
-          hintText = `Did you mean losant://flow/nodes/${resolved.spec}? "${nodeSpec}" looks like it refers to the node type documented there — see the Node catalog in losant://authoring/flow for the full type-to-spec mapping.`;
+          hintText = `Did you mean losant://flow/nodes/${resolved.spec}? "${nodeSpec}" looks like it refers to the node type or a metadata field — see the Node catalog in losant://authoring/flow for the full type-to-spec mapping.`;
         }
         throw resourceNotFoundError(`Flow node not found: ${nodeSpec}`, { uri: uri.href, hint: hintText });
       }
@@ -343,11 +343,18 @@ export default (server) => {
     async (uri, { triggerSpec }) => {
       const filePath = FLOW_TRIGGER_TO_FILE[triggerSpec];
       if (!filePath) {
-        const hint = FLOW_TRIGGER_TYPE_TO_SPEC[triggerSpec];
+        const message = `Flow trigger not found: ${triggerSpec}`;
+        if (triggerSpec === 'integration') {
+          throw resourceNotFoundError(message, {
+            uri: uri.href,
+            hint: 'It does not exist. There are individual trigger guides per integration type e.g. amazon-sqs, azure-event-hubs, google-pub-sub, mqtt-topic, particle, or websocket. — read losant://authoring/flow for the full Trigger catalog.'
+          });
+        }
+        const hint = FLOW_TRIGGER_TYPE_TO_SPEC[triggerSpec] || FLOW_TRIGGER_TYPE_TO_SPEC[kebabCase(triggerSpec)] || FLOW_TRIGGER_TO_FILE[triggerSpec];
         const hintText = hint
           ? `Did you mean losant://flow/triggers/${hint}? "${triggerSpec}" looks like it refers to the trigger type documented there — see the Trigger catalog in losant://authoring/flow for the full type-to-spec mapping.`
           : 'It does not exist — read losant://authoring/flow for the full Trigger catalog.';
-        throw resourceNotFoundError(`Flow trigger not found: ${triggerSpec}`, { uri: uri.href, hint: hintText });
+        throw resourceNotFoundError(message, { uri: uri.href, hint: hintText });
       }
       return readAuthoringContent(filePath, uri.href);
     }

@@ -672,7 +672,7 @@ describe('MCP Resources', () => {
 
       it('should hint at the real spec when the real `type` is passed directly', async () => {
         const err = await readFlowNode('EventGetNode');
-        err.data.hint.should.match(/Did you mean losant:\/\/flow\/nodes\/event\?/);
+        err.data.hint.should.match(/See losant:\/\/flow\/nodes\/event/);
       });
 
       it('should hint at the real spec when the real `meta.name` is passed directly', async () => {
@@ -687,7 +687,7 @@ describe('MCP Resources', () => {
 
       it('should give a two-step hint (real type, then spec) for a NON_EXISTING_FLOW_NODE_TYPES entry', async () => {
         const err = await readFlowNode('DataTableGetRowNode');
-        err.data.hint.should.match(/"DataTableGetRowNode" is not a valid node type\. Did you mean "DataTableQueryNode"\? See losant:\/\/flow\/nodes\/data-table for its spec\./);
+        err.data.hint.should.match(/"DataTableGetRowNode" is not a valid node spec\. Did you mean "DataTableQueryNode"\? See losant:\/\/flow\/nodes\/data-table for its spec\./);
       });
 
       it('every NON_EXISTING_FLOW_NODE_TYPES entry should map to a real, documented node type', () => {
