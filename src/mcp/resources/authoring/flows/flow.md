@@ -218,7 +218,7 @@ Experience flows back HTTP endpoints exposed to end users. They are versioned **
 
 ### Edge flows
 
-Edge flows are deployed to Gateway Edge Agent (GEA) hardware and run locally on the device. They support hardware-specific triggers (serial, OPC UA, Beckhoff, file watch, UDP, etc.) and make local decisions without requiring a cloud round-trip.
+Edge flows are deployed to Gateway Edge Agent (GEA) hardware and run locally on the device. They support hardware-specific triggers (serial, OPC UA, Beckhoff, file watch, UDP, etc.), cluster interactions via the Kubernetes node (GEA >= 2.7.0), and make local decisions without requiring a cloud round-trip.
 
 **When changes go live:** Changes do **not** go live until you publish a named version. Devices pull and run versions — they never execute the develop version directly. PATCHing develop has zero effect on a running device until a new version is published and deployed.
 
@@ -257,11 +257,6 @@ Edge flows are deployed to Gateway Edge Agent (GEA) hardware and run locally on 
 - `losant://flow/nodes/otel-metrics-write` — OTel Metrics: Write Node
 
 Both nodes support two connection modes: `connectionSource: "inline"` (embed the collector URL and credentials directly in the flow) or `connectionSource: "agentConfig"` (pull the connection from the GEA `[otlpCollector]` config block — no credentials in the flow). The agent-config mode requires the edge device's GEA to have `[otlpCollector]` configured. See `losant://guides/devices` → **OpenTelemetry Integration** for the GEA config reference.
-
-**Kubernetes integration (GEA 2.7.0+):** Edge flows can interact with Kubernetes clusters (Pods, Deployments, Services, ConfigMaps, Namespaces, Nodes, Server-Side Apply manifests, and CRDs) using the Kubernetes Node:
-- `losant://flow/nodes/kubernetes` — Kubernetes Node
-
-Supports two authentication modes: `authMode: "inCluster"` (for GEA pods running within a cluster with auto-discovered ServiceAccount token and CA cert) and `authMode: "inline"` (targeting an external cluster with configurable bearer token and CA cert). Also supports streaming pod logs and large responses directly to local container storage via `resultDiskPathTemplate` to bypass the 5 MB flow payload limit.
 
 ---
 
