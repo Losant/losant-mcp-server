@@ -136,10 +136,17 @@ describe('flow-debug-listener tool', () => {
     result.isError.should.equal(true);
   });
 
-  it('should return a validation error when flowVersionId is given without filterVersion', async () => {
+  it('should default filterVersion to "id" and use the versioned stream URL when flowVersionId is given alone', async () => {
     const tool = await loadTool();
-    const result = await tool({ applicationId: APP_ID, flowId, flowVersionId: '575ed18f7ae143cd83dc4aa7' });
-    result.isError.should.equal(true);
+    const flowVersionId = '575ed18f7ae143cd83dc4aa7';
+    const resultPromise = tool({ applicationId: APP_ID, flowId, flowVersionId, timeout: 1 });
+
+    const es = FakeEventSource.instances[0];
+    es.url.should.match(new RegExp(`/versions/${flowVersionId}/debug`));
+    es.url.should.not.match(/filter=/);
+    es.emitOpen();
+
+    await resultPromise;
   });
 
   it('should default to filter=develop and forward debugParams on the unversioned stream URL', async () => {
@@ -376,6 +383,72 @@ describe('flow-debug-listener tool', () => {
     result.isError.should.equal(true);
     const body = JSON.parse(result.content[0].text);
     body.message.should.match(/Failed to open/);
+  });
+
+  it('should return a connection error when the stream neither opens nor errors before the timeout', async () => {
+    const tool = await loadTool();
+    const result = await tool({ applicationId: APP_ID, flowId, timeout: 1 });
+
+    result.isError.should.equal(true);
+    const body = JSON.parse(result.content[0].text);
+    body.message.should.match(/Timed out after 1s waiting to connect/);
+  });
+
+  it('should stop and report the collected messages when the stream drops unexpectedly after opening', async () => {
+    const tool = await loadTool();
+    const resultPromise = tool({ applicationId: APP_ID, flowId, timeout: 5 });
+
+    const es = FakeEventSource.instances[0];
+    es.emitOpen();
+    await nextTick();
+    es.emitMessage('logEntry', baseMessage());
+    await nextTick();
+    es.emitError({ code: 500, message: 'Connection lost' });
+
+    const result = await resultPromise;
+    should.not.exist(result.isError);
+    const body = JSON.parse(result.content[0].text);
+    body.messageCount.should.equal(1);
+    body.detail.should.match(/closed unexpectedly after collecting 1 message/);
+  });
+
+  it('should skip a logEntry message whose payload is not valid JSON', async () => {
+    const tool = await loadTool();
+    const resultPromise = tool({ applicationId: APP_ID, flowId, timeout: 1 });
+
+    const es = FakeEventSource.instances[0];
+    es.emitOpen();
+    await nextTick();
+    es.dispatchEvent(new MessageEvent('logEntry', { data: 'not-valid-json' }));
+    es.emitMessage('logEntry', baseMessage());
+
+    const result = await resultPromise;
+    should.not.exist(result.isError);
+    const body = JSON.parse(result.content[0].text);
+    body.messageCount.should.equal(1);
+  });
+
+  it('should inject the Authorization header via the custom fetch passed to EventSource', async () => {
+    const tool = await loadTool();
+    const resultPromise = tool({ applicationId: APP_ID, flowId, timeout: 1 });
+
+    const es = FakeEventSource.instances[0];
+    const originalFetch = global.fetch;
+    let capturedInit;
+    global.fetch = (input, init) => {
+      capturedInit = init;
+      return Promise.resolve();
+    };
+    try {
+      await es.init.fetch('https://example.com/debug', { headers: { Accept: 'text/event-stream' } });
+    } finally {
+      global.fetch = originalFetch;
+    }
+    capturedInit.headers.Authorization.should.equal(`Bearer ${LOSANT_API_TOKEN}`);
+    capturedInit.headers.Accept.should.equal('text/event-stream');
+
+    es.emitOpen();
+    await resultPromise;
   });
 
 });

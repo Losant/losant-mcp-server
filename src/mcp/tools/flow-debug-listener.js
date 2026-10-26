@@ -22,9 +22,14 @@ const VALID_DEBUG_LEVELS = new Set(['all', 'none', 'verbose', 'info', 'warn', 'e
 // comma-separated form the endpoint expects by buildDebugPath.
 const DEBUG_PARAM_PROPERTIES = {
   level: {
-    type: 'array',
-    items: { type: 'string', enum: [...VALID_DEBUG_LEVELS] },
-    description: 'Levels to include. Matches the level set on each Debug node - set this to only see output from nodes at a given severity. Must be one or more entries, with no duplicates.'
+    anyOf: [{
+      type: 'array',
+      items: { type: 'string', enum: [...VALID_DEBUG_LEVELS] },
+      description: 'Levels to include. Matches the level set on each Debug node - set this to only see output from nodes at a given severity. Must be one or more entries, with no duplicates.'
+    }, {
+      type: 'string',
+      description: 'Comma separated string of levels to include. Matches the level set on each Debug node - set this to only see output from nodes at a given severity. Must be one or more entries, with no duplicates.'
+    }]
   },
   excludeIds: {
     type: 'array',
@@ -132,11 +137,11 @@ const validateParams = (
     }
   }
 
-  if (virtualButtonPayload !== undefined && virtualButtonKey === undefined) {
+  if (virtualButtonPayload && !virtualButtonKey) {
     errors.push({ fieldName: 'virtualButtonPayload', details: 'Only meaningful when virtualButtonKey is also given.' });
   }
 
-  if (includeUnmatchedMessages !== undefined && virtualButtonKey === undefined) {
+  if (includeUnmatchedMessages && !virtualButtonKey) {
     errors.push({ fieldName: 'includeUnmatchedMessages', details: 'Only meaningful when virtualButtonKey is also given - there is no filtering to exclude messages from without it.' });
   }
 
@@ -160,8 +165,11 @@ const buildDebugPath = (applicationId, flowId, flowVersionId, effectiveFilterVer
 
   const query = new URLSearchParams();
   Object.entries(resolvedParams).forEach(([key, value]) => {
-    if (value === undefined) { return; }
-    query.set(key, Array.isArray(value) ? value.join(',') : String(value));
+    if (Array.isArray(value) && value.length) {
+      query.set(key, value.join(','));
+    } else if (value !== undefined) {
+      query.set(key, String(value));
+    }
   });
   const qs = query.toString();
   return qs ? `${base}?${qs}` : base;
@@ -171,7 +179,7 @@ const buildDebugPath = (applicationId, flowId, flowVersionId, effectiveFilterVer
 // routed through a fetch override that injects the bearer token - the same technique losant-rest's
 // own (private, unused-by-this-SDK) attachEventSource helper uses for its public SSE endpoints.
 const openDebugStream = (apiUrl, accessToken, debugPath) => {
-  const es = new EventSource(`${apiUrl}${debugPath}`, {
+  const es = new EventSource(new URL(debugPath, apiUrl).toString(), {
     fetch: (input, init) => fetch(input, {
       ...init,
       headers: { ...init.headers, Authorization: `Bearer ${accessToken}` }
@@ -223,12 +231,12 @@ export default {
         },
         flowVersionId: {
           type: 'string',
-          description: 'Flow version ID (24-character hex string; version names like "develop" are not accepted here, even though the underlying API allows them). Required when filterVersion is "id", and an error otherwise. Scopes both the debug endpoint and the virtual button press (if any) to that exact published version.'
+          description: 'Flow version ID (24-character hex string; version names like "develop" are not accepted here, even though the underlying API allows them). If given, filterVersion defaults to "id" unless set explicitly, and any other filterVersion value is an error. Scopes both the debug endpoint and the virtual button press (if any) to that exact published version.'
         },
         filterVersion: {
           type: 'string',
           enum: ['develop', 'all', 'default', 'id'],
-          description: 'Which flow version(s) the debug stream reflects. "develop" (default) watches the unversioned develop stream. "all"/"default" watch the unversioned stream with that platform-level scope. "id" watches one exact published version and requires flowVersionId to also be given (flowVersionId is an error for any other value).'
+          description: 'Which flow version(s) the debug stream reflects. "develop" (default when flowVersionId is not given) watches the unversioned develop stream. "all"/"default" watch the unversioned stream with that platform-level scope. "id" watches one exact published version and requires flowVersionId to also be given - this is also the default when flowVersionId is given without an explicit filterVersion. Giving any value other than "id" alongside flowVersionId is an error.'
         },
         deviceId: {
           type: 'string',
@@ -278,7 +286,8 @@ export default {
         applicationId, flowId, flowVersionId, filterVersion, deviceId, deploymentId, virtualButtonKey, virtualButtonPayload, timeout, messageCount, includeUnmatchedMessages, debugParams
       });
 
-      const effectiveFilterVersion = filterVersion === undefined ? DEFAULT_FILTER_VERSION : filterVersion;
+      const defaultFilterVersion = flowVersionId !== undefined ? 'id' : DEFAULT_FILTER_VERSION;
+      const effectiveFilterVersion = filterVersion !== undefined ? filterVersion : defaultFilterVersion;
 
       const paramErrors = validateParams(
         timeout, messageCount, virtualButtonKey, virtualButtonPayload, includeUnmatchedMessages,
@@ -293,18 +302,22 @@ export default {
       const accessToken = losantClient.getOption('accessToken');
       const debugPath = buildDebugPath(applicationId, flowId, flowVersionId, effectiveFilterVersion, deviceId, deploymentId, debugParams);
       const { es, openPromise, isTransportFailure } = openDebugStream(apiUrl, accessToken, debugPath);
+      try {
+        await Promise.race([
+          openPromise,
+          sleep(timeoutSec * 1000).then(() => {
+            throw new Error(`Timed out after ${timeoutSec}s waiting to connect to flow debug stream`);
+          })
+        ]);
+      } catch (err) {
+        return invalidRequestError({
+          message: `Failed to open flow debug stream: ${err.message}`,
+          statusCode: err.statusCode,
+          detail: 'A 401/403 here most likely means the access token does not have read access to this application - the debug stream requires the same access as reading the flow itself, not any additional permission.'
+        });
+      }
 
       try {
-        try {
-          await Promise.race([openPromise, sleep(timeoutSec * 1000).then(() => 'timeout')]);
-        } catch (err) {
-          return invalidRequestError({
-            message: `Failed to open flow debug stream: ${err.message}`,
-            statusCode: err.statusCode,
-            detail: 'A 401/403 here most likely means the access token does not have read access to this application - the debug stream requires the same access as reading the flow itself, not any additional permission.'
-          });
-        }
-
         const collected = [];
         const unmatched = [];
         const clickingButton = virtualButtonKey !== undefined;
@@ -364,9 +377,7 @@ export default {
             return restToMCPError(err, { phase: 'pressVirtualButton', virtualButtonKey });
           }
         }
-
         const outcome = await Promise.race([donePromise, sleep(timeoutSec * 1000).then(() => 'timeout')]);
-
         const timedOut = outcome === 'timeout';
         const detailParts = [];
         if (timedOut && messageCount !== undefined && collected.length < messageCount) {
@@ -375,7 +386,7 @@ export default {
           detailParts.push(`Debug stream closed unexpectedly after collecting ${collected.length} message(s).`);
         }
         if (virtualButtonKey !== undefined && unmatchedCount > 0) {
-          detailParts.push(`${unmatchedCount} other debug message(s) were seen on the stream but did not match this press (different pressId/runId) and were excluded - the run likely executed even if 0 messages were returned above.`);
+          detailParts.push(`${unmatchedCount} other debug message(s) were seen on the stream but did not match this press (different pressId/runId) and were excluded ${!collected.length ? '- the run likely executed even if 0 messages were returned above.' : '.'}`);
         }
         const detail = detailParts.length ? detailParts.join(' ') : undefined;
 
