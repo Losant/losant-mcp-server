@@ -5,6 +5,21 @@ All notable changes to the Losant MCP Server will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-11-03
+
+### Added
+- `losant_flow_diagnostics` MCP tool — query a flow's run statistics and historical per-node errors in one call
+- `losant_flow_debug_listener` MCP tool — watch a flow's live debug output and optionally trigger a Virtual Button press to capture a test run
+- Flow debug patterns reference doc (`losant://references/flow/debug-patterns`) covering manual and tool-assisted flow debugging approaches
+- Flow authoring guide: node specs for the Kubernetes, OpenTelemetry Logs Write, and OpenTelemetry Metrics Write nodes
+- Webhook guide (`losant://guides/webhook`)
+
+### Changed
+- Upgraded `@modelcontextprotocol/sdk` from v1 to v2 (split into `@modelcontextprotocol/node`/`server`/`client` packages)
+- Reorganized all tool guides under a dedicated `tools/` resource directory and standardized their markdown structure
+- Bumped `losant-rest` to the tagged `v4.3.0` release
+- Upgraded Node.js runtime to 24.22.1 and updated pnpm and other dependencies
+
 ## [1.2.0] - 2026-09-23
 
 ### Added
