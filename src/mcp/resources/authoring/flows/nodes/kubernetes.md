@@ -1,6 +1,6 @@
 # Kubernetes Node (`type: "KubernetesNode"`)
 
-The Kubernetes Node allows the Gateway Edge Agent to interact with a Kubernetes cluster, whether the agent's container is orchestrated by the cluster or running alongside it on the edge network. It is only available in Edge Workflows. The node supports curated operations across Pods, Deployments, Services, ConfigMaps, Namespaces, and Nodes, Server-Side Apply (SSA) for deploying YAML/JSON manifests, and an escape-hatch Custom operation for arbitrary REST endpoints and Custom Resource Definitions (CRDs).
+The Kubernetes Node allows the Gateway Edge Agent to interact with a Kubernetes cluster, whether the agent's container is orchestrated by the cluster or running alongside it on the edge network. It is only available in Edge Workflows (GEA >= 2.7.0). The node supports curated operations across Pods, Deployments, Services, ConfigMaps, Namespaces, and Nodes, Server-Side Apply (SSA) for deploying YAML/JSON manifests, and an escape-hatch Custom operation for arbitrary REST endpoints and Custom Resource Definitions (CRDs).
 
 ## Required Fields
 
