@@ -75,9 +75,17 @@ const validateLevel = (level) => {
 };
 
 const validateParams = (
-  timeout, messageCount, virtualButtonKey, virtualButtonPayload, includeUnmatchedMessages, flowVersionId, effectiveFilterVersion, deviceId, deploymentId, debugParams
+  timeout, messageCount, virtualButtonKey, virtualButtonPayload, includeUnmatchedMessages, applicationId, flowId, flowVersionId, effectiveFilterVersion, deviceId, deploymentId, debugParams
 ) => {
   const errors = [];
+
+  if (!OBJECT_ID_PATTERN.test(applicationId)) {
+    errors.push({ fieldName: 'applicationId', details: `Must be a 24-character hex string, got "${applicationId}".` });
+  }
+
+  if (!OBJECT_ID_PATTERN.test(flowId)) {
+    errors.push({ fieldName: 'flowId', details: `Must be a 24-character hex string, got "${flowId}".` });
+  }
 
   if (flowVersionId !== undefined && !OBJECT_ID_PATTERN.test(flowVersionId)) {
     errors.push({ fieldName: 'flowVersionId', details: `Must be a 24-character hex string, got "${flowVersionId}".` });
@@ -97,15 +105,15 @@ const validateParams = (
   if (effectiveFilterVersion !== 'id' && flowVersionId !== undefined) {
     errors.push({ fieldName: 'filterVersion', details: 'Must be "id" when flowVersionId is given.' });
   }
-
-  Object.keys(debugParams).forEach((key) => {
+  const resolvedDebugParams = debugParams || {};
+  Object.keys(resolvedDebugParams).forEach((key) => {
     if (!SHARED_DEBUG_PARAM_KEYS.has(key)) {
       errors.push({ fieldName: `debugParams.${key}`, details: `Unknown debug stream parameter "${key}".` });
     }
   });
 
-  if (debugParams.level !== undefined) {
-    errors.push(...validateLevel(debugParams.level));
+  if (resolvedDebugParams.level !== undefined) {
+    errors.push(...validateLevel(resolvedDebugParams.level));
   }
 
   if (timeout !== undefined) {
@@ -171,15 +179,16 @@ const openDebugStream = (apiUrl, accessToken, debugPath) => {
   });
 
   const isTransportFailure = (event) => typeof event.code === 'number' || es.readyState === EventSource.CLOSED;
-
+  let hasOpened = false;
   const openPromise = new Promise((resolve, reject) => {
     const controller = new AbortController();
     es.addEventListener('open', () => {
+      hasOpened = true;
       controller.abort();
       resolve();
     }, { signal: controller.signal });
     es.addEventListener('error', (event) => {
-      if (isTransportFailure(event)) {
+      if (!hasOpened || isTransportFailure(event)) {
         controller.abort();
         const err = new Error(event.message || 'Failed to open flow debug stream');
         err.statusCode = event.code;
@@ -254,7 +263,7 @@ export default {
           type: 'object',
           properties: DEBUG_PARAM_PROPERTIES,
           additionalProperties: false,
-          description: 'Parameters used to filter which messages from the flow are recieved in this tool'
+          description: 'Parameters used to filter which messages from the flow are received in this tool'
         }
       },
       required: ['applicationId', 'flowId'],
@@ -272,7 +281,8 @@ export default {
       const effectiveFilterVersion = filterVersion === undefined ? DEFAULT_FILTER_VERSION : filterVersion;
 
       const paramErrors = validateParams(
-        timeout, messageCount, virtualButtonKey, virtualButtonPayload, includeUnmatchedMessages, flowVersionId, effectiveFilterVersion, deviceId, deploymentId, debugParams
+        timeout, messageCount, virtualButtonKey, virtualButtonPayload, includeUnmatchedMessages,
+        applicationId, flowId, flowVersionId, effectiveFilterVersion, deviceId, deploymentId, debugParams
       );
       if (paramErrors.length) {
         return invalidRequestError({ message: 'Tool input validation failed', errors: paramErrors });
@@ -286,7 +296,7 @@ export default {
 
       try {
         try {
-          await openPromise;
+          await Promise.race([openPromise, sleep(timeoutSec * 1000).then(() => 'timeout')]);
         } catch (err) {
           return invalidRequestError({
             message: `Failed to open flow debug stream: ${err.message}`,
@@ -297,17 +307,18 @@ export default {
 
         const collected = [];
         const unmatched = [];
-        let pressId;
+        const clickingButton = virtualButtonKey !== undefined;
+        const pressId = randomUUID();
         let matchedRunId;
         let unmatchedCount = 0;
 
         const isMatch = (message) => {
-          if (virtualButtonKey === undefined) { return true; }
+          if (!clickingButton) { return true; }
           if (message?.payload?.meta?.pressId === pressId) {
             if (matchedRunId === undefined) { matchedRunId = message.runId; }
             return true;
           }
-          return matchedRunId !== undefined && message.runId === matchedRunId;
+          return matchedRunId !== undefined && message?.runId === matchedRunId;
         };
 
         let resolveDone;
@@ -335,8 +346,7 @@ export default {
           if (isTransportFailure(event)) { resolveDone('dropped'); }
         });
 
-        if (virtualButtonKey !== undefined) {
-          pressId = randomUUID();
+        if (clickingButton) {
           try {
             await losantClient.flow.pressVirtualButton({
               applicationId,
