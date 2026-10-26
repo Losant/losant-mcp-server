@@ -165,8 +165,8 @@ const buildDebugPath = (applicationId, flowId, flowVersionId, effectiveFilterVer
 
   const query = new URLSearchParams();
   Object.entries(resolvedParams).forEach(([key, value]) => {
-    if (Array.isArray(value) && value.length) {
-      query.set(key, value.join(','));
+    if (Array.isArray(value)) {
+      if (value.length) { query.set(key, value.join(',')); }
     } else if (value !== undefined) {
       query.set(key, String(value));
     }
@@ -303,21 +303,21 @@ export default {
       const debugPath = buildDebugPath(applicationId, flowId, flowVersionId, effectiveFilterVersion, deviceId, deploymentId, debugParams);
       const { es, openPromise, isTransportFailure } = openDebugStream(apiUrl, accessToken, debugPath);
       try {
-        await Promise.race([
-          openPromise,
-          sleep(timeoutSec * 1000).then(() => {
-            throw new Error(`Timed out after ${timeoutSec}s waiting to connect to flow debug stream`);
-          })
-        ]);
-      } catch (err) {
-        return invalidRequestError({
-          message: `Failed to open flow debug stream: ${err.message}`,
-          statusCode: err.statusCode,
-          detail: 'A 401/403 here most likely means the access token does not have read access to this application - the debug stream requires the same access as reading the flow itself, not any additional permission.'
-        });
-      }
+        try {
+          await Promise.race([
+            openPromise,
+            sleep(timeoutSec * 1000).then(() => {
+              throw new Error(`Timed out after ${timeoutSec}s waiting to connect to flow debug stream`);
+            })
+          ]);
+        } catch (err) {
+          return invalidRequestError({
+            message: `Failed to open flow debug stream: ${err.message}`,
+            statusCode: err.statusCode,
+            detail: 'A 401/403 here most likely means the access token does not have read access to this application - the debug stream requires the same access as reading the flow itself, not any additional permission.'
+          });
+        }
 
-      try {
         const collected = [];
         const unmatched = [];
         const clickingButton = virtualButtonKey !== undefined;
