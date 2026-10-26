@@ -218,7 +218,7 @@ Experience flows back HTTP endpoints exposed to end users. They are versioned **
 
 ### Edge flows
 
-Edge flows are deployed to Gateway Edge Agent (GEA) hardware and run locally on the device. They support hardware-specific triggers (serial, OPC UA, Beckhoff, file watch, UDP, etc.) and make local decisions without requiring a cloud round-trip.
+Edge flows are deployed to Gateway Edge Agent (GEA) hardware and run locally on the device. They support hardware-specific triggers (serial, OPC UA, Beckhoff, file watch, UDP, etc.), cluster interactions via the Kubernetes node (GEA >= 2.7.0), and make local decisions without requiring a cloud round-trip.
 
 **When changes go live:** Changes do **not** go live until you publish a named version. Devices pull and run versions — they never execute the develop version directly. PATCHing develop has zero effect on a running device until a new version is published and deployed.
 
@@ -536,6 +536,7 @@ See `losant://flow/nodes/loop` for the full pattern and a worked example.
 | `JWTCreateNode` | `jwt-create` | logic | cloud, exp, edge, custom | `losant://flow/nodes/jwt` |
 | `JWTDecodeNode` | `jwt-decode` | logic | cloud, exp, edge, custom | `losant://flow/nodes/jwt` |
 | `JWTVerifyNode` | `jwt-verify` | logic | cloud, exp, edge, custom | `losant://flow/nodes/jwt` |
+| `KubernetesNode` | `kubernetes` | data | edge | `losant://flow/nodes/kubernetes` |
 | `LatchNode` | `latch` | logic | all | `losant://flow/nodes/latch` |
 | `LosantApiNode` | `losantapi` | data | cloud, exp, edge, custom | `losant://flow/nodes/losant-api` |
 | `LoopCapNode` | `loop-return` | loop | cloud, exp, edge, custom | `losant://flow/nodes/loop` |
