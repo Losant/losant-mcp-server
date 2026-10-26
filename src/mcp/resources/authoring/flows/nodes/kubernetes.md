@@ -195,7 +195,11 @@ The `custom` operation serves as an escape hatch for arbitrary Kubernetes REST e
 The node uses Kubernetes Server-Side Apply (SSA) with `Content-Type: application/apply-patch+yaml` to declare and reconcile desired states for single- or multi-document YAML/JSON manifests. Manifests can contain multiple Kubernetes resource definitions separated by standard YAML document markers (`---`).
 
 #### Supported Manifest Resource Types
-`Pod`, `Deployment`, `Service`, `ConfigMap`, `Namespace`, `Node`, `StatefulSet`, `DaemonSet`, `ReplicaSet`, `Secret`, `ServiceAccount`, `Job`, `CronJob`, `Ingress`, `PersistentVolumeClaim`, `Role`, `RoleBinding`, `ClusterRole`, `ClusterRoleBinding`. For custom kinds or CRDs, use the `custom` operation.
+
+`Pod`, `Deployment`, `Service`, `ConfigMap`, `Namespace`, `Node`, `StatefulSet`, `DaemonSet`, `ReplicaSet`, `Secret`, `ServiceAccount`, `Job`, `CronJob`, `Ingress`, `PersistentVolumeClaim`, `Role`, `RoleBinding`, `ClusterRole`, `ClusterRoleBinding`.
+
+> [!NOTE]
+> Server-Side Apply in the Gateway Edge Agent resolves resource endpoints using an internal mapping of standard Kubernetes types rather than performing dynamic API discovery (`/apis`) against the cluster. Consequently, manifest documents containing Custom Resource Definitions (CRDs) or unrecognized `kind` values will throw a validation error. To create, update, or query custom resources, use the `custom` operation with the resource's explicit API endpoint (for example, `PATCH /apis/<group>/<version>/namespaces/<ns>/<plural>/<name>`).
 
 #### Example: Server-Side Apply Manifest (Inline Auth)
 
