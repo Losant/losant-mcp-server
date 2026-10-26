@@ -53,12 +53,13 @@ A common procedure for turning \`errors\` into a fix:
 3. Look up that \`nodeId\` in the flow's \`nodes\` array (\`losant_query\` \`operation=get\` \`resourceType=flow\`) to get the node's \`type\`.
 4. Find that \`type\` in the node catalog table in [losant://authoring/flow](losant://authoring/flow), then read its [losant://flow/nodes/{nodeName}](losant://flow/nodes/{nodeName}) detail page for its config shape and common failure causes.
 5. Once you know the fix, use \`losant_write\` \`operation=updateOne\` \`resourceType=flow\` to update the node's \`config\` — see [losant://guides/tools/losant_write](losant://guides/tools/losant_write) and [losant://authoring/flow](losant://authoring/flow) before constructing the updated \`nodes\` array.
+6. Verify the fix by reproducing the failing path live with [losant://guides/tools/losant_flow_debug_listener](losant://guides/tools/losant_flow_debug_listener), instead of waiting on the next stats aggregate (up to 15 minutes) or for the failure to recur naturally.
 
 This narrows "the flow is failing" down to "this node is failing" before you spend time reading the rest of the flow.
 
 ## Restrictions
 
-- Empty results don't necessarily mean "the flow never runs" — it can also mean the time range is too narrow, or \`flowVersion\` doesn't match anything real (consider verifying the name/ID via \`losant_query\` on \`resourceType=flowVersion\`).
+- Empty results don't necessarily mean "the flow never runs" — it can also mean the time range is too narrow, or \`flowVersion\` doesn't match anything real (consider verifying the name/ID via \`losant_query\` on \`resourceType=flowVersion\`). If you've ruled those out and a problem is still suspected, use [losant://guides/tools/losant_flow_debug_listener](losant://guides/tools/losant_flow_debug_listener) to watch the flow's live output and try to capture the error as it happens.
 - \`duration\` must be between \`900000\` (15 minutes) and \`2678400000\` (31 days), and \`resolution\` between \`900000\` and \`duration\` — out-of-range values return a tool input validation error rather than a diagnostics result. See the **15-minute floor** note above.
 - \`limit\` must be between \`1\` and \`25\` — out-of-range values return a tool input validation error rather than a diagnostics result.
 
@@ -66,6 +67,7 @@ This narrows "the flow is failing" down to "this node is failing" before you spe
 
 - [losant://docs/flow](losant://docs/flow) has the raw \`stats\`/\`errors\` endpoint documentation.
 - [losant://guides/flows](losant://guides/flows) covers flow authoring (triggers, nodes, wiring) — the flow's *definition*, as opposed to the runtime data this tool returns.
+- [losant://guides/tools/losant_flow_debug_listener](losant://guides/tools/losant_flow_debug_listener) covers live per-node debug output — reach for it once you have a specific \`nodeId\`/error to reproduce, or when \`stats\`/\`errors\` come back empty but a problem is still suspected.
 `;
 
 export default {
