@@ -671,8 +671,13 @@ describe('MCP Resources', () => {
       });
 
       it('should hint at the real spec when the real `type` is passed directly', async () => {
-        const err = await readFlowNode('EventGetNode');
-        err.data.hint.should.match(/See losant:\/\/flow\/nodes\/event/);
+        const err = await readFlowNode('GetEventNode');
+        err.data.hint.should.match(/Did you mean losant:\/\/flow\/nodes\/event\?/);
+      });
+
+      it('should propagate the hint in err.message, not just err.data.hint', async () => {
+        const err = await readFlowNode('get-table-rows');
+        err.message.should.match(/HINT:: Did you mean losant:\/\/flow\/nodes\/data-table\?/);
       });
 
       it('should hint at the real spec when the real `meta.name` is passed directly', async () => {
@@ -733,10 +738,30 @@ describe('MCP Resources', () => {
         err.data.hint.should.match(/Did you mean losant:\/\/flow\/triggers\/device-state\?/);
       });
 
+      it('should hint at the real spec for a kebab-case guess of the spec name (amazonSqs)', async () => {
+        const err = await readFlowTrigger('amazonSqs');
+        err.data.hint.should.match(/Did you mean losant:\/\/flow\/triggers\/amazon-sqs\?/);
+      });
+
+      it('should hint at the real spec for a kebab-case guess of the spec name (deviceState)', async () => {
+        const err = await readFlowTrigger('deviceState');
+        err.data.hint.should.match(/Did you mean losant:\/\/flow\/triggers\/device-state\?/);
+      });
+
+      it('should hint at the real spec for a PascalCase guess reduced via kebab-case (Timer)', async () => {
+        const err = await readFlowTrigger('Timer');
+        err.data.hint.should.match(/Did you mean losant:\/\/flow\/triggers\/timer\?/);
+      });
+
+      it('should propagate the hint in err.message, not just err.data.hint', async () => {
+        const err = await readFlowTrigger('deviceCreate');
+        err.message.should.match(/HINT:: Did you mean losant:\/\/flow\/triggers\/device-create\?/);
+      });
+
       it('should not hint at a single spec for the ambiguous "integration" type', async () => {
         const err = await readFlowTrigger('integration');
         err.message.should.match(/Flow trigger not found: integration/);
-        err.data.hint.should.match(/It does not exist/);
+        err.data.hint.should.match(/configured by service type/);
       });
     });
   });

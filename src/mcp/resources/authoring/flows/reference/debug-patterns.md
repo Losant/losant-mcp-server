@@ -5,7 +5,7 @@ description: Three debugging patterns for flows — Virtual Button-driven manual
 
 # Flow Debug Patterns
 
-Three ways to test and debug a flow without relying on waiting for real events to arrive. Individual node and trigger details are at `losant://flow/nodes/<name>` and `losant://flow/triggers/<name>`.
+Three ways to test and debug a flow without relying on waiting for real events to arrive. Individual node and trigger details are at `losant://flow/nodes/<nodeSpec>` and `losant://flow/triggers/<triggerSpec>`.
 
 ---
 
@@ -88,7 +88,7 @@ This produces `data.tempC = 95`, `data.humidity = 82` — matching what the Devi
 ]
 ```
 
-Check `losant://flow/triggers/<name>` for the exact payload shape of the trigger you are replacing — specifically which fields are at the root vs. under `data`.
+Check `losant://flow/triggers/<triggerSpec>` for the exact payload shape of the trigger you are replacing — specifically which fields are at the root vs. under `data`.
 
 ### Multiple buttons for multiple code paths
 

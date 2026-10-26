@@ -231,9 +231,11 @@ export default (server) => {
   // Tries every strategy (type/meta.name/kebab-fallback, then the NON_EXISTING_FLOW_NODE_TYPES
   // escape hatch) against one candidate spelling of the guess.
   const resolveNodeHintCandidate = (candidate) => {
+    const candidateKebab = kebabCase(candidate.replace(/Node$/, ''));
     const spec = FLOW_NODE_TYPES[candidate]?.spec ||
       FLOW_NODE_META_NAME_TO_SPEC[candidate] ||
-      FLOW_NODE_META_NAME_TO_SPEC[kebabCase(candidate.replace(/Node$/, ''))];
+      FLOW_NODE_META_NAME_TO_SPEC[candidateKebab] ||
+      (FLOW_NODE_TO_FILE[candidateKebab] ? candidateKebab : undefined);
     if (spec) { return { spec }; }
     const realType = NON_EXISTING_FLOW_NODE_TYPES[candidate];
     if (realType) { return { spec: FLOW_NODE_TYPES[realType]?.spec, realType }; }
@@ -344,13 +346,16 @@ export default (server) => {
       const filePath = FLOW_TRIGGER_TO_FILE[triggerSpec];
       if (!filePath) {
         const message = `Flow trigger not found: ${triggerSpec}`;
-        if (triggerSpec === 'integration') {
+        if (triggerSpec.toLowerCase() === 'integration') {
           throw resourceNotFoundError(message, {
             uri: uri.href,
-            hint: 'It does not exist. There are individual trigger guides per integration type e.g. amazon-sqs, azure-event-hubs, google-pub-sub, mqtt-topic, particle, or websocket. — read losant://authoring/flow for the full Trigger catalog.'
+            hint: '"integration" triggers are configured by service type rather than a single spec. There are individual trigger guides per integration type: amazon-sqs, azure-event-hubs, google-pub-sub, mqtt-topic, particle, or websocket — read losant://authoring/flow for the full Trigger catalog.'
           });
         }
-        const hint = FLOW_TRIGGER_TYPE_TO_SPEC[triggerSpec] || FLOW_TRIGGER_TYPE_TO_SPEC[kebabCase(triggerSpec)] || FLOW_TRIGGER_TO_FILE[triggerSpec];
+        const triggerSpecKebab = kebabCase(triggerSpec);
+        const hint = FLOW_TRIGGER_TYPE_TO_SPEC[triggerSpec] ||
+          FLOW_TRIGGER_TYPE_TO_SPEC[triggerSpecKebab] ||
+          (FLOW_TRIGGER_TO_FILE[triggerSpecKebab] ? triggerSpecKebab : undefined);
         const hintText = hint
           ? `Did you mean losant://flow/triggers/${hint}? "${triggerSpec}" looks like it refers to the trigger type documented there — see the Trigger catalog in losant://authoring/flow for the full type-to-spec mapping.`
           : 'It does not exist — read losant://authoring/flow for the full Trigger catalog.';

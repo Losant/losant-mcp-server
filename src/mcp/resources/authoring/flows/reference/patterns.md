@@ -5,7 +5,7 @@ description: Six common flow patterns with concrete node chains and minimal JSON
 
 # Common Flow Patterns
 
-Grounded examples of the most frequent real-world flow shapes. Each pattern shows the trigger-to-output chain, the key config fields, and the non-obvious gotcha that causes the most problems. Individual node details are at `losant://flow/nodes/<name>` and `losant://flow/triggers/<name>`.
+Grounded examples of the most frequent real-world flow shapes. Each pattern shows the trigger-to-output chain, the key config fields, and the non-obvious gotcha that causes the most problems. Individual node details are at `losant://flow/nodes/<nodeSpec>` and `losant://flow/triggers/<triggerSpec>`.
 
 > For debug/local-testing patterns (Virtual Button, file capture, webhook+curl), see `losant://references/flow/debug-patterns`.
 

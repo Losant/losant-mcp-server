@@ -40,8 +40,8 @@ Before creating or enabling a cloud flow, assess whether it can cause real-world
 
 **Check the trigger type.** These triggers fire automatically without any human action:
 - \`timer\` — fires on schedule immediately after enable
-- \`deviceState\`, \`deviceConnect\`, \`deviceDisconnect\`, \`deviceInactivity\` — fire for every matching device event
-- \`integration\`, \`mqttTopic\`, \`amazonSqs\`, \`azureEventHubs\`, \`googlePubSub\`, \`particle\` — fire for every inbound message
+- \`deviceId\`/\`deviceTag\`, \`deviceIdConnect\`, \`deviceIdDisconnect\`, \`deviceIdInactivity\` — fire for every matching device event
+- \`integration\` (Amazon SQS, Azure Event Hubs, GCP Pub/Sub, Particle, WebSocket sub-kinds), \`mqttTopic\` — fire for every inbound message
 
 **Check for side-effect output nodes.** If the flow contains any of these, a bug could affect real users or external systems:
 - Messaging: SMS, Email, SendGrid, Mailgun, Twilio, WhatsApp
