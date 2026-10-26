@@ -315,6 +315,7 @@ export const FLOW_NODE_TYPES = {
   JWTCreateNode: { name: 'jwt-create', category: 'logic', available: ['cloud', 'exp', 'edge', 'custom'], spec: 'jwt' },
   JWTDecodeNode: { name: 'jwt-decode', category: 'logic', available: ['cloud', 'exp', 'edge', 'custom'], spec: 'jwt' },
   JWTVerifyNode: { name: 'jwt-verify', category: 'logic', available: ['cloud', 'exp', 'edge', 'custom'], spec: 'jwt' },
+  KubernetesNode: { name: 'kubernetes', category: 'data', available: ['edge'], spec: 'kubernetes' },
   LatchNode: { name: 'latch', category: 'logic', available: ['all'], spec: 'latch' },
   LosantApiNode: { name: 'losantapi', category: 'data', available: ['cloud', 'exp', 'edge', 'custom'], spec: 'losant-api' },
   LoopCapNode: { name: 'loop-return', category: 'loop', available: ['cloud', 'exp', 'edge', 'custom'], spec: 'loop' },
