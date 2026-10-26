@@ -87,14 +87,14 @@ The node supports two authentication modes configured via `authMode`:
 | `authMode` | `"inCluster"` | `"inCluster"` — read credentials from cluster pod environment. `"inline"` — supply control plane URL, token, and CA certificate manually. |
 | `kubernetesUrlTemplate` | `""` | **Required when `authMode: "inline"`.** Control plane base URL (e.g. `https://k8s.example.com:6443`). Template. |
 | `tokenSource` | `"stringTemplate"` | When `authMode: "inline"`. `"stringTemplate"` — direct template. `"diskPath"` — path to token file on GEA container. |
-| `tokenTemplate` | `""` | **Required when `tokenSource: "stringTemplate"`.** Bearer token template. |
+| `tokenTemplate` | `""` | **Required when `tokenSource: "stringTemplate"`.** Bearer token template. Max 8,192 characters. Template. |
 | `tokenDiskPathTemplate` | `""` | **Required when `tokenSource: "diskPath"`.** Local file path containing the bearer token. Template. |
 | `caCertSource` | `"none"` | When `authMode: "inline"`. `"none"` — standard trust store. `"stringTemplate"` — PEM certificate string. `"diskPath"` — path to CA cert file. |
-| `caCertTemplate` | `""` | **Required when `caCertSource: "stringTemplate"`.** PEM CA certificate string. Ignored when `disableSSLVerification` is `true`. Template. |
+| `caCertTemplate` | `""` | **Required when `caCertSource: "stringTemplate"`.** PEM CA certificate string. Ignored when `disableSSLVerification` is `true`. Max 8,192 characters. Template. |
 | `caCertDiskPathTemplate` | `""` | **Required when `caCertSource: "diskPath"`.** Path to PEM CA certificate file. Ignored when `disableSSLVerification` is `true`. Template. |
 | `disableSSLVerification` | `false` | When `true`, disables TLS certificate verification (applies to both `inline` and `inCluster` modes). |
 | `timeoutTemplate` | `""` | Optional. Timeout in **milliseconds** (e.g. `"30000"` for 30 seconds). Maximum allowed value is `30000` (30 seconds); values above 30000 throw a validation error. If omitted, defaults to the external call timeout. Passed as `?timeoutSeconds=Math.floor(timeoutMs / 1000)` to the Kubernetes API where supported. **UI Note:** While the Losant Workflow UI may label this field in seconds (`"Timeout Template (Seconds)"`), the underlying GEA runtime strictly evaluates `timeoutTemplate` in milliseconds. When authoring workflow JSON directly or via MCP tools, always supply milliseconds (e.g. `"30000"`). Values `<= 30` will time out after 30 milliseconds. Integer template. |
-| `operationTemplate` | `"applyManifest"` | **Required.** Operation to execute. Defaults to `"applyManifest"` in the Workflow Editor UI (SP-15597+), or `"listPods"` in older versions. See Supported Operations table below. Template. |
+| `operationTemplate` | `"applyManifest"` | **Required.** Operation to execute. See Supported Operations table below. Template. |
 
 ---
 
@@ -139,8 +139,8 @@ The node supports two authentication modes configured via `authMode`:
 | Config field | Default | Notes |
 |---|---|---|
 | `namespaceTemplate` | `""` | Target Kubernetes namespace: <br>• **Single-resource namespaced operations** (`getPod`, `createPod`, `updateDeployment`, etc.): **Required**.<br>• **Server-Side Apply (`applyManifest`)**: Fallback namespace for manifest objects that omit `metadata.namespace`. Defaults to `"default"` if blank.<br>• **List operations (`list*`)**: Omit or leave empty to query cluster-wide across all namespaces.<br>Must match standard DNS label format (`^[a-z0-9]([-a-z0-9]{0,61}[a-z0-9])?$`). Template. |
-| `nameTemplate` | `""` | **Required** for single-resource operations (`get*`, `delete*`, `update*`, `patch*`, `getNode`, `getNamespace`, `getPodLogs`). Name of the target resource. Cannot contain `/`, `%`, `.`, or `..`. Template. |
-| `bodyTemplate` | `""` | **Required** for `create*`, `update*`, and `patch*` operations. JSON body template rendered against the flow payload and parsed via LJSON. For `patch*` operations, sent with `Content-Type: application/strategic-merge-patch+json`. Template. |
+| `nameTemplate` | `""` | **Required** for single-resource operations (`get*`, `delete*`, `update*`, `patch*`, `getNode`, `getNamespace`, `getPodLogs`). Name of the target resource. Cannot contain `/` or `%`, and cannot be exactly `.` or `..`. Template. |
+| `bodyTemplate` | `""` | **Required** for `create*`, `update*`, and `patch*` operations. JSON body template rendered against the flow payload and parsed via LJSON. For `patch*` operations, sent with `Content-Type: application/strategic-merge-patch+json`. Max 8,192 characters. Template. |
 
 #### List Query Fields (`list*` operations)
 
@@ -168,7 +168,7 @@ The `custom` operation serves as an escape hatch for arbitrary Kubernetes REST e
 |---|---|---|
 | `customMethodTemplate` | `"GET"` | HTTP method: `"GET"`, `"POST"`, `"PUT"`, `"PATCH"`, or `"DELETE"`. Defaults to `"GET"`. Template. |
 | `customPathTemplate` | `""` | **Required.** Kubernetes API URL path (e.g. `/apis/cert-manager.io/v1/namespaces/default/certificates`). Must be an API path relative to the server root, not a full URL. Query parameters can be included directly in the path (e.g. `?limit=5`). Template. |
-| `customBodyTemplate` | `""` | JSON body template for `"POST"`, `"PUT"`, and `"PATCH"` custom requests. Parsed via LJSON and sent with `Content-Type: application/json`. Ignored for `"GET"` and `"DELETE"`. Template. |
+| `customBodyTemplate` | `""` | JSON body template for `"POST"`, `"PUT"`, and `"PATCH"` custom requests. Parsed via LJSON and sent with `Content-Type: application/json`. Ignored for `"GET"` and `"DELETE"`. Max 8,192 characters. Template. |
 
 #### Example: Custom Operation (CRD Query)
 
@@ -232,7 +232,7 @@ The node uses Kubernetes Server-Side Apply (SSA) with `Content-Type: application
 | Config field | Default | Notes |
 |---|---|---|
 | `manifestSource` | `"stringTemplate"` | Source for the manifest: `"stringTemplate"`, `"payloadPath"`, or `"diskPath"`. |
-| `manifestTemplate` | `""` | **Required when `manifestSource: "stringTemplate"`.** Multi-document YAML or JSON manifest string (documents separated by `---`). Evaluated as a Handlebars template before parsing. Template. |
+| `manifestTemplate` | `""` | **Required when `manifestSource: "stringTemplate"`.** Multi-document YAML or JSON manifest string (documents separated by `---`). Evaluated as a Handlebars template before parsing. Max 8,192 characters. For manifests exceeding 8,192 characters, use `manifestPayloadPath` or `manifestDiskPathTemplate`. Template. |
 | `manifestPayloadPath` | `""` | **Required when `manifestSource: "payloadPath"`.** Payload path pointing to a manifest string, a single resource JavaScript object, or an array of resource objects (`[podObj, svcObj]`). |
 | `manifestDiskPathTemplate` | `""` | **Required when `manifestSource: "diskPath"`.** Local file path on the GEA container to a YAML or JSON manifest file (max 1 MB). Template. |
 | `fieldManagerTemplate` | `"gea"` | Name of the field manager claiming ownership during Server-Side Apply. Defaults to `"gea"`. Template. |
@@ -272,7 +272,12 @@ By default, operation results are written directly to `resultPath` on the payloa
 | Config field | Default | Notes |
 |---|---|---|
 | `resultPath` | `""` | Payload path where operation results are written. Optional; if omitted, no result is stored on the payload. |
-| `resultDiskPathTemplate` | `""` | Optional. Local file path on the GEA container where the response body is written (overwrites any existing file). If set and the request returns a 2xx status code with a body, the body is saved to disk and `body` in `resultPath` is replaced with the resolved file path string. Non-2xx responses are not written to disk; their error body is retained in memory on `resultPath`. Template. |
+| `resultDiskPathTemplate` | `""` | Optional. Local file path on the GEA container where the response body is written. If set and the request returns a 2xx status code with a body, the body is saved to disk and `body` in `resultPath` is replaced with the resolved file path string. Non-2xx responses are not written to disk; their error body is retained in memory on `resultPath`. Template. |
+| `encodingTemplate` | `"utf8"` | Optional. Content encoding when writing to disk: `"ascii"`, `"utf8"`, `"utf16le"`, `"ucs2"`, `"base64"`, `"latin1"`, `"binary"`, `"hex"`. Defaults to `"utf8"`. Template. |
+| `shouldAppend` | `false` | When `true`, appends content to the existing file at `resultDiskPathTemplate` instead of overwriting. |
+| `errorIfFileExists` | `false` | When `true`, cancels and errors if the file at `resultDiskPathTemplate` already exists. |
+
+`shouldAppend` and `errorIfFileExists` can both be `true` simultaneously. The combination uses the POSIX `'ax'` file flag: open for appending, but fail (error) if the file already exists. Use this combination to create a new file in append mode while preventing overwrites of existing files.
 
 ---
 
@@ -418,7 +423,11 @@ Common error `type` values:
 - Disk I/O errors (e.g. `EACCES`, `ENOSPC`) if the agent cannot write to `resultDiskPathTemplate`.
 
 #### Partial Multi-Document SSA Transport Failure
+
 If a multi-document SSA operation encounters a transport or network failure after applying earlier documents, execution stops and returns partial results on `resultPath` without a `statusCode` property:
+
+> [!NOTE]
+> This partial-results shape (`{ error, body: [...] }`) only occurs when a transport or network error happens **after** one or more documents have already been successfully applied. If the transport or network failure occurs on the **first document** (before any results are collected), the error is rethrown immediately and produces the standard `{ error: { type, message } }` [Runtime Error](#runtime-errors) shape without a `body` array.
 ```json
 {
   "working": {
