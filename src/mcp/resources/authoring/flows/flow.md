@@ -258,6 +258,11 @@ Edge flows are deployed to Gateway Edge Agent (GEA) hardware and run locally on 
 
 Both nodes support two connection modes: `connectionSource: "inline"` (embed the collector URL and credentials directly in the flow) or `connectionSource: "agentConfig"` (pull the connection from the GEA `[otlpCollector]` config block — no credentials in the flow). The agent-config mode requires the edge device's GEA to have `[otlpCollector]` configured. See `losant://guides/devices` → **OpenTelemetry Integration** for the GEA config reference.
 
+**Kubernetes integration (GEA 2.7.0+):** Edge flows can interact with Kubernetes clusters (Pods, Deployments, Services, ConfigMaps, Namespaces, Nodes, Server-Side Apply manifests, and CRDs) using the Kubernetes Node:
+- `losant://flow/nodes/kubernetes` — Kubernetes Node
+
+Supports two authentication modes: `authMode: "inCluster"` (for GEA pods running within a cluster with auto-discovered ServiceAccount token and CA cert) and `authMode: "inline"` (targeting an external cluster with configurable bearer token and CA cert). Also supports streaming pod logs and large responses directly to local container storage via `resultDiskPathTemplate` to bypass the 5 MB flow payload limit.
+
 ---
 
 ## Triggers — object shape
@@ -536,6 +541,7 @@ See `losant://flow/nodes/loop` for the full pattern and a worked example.
 | `JWTCreateNode` | `jwt-create` | logic | cloud, exp, edge, custom | `losant://flow/nodes/jwt` |
 | `JWTDecodeNode` | `jwt-decode` | logic | cloud, exp, edge, custom | `losant://flow/nodes/jwt` |
 | `JWTVerifyNode` | `jwt-verify` | logic | cloud, exp, edge, custom | `losant://flow/nodes/jwt` |
+| `KubernetesNode` | `kubernetes` | data | edge | `losant://flow/nodes/kubernetes` |
 | `LatchNode` | `latch` | logic | all | `losant://flow/nodes/latch` |
 | `LosantApiNode` | `losantapi` | data | cloud, exp, edge, custom | `losant://flow/nodes/losant-api` |
 | `LoopCapNode` | `loop-return` | loop | cloud, exp, edge, custom | `losant://flow/nodes/loop` |
