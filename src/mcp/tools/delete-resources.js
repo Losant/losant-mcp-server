@@ -15,7 +15,8 @@ export default {
       destructiveHint: true
     },
     title: 'Delete Losant Resources',
-    description: `Read losant://guides/losant-delete-tool before using this tool. Permanently deletes a Losant resource: ${DELETABLE_RESOURCE_TYPES.join(', ')}.`,
+    // The resourceType enum below already lists every supported type — do not repeat it here.
+    description: 'REQUIRED: Read losant://guides/tools/losant_delete before using this tool. Permanently deletes a Losant resource — the guide covers which types are supported, what else is removed along with them, and the alternatives to deleting.',
     inputSchema: z.fromJSONSchema({
       type: 'object',
       properties: {
@@ -37,7 +38,8 @@ export default {
           description: 'Parent resource ID — required for nested resource types (e.g., the dataTableId when resourceType is "dataTableRow", or flowId when resourceType is "flowVersion")'
         }
       },
-      required: ['resourceType', 'applicationId']
+      required: ['resourceType', 'applicationId'],
+      additionalProperties: false
     })
   },
   runnerFactory: (losantClient) => {

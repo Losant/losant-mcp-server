@@ -1,21 +1,10 @@
 import { z } from 'zod';
-import { NESTED_RESOURCES, RESOURCE_TYPES, APPLICATION_RESOURCES, ALLOWS_ADVANCED_QUERIES_SET } from '../../constants.js';
+import { NESTED_RESOURCES, RESOURCE_TYPES, APPLICATION_RESOURCES, RESOURCE_TYPE_TO_QUERY_SCHEMA,
+  LIST_OMITTED_FIELDS } from '../../constants.js';
 import debug from 'debug';
 import { restToMCPError, invalidRequestError } from '../../helpers/errors.js';
 import { getResourceFieldId, getPluralResourceName } from './helpers.js';
 const log = debug('losant-mcp-server:tools:query-resources');
-
-const omittedFieldsByResourceType = {
-  applicationDashboard: ['blocks', 'contextConfiguration'],
-  flow: ['nodes', 'triggers', 'iconData' ],
-  experienceView: ['body'],
-  experienceDomain: [ 'sslCert', 'sslBundle' ],
-  application: ['globals', 'archiveConfig', 'readme'],
-  embeddedDeployment: ['logs'],
-  device: ['attributes.description', 'attributes.contentType', 'attributes.attributeTags', 'attributes.system']
-};
-omittedFieldsByResourceType.edgeDeployment = omittedFieldsByResourceType.embeddedDeployment; // same structure for edge and embedded deployments
-omittedFieldsByResourceType.flowVersion = omittedFieldsByResourceType.flow; // same structure for flow and flowVersion
 
 const omittedFieldHint = {
   device: 'Attributes include name and dataType only. Use operation:get with the deviceId to retrieve full attribute details including description, contentType, attributeTags, and system configuration.'
@@ -262,7 +251,7 @@ const listResourceTool = async (losantClient, { resourceType }, requestParams, l
 
   // Advanced query overrides simple filter parameters
   if (listInput.query) {
-    if (!ALLOWS_ADVANCED_QUERIES_SET.has(resourceType)) {
+    if (!RESOURCE_TYPE_TO_QUERY_SCHEMA[resourceType]) {
       errors.push({
         fieldName: 'query',
         details: `The resource type '${resourceType}' does not support advanced queries. Remove the 'query' parameter and use 'filterField' and 'filter' for simple filtering instead.`
@@ -304,7 +293,7 @@ const listResourceTool = async (losantClient, { resourceType }, requestParams, l
       text: JSON.stringify({
         _projection: {
           mode: 'summary',
-          omittedFields: omittedFieldsByResourceType[resourceType] || [],
+          omittedFields: LIST_OMITTED_FIELDS[resourceType] || [],
           hint: omittedFieldHint[resourceType] || 'Summary fields only. Use operation:get with an id to retrieve full content.'
         }
       }, null, 2)
@@ -340,7 +329,8 @@ export default {
   name: 'losant_query',
   inputInfo: {
     title: 'Query Losant Resources',
-    description: `List or get Losant resources: ${RESOURCE_TYPES.join(', ')}. See losant://guides/losant-query-tool for the step by step procedures, including how to select an application, handle nested resources, and links to per-resource documentation. For advanced MongoDB-style queries, see losant://guides/advanced-queries.`,
+    // The resourceType enum below already lists every supported type — do not repeat it here.
+    description: 'REQUIRED: Read losant://guides/tools/losant_query before using this tool. List or get Losant resources — the guide covers the application-selection procedure, nested resources, advanced queries, and per-resource documentation links.',
     inputSchema: z.fromJSONSchema({
       type: 'object',
       properties: {
@@ -393,14 +383,17 @@ export default {
         },
         query: {
           type: 'object',
-          description: 'Advanced MongoDB-style query object (list operation). Supports operators: $and, $or, $nor, $eq, $ne, $gt, $lt, $gte, $lte, $in, $nin, $startsWith, $endsWith, $contains, $ci. See losant://guides/advanced-queries and resource-specific schemas for details.'
+          description: 'Advanced MongoDB-style query object (list operation). Supports operators: $and, $or, $nor, $eq, $ne, $gt, $lt, $gte, $lte, $in, $nin, $startsWith, $endsWith, $contains, $ci. See losant://guides/advanced-queries and resource-specific schemas for details.',
+          additionalProperties: true
         },
         params: {
           type: 'object',
-          description: 'Additional resource-specific parameters - check documentation for available options'
+          description: 'Additional resource-specific parameters - check documentation for available options',
+          additionalProperties: true
         }
       },
-      required: ['operation', 'resourceType']
+      required: ['operation', 'resourceType'],
+      additionalProperties: false
     })
   },
   runnerFactory: (losantClient) => {

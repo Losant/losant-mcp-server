@@ -253,13 +253,5 @@ export default {
     description: 'Domain guide for all experience resources — versioning model, views, endpoints, users, groups, domains, and slugs',
     mimeType: 'text/markdown'
   },
-  getContent: async (uri) => {
-    return {
-      contents: [{
-        uri: uri.href,
-        mimeType: 'text/markdown',
-        text: content
-      }]
-    };
-  }
+  content
 };

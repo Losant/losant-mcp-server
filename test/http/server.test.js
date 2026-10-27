@@ -55,8 +55,8 @@ describe('HTTP Server', () => {
       '../../src/mcp/server.js': {
         createMCPServer: mockCreateMCPServer
       },
-      '@modelcontextprotocol/sdk/server/streamableHttp.js': {
-        StreamableHTTPServerTransport: MockTransportClass
+      '@modelcontextprotocol/node': {
+        NodeStreamableHTTPServerTransport: MockTransportClass
       }
     });
 

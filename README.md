@@ -9,10 +9,13 @@
 ## Features
 
 - 🔐 **OAuth 2.0 Authentication** - RFC-compliant bearer token auth (RFC 6750, RFC 7235, RFC 8707, RFC 9728)
-- 🛠️ **Two Powerful MCP Tools**:
+- 🛠️ **Powerful MCP Tools**:
   - `losant_query` - Query applications, devices, flows, data tables, and more
   - `losant_write` - Create/Update devices, flows, data tables, files and more
+  - `losant_delete` - Permanently delete devices, flows, data tables, files and more
   - `losant_timeseries` - Retrieve time-series device data and state
+  - `losant_flow_diagnostics` - Query a flow's run stats and historical per-node errors
+  - `losant_flow_debug_listener` - Watch a flow's live debug output, optionally triggering a Virtual Button press
 - 📚 **Dynamic Documentation** - API docs and schemas loaded from `losant-rest` package
 - 🚀 **Stateless & Scalable** - Per-request MCP server instances for horizontal scaling
 - 🐳 **Docker Support** - Production-ready multi-stage Docker builds
@@ -303,7 +306,7 @@ OAuth 2.0 Protected Resource Metadata (RFC 9728).
 
 ### 1. losant_query
 
-Query Losant resources (applications, devices, flows, data tables, etc.).
+Query Losant resources (applications, devices, flows, data tables, etc.). Read `losant://guides/tools/losant_query` before calling for application selection, nested resources, per-resource documentation links, advanced query schemas, and resource-specific params.
 
 **Parameters:**
 - `operation` - "list" or "get"
@@ -363,7 +366,7 @@ Query Losant resources (applications, devices, flows, data tables, etc.).
 
 ### 2. losant_write
 
-Create or update Losant resources. Read `losant://guides/losant-write-tool` before calling for operations, schema links, PATCH semantics, and resource-specific notes.
+Create or update Losant resources. Read `losant://guides/tools/losant_write` before calling for operations, schema links, PATCH semantics, and resource-specific notes.
 
 **Parameters:**
 - `operation` - `"createOne"` (POST) or `"updateOne"` (PATCH)
@@ -438,7 +441,68 @@ Create or update Losant resources. Read `losant://guides/losant-write-tool` befo
 }
 ```
 
-### 3. losant_timeseries
+### 3. losant_delete
+
+Permanently delete a Losant resource. Read `losant://guides/tools/losant_delete` before calling for supported resource types, nested resource rules, and restrictions.
+
+> **Warning:** Deletion is permanent and cannot be undone for most resource types. Query and surface the resource to the user before deleting, and confirm the correct `resourceId`. Devices are the one exception — they can be recovered through the Losant UI after deletion.
+
+**Parameters:**
+- `resourceType` - Type of resource to delete
+- `applicationId` - Application ID (required)
+- `resourceId` - Resource ID (required for all types except `application`)
+- `parentResourceId` - Parent resource ID (required for nested resources)
+
+**Supported Resource Types:**
+- Top-level: `application`
+- App-scoped: `event`, `device`, `deviceRecipe`, `dataTable`, `webhook`, `integration`, `applicationDashboard`, `notebook`, `flow`, `resourceJob`, `file`, `privateFile`, `experienceDomain`, `experienceEndpoint`, `experienceGroup`, `experienceSlug`, `experienceUser`, `experienceVersion`, `experienceView`
+- Nested: `flowVersion` (requires `flowId`), `dataTableRow` (requires `dataTableId`)
+
+**Not supported:** `applicationKey`, `credential`, `applicationCertificate`, `applicationCertificateAuthority` (sensitive — manage via the Losant UI), and `applicationJobLog`, `edgeDeployment`, `embeddedDeployment` (no delete endpoint).
+
+**Key behaviors:**
+- `application` is identified by `applicationId` alone and does not take a `resourceId` — deleting it removes every resource it contains
+- Deleting a `dataTable` removes all of its rows; deleting a `file`/`privateFile` directory removes its contents recursively
+- Only the develop version of `experienceEndpoint` and `experienceView` can be deleted directly; versioned copies go away with their `experienceVersion`
+- There is no bulk delete — call the tool once per resource
+
+**Example: Delete a Device**
+```json
+{
+  "name": "losant_delete",
+  "arguments": {
+    "resourceType": "device",
+    "applicationId": "507f1f77bcf86cd799439011",
+    "resourceId": "507f1f77bcf86cd799439012"
+  }
+}
+```
+
+**Example: Delete a Data Table Row**
+```json
+{
+  "name": "losant_delete",
+  "arguments": {
+    "resourceType": "dataTableRow",
+    "applicationId": "507f1f77bcf86cd799439011",
+    "parentResourceId": "507f1f77bcf86cd799439013",
+    "resourceId": "507f1f77bcf86cd799439014"
+  }
+}
+```
+
+**Example: Delete an Application**
+```json
+{
+  "name": "losant_delete",
+  "arguments": {
+    "resourceType": "application",
+    "applicationId": "507f1f77bcf86cd799439011"
+  }
+}
+```
+
+### 4. losant_timeseries
 
 Query time-series device data and state information.
 
@@ -488,6 +552,63 @@ Query time-series device data and state information.
       "deviceIds": ["507f1f77bcf86cd799439012"],
       "attributes": ["temperature"]
     }
+  }
+}
+```
+
+### 5. losant_flow_diagnostics
+
+Query a flow's runtime health in one call: run statistics (`stats`) and historical per-node errors (`errors`). Read `losant://guides/tools/losant_flow_diagnostics` before calling for interpreting the response.
+
+**Parameters:**
+- `applicationId` - Application ID (required)
+- `flowId` - Flow ID (required)
+- `duration` - Time range in milliseconds, ending at `end`. Default 86400000 (24 hours). Must be between 900000 (15 minutes) and 2678400000 (31 days)
+- `end` - End of the time range in milliseconds since epoch. Default `0` (now)
+- `resolution` - Bucket size in milliseconds for the stats metrics array. Must be between 900000 (15 minutes) and `duration`
+- `flowVersion` - Flow version name or ID to scope results to, e.g. `"develop"`. Omit for an aggregate across all versions
+- `deviceId` - For edge/embedded flows, scope stats/errors to this device
+- `limit` - Maximum number of error entries to return (1-25, default 25). Does not apply to stats
+
+**Example: Diagnose a Flow Over the Last Hour**
+```json
+{
+  "name": "losant_flow_diagnostics",
+  "arguments": {
+    "applicationId": "507f1f77bcf86cd799439011",
+    "flowId": "507f1f77bcf86cd799439012",
+    "duration": "3600000",
+    "resolution": "900000"
+  }
+}
+```
+
+### 6. losant_flow_debug_listener
+
+Opens a live debug stream for a flow, optionally presses a Virtual Button to trigger a test run, and collects the resulting debug messages. Read `losant://guides/tools/losant_flow_debug_listener` before calling - including which access token scopes are required.
+
+**Parameters:**
+- `applicationId` - Application ID (required)
+- `flowId` - Flow ID (required)
+- `flowVersionId` - Flow version ID to scope the stream/press to a published version. Defaults `filterVersion` to `"id"` when given
+- `filterVersion` - Which flow version(s) to watch: `develop`, `all`, `default`, or `id`
+- `deviceId`, `deploymentId` - For edge workflows, the device/deployment to connect the stream to (also forwarded onto the virtual button press)
+- `virtualButtonKey` - Trigger key of the Virtual Button to press after the stream opens. If omitted, all messages seen during the listen window are returned, unfiltered
+- `virtualButtonPayload` - JSON object sent as the press's `data`. Only meaningful with `virtualButtonKey`
+- `timeout` - Seconds to listen (default 10, must be 1-60)
+- `messageCount` - Stop early once this many matching messages arrive
+- `includeUnmatchedMessages` - If true, also return raw messages seen but not matching the press
+- `debugParams` - Extra debug-stream query params (`level`, `excludeIds`, `includeIds`, `filterExpression`, `includeCustomNodes`) for cutting down noise on a busy flow
+
+**Example: Trigger a Virtual Button and Collect Its Debug Output**
+```json
+{
+  "name": "losant_flow_debug_listener",
+  "arguments": {
+    "applicationId": "507f1f77bcf86cd799439011",
+    "flowId": "507f1f77bcf86cd799439012",
+    "virtualButtonKey": "testButton",
+    "timeout": 15
   }
 }
 ```
@@ -669,13 +790,28 @@ losant-mcp-server/
 │   │   ├── tools/            # MCP tool implementations
 │   │   │   ├── index.js
 │   │   │   ├── query-resources.js
-│   │   │   └── query-timeseries.js
+│   │   │   ├── write-resources.js
+│   │   │   ├── delete-resources.js
+│   │   │   ├── query-timeseries.js
+│   │   │   ├── flow-diagnostics.js
+│   │   │   └── flow-debug-listener.js
 │   │   └── resources/        # MCP resource loaders
 │   │       ├── index.js
 │   │       ├── build-api-index-content.js
-│   │       ├── query-tool-guide.js
-│   │       └── advanced-query-guide.js
+│   │       ├── advanced-query-guide.js
+│   │       ├── tools/        # Per-tool guides (losant://guides/tools/{toolName})
+│   │       │   ├── index.js
+│   │       │   ├── query-tool-guide.js
+│   │       │   ├── write-tool-guide.js
+│   │       │   ├── delete-tool-guide.js
+│   │       │   ├── flow-diagnostics-tool-guide.js
+│   │       │   └── flow-debug-listener-tool-guide.js
+│   │       └── authoring/    # Flow/dashboard/experience authoring guides
+│   │           ├── flows/
+│   │           ├── dashboards/
+│   │           └── experiences/
 │   ├── helpers/
+│   │   ├── errors.js         # MCP/tool error helpers
 │   │   └── rollbar.js        # Error reporting
 │   ├── config.js             # Configuration schema
 │   └── constants.js          # Shared constants
