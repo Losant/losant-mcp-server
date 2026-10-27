@@ -306,7 +306,7 @@ OAuth 2.0 Protected Resource Metadata (RFC 9728).
 
 ### 1. losant_query
 
-Query Losant resources (applications, devices, flows, data tables, etc.).
+Query Losant resources (applications, devices, flows, data tables, etc.). Read `losant://guides/tools/losant_query` before calling for application selection, nested resources, per-resource documentation links, advanced query schemas, and resource-specific params.
 
 **Parameters:**
 - `operation` - "list" or "get"
@@ -790,13 +790,28 @@ losant-mcp-server/
 │   │   ├── tools/            # MCP tool implementations
 │   │   │   ├── index.js
 │   │   │   ├── query-resources.js
-│   │   │   └── query-timeseries.js
+│   │   │   ├── write-resources.js
+│   │   │   ├── delete-resources.js
+│   │   │   ├── query-timeseries.js
+│   │   │   ├── flow-diagnostics.js
+│   │   │   └── flow-debug-listener.js
 │   │   └── resources/        # MCP resource loaders
 │   │       ├── index.js
 │   │       ├── build-api-index-content.js
-│   │       ├── query-tool-guide.js
-│   │       └── advanced-query-guide.js
+│   │       ├── advanced-query-guide.js
+│   │       ├── tools/        # Per-tool guides (losant://guides/tools/{toolName})
+│   │       │   ├── index.js
+│   │       │   ├── query-tool-guide.js
+│   │       │   ├── write-tool-guide.js
+│   │       │   ├── delete-tool-guide.js
+│   │       │   ├── flow-diagnostics-tool-guide.js
+│   │       │   └── flow-debug-listener-tool-guide.js
+│   │       └── authoring/    # Flow/dashboard/experience authoring guides
+│   │           ├── flows/
+│   │           ├── dashboards/
+│   │           └── experiences/
 │   ├── helpers/
+│   │   ├── errors.js         # MCP/tool error helpers
 │   │   └── rollbar.js        # Error reporting
 │   ├── config.js             # Configuration schema
 │   └── constants.js          # Shared constants
