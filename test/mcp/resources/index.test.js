@@ -387,6 +387,28 @@ describe('MCP Resources', () => {
       result.contents[0].text.should.containEql('endpoints "stats" and "errors" both used by tool `losant_flow_diagnostics`');
     });
 
+    it('should provide handler for flow debug listener tool guide', async () => {
+      const result = await client.readResource({ uri: 'losant://guides/tools/losant_flow_debug_listener' });
+
+      result.should.have.property('contents');
+      result.contents.should.be.an.Array();
+      result.contents[0].should.have.property('uri', 'losant://guides/tools/losant_flow_debug_listener');
+      result.contents[0].should.have.property('mimeType', 'text/markdown');
+      result.contents[0].should.have.property('text');
+      result.contents[0].text.should.match(/pressId/);
+      result.contents[0].text.should.match(/unmatchedMessageCount/);
+    });
+
+    it('should include flow debug listener endpoint disclaimer (pressVirtualButton only, not the private debug endpoint) in flow doc', async () => {
+      const result = await client.readResource({ uri: 'losant://docs/flow' });
+
+      result.should.have.property('contents');
+      result.contents[0].should.have.property('text');
+      result.contents[0].text.should.containEql('endpoint "pressVirtualButton" used by tool `losant_flow_debug_listener`');
+      result.contents[0].text.should.not.containEql('endpoint "debug"');
+      result.contents[0].text.should.containEql('losant://guides/tools/losant_flow_debug_listener');
+    });
+
     describe('authoring/dashboard resources', () => {
       it('should return dashboard authoring hub guide for losant://authoring/dashboard', async () => {
         const result = await client.readResource({ uri: 'losant://authoring/dashboard' });
