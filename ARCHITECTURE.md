@@ -17,12 +17,13 @@ This document describes the architecture, design decisions, and technical implem
 
 ## Overview
 
-The Losant MCP Server is a [Model Context Protocol](https://modelcontextprotocol.io) server that provides AI assistants (like Claude) with secure access to Losant IoT platform resources. It implements OAuth 2.0 Bearer Token authentication and exposes two MCP tools for querying Losant resources and time-series data.
+The Losant MCP Server is a [Model Context Protocol](https://modelcontextprotocol.io) server that provides AI assistants (like Claude) with secure access to Losant IoT platform resources. It implements OAuth 2.0 Bearer Token authentication and exposes six MCP tools for querying, writing, and deleting Losant resources, retrieving time-series data, and diagnosing/debugging flows.
 
 ### Key Capabilities
 
-- Query Losant applications, devices, flows, data tables, and other resources
+- Query, create/update, and delete Losant applications, devices, flows, data tables, and other resources
 - Retrieve time-series device data and state information
+- Diagnose a flow's run statistics and historical per-node errors, or watch its live debug output
 - OAuth 2.0 RFC-compliant authentication (RFC 6750, RFC 7235, RFC 8707, RFC 9728)
 - Dynamic resource documentation from the `losant-rest` package
 - Stateless per-request MCP server instances
@@ -62,15 +63,21 @@ The Losant MCP Server is a [Model Context Protocol](https://modelcontextprotocol
 │  │  • Load resources (docs, schemas)                  │  │
 │  │  • Register tools                                  │  │
 │  └────────────────────────────────────────────────────┘  │
-│         │                                │               │
-│         ▼                                ▼               │
-│  ┌──────────────┐              ┌──────────────────────┐  │
-│  │  Resources   │              │  Tools               │  │
-│  │              │              │                      │  │
-│  │  • Docs      │              │  • losant_query      │  │
-│  │  • Schemas   │              │  • losant_timeseries │  │
-│  │  • Guides    │              │                      │  │
-│  └──────────────┘              └──────────────────────┘  │
+│                           │                              │
+│                           ▼                              │
+│  ┌────────────────────────────────────────────────────┐  │
+│  │  Resources & Tools                                 │  │
+│  │                                                    │  │
+│  │  Resources: Docs, Schemas, Guides                  │  │
+│  │                                                    │  │
+│  │  Tools:                                            │  │
+│  │    • losant_query                                  │  │
+│  │    • losant_write                                  │  │
+│  │    • losant_delete                                 │  │
+│  │    • losant_timeseries                             │  │
+│  │    • losant_flow_diagnostics                       │  │
+│  │    • losant_flow_debug_listener                    │  │
+│  └────────────────────────────────────────────────────┘  │
 └────────────────────────┬─────────────────────────────────┘
                          │ Bearer Token
                          ▼
@@ -122,7 +129,7 @@ User → OAuth Server → JWT → MCP Server → Losant API
 3. **Validate Token** → Check aud + exp claims
 4. **Create MCP Server** → New instance bound to bearer token
 5. **Load Resources** → API docs, schemas (cached 1 hour)
-6. **Register Tools** → losant_query, losant_timeseries
+6. **Register Tools** → losant_query, losant_write, losant_delete, losant_timeseries, losant_flow_diagnostics, losant_flow_debug_listener
 7. **Execute Tool** → Call losant-rest client with bearer token
 8. **Return Response** → MCP-formatted JSON response
 
@@ -177,7 +184,7 @@ Creates per-request MCP server instances:
 - **Info / API Index** (`losant://info`) - Start here: platform overview, environment info, and an auto-generated index of every guide, doc, and schema URI
 - **API Docs** (`losant://docs/{name}`) - From losant-rest package
 - **Schemas** (`losant://schemas/{name}`) - JSON schemas for write bodies (`{type}Post` / `{type}Patch`) and advanced queries (`advanced*Query`)
-- **Tool Guides** (`losant://guides/tools/{toolName}`) - One per tool, read before calling it: `losant_query`, `losant_write`, `losant_delete`. Defined in `src/mcp/resources/tools/`
+- **Tool Guides** (`losant://guides/tools/{toolName}`) - One per tool, read before calling it: `losant_query`, `losant_write`, `losant_delete`, `losant_flow_diagnostics`, `losant_flow_debug_listener`. Defined in `src/mcp/resources/tools/`
 - **Domain Guides** (`losant://guides/{name}`) - Per-domain context: devices, data-tables, flows, dashboards, experiences, files, notebooks, integrations, credentials, resource-jobs, webhooks, device-auth, advanced-queries
 - **Authoring Hubs** (`losant://authoring/{resourceType}`) - Deep-dive authoring for resources whose body the schema alone does not explain: flow, dashboard, experience-view, experience-endpoint
 - **Authoring Detail** (`losant://flow/nodes/{nodeSpec}`, `losant://flow/triggers/{triggerSpec}`, `losant://dashboard/blocks/{blockType}`) - Per-node, per-trigger, and per-block reference
@@ -229,6 +236,21 @@ Query time-series device data.
 - getCompositeState - Composite state
 - getCommand - Command history
 - getLogEntries - Log entries
+
+#### losant_flow_diagnostics (`src/mcp/tools/flow-diagnostics.js`)
+
+Query a flow's runtime health in one call: run statistics and historical per-node errors.
+
+**Response:** `stats` (run counts/timing bucketed by `resolution`) and `errors` (recent per-node error entries, newest first)
+**Features:** Time-range (`duration`/`end`) and resolution bucketing, scoping to a flow version or device, capped error `limit`
+**Guide:** `losant://guides/tools/losant_flow_diagnostics`
+
+#### losant_flow_debug_listener (`src/mcp/tools/flow-debug-listener.js`)
+
+Opens a live debug stream for a flow, optionally presses a Virtual Button to trigger a test run, and collects the resulting debug messages.
+
+**Features:** Scoping to develop/published/default/specific flow versions, optional Virtual Button press with payload, configurable listen timeout and early-stop message count, raw debug-stream filtering params
+**Guide:** `losant://guides/tools/losant_flow_debug_listener`
 
 ### 6. Configuration (`src/config.js`)
 
@@ -438,5 +460,5 @@ See [README.Docker.md](README.Docker.md) for details.
 
 ---
 
-**Last Updated:** 2026-05-27
-**Version:** 1.0.0
+**Last Updated:** 2026-10-27
+**Version:** 1.3.0
