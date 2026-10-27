@@ -3,7 +3,8 @@ import should from 'should';
 import registerResourceLoader from '../../../src/mcp/resources/index.js';
 import { createMCPServer } from '../../../src/mcp/server.js';
 import { Client, InMemoryTransport } from '@modelcontextprotocol/client';
-import { LIST_OMITTED_FIELDS } from '../../../src/constants.js';
+import { LIST_OMITTED_FIELDS, FLOW_NODE_TYPES, FLOW_NODE_TO_FILE, NON_EXISTING_FLOW_NODE_TYPES,
+  FLOW_TRIGGER_TYPES, FLOW_TRIGGER_TO_FILE } from '../../../src/constants.js';
 
 describe('MCP Resources', () => {
 
@@ -149,21 +150,21 @@ describe('MCP Resources', () => {
       referenceTemplate.config.should.have.property('mimeType', 'text/markdown');
     });
 
-    it('should register flow-node template with pattern losant://flow/nodes/{nodeName}', async () => {
+    it('should register flow-node template with pattern losant://flow/nodes/{nodeSpec}', async () => {
       registerResourceLoader(mockServer);
 
       const flowNodeTemplate = registeredTemplates.find((t) => t.name === 'flow-node');
       should.exist(flowNodeTemplate);
-      flowNodeTemplate.template.uriTemplate.toString().should.equal('losant://flow/nodes/{nodeName}');
+      flowNodeTemplate.template.uriTemplate.toString().should.equal('losant://flow/nodes/{nodeSpec}');
       flowNodeTemplate.config.should.have.property('mimeType', 'text/markdown');
     });
 
-    it('should register flow-trigger template with pattern losant://flow/triggers/{triggerName}', async () => {
+    it('should register flow-trigger template with pattern losant://flow/triggers/{triggerSpec}', async () => {
       registerResourceLoader(mockServer);
 
       const flowTriggerTemplate = registeredTemplates.find((t) => t.name === 'flow-trigger');
       should.exist(flowTriggerTemplate);
-      flowTriggerTemplate.template.uriTemplate.toString().should.equal('losant://flow/triggers/{triggerName}');
+      flowTriggerTemplate.template.uriTemplate.toString().should.equal('losant://flow/triggers/{triggerSpec}');
       flowTriggerTemplate.config.should.have.property('mimeType', 'text/markdown');
     });
   });
@@ -676,6 +677,55 @@ describe('MCP Resources', () => {
       result.contents[0].text.should.match(/DebugNode|debug/i);
     });
 
+    it('every FLOW_NODE_TYPES entry should reference a spec with an actual node doc file', () => {
+      Object.entries(FLOW_NODE_TYPES).forEach(([type, { spec }]) => {
+        should.exist(FLOW_NODE_TO_FILE[spec], `${type}'s spec "${spec}" has no file at losant://flow/nodes/${spec}`);
+      });
+    });
+
+    describe('flow-node spec-name hints', () => {
+      const readFlowNode = (nodeSpec) => client.readResource({ uri: `losant://flow/nodes/${nodeSpec}` }).catch((err) => err);
+
+      it('should throw a plain not-found error for a genuinely unknown node name, with no spec hint', async () => {
+        const err = await readFlowNode('TotallyBogusNode');
+        err.message.should.match(/Flow node not found: TotallyBogusNode/);
+        err.data.hint.should.match(/It does not exist/);
+      });
+
+      it('should hint at the real spec when the real `type` is passed directly', async () => {
+        const err = await readFlowNode('GetEventNode');
+        err.data.hint.should.match(/Did you mean losant:\/\/flow\/nodes\/event\?/);
+      });
+
+      it('should propagate the hint in err.message, not just err.data.hint', async () => {
+        const err = await readFlowNode('get-table-rows');
+        err.message.should.match(/HINT:: Did you mean losant:\/\/flow\/nodes\/data-table\?/);
+      });
+
+      it('should hint at the real spec when the real `meta.name` is passed directly', async () => {
+        const err = await readFlowNode('get-table-rows');
+        err.data.hint.should.match(/Did you mean losant:\/\/flow\/nodes\/data-table\?/);
+      });
+
+      it('should hint at the real spec for a plausible-but-wrong type guess reduced via kebab-case', async () => {
+        const err = await readFlowNode('GetTableRowsNode');
+        err.data.hint.should.match(/Did you mean losant:\/\/flow\/nodes\/data-table\?/);
+      });
+
+      it('should give a two-step hint (real type, then spec) for a NON_EXISTING_FLOW_NODE_TYPES entry', async () => {
+        const err = await readFlowNode('DataTableGetRowNode');
+        err.data.hint.should.match(/"DataTableGetRowNode" is not a valid node spec\. Did you mean "DataTableQueryNode"\? See losant:\/\/flow\/nodes\/data-table for its spec\./);
+      });
+
+      it('every NON_EXISTING_FLOW_NODE_TYPES entry should map to a real, documented node type', () => {
+        Object.entries(NON_EXISTING_FLOW_NODE_TYPES).forEach(([guess, realType]) => {
+          should.exist(FLOW_NODE_TYPES[realType], `${guess} -> "${realType}" is not a real FLOW_NODE_TYPES entry`);
+          const spec = FLOW_NODE_TYPES[realType].spec;
+          should.exist(FLOW_NODE_TO_FILE[spec], `${guess} -> ${realType} has no spec file at losant://flow/nodes/${spec}`);
+        });
+      });
+    });
+
     it('should provide handler for flow trigger timer', async () => {
       const result = await client.readResource({ uri: 'losant://flow/triggers/timer' });
 
@@ -683,6 +733,58 @@ describe('MCP Resources', () => {
       result.contents[0].should.have.property('uri', 'losant://flow/triggers/timer');
       result.contents[0].should.have.property('mimeType', 'text/markdown');
       result.contents[0].text.should.match(/timer|cron/i);
+    });
+
+    it('every FLOW_TRIGGER_TYPES entry should reference a spec with an actual trigger doc file', () => {
+      FLOW_TRIGGER_TYPES.forEach(({ type, spec }) => {
+        should.exist(FLOW_TRIGGER_TO_FILE[spec], `${type}'s spec "${spec}" has no file at losant://flow/triggers/${spec}`);
+      });
+    });
+
+    describe('flow-trigger spec-name hints', () => {
+      const readFlowTrigger = (triggerSpec) => client.readResource({ uri: `losant://flow/triggers/${triggerSpec}` }).catch((err) => err);
+
+      it('should throw a plain not-found error for a genuinely unknown trigger name, with no spec hint', async () => {
+        const err = await readFlowTrigger('totallyBogus');
+        err.message.should.match(/Flow trigger not found: totallyBogus/);
+        err.data.hint.should.match(/It does not exist/);
+      });
+
+      it('should hint at the real spec when the real `type` is passed directly', async () => {
+        const err = await readFlowTrigger('deviceCreate');
+        err.data.hint.should.match(/Did you mean losant:\/\/flow\/triggers\/device-create\?/);
+      });
+
+      it('should hint at the real spec for an alias type (deviceTag shares device-state with deviceId)', async () => {
+        const err = await readFlowTrigger('deviceTag');
+        err.data.hint.should.match(/Did you mean losant:\/\/flow\/triggers\/device-state\?/);
+      });
+
+      it('should hint at the real spec for a kebab-case guess of the spec name (amazonSqs)', async () => {
+        const err = await readFlowTrigger('amazonSqs');
+        err.data.hint.should.match(/Did you mean losant:\/\/flow\/triggers\/amazon-sqs\?/);
+      });
+
+      it('should hint at the real spec for a kebab-case guess of the spec name (deviceState)', async () => {
+        const err = await readFlowTrigger('deviceState');
+        err.data.hint.should.match(/Did you mean losant:\/\/flow\/triggers\/device-state\?/);
+      });
+
+      it('should hint at the real spec for a PascalCase guess reduced via kebab-case (Timer)', async () => {
+        const err = await readFlowTrigger('Timer');
+        err.data.hint.should.match(/Did you mean losant:\/\/flow\/triggers\/timer\?/);
+      });
+
+      it('should propagate the hint in err.message, not just err.data.hint', async () => {
+        const err = await readFlowTrigger('deviceCreate');
+        err.message.should.match(/HINT:: Did you mean losant:\/\/flow\/triggers\/device-create\?/);
+      });
+
+      it('should not hint at a single spec for the ambiguous "integration" type', async () => {
+        const err = await readFlowTrigger('integration');
+        err.message.should.match(/Flow trigger not found: integration/);
+        err.data.hint.should.match(/configured by service type/);
+      });
     });
   });
 });
