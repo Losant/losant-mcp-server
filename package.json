@@ -44,7 +44,7 @@
     "@hapi/boom": "^10.0.1",
     "@hapi/hapi": "^21.4.10",
     "@hapi/inert": "^7.1.2",
-    "@modelcontextprotocol/node": "^2.1.1",
+    "@modelcontextprotocol/node": "^2.1.2",
     "@modelcontextprotocol/server": "^2.3.1",
     "convict": "^6.2.5",
     "debug": "^4.4.3",
