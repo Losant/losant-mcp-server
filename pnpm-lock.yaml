@@ -343,8 +343,8 @@ packages:
   '@hapi/catbox@12.1.1':
     resolution: {integrity: sha512-hDqYB1J+R0HtZg4iPH3LEnldoaBsar6bYp0EonBmNQ9t5CO+1CqgCul2ZtFveW1ReA5SQuze9GPSU7/aecERhw==}
 
-  '@hapi/content@6.0.2':
-    resolution: {integrity: sha512-OKyCOTjNR1hftwSjk9ueyAQTw8AwapvzBrPIWMGn39vhR5PmqLdYFmLc35bsSBye7gSMnlkXfc679bUdMIcRyQ==}
+  '@hapi/content@6.0.3':
+    resolution: {integrity: sha512-ksXemMNZAwPq/mu1a9TZ7LDUSgMR9sexBgpalF3nrP6SM42ARlnBZs58IS5Ay+o4o7y6tFNXL+rMJkQ5ghvCSw==}
 
   '@hapi/cryptiles@6.0.3':
     resolution: {integrity: sha512-r6VKalpbMHz4ci3gFjFysBmhwCg70RpYZy6OkjEpdXzAYnYFX5XsW7n4YMJvuIYpnMwLxGUjK/cBhA7X3JDvXw==}
@@ -1033,8 +1033,8 @@ packages:
   flatted@3.4.4:
     resolution: {integrity: sha512-5+ybhBZANEJxaH3X5evAFatUxLfEHSr7n6kYJ+1Qd0mUqr4eu9gIf6GDbWHf8RJijHrjjO8G+la14SlL2SeS1Q==}
 
-  follow-redirects@1.16.1:
-    resolution: {integrity: sha512-FNvFGzoMLWmE6Yj9spb/zjd7yiNCHiAW9/Tg9CXrQ8wuu32HtlJOwWO11OJafl5FfY3DxTdQ0vj42zU1kvv5jg==}
+  follow-redirects@1.16.2:
+    resolution: {integrity: sha512-/kVP2U8z596Ia0gwFrwyIeo74ta5aVmSeU1FfAUMAmcEP5EP7zydmag3SLiN64NaRKef3lxsq7i/g7ltJQDGow==}
     engines: {node: '>=4.0'}
     peerDependencies:
       debug: '*'
@@ -2153,7 +2153,7 @@ snapshots:
       '@hapi/podium': 5.0.2
       '@hapi/validate': 2.0.1
 
-  '@hapi/content@6.0.2':
+  '@hapi/content@6.0.3':
     dependencies:
       '@hapi/boom': 10.0.1
 
@@ -2223,7 +2223,7 @@ snapshots:
     dependencies:
       '@hapi/b64': 6.0.1
       '@hapi/boom': 10.0.1
-      '@hapi/content': 6.0.2
+      '@hapi/content': 6.0.3
       '@hapi/hoek': 11.0.7
       '@hapi/nigel': 5.0.1
 
@@ -2257,7 +2257,7 @@ snapshots:
     dependencies:
       '@hapi/boom': 10.0.1
       '@hapi/bourne': 3.0.0
-      '@hapi/content': 6.0.2
+      '@hapi/content': 6.0.3
       '@hapi/file': 3.0.0
       '@hapi/hoek': 11.0.7
       '@hapi/pez': 6.1.1
@@ -2518,7 +2518,7 @@ snapshots:
 
   axios@1.20.0(debug@4.4.3(supports-color@5.5.0))(supports-color@5.5.0):
     dependencies:
-      follow-redirects: 1.16.1(debug@4.4.3(supports-color@5.5.0))
+      follow-redirects: 1.16.2(debug@4.4.3(supports-color@5.5.0))
       form-data: 4.0.6
       https-proxy-agent: 5.0.1(supports-color@5.5.0)
       proxy-from-env: 2.1.0
@@ -3103,7 +3103,7 @@ snapshots:
 
   flatted@3.4.4: {}
 
-  follow-redirects@1.16.1(debug@4.4.3(supports-color@5.5.0)):
+  follow-redirects@1.16.2(debug@4.4.3(supports-color@5.5.0)):
     optionalDependencies:
       debug: 4.4.3(supports-color@5.5.0)
 
