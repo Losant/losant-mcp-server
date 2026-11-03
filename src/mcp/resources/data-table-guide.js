@@ -148,13 +148,5 @@ export default {
     description: 'Domain guide for Losant data tables — column schema, constraints, the dataTable/dataTableRow relationship, and common procedures for creating and managing tables and rows',
     mimeType: 'text/markdown'
   },
-  getContent: async (uri) => {
-    return {
-      contents: [{
-        uri: uri.href,
-        mimeType: 'text/markdown',
-        text: content
-      }]
-    };
-  }
+  content
 };

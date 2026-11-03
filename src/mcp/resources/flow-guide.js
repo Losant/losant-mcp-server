@@ -39,14 +39,17 @@ The \`flowPost\` / \`flowPatch\` schemas are large (86KB). Read \`losant://schem
 For the wiring model, trigger configuration, and per-node config details read:
 
 - \`losant://authoring/flow\` — full authoring guide (trigger catalog, node catalog, wiring model, loops, conditionals)
-- \`losant://flow/nodes/{nodeName}\` — per-node detail
-- \`losant://flow/triggers/{triggerName}\` — per-trigger detail
+- \`losant://flow/nodes/{nodeSpec}\` — per-node detail
+- \`losant://flow/triggers/{triggerSpec}\` — per-trigger detail
 - \`losant://references/flow/templating\` — Handlebars dialect, format helpers, expressions, payload paths, and LJSON syntax for nodes
 - \`losant://references/flow/globals\` — global variables reference
 - \`losant://references/flow/payload\` — payload reference
 - \`losant://references/flow/custom-nodes\` — custom nodes reference
 - \`losant://references/flow/execution-model\` — how execution works: payload flow, branching, throws, and the Flow Error trigger
-- \`losant://references/flow/patterns\` — seven common flow patterns with concrete node chains: device alert, scheduled API pull, webhook handler, experience login, authenticated API endpoint, device provisioning
+- \`losant://references/flow/patterns\` — six common flow patterns with concrete node chains: device alert, scheduled API pull, webhook handler, experience login, authenticated API endpoint, device provisioning
+- \`losant://references/flow/debug-patterns\` — debug/local-testing patterns: Virtual Button manual triggering, capture-to-file for replay, and synchronous webhook+curl debugging
+- \`losant://guides/tools/losant_flow_diagnostics\` — query run stats, and historical errors for a flow via \`losant_flow_diagnostics\`
+- \`losant://guides/tools/losant_flow_debug_listener\` — watch a flow's live debug output, optionally triggering a test run via Virtual Button, via \`losant_flow_debug_listener\`
 
 ## Flow Versions
 
@@ -90,6 +93,12 @@ Triggers and nodes in a \`flowVersion\` cannot be edited. To revise:
 2. Apply your changes to \`triggers\` and \`nodes\` on the develop version via \`losant_write\` \`operation=updateOne\` \`resourceType=flow\`
 3. Snapshot a new \`flowVersion\` with a new version name
 
+### Debug a failing flow
+1. Investigating a historical bug a user described, or trying to characterize what's going wrong — start with \`losant_flow_diagnostics\` ([losant://guides/tools/losant_flow_diagnostics](losant://guides/tools/losant_flow_diagnostics)) for aggregate run/error counts and failing \`nodeId\`s.
+2. If diagnostics returns an error with a \`nodeId\`, switch to \`losant_flow_debug_listener\` ([losant://guides/tools/losant_flow_debug_listener](losant://guides/tools/losant_flow_debug_listener)) to reproduce that node's failure live and inspect the actual payload.
+3. If diagnostics comes back empty but a problem is still suspected, use \`losant_flow_debug_listener\` to watch the flow's live output and try to capture the error as it happens, rather than waiting on the next 15-minute aggregate.
+4. See [losant://references/flow/debug-patterns](losant://references/flow/debug-patterns) for the flow edits (Virtual Button, Debug nodes) needed to make the debug listener produce useful signal.
+
 ${buildReferenceSection(['flow', 'flowVersion'])}
 `;
 
@@ -101,13 +110,5 @@ export default {
     description: 'Domain guide for Losant flows — flow classes, triggers, nodes, versions, and common procedures',
     mimeType: 'text/markdown'
   },
-  getContent: async (uri) => {
-    return {
-      contents: [{
-        uri: uri.href,
-        mimeType: 'text/markdown',
-        text: content
-      }]
-    };
-  }
+  content
 };

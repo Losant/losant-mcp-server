@@ -68,7 +68,8 @@ export default {
         },
         query: {
           type: 'object',
-          description: 'Query object for timeSeriesQuery/lastValueQuery operations. For timeSeriesQuery: contains deviceIds/deviceTags, attributes (array), time range, aggregation settings. For lastValueQuery: contains deviceIds/deviceTags and attribute (singular string, not array). See losant://docs/data for schema details.'
+          description: 'Query object for timeSeriesQuery/lastValueQuery operations. For timeSeriesQuery: contains deviceIds/deviceTags, attributes (array), time range, aggregation settings. For lastValueQuery: contains deviceIds/deviceTags and attribute (singular string, not array). See losant://docs/data for schema details.',
+          additionalProperties: true
         },
         deviceId: {
           type: 'string',
@@ -100,7 +101,8 @@ export default {
           description: 'Comma-separated list of attributes to include (getCompositeState). When not provided, returns all attributes.'
         }
       },
-      required: ['operation', 'applicationId']
+      required: ['operation', 'applicationId'],
+      additionalProperties: false
     })
   },
   runnerFactory: (losantClient) => {

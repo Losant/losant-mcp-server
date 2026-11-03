@@ -98,13 +98,5 @@ export default {
     description: 'Domain guide for Losant application dashboards — blocks, layout grid, context variables, and common procedures',
     mimeType: 'text/markdown'
   },
-  getContent: async (uri) => {
-    return {
-      contents: [{
-        uri: uri.href,
-        mimeType: 'text/markdown',
-        text: content
-      }]
-    };
-  }
+  content
 };

@@ -112,7 +112,7 @@ describe('Integration: OAuth 2.0 Flow', function() {
       const error = JSON.parse(response.payload);
       error.should.have.property('jsonrpc', '2.0');
       error.should.have.property('error');
-      error.error.should.have.property('code', -32000);
+      error.error.should.have.property('code', -32600);
       error.error.should.have.property('message', null);
       error.error.data.should.deepEqual({ error: null, description: 'No Authorization header provided' });
     });

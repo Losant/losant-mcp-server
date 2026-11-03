@@ -196,13 +196,5 @@ export default {
     description: 'Access keys and device certificates for MQTT broker authentication — API/UI naming differences, setup procedures, and edge compute notes',
     mimeType: 'text/markdown'
   },
-  getContent: async (uri) => {
-    return {
-      contents: [{
-        uri: uri.href,
-        mimeType: 'text/markdown',
-        text: content
-      }]
-    };
-  }
+  content
 };

@@ -2,8 +2,9 @@ import '../../common.js';
 import should from 'should';
 import registerResourceLoader from '../../../src/mcp/resources/index.js';
 import { createMCPServer } from '../../../src/mcp/server.js';
-import { Client } from '@modelcontextprotocol/sdk/client/index.js'; // eslint-disable-line import/no-unresolved
-import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js'; // eslint-disable-line import/no-unresolved
+import { Client, InMemoryTransport } from '@modelcontextprotocol/client';
+import { LIST_OMITTED_FIELDS, FLOW_NODE_TYPES, FLOW_NODE_TO_FILE, NON_EXISTING_FLOW_NODE_TYPES,
+  FLOW_TRIGGER_TYPES, FLOW_TRIGGER_TO_FILE } from '../../../src/constants.js';
 
 describe('MCP Resources', () => {
 
@@ -149,21 +150,21 @@ describe('MCP Resources', () => {
       referenceTemplate.config.should.have.property('mimeType', 'text/markdown');
     });
 
-    it('should register flow-node template with pattern losant://flow/nodes/{nodeName}', async () => {
+    it('should register flow-node template with pattern losant://flow/nodes/{nodeSpec}', async () => {
       registerResourceLoader(mockServer);
 
       const flowNodeTemplate = registeredTemplates.find((t) => t.name === 'flow-node');
       should.exist(flowNodeTemplate);
-      flowNodeTemplate.template.uriTemplate.toString().should.equal('losant://flow/nodes/{nodeName}');
+      flowNodeTemplate.template.uriTemplate.toString().should.equal('losant://flow/nodes/{nodeSpec}');
       flowNodeTemplate.config.should.have.property('mimeType', 'text/markdown');
     });
 
-    it('should register flow-trigger template with pattern losant://flow/triggers/{triggerName}', async () => {
+    it('should register flow-trigger template with pattern losant://flow/triggers/{triggerSpec}', async () => {
       registerResourceLoader(mockServer);
 
       const flowTriggerTemplate = registeredTemplates.find((t) => t.name === 'flow-trigger');
       should.exist(flowTriggerTemplate);
-      flowTriggerTemplate.template.uriTemplate.toString().should.equal('losant://flow/triggers/{triggerName}');
+      flowTriggerTemplate.template.uriTemplate.toString().should.equal('losant://flow/triggers/{triggerSpec}');
       flowTriggerTemplate.config.should.have.property('mimeType', 'text/markdown');
     });
   });
@@ -245,11 +246,11 @@ describe('MCP Resources', () => {
     });
 
     it('should provide handler for losant delete tool guide', async () => {
-      const result = await client.readResource({ uri: 'losant://guides/losant-delete-tool' });
+      const result = await client.readResource({ uri: 'losant://guides/tools/losant_delete' });
 
       result.should.have.property('contents');
       result.contents.should.be.an.Array();
-      result.contents[0].should.have.property('uri', 'losant://guides/losant-delete-tool');
+      result.contents[0].should.have.property('uri', 'losant://guides/tools/losant_delete');
       result.contents[0].should.have.property('mimeType', 'text/markdown');
       result.contents[0].should.have.property('text');
       result.contents[0].text.should.match(/deletion is permanent|cannot be undone/i);
@@ -265,15 +266,41 @@ describe('MCP Resources', () => {
     });
 
     it('should provide handler for losant query tool guide', async () => {
-      const result = await client.readResource({ uri: 'losant://guides/losant-query-tool' });
+      const result = await client.readResource({ uri: 'losant://guides/tools/losant_query' });
 
       result.should.have.property('contents');
       result.contents.should.be.an.Array();
-      result.contents[0].should.have.property('uri', 'losant://guides/losant-query-tool');
+      result.contents[0].should.have.property('uri', 'losant://guides/tools/losant_query');
       result.contents[0].should.have.property('mimeType', 'text/markdown');
       result.contents[0].should.have.property('text');
       // Should contain query guide content
       result.contents[0].text.should.match(/MongoDB|query|operator/i);
+    });
+
+    it('should document the fields the query tool omits from list responses', async () => {
+      const result = await client.readResource({ uri: 'losant://guides/tools/losant_query' });
+      const { text } = result.contents[0];
+
+      text.should.containEql('## Summary Fields');
+      // Every type the tool trims must be named, with the fields it trims
+      Object.entries(LIST_OMITTED_FIELDS).forEach(([resourceType, fields]) => {
+        text.should.containEql(`| \`${resourceType}\` | ${fields.map((f) => `\`${f}\``).join(', ')} |`);
+      });
+      text.should.match(/An omitted field is not an empty field/);
+    });
+
+    it('should provide handler for losant write tool guide', async () => {
+      const result = await client.readResource({ uri: 'losant://guides/tools/losant_write' });
+
+      result.should.have.property('contents');
+      result.contents.should.be.an.Array();
+      result.contents[0].should.have.property('uri', 'losant://guides/tools/losant_write');
+      result.contents[0].should.have.property('mimeType', 'text/markdown');
+      result.contents[0].should.have.property('text');
+      // Post/Patch schema links and PATCH semantics are what distinguish the write guide
+      result.contents[0].text.should.containEql('losant://schemas/devicePost');
+      result.contents[0].text.should.containEql('losant://schemas/devicePatch');
+      result.contents[0].text.should.match(/PATCH is partial/);
     });
 
     it('should provide handler for advanced query guide', async () => {
@@ -307,6 +334,79 @@ describe('MCP Resources', () => {
       result.contents[0].text.should.match(/Device Certificate/);
       result.contents[0].text.should.match(/Access Key/i);
       result.contents[0].text.should.match(/mutual TLS/i);
+    });
+
+    it('should provide handler for webhooks guide', async () => {
+      const result = await client.readResource({ uri: 'losant://guides/webhooks' });
+
+      result.should.have.property('contents');
+      result.contents[0].should.have.property('uri', 'losant://guides/webhooks');
+      result.contents[0].should.have.property('mimeType', 'text/markdown');
+      result.contents[0].text.should.match(/token/);
+      result.contents[0].text.should.match(/waitForReply/);
+    });
+
+    it('should provide handler for flow diagnostics tool guide', async () => {
+      const result = await client.readResource({ uri: 'losant://guides/tools/losant_flow_diagnostics' });
+
+      result.should.have.property('contents');
+      result.contents.should.be.an.Array();
+      result.contents[0].should.have.property('uri', 'losant://guides/tools/losant_flow_diagnostics');
+      result.contents[0].should.have.property('mimeType', 'text/markdown');
+      result.contents[0].should.have.property('text');
+      result.contents[0].text.should.match(/stats/);
+      result.contents[0].text.should.match(/errors/);
+      result.contents[0].text.should.match(/15-minute floor/);
+      result.contents[0].text.should.match(/losant:\/\/schemas\/flowStats/);
+      result.contents[0].text.should.match(/losant:\/\/schemas\/flowErrors/);
+    });
+
+    it('should load schema for flowStats response schema', async () => {
+      const result = await client.readResource({ uri: 'losant://schemas/flowStats' });
+      result.contents[0].should.have.property('uri', 'losant://schemas/flowStats');
+      result.contents[0].should.have.property('mimeType', 'application/json');
+      const parsed = JSON.parse(result.contents[0].text);
+      parsed.should.have.property('type', 'object');
+      parsed.properties.should.have.property('metrics');
+    });
+
+    it('should load schema for flowErrors response schema', async () => {
+      const result = await client.readResource({ uri: 'losant://schemas/flowErrors' });
+      result.contents[0].should.have.property('uri', 'losant://schemas/flowErrors');
+      result.contents[0].should.have.property('mimeType', 'application/json');
+      const parsed = JSON.parse(result.contents[0].text);
+      parsed.should.have.property('type', 'object');
+      parsed.properties.should.have.property('errors');
+    });
+
+    it('should include flow diagnostics endpoint disclaimers in flow doc', async () => {
+      const result = await client.readResource({ uri: 'losant://docs/flow' });
+
+      result.should.have.property('contents');
+      result.contents[0].should.have.property('text');
+      result.contents[0].text.should.containEql('endpoints "stats" and "errors" both used by tool `losant_flow_diagnostics`');
+    });
+
+    it('should provide handler for flow debug listener tool guide', async () => {
+      const result = await client.readResource({ uri: 'losant://guides/tools/losant_flow_debug_listener' });
+
+      result.should.have.property('contents');
+      result.contents.should.be.an.Array();
+      result.contents[0].should.have.property('uri', 'losant://guides/tools/losant_flow_debug_listener');
+      result.contents[0].should.have.property('mimeType', 'text/markdown');
+      result.contents[0].should.have.property('text');
+      result.contents[0].text.should.match(/pressId/);
+      result.contents[0].text.should.match(/unmatchedMessageCount/);
+    });
+
+    it('should include flow debug listener endpoint disclaimer (pressVirtualButton only, not the private debug endpoint) in flow doc', async () => {
+      const result = await client.readResource({ uri: 'losant://docs/flow' });
+
+      result.should.have.property('contents');
+      result.contents[0].should.have.property('text');
+      result.contents[0].text.should.containEql('endpoint "pressVirtualButton" used by tool `losant_flow_debug_listener`');
+      result.contents[0].text.should.not.containEql('endpoint "debug"');
+      result.contents[0].text.should.containEql('losant://guides/tools/losant_flow_debug_listener');
     });
 
     describe('authoring/dashboard resources', () => {
@@ -437,6 +537,10 @@ describe('MCP Resources', () => {
       indexText.should.match(/losant:\/\/schemas\/advancedApplicationJobLogQuery/);
       indexText.should.match(/losant:\/\/schemas\/advancedDeviceQuery/);
 
+      // Should contain links to response schemas
+      indexText.should.match(/losant:\/\/schemas\/flowStats/);
+      indexText.should.match(/losant:\/\/schemas\/flowErrors/);
+
       // Should contain link to advanced query guide
       indexText.should.match(/losant:\/\/guides\/advanced-queries/);
 
@@ -444,6 +548,7 @@ describe('MCP Resources', () => {
       indexText.should.match(/# Losant API Documentation/);
       indexText.should.match(/## API Documentation/);
       indexText.should.match(/## Query Schemas/);
+      indexText.should.match(/## Response Schemas/);
     });
 
     it('should provide handler for authoring flow hub', async () => {
@@ -518,6 +623,15 @@ describe('MCP Resources', () => {
       result.contents[0].text.should.containEql('Pattern');
     });
 
+    it('should provide handler for flow reference debug-patterns', async () => {
+      const result = await client.readResource({ uri: 'losant://references/flow/debug-patterns' });
+
+      result.should.have.property('contents');
+      result.contents[0].should.have.property('uri', 'losant://references/flow/debug-patterns');
+      result.contents[0].should.have.property('mimeType', 'text/markdown');
+      result.contents[0].text.should.containEql('Virtual Button');
+    });
+
     it('should provide handler for flow node access-key', async () => {
       const result = await client.readResource({ uri: 'losant://flow/nodes/access-key' });
 
@@ -563,6 +677,55 @@ describe('MCP Resources', () => {
       result.contents[0].text.should.match(/DebugNode|debug/i);
     });
 
+    it('every FLOW_NODE_TYPES entry should reference a spec with an actual node doc file', () => {
+      Object.entries(FLOW_NODE_TYPES).forEach(([type, { spec }]) => {
+        should.exist(FLOW_NODE_TO_FILE[spec], `${type}'s spec "${spec}" has no file at losant://flow/nodes/${spec}`);
+      });
+    });
+
+    describe('flow-node spec-name hints', () => {
+      const readFlowNode = (nodeSpec) => client.readResource({ uri: `losant://flow/nodes/${nodeSpec}` }).catch((err) => err);
+
+      it('should throw a plain not-found error for a genuinely unknown node name, with no spec hint', async () => {
+        const err = await readFlowNode('TotallyBogusNode');
+        err.message.should.match(/Flow node not found: TotallyBogusNode/);
+        err.data.hint.should.match(/It does not exist/);
+      });
+
+      it('should hint at the real spec when the real `type` is passed directly', async () => {
+        const err = await readFlowNode('GetEventNode');
+        err.data.hint.should.match(/Did you mean losant:\/\/flow\/nodes\/event\?/);
+      });
+
+      it('should propagate the hint in err.message, not just err.data.hint', async () => {
+        const err = await readFlowNode('get-table-rows');
+        err.message.should.match(/HINT:: Did you mean losant:\/\/flow\/nodes\/data-table\?/);
+      });
+
+      it('should hint at the real spec when the real `meta.name` is passed directly', async () => {
+        const err = await readFlowNode('get-table-rows');
+        err.data.hint.should.match(/Did you mean losant:\/\/flow\/nodes\/data-table\?/);
+      });
+
+      it('should hint at the real spec for a plausible-but-wrong type guess reduced via kebab-case', async () => {
+        const err = await readFlowNode('GetTableRowsNode');
+        err.data.hint.should.match(/Did you mean losant:\/\/flow\/nodes\/data-table\?/);
+      });
+
+      it('should give a two-step hint (real type, then spec) for a NON_EXISTING_FLOW_NODE_TYPES entry', async () => {
+        const err = await readFlowNode('DataTableGetRowNode');
+        err.data.hint.should.match(/"DataTableGetRowNode" is not a valid node spec\. Did you mean "DataTableQueryNode"\? See losant:\/\/flow\/nodes\/data-table for its spec\./);
+      });
+
+      it('every NON_EXISTING_FLOW_NODE_TYPES entry should map to a real, documented node type', () => {
+        Object.entries(NON_EXISTING_FLOW_NODE_TYPES).forEach(([guess, realType]) => {
+          should.exist(FLOW_NODE_TYPES[realType], `${guess} -> "${realType}" is not a real FLOW_NODE_TYPES entry`);
+          const spec = FLOW_NODE_TYPES[realType].spec;
+          should.exist(FLOW_NODE_TO_FILE[spec], `${guess} -> ${realType} has no spec file at losant://flow/nodes/${spec}`);
+        });
+      });
+    });
+
     it('should provide handler for flow trigger timer', async () => {
       const result = await client.readResource({ uri: 'losant://flow/triggers/timer' });
 
@@ -570,6 +733,58 @@ describe('MCP Resources', () => {
       result.contents[0].should.have.property('uri', 'losant://flow/triggers/timer');
       result.contents[0].should.have.property('mimeType', 'text/markdown');
       result.contents[0].text.should.match(/timer|cron/i);
+    });
+
+    it('every FLOW_TRIGGER_TYPES entry should reference a spec with an actual trigger doc file', () => {
+      FLOW_TRIGGER_TYPES.forEach(({ type, spec }) => {
+        should.exist(FLOW_TRIGGER_TO_FILE[spec], `${type}'s spec "${spec}" has no file at losant://flow/triggers/${spec}`);
+      });
+    });
+
+    describe('flow-trigger spec-name hints', () => {
+      const readFlowTrigger = (triggerSpec) => client.readResource({ uri: `losant://flow/triggers/${triggerSpec}` }).catch((err) => err);
+
+      it('should throw a plain not-found error for a genuinely unknown trigger name, with no spec hint', async () => {
+        const err = await readFlowTrigger('totallyBogus');
+        err.message.should.match(/Flow trigger not found: totallyBogus/);
+        err.data.hint.should.match(/It does not exist/);
+      });
+
+      it('should hint at the real spec when the real `type` is passed directly', async () => {
+        const err = await readFlowTrigger('deviceCreate');
+        err.data.hint.should.match(/Did you mean losant:\/\/flow\/triggers\/device-create\?/);
+      });
+
+      it('should hint at the real spec for an alias type (deviceTag shares device-state with deviceId)', async () => {
+        const err = await readFlowTrigger('deviceTag');
+        err.data.hint.should.match(/Did you mean losant:\/\/flow\/triggers\/device-state\?/);
+      });
+
+      it('should hint at the real spec for a kebab-case guess of the spec name (amazonSqs)', async () => {
+        const err = await readFlowTrigger('amazonSqs');
+        err.data.hint.should.match(/Did you mean losant:\/\/flow\/triggers\/amazon-sqs\?/);
+      });
+
+      it('should hint at the real spec for a kebab-case guess of the spec name (deviceState)', async () => {
+        const err = await readFlowTrigger('deviceState');
+        err.data.hint.should.match(/Did you mean losant:\/\/flow\/triggers\/device-state\?/);
+      });
+
+      it('should hint at the real spec for a PascalCase guess reduced via kebab-case (Timer)', async () => {
+        const err = await readFlowTrigger('Timer');
+        err.data.hint.should.match(/Did you mean losant:\/\/flow\/triggers\/timer\?/);
+      });
+
+      it('should propagate the hint in err.message, not just err.data.hint', async () => {
+        const err = await readFlowTrigger('deviceCreate');
+        err.message.should.match(/HINT:: Did you mean losant:\/\/flow\/triggers\/device-create\?/);
+      });
+
+      it('should not hint at a single spec for the ambiguous "integration" type', async () => {
+        const err = await readFlowTrigger('integration');
+        err.message.should.match(/Flow trigger not found: integration/);
+        err.data.hint.should.match(/configured by service type/);
+      });
     });
   });
 });

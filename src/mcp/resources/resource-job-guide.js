@@ -102,13 +102,5 @@ export default {
     description: 'Domain guide for Losant resource jobs — the iterate-resources-trigger-flow pattern, queryJson, concurrency, and retry settings',
     mimeType: 'text/markdown'
   },
-  getContent: async (uri) => {
-    return {
-      contents: [{
-        uri: uri.href,
-        mimeType: 'text/markdown',
-        text: content
-      }]
-    };
-  }
+  content
 };

@@ -1,7 +1,6 @@
-/* eslint-disable no-console, import/no-unresolved */
+/* eslint-disable no-console */
 import should from 'should';
-import { Client } from '@modelcontextprotocol/sdk/client/index.js';
-import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
+import { Client, StreamableHTTPClientTransport } from '@modelcontextprotocol/client';
 
 /**
  * E2E tests against a locally running MCP server.
