@@ -194,8 +194,8 @@ importers:
         specifier: ^9.0.3
         version: 9.0.3
       losant-rest:
-        specifier: Losant/losant-rest-js#v4.3.0
-        version: https://codeload.github.com/Losant/losant-rest-js/tar.gz/a7009c3602d934d781bbdd306393b44168d2d42d(debug@4.4.3(supports-color@5.5.0))(supports-color@5.5.0)
+        specifier: Losant/losant-rest-js#v4.4.0
+        version: https://codeload.github.com/Losant/losant-rest-js/tar.gz/308336ea075d3047b23250f630c9a4deca58547d(debug@4.4.3(supports-color@5.5.0))(supports-color@5.5.0)
       memoizee:
         specifier: ^0.4.17
         version: 0.4.17
@@ -1444,9 +1444,9 @@ packages:
   lodash@4.18.1:
     resolution: {integrity: sha512-dMInicTPVE8d1e5otfwmmjlxkZoUpiVLwyeTdUsi/Caj/gfzzblBcCE5sRHV/AsjuCmxWrte2TNGSYuCeCq+0Q==}
 
-  losant-rest@https://codeload.github.com/Losant/losant-rest-js/tar.gz/a7009c3602d934d781bbdd306393b44168d2d42d:
-    resolution: {gitHosted: true, integrity: sha512-N21zxq1lrBlmWZ3Nikt4j5A7E6Psi4Fr4SjXW9sdMgnWLjmsy61fVUGq4HuoFQgdpMQptLH0Nev66+br55Kp1Q==, tarball: https://codeload.github.com/Losant/losant-rest-js/tar.gz/a7009c3602d934d781bbdd306393b44168d2d42d}
-    version: 4.3.0
+  losant-rest@https://codeload.github.com/Losant/losant-rest-js/tar.gz/308336ea075d3047b23250f630c9a4deca58547d:
+    resolution: {gitHosted: true, integrity: sha512-pQtlCXzz9ra8BgnGMtIDLh67DsDWF5C/GztO3Wom0TYAhFEoPC41O4FkLPr9jpIP8Vis6YQi7weTUEO1ER7t5g==, tarball: https://codeload.github.com/Losant/losant-rest-js/tar.gz/308336ea075d3047b23250f630c9a4deca58547d}
+    version: 4.4.0
 
   lru-cache@11.5.3:
     resolution: {integrity: sha512-U4N8FgzmWxc8k1VH8Kr6lQg18U7Fjvby6wXHVRX/ZZ7IwWbRMgrRbP0Wrb5q5NVinryp4SQampHKdvtecItxUg==}
@@ -3506,7 +3506,7 @@ snapshots:
 
   lodash@4.18.1: {}
 
-  losant-rest@https://codeload.github.com/Losant/losant-rest-js/tar.gz/a7009c3602d934d781bbdd306393b44168d2d42d(debug@4.4.3(supports-color@5.5.0))(supports-color@5.5.0):
+  losant-rest@https://codeload.github.com/Losant/losant-rest-js/tar.gz/308336ea075d3047b23250f630c9a4deca58547d(debug@4.4.3(supports-color@5.5.0))(supports-color@5.5.0):
     dependencies:
       axios: 1.20.0(debug@4.4.3(supports-color@5.5.0))(supports-color@5.5.0)
       eventsource: 4.1.1
