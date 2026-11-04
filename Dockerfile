@@ -2,6 +2,7 @@
 FROM node:26.13.0-alpine AS base
 
 # Install pnpm
+RUN npm install -g corepack
 RUN corepack enable
 
 WORKDIR /app
@@ -25,6 +26,7 @@ LABEL org.opencontainers.image.title="Losant MCP Server" \
       org.opencontainers.image.authors="Losant Team <hello@losant.com>"
 
 # Install pnpm
+RUN npm install -g corepack
 RUN corepack enable
 
 # Create non-root user

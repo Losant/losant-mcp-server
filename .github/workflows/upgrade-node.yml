@@ -8,7 +8,7 @@ on:
       node_major_version:
         description: 'Node major version to check for upgrades'
         required: false
-        default: '24'
+        default: '26'
 
 jobs:
   check:
