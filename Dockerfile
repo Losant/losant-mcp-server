@@ -1,7 +1,8 @@
 # Build stage
-FROM node:24.22.2-alpine AS base
+FROM node:26.13.0-alpine AS base
 
 # Install pnpm
+RUN npm install -g corepack
 RUN corepack enable
 
 WORKDIR /app
@@ -17,7 +18,7 @@ COPY src ./src
 COPY bin ./bin
 
 # Production stage
-FROM node:24.22.2-alpine
+FROM node:26.13.0-alpine
 
 LABEL org.opencontainers.image.title="Losant MCP Server" \
       org.opencontainers.image.description="Losant MCP Server for handling device communication and integration with Losant platform" \
@@ -25,6 +26,7 @@ LABEL org.opencontainers.image.title="Losant MCP Server" \
       org.opencontainers.image.authors="Losant Team <hello@losant.com>"
 
 # Install pnpm
+RUN npm install -g corepack
 RUN corepack enable
 
 # Create non-root user

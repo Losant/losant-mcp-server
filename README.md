@@ -44,8 +44,8 @@
 
 ### Prerequisites
 
-- **[Node.js](https://nodejs.org/)** >= 24.0.0
-- **[pnpm](https://pnpm.io/)** >= 11.4.0
+- **[Node.js](https://nodejs.org/)** >= 24
+- **[pnpm](https://pnpm.io/)** >= 12.16.1
 - **[Losant Account](https://www.losant.com/)** with an API token or OAuth configured
 
 ### Install & Run (API Token — Default)
