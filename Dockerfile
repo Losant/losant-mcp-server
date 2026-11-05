@@ -1,9 +1,11 @@
 # Build stage
 FROM node:26.13.0-alpine AS base
 
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME/bin:$PATH"
+
 # Install pnpm
-RUN npm install -g corepack
-RUN corepack enable
+RUN npx get-pnpm
 
 WORKDIR /app
 
@@ -25,9 +27,11 @@ LABEL org.opencontainers.image.title="Losant MCP Server" \
       org.opencontainers.image.version="1.0.0" \
       org.opencontainers.image.authors="Losant Team <hello@losant.com>"
 
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME/bin:$PATH"
+
 # Install pnpm
-RUN npm install -g corepack
-RUN corepack enable
+RUN npx get-pnpm
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
