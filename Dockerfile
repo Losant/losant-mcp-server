@@ -1,5 +1,5 @@
 # Build stage
-FROM node:26.13.0-alpine AS base
+FROM node:26.13.1-alpine AS base
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME/bin:$PATH"
@@ -16,7 +16,7 @@ RUN npx get-pnpm
 RUN pnpm deploy --prod --frozen-lockfile /deploy
 
 # Production stage
-FROM node:26.13.0-alpine
+FROM node:26.13.1-alpine
 
 LABEL org.opencontainers.image.title="Losant MCP Server" \
       org.opencontainers.image.description="Losant MCP Server for handling device communication and integration with Losant platform" \
