@@ -211,7 +211,8 @@ describe('flow-debug-listener tool', () => {
     nock(LOSANT_API_URL, { encodedQueryParams: true })
       .post(`/applications/${APP_ID}/flows/${flowId}/virtualButton`)
       .query(true)
-      .reply(200, (uri, requestBody) => {
+      .reply(200, async (req) => {
+        const requestBody = await req.text();
         capturedBody = typeof requestBody === 'string' ? JSON.parse(requestBody) : requestBody;
         return { flowId, flowVersion: 'develop', virtualButtonId: 'vb1', payload: {}, success: true };
       });
@@ -264,7 +265,8 @@ describe('flow-debug-listener tool', () => {
     nock(LOSANT_API_URL, { encodedQueryParams: true })
       .post(`/applications/${APP_ID}/flows/${flowId}/virtualButton`)
       .query(true)
-      .reply(200, (uri, requestBody) => {
+      .reply(200, async (req) => {
+        const requestBody = await req.text();
         const body = typeof requestBody === 'string' ? JSON.parse(requestBody) : requestBody;
         capturedPressId = body.meta.pressId;
         FakeEventSource.instances[0].emitMessage('logEntry', baseMessage({
