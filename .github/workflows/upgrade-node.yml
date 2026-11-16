@@ -3,6 +3,10 @@ name: Upgrade Node.js Version
 on:
   schedule:
     - cron: '0 9 * * *' # Daily 9 AM UTC
+  pull_request:
+    types: ['opened', 'reopened', 'synchronize']
+    paths:
+      - '.github/workflows/upgrade-node.yml'
   workflow_dispatch:
     inputs:
       node_major_version:
@@ -49,6 +53,7 @@ jobs:
       new_node_version: ${{ steps.upgrade.outputs.new_node_version }}
       new_pnpm: ${{ steps.upgrade.outputs.new_pnpm }}
       notes: ${{ steps.upgrade.outputs.notes }}
+      has_changes: ${{ steps.upgrade.outputs.has_changes }}
 
     steps:
       # tag v6.0.2
@@ -60,7 +65,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320
         with:
-          run_install: false
+          install: false
 
       # tag v6.3.0
       - name: Setup Node
@@ -70,18 +75,25 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Resolve Node major version
+        id: major
+        env:
+          NODE_MAJOR_INPUT: ${{ inputs.node_major_version }}
+        run: |
+          NODE_MAJOR="${NODE_MAJOR_INPUT:-$(cut -d. -f1 .node-version)}"
+          echo "node_major=${NODE_MAJOR#v}" >> "$GITHUB_OUTPUT"
       - name: Run Node upgrade
         id: upgrade
         uses: Losant/losant-vex-tools/auto-upgrade-node@main
         with:
-          node_major_version: ${{ inputs.node_major_version || '24' }}
+          node_major_version: ${{ steps.major.outputs.node_major }}
 
       - name: Save upgrade diff
-        if: steps.upgrade.outputs.new_node_version != ''
+        if: steps.upgrade.outputs.has_changes != 'false'
         run: git diff > upgrade.patch
 
       - name: Upload upgrade diff
-        if: steps.upgrade.outputs.new_node_version != ''
+        if: steps.upgrade.outputs.has_changes != 'false'
         # tag v4.6.2
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -91,7 +103,7 @@ jobs:
 
   open-pr:
     needs: upgrade
-    if: needs.upgrade.outputs.new_node_version != ''
+    if: needs.upgrade.outputs.has_changes != 'false'
     runs-on: ubuntu-latest
     permissions:
       contents: write
