@@ -16,7 +16,7 @@ Rows are a nested resource under their parent table. To query rows, use \`losant
 
 ## Columns
 
-Columns are defined when creating the table (or can be added/removed via PATCH). Each column has:
+Columns are defined when creating the table. **Adding or removing columns after creation is not possible through the MCP** — see "Modifying Columns" below. Each column has:
 
 | Field | Required | Rules |
 |---|---|---|
@@ -52,17 +52,13 @@ A column's \`dataType\` cannot be changed after rows exist. To change a type, dr
 }
 \`\`\`
 
-Only \`name\` is required at the top level. Columns are optional — a table can be created with no columns and columns added later.
+Only \`name\` is strictly required by the schema, but **treat \`columns\` as required in practice**: since columns cannot be added, removed, or renamed later through the MCP (see "Modifying Columns" below), the full column list must be confirmed with the user and included at creation time.
 
 ## Modifying Columns
 
-Use \`losant_write\` with \`operation=updateOne\` and the full updated \`columns\` array. The PATCH replaces the entire columns array.
+**Columns cannot be added, removed, or renamed through this MCP.** The \`dataTable\` PATCH endpoint (used by \`losant_write\` \`operation=updateOne\`) only accepts \`name\` and \`description\` — it does not accept a \`columns\` field. Adding a column requires a dedicated \`POST .../data-table/{id}/column\` (\`addColumn\`) endpoint, and removing one requires a dedicated \`DELETE .../data-table/{id}/column\` (\`removeColumn\`) endpoint. Neither is exposed by \`losant_write\`.
 
-**Adding a column**: append to the array — existing rows will have \`null\` for the new column unless \`defaultValue\` is set.
-
-**Removing a column**: omit it from the array — **all data in that column is permanently deleted**.
-
-**Renaming a column**: not directly supported. Drop and recreate with a new name (loses data for that column).
+If the user wants to add, remove, or rename a column, tell them this must be done from the Losant platform UI (or directly via the API/SDK) rather than through the MCP.
 
 ## Querying Rows
 
@@ -87,17 +83,8 @@ See \`losant://guides/advanced-queries\` for query syntax and \`losant://schemas
 3. Call \`losant_write\` with \`operation=createOne\`, \`resourceType=dataTable\`
 4. Check \`losant://schemas/dataTablePost\` for the full body schema
 
-### Add a column to an existing table
-1. Use \`losant_query\` \`operation=get\` on the dataTable to retrieve current columns
-2. Append the new column definition to the \`columns\` array
-3. Call \`losant_write\` \`operation=updateOne\` with the full updated columns array
-4. Warn user: existing rows will have \`null\` for the new column
-
-### Remove a column
-1. Warn the user: this permanently deletes all data in that column for every row
-2. Use \`losant_query\` \`operation=get\` on the dataTable to retrieve current columns
-3. Remove the target column from the array
-4. Call \`losant_write\` \`operation=updateOne\` with the updated columns array
+### Add or remove a column on an existing table
+Not possible through the MCP. The dataTable PATCH endpoint does not accept a \`columns\` field — adding/removing columns requires dedicated \`addColumn\`/\`removeColumn\` API endpoints that \`losant_write\` does not expose. Tell the user to make this change from the Losant platform UI or directly via the API/SDK.
 
 ### Query rows by column value
 Use \`losant_query\` with \`resourceType=dataTableRow\`, \`parentResourceId=<dataTableId>\`, and an advanced \`query\` object.
