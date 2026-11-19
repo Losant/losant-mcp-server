@@ -44,5 +44,3 @@ jobs:
         with:
           vex_repo: Losant/losant-vexhub
           gcp_project: losant-core
-          cloud_run_job: gca-vex-generator-mcp
-          cloud_run_region: us-central1
